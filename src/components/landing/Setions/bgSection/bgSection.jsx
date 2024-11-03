@@ -26,6 +26,19 @@ export default BgSection;
 
 
 
+// import React from 'react';
 
+// const bgSection = () => {
+//   return (
+//     <div>
+//       <h1>
+
+//       hello bg section here..wtger
+//       </h1>
+//     </div>
+//   );
+// }
+
+// export default bgSection;
 
 
