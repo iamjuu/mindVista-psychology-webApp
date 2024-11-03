@@ -1,11 +1,10 @@
-import React from 'react';
-
+import React from "react";
+// import {Container,Containerwrap} from "./styles";
 const index = () => {
   return (
-    <div>
-      <h1> about</h1>
-    </div>
+ <>
+ </>
   );
-}
+};
 
 export default index;

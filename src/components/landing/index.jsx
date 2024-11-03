@@ -1,7 +1,7 @@
 // Index.js
 import React from "react";
 import Navbar from "../navbar/index";
-import Bgsction from "./Setions/bgSection";
+import Bgsction from "./Setions/bgSection/bgSection";
 import SectionOne from "./Setions/Section1"
 
 const Index = () => {
@@ -9,7 +9,7 @@ const Index = () => {
     <div>
       <Navbar/>
       <Bgsction/>
-      <SectionOne/>
+      {/* <SectionOne/> */}
 
     </div>
   );
