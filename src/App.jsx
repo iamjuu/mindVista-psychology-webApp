@@ -1,11 +1,13 @@
+// App.js
 import './App.css';
-import LandingRouter from './Routes/landing/index';
+import UserRouter from './Routes/UserRouter'; 
+import { BrowserRouter as Router } from 'react-router-dom'; // Import Router
 
 function App() {
   return (
-    <>
-      <LandingRouter />
-    </>
+    <Router>
+      <UserRouter /> 
+    </Router>
   );
 }
 
