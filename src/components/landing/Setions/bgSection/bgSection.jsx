@@ -14,7 +14,13 @@ const BgSection = () => {
       <BgContainer bg={BG}> 
         <ContainerWrap>
        <Main>
-<h1>{Data.h1} </h1>
+        <p>{Data.p}</p>
+<h1 style={{color:'white' ,fontFamily:"monospace"}}>{Data.h1} </h1>
+<div className="btn-container">
+  <Regbtn className='btn1'  btnName={'Book Now'} />
+  <Regbtn btnName={'About me'} />
+
+</div>
        </Main>
         </ContainerWrap>
       </BgContainer>
@@ -23,22 +29,5 @@ const BgSection = () => {
 };
 
 export default BgSection;
-
-
-
-// import React from 'react';
-
-// const bgSection = () => {
-//   return (
-//     <div>
-//       <h1>
-
-//       hello bg section here..wtger
-//       </h1>
-//     </div>
-//   );
-// }
-
-// export default bgSection;
 
 
