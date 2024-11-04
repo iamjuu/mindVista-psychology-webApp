@@ -1,15 +1,31 @@
-
+import React, { useEffect } from "react";
+import AOS from "aos";
+import "aos/dist/aos.css"; // Import AOS styles
 import Navbar from "../navbar";
 import Footer from "../footer";
 import Bgsction from "./Setions/bgSection/bgSection";
-import BgsectionOne from "./Setions/sectionOne/Section1"
+import BgsectionOne from "./Setions/sectionOne/Section1";
+
 const Index = () => {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, // Animation duration in milliseconds
+      delay: 200, // Delay before animation starts
+      once: true, // Trigger animation only once
+    });
+  }, []);
+
   return (
     <div>
-      <Navbar/>
-      <Bgsction />
-      <BgsectionOne/>
-      <Footer/>
+      <Navbar />
+      <div data-aos="fade-up"> 
+        <Bgsction />
+      </div>
+      <div data-aos="fade-up" data-aos-delay="300"> 
+        <BgsectionOne />
+      </div>
+      
+      <Footer /> 
     </div>
   );
 };
