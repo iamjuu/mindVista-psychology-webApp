@@ -19,7 +19,7 @@ export const Main = styled.div`
     width: 100%;
     .left {
       border-radius: 15px;
-      background-color: aliceblue;
+      background-color: white;
       padding: 10px;
       gap: 5px;
       flex-wrap: wrap;
@@ -65,7 +65,7 @@ export const Main = styled.div`
     .right {
       border-radius: 15px;
       width: 48%;
-      background-color: aliceblue;
+      background-color: #F3EBE6;
       display: flex;
       flex-direction: column;
       justify-content: center;

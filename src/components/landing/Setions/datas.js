@@ -7,6 +7,17 @@ export const Data = {
 };
 
 export const SectionOne = {
+  boxOne:[{
+h2:'How can I help you?',
+p:'   If you’re experiencing any kind of mental illness or problem in relations',
+h5:'Explore Programs'
+  }],
+  boxTwo:[{
+    h1:'Call for Consultation',
+    p:"30 minutes free for the first session.",
+    h5:"  DIAL NOW ",
+    break:'  921-124-9220'
+  }],
   img: SectionImg,
   h5: "Let me introduce",
   h1: "I’m Dr. Susan Lopez – Expert Psychologist from New York.",
