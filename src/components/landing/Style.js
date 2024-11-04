@@ -8,6 +8,7 @@ export const Container = styled.div`
 `;
 
 export const ContainerWrap = styled.div`
+background-color:${(props)=>props.bg||''} ;
   max-width: 1300px;
   display: flex;
   width: 100%;
@@ -22,5 +23,5 @@ export const BgContainer = styled.div`
   justify-content: center;
   align-items: center;
   background-position: center;
-  height: 500px; 
+  height: 700px; 
 `;
