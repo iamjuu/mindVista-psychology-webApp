@@ -8,33 +8,29 @@ const Section1 = () => {
       <ContainerWrap>
         <Main>
           <div className="first">
-            <div className="left">
-              <div>
-                <h2>How can I help you?</h2>
-                <p>
-                  If you’re experiencing any kind of mental illness or problem
-                  in relations.
-                </p>
-                <h5>Explore Programs</h5>
-              </div>
-              <div>
-                <ul>
-                  <li>Family Problems</li>
-                  <li>Breakups</li>
-                  <li>Business Failure</li>
-                  <li>Stress Issues</li>
-                  <li>Online Sessions</li>
-                </ul>
-              </div>
-            </div>
+          <div className="left">
+  <div>
+    <h2>{SectionOne.boxOne[0].h2}</h2>
+    <p>{SectionOne.boxOne[0].p}</p>
+    <h5>{SectionOne.boxOne[0].h5}</h5>
+  </div>
+  <div>
+    <ul>
+      <li>Family Problems</li>
+      <li>Breakups</li>
+      <li>Business Failure</li>
+      <li>Stress Issues</li>
+      <li>Online Sessions</li>
+    </ul>
+  </div>
+</div>
             <div className="right">
-              {" "}
-              <h1>Call for Consultation</h1>{" "}
-              <p>30 minutes free for the first session.</p>{" "}
+            
+              <h1>{SectionOne.boxTwo[0].h1}</h1>
+              <p>{SectionOne.boxTwo[0].p}</p>
               <hr  style={{width:'170px'}}/>
               <h5>
-                DIAL NOW <br />
-                921-124-9220
+               {SectionOne.boxTwo[0].h5 } <br /> {SectionOne.boxTwo[0].break}
               </h5>
             </div>
           </div>
