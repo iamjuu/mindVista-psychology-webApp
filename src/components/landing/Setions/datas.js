@@ -101,3 +101,6 @@ export const sectionTwoData={
     }
   ]
 }
+export const sectionThreeData =[
+  {span:'Program Offerings'
+}]
