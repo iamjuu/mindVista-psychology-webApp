@@ -20,18 +20,17 @@ export const Main = styled.div`
     .left {
       border-radius: 15px;
       background-color: white;
-      padding: 10px;
+      /* padding: 10px; */
       gap: 5px;
+      width: 60%;
       flex-wrap: wrap;
-      align-items: center;
       display: flex;
 
-      width: 48%;
       & > :nth-child(1) {
         font-size: 1.2rem;
+        text-align: left;
+        display: flex;
         width: 70%;
-        text-align: center;
-
         display: flex;
         flex-direction: column;
         gap: 25px;
@@ -64,7 +63,7 @@ export const Main = styled.div`
     }
     .right {
       border-radius: 15px;
-      width: 48%;
+      width: 30%;
       background-color: #F3EBE6;
       display: flex;
       flex-direction: column;
@@ -86,7 +85,18 @@ width: 80%;
       @media (max-width: 425px) {
         font-size: 0.8rem;
       }
+
+
+      h1{
+        font-size: 1.4rem;
+      }
+      p{
+        font-size: 1rem;
+
+      }
     }
+
+
   }
   /* ..........second..........  */
   .second {
@@ -115,7 +125,7 @@ width: 80%;
     flex-direction: column;
     align-items: center;
     h5{
-        font-size: 1.5rem;
+        font-size: 1rem;
     }
     p{
         line-height: 25px;

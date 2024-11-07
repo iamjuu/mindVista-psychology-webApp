@@ -3,6 +3,7 @@ import styled from "styled-components";
 export const Container = styled.div`
   width: 100%;
   display: flex;
+  background-color:${(props)=>props.bg||''} ;
   justify-content: center;
   align-items: center;
 `;
@@ -25,3 +26,9 @@ export const BgContainer = styled.div`
   background-position: center;
   height: 700px; 
 `;
+export const FreeContainer =styled.div`
+width:  ${(props)=>props.width||''};
+background-color: ${(props)=> props.bg||''};
+height: ${(props)=>props.height||''};
+
+`
