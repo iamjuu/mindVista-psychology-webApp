@@ -3,9 +3,9 @@ import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
 import Navbar from "../navbar";
 import Footer from "../footer";
-import Bgsction from "./Setions/bgSection/bgSection";
-import BgsectionOne from "./Setions/sectionOne/Section1";
-
+import Bgsction from "./Setions/bgSection";
+import BgsectionOne from "./Setions/sectionOne";
+import SectionTwo from './Setions/sectionTwo/'
 const Index = () => {
   useEffect(() => {
     AOS.init({
@@ -23,6 +23,10 @@ const Index = () => {
       </div>
       <div data-aos="fade-up" data-aos-delay="300"> 
         <BgsectionOne />
+      </div>
+      <div data-aos="fade-in" data-aos-delay ="400">
+        <SectionTwo/>
+
       </div>
       
       <Footer /> 

@@ -24,7 +24,7 @@ const Navbar = () => {
           </Menu>
         </LinksDiv>
         <LogoutDiv>
-          <LogOutbtn btnName="register" width="130px" />
+          <LogOutbtn    color={'white'} bg={'#a57355'}  btnName="register" width="130px" />
         </LogoutDiv>
       </NavContainer>
     </Nav>
