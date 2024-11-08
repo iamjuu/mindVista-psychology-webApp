@@ -1,6 +1,7 @@
 import styled from "styled-components";
 export const Main = styled.div`
 display: flex;
+flex-direction: column;
 justify-content: center;
 width: 100%;
 .first{
@@ -29,5 +30,12 @@ height: 3px;
 border: none;
 
     }
+}
+.second{
+margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 `

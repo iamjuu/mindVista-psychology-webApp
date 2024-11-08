@@ -5,6 +5,7 @@ import Breakup from "../../../assets/bannar/Brackup.avif"
 import Introvert from "../../../assets/bannar/introvert.jpg"
 import Smoking from "../../../assets/bannar/smoking.jpg"
 import Youth from "../../../assets/bannar/youth.avif"
+import Cardimg1 from "../../../assets/landing/about-image-1 (1).jpg"
 export const Data = {
   p: "Best psychologist",
   h1: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta, esse nobis reprehenderit aut cumque labore sapiente tempora eveniet veniam quaerat, distinctio minima est voluptatum, error tempore. Minima, totam. Ratione, ullam?",
@@ -30,46 +31,6 @@ h5:'Explore Programs'
   p: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Diam nascetur ad varius curabitur ante donec de proin auctor felis hendrerit.",
   h4: "Susan Lopez – Founder",
 };
-
-// export const  sectionTwoData =[{
-//   id:1,
-// icon:Breakup,
-// title:'Breakup'
-// },
-// {
-//   id:2,
-//   icon:Brain,
-//   title:'mendel pressure'
-// },
-// {
-//   id:3,
-//   icon:'',
-//   title:'family problems'
-// },
-// {
-//   id:4,
-//   icon:Youth,
-//   title:'youth'
-// },
-// {
-//   id:5,
-// icon:'',
-// title:'drugs'
-// }
-// ,{
-//   id:6,
-//   icon:Smoking,
-//   title:' smoking'
-// },
-// {
-//   id:7,
-//   icon:Introvert,
-//   title:'introvert'
-// }
-
-// ]
-
-
 export const sectionTwoData={ 
   left:[
 {
@@ -101,6 +62,16 @@ export const sectionTwoData={
     }
   ]
 }
-export const sectionThreeData =[
-  {span:'Program Offerings'
-}]
+
+export const sectionThreeData={
+  first:[{
+    span:'Program Offerings',
+    h1:'Magical & Inspirational lessons for people seeking help.'
+  }],
+  secondCard:[{
+   h1: 'heading',
+   img:Cardimg1,
+   p:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor',
+   link:'/about'
+  }]
+}
