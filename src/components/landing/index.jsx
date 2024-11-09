@@ -7,6 +7,7 @@ import Bgsction from "./Setions/bgSection";
 import BgsectionOne from "./Setions/sectionOne";
 import SectionTwo from "./Setions/sectionTwo/";
 import SectionThree from "./Setions/sectionThree";
+import SectionFour from "./Setions/sectionFour";
 const Index = () => {
   useEffect(() => {
     AOS.init({
@@ -30,6 +31,9 @@ const Index = () => {
       </div>
       <div data-aos="fade-down" data-aos-delay="400">
         <SectionThree />
+      </div>
+      <div data-aos="fade-down" data-aos-delay="400">
+        <SectionFour />
       </div>
 
       <Footer />

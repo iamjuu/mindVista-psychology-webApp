@@ -12,6 +12,8 @@ export const ContainerWrap = styled.div`
 background-color:${(props)=>props.bg||''} ;
   max-width: 1300px;
   display: flex;
+  justify-content: center;
+  align-items: center;
   width: 100%;
 `;
 

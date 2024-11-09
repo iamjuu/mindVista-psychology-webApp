@@ -32,7 +32,7 @@ const SectionTwo = () => {
     width={'290px'}
     key={data.id}
     data-aos="zoom-in"
-    data-aos-delay={index * 200}  // Stagger the delay based on index
+    data-aos-delay={index * 200}  
   >
     <div className="right-sub" style={{ transition: 'transform 0.3s ease' }}>
       <h3 data-aos="fade-down" data-aos-delay={1500 + index * 200}>
