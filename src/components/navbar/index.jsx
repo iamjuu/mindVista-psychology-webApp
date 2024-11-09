@@ -11,6 +11,7 @@ const Navbar = () => {
       <NavContainer>
         <LogoDiv>
           <Logo href="/">mindVista</Logo>
+          <h1>hello</h1>
         </LogoDiv>
         <LinksDiv>
           <Hamburger onClick={() => setIsOpen(!isOpen)}>
@@ -24,7 +25,7 @@ const Navbar = () => {
           </Menu>
         </LinksDiv>
         <LogoutDiv>
-          <LogOutbtn btnName="register" width="130px" />
+          <LogOutbtn    color={'white'} bg={'#a57355'}  btnName="register" width="130px" />
         </LogoutDiv>
       </NavContainer>
     </Nav>

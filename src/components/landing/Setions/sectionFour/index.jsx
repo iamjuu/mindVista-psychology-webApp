@@ -1,10 +1,14 @@
 import React from 'react';
 
+import {} from "../datas"
+
 const index = () => {
   return (
-    <div style={{height:'100px'}}>
-      <h1>footer</h1>
-    </div>
+
+
+<>  
+<h1> heloo</h1>
+</>
   );
 }
 

@@ -1,11 +1,28 @@
-    import styled from "styled-components";
+import styled from "styled-components";
 
-    export const Button= styled.button`
-    padding: 10px;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 5px;
-    width: ${(props) => props.width };
+export const Button = styled.button`
+  padding: ${(props) => props.padding || '10px'};
+  font-size: ${(props) => props.fontsize || '1rem'};
+  border: none;
+  border-radius: ${(props) => props.borderRadius || '5px'};
+  background-color: ${(props) => props.bg || '#007BFF'};
+  color: ${(props) => props.color || '#fff'};
+  width: ${(props) => props.width || 'auto'};
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  
+  :hover {
+    background-color: ${(props) => props.hoverbg || '#0056b3'};
+    transform: scale(1.05);
+  }
 
-    
-    `
+  :active {
+    transform: scale(1);
+  }
+
+  :disabled {
+    background-color: ${(props) => props.disabledBg || '#ccc'};
+    color: ${(props) => props.disabledColor || '#777'};
+    cursor: not-allowed;
+  }
+`;
