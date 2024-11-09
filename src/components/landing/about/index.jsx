@@ -1,10 +1,12 @@
 import React from 'react';
+import Navbar from '../../navbar';
+
 
 const index = () => {
   return (
     <div>
-      <h1> about</h1>
-      <p>this is about page</p>
+      <Navbar />
+      <h1>welcome</h1>
     </div>
   );
 }

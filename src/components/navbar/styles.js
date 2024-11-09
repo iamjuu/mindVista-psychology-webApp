@@ -71,7 +71,6 @@ export const MenuLink = styled(Link)`
 `;
 
 export const LogoutDiv = styled.div`
-background-color: red;
   @media (max-width: 768px) {
     display: ${({ isOpen }) => (isOpen ? 'block' : 'none')};
     position: absolute;
@@ -85,7 +84,6 @@ export const LogoutButton = styled(Link)`
   color: #fff;
   text-decoration: none;
   padding: 0.5rem 1rem;
-  background: #a57355;
   border-radius: 4px;
 
   &:hover {

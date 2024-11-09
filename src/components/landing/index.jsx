@@ -1,16 +1,13 @@
-// Index.js
-import React from "react";
-import Navbar from "../navbar/index";
-import Bgsction from "./Setions/bgSection";
-import SectionOne from "./Setions/Section1"
 
+import Bgsction from "./Setions/bgSection/bgSection";
+import Navbar from "../navbar";
+import Footer from "../footer";
 const Index = () => {
   return (
     <div>
       <Navbar/>
-      <Bgsction/>
-      <SectionOne/>
-
+      <Bgsction />
+      <Footer/>
     </div>
   );
 };
