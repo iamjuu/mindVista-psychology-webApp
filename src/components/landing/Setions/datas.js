@@ -75,3 +75,25 @@ export const sectionThreeData={
    link:'/about'
   }]
 }
+
+
+
+export const technologies = [
+  {
+    name: "HTML 5",
+    icon: 'html',
+  },
+  {
+    name: "CSS 3",
+    icon: 'css',
+  },
+  {
+    name: "JavaScript",
+    icon: "javascript",
+  },
+  {
+    name: "React JS",
+    icon: 'react js',
+  },
+
+  ]

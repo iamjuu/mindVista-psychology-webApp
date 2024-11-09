@@ -1,10 +1,14 @@
 import React from 'react';
 
+import {} from "../datas"
+
 const index = () => {
   return (
-    <div>
-      
-    </div>
+
+
+<>  
+<h1> heloo</h1>
+</>
   );
 }
 
