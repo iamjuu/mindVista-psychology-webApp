@@ -6,6 +6,7 @@ import Introvert from "../../../assets/bannar/introvert.jpg"
 import Smoking from "../../../assets/bannar/smoking.jpg"
 import Youth from "../../../assets/bannar/youth.avif"
 import Cardimg1 from "../../../assets/landing/about-image-1 (1).jpg"
+import {Logo } from '../../../assets/index'
 export const Data = {
   p: "Best psychologist",
   h1: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta, esse nobis reprehenderit aut cumque labore sapiente tempora eveniet veniam quaerat, distinctio minima est voluptatum, error tempore. Minima, totam. Ratione, ullam?",
@@ -73,27 +74,24 @@ export const sectionThreeData={
    img:Cardimg1,
    p:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor',
    link:'/about'
-  }]
+  },
+  {
+    h1: 'heading1',
+    img:Cardimg1,
+    p:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor',
+    link:'/about'
+   },
+   {
+    h1: 'heading',
+    img:Cardimg1,
+    p:'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor',
+    link:'/about'
+   },
+],
+third:[{
+  h1:'Open for Appointments',
+  p:'Have a look at my schedule to book a session.',
+  icon:Logo
+}]
+
 }
-
-
-
-export const technologies = [
-  {
-    name: "HTML 5",
-    icon: 'html',
-  },
-  {
-    name: "CSS 3",
-    icon: 'css',
-  },
-  {
-    name: "JavaScript",
-    icon: "javascript",
-  },
-  {
-    name: "React JS",
-    icon: 'react js',
-  },
-
-  ]

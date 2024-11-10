@@ -1,7 +1,19 @@
+// Navbar.js
 import React, { useState } from 'react';
 import { FiMenu, FiX } from 'react-icons/fi';
-import { Hamburger, LinksDiv, Logo, LogoDiv, LogoutDiv, Menu, Nav, NavContainer,MenuLink } from './styles';
+import { 
+  Hamburger, 
+  LinksDiv, 
+  LogoContainer, 
+  LogoDiv, 
+  LogoutDiv, 
+  Menu, 
+  Nav, 
+  NavContainer, 
+  MenuLink 
+} from './styles';
 import LogOutbtn from "../core/button/";
+import { Logo } from "../../assets/";
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +22,9 @@ const Navbar = () => {
     <Nav>
       <NavContainer>
         <LogoDiv>
-          <Logo href="/">mindVista</Logo>
+          <LogoContainer to="/"> 
+            <img src={Logo} alt="Logo" />
+          </LogoContainer>
         </LogoDiv>
         <LinksDiv>
           <Hamburger onClick={() => setIsOpen(!isOpen)}>
@@ -23,8 +37,8 @@ const Navbar = () => {
             <MenuLink to="/contact">Contact</MenuLink>
           </Menu>
         </LinksDiv>
-        <LogoutDiv>
-          <LogOutbtn    color={'white'} bg={'#a57355'}  btnName="register" width="130px" />
+        <LogoutDiv isOpen={isOpen}>
+          <LogOutbtn color="white" bg="#a57355" btnName="Register" width="130px" />
         </LogoutDiv>
       </NavContainer>
     </Nav>

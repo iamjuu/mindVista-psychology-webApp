@@ -5,7 +5,7 @@ import Regbtn from '../../../core/button/index';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
 import { Data } from '../datas';
-import BG from '../../../../assets/landing/vistaBg.jpg';
+import {Bgimg} from '../../../../assets/'
 
 const BgSection = () => {
   useEffect(() => {
@@ -18,7 +18,7 @@ const BgSection = () => {
 
   return (
     <Container>
-      <BgContainer bg={BG}>
+      <BgContainer bg={Bgimg}>
         <ContainerWrap>
           <Main data-aos="fade-up">
             <p data-aos="fade-up" data-aos-delay="100">{Data.p}</p>

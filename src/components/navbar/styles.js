@@ -20,13 +20,26 @@ export const NavContainer = styled.div`
   width: 100%;
 `;
 
-export const LogoDiv = styled.div``;
+export const LogoDiv = styled.div` 
+/* background-color:green; */
+width: 100%;
+`;
 
-export const Logo = styled(Link)`
+export const LogoContainer = styled(Link)`
+  width: 100%;
   font-size: 1.5rem;
   text-decoration: none;
+  /* background-color: red; */
   padding: 5px;
   color: #dcdada;
+  img{
+    width: 6%;
+    border-radius: 50%;
+    @media (max-width:425px) {
+      width: 10%;
+    }
+    
+  }
 `;
 
 export const LinksDiv = styled.div`
@@ -52,10 +65,12 @@ export const Menu = styled.div`
     display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
     flex-direction: column;
     position: absolute;
-    top: 60px;
+    top: 80px;
     right: 0;
-    background: #dcdada;
+    background: #f3ebe6;
     width: 100%;
+    z-index: 10;
+    /* padding: 1.2rem; */
   }
 `;
 
