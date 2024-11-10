@@ -26,7 +26,7 @@ h5:'Explore Programs'
   }],
   img: SectionImg,
   h5: "Let me introduce",
-  h1: "I’m Dr. Vishnu priya – Expert Psychologist from India.",
+  h1: "I’m Vishnu priya – Expert Psychologist from India.",
   // h1Break: "Vishnu priya from New York.",
   h3: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua minim veniam.",
   p: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Diam nascetur ad varius curabitur ante donec de proin auctor felis hendrerit.",

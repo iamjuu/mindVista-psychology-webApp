@@ -10,9 +10,9 @@ import {Bgimg} from '../../../../assets/'
 const BgSection = () => {
   useEffect(() => {
     AOS.init({
-      duration: 1000, // Animation duration in milliseconds
-      delay: 200, // Delay before animation starts
-      once: true, // Trigger animation only once
+      duration: 1000, 
+      delay: 200, 
+      once: true, 
     });
   }, []);
 
