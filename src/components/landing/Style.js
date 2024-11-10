@@ -32,5 +32,8 @@ export const FreeContainer =styled.div`
 width:  ${(props)=>props.width||''};
 background-color: ${(props)=> props.bg||''};
 height: ${(props)=>props.height||''};
-
+display: flex;
+justify-content: center;
+flex-direction: column;
+align-items: center;
 `

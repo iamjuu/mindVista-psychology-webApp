@@ -1,13 +1,13 @@
 import React from 'react';
 
-import {} from "../datas"
+// import {} from "../datas"
 
 const index = () => {
   return (
 
 
 <>  
-<h1> heloo</h1>
+<h1>four</h1>
 </>
   );
 }

@@ -11,28 +11,28 @@ import SectionFour from "./Setions/sectionFour";
 const Index = () => {
   useEffect(() => {
     AOS.init({
-      duration: 1000, // Animation duration in milliseconds
-      delay: 200, // Delay before animation starts
-      once: true, // Trigger animation only once
+      duration: 1000, 
+      delay: 200, 
+      once: true, 
     });
   }, []);
 
   return (
     <div>
       <Navbar />
-      <div data-aos="fade-up">
+      <div  >
         <Bgsction />
       </div>
-      <div data-aos="fade-up" data-aos-delay="300">
+      <div >
         <BgsectionOne />
       </div>
-      <div data-aos="fade-in" data-aos-delay="400">
+      <div >
         <SectionTwo />
       </div>
-      <div data-aos="fade-down" data-aos-delay="400">
+      <div >
         <SectionThree />
       </div>
-      <div data-aos="fade-down" data-aos-delay="400">
+      <div >
         <SectionFour />
       </div>
 

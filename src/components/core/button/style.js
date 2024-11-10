@@ -8,21 +8,12 @@ export const Button = styled.button`
   background-color: ${(props) => props.bg || '#007BFF'};
   color: ${(props) => props.color || '#fff'};
   width: ${(props) => props.width || 'auto'};
+  border: ${(props) => props.border || "none"};
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.3s ease;
   
+ 
   :hover {
-    background-color: ${(props) => props.hoverbg || '#0056b3'};
-    transform: scale(1.05);
-  }
-
-  :active {
-    transform: scale(1);
-  }
-
-  :disabled {
-    background-color: ${(props) => props.disabledBg || '#ccc'};
-    color: ${(props) => props.disabledColor || '#777'};
-    cursor: not-allowed;
+    background-color: red;
   }
 `;

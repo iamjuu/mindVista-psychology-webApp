@@ -5,20 +5,20 @@ import Regbtn from '../../../core/button/index';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
 import { Data } from '../datas';
-import BG from '../../../../assets/landing/vistaBg.jpg';
+import {Bgimg} from '../../../../assets/'
 
 const BgSection = () => {
   useEffect(() => {
     AOS.init({
-      duration: 1000, // Animation duration in milliseconds
-      delay: 200, // Delay before animation starts
-      once: true, // Trigger animation only once
+      duration: 1000, 
+      delay: 200, 
+      once: true, 
     });
   }, []);
 
   return (
     <Container>
-      <BgContainer bg={BG}>
+      <BgContainer bg={Bgimg}>
         <ContainerWrap>
           <Main data-aos="fade-up">
             <p data-aos="fade-up" data-aos-delay="100">{Data.p}</p>
