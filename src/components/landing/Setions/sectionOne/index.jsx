@@ -20,8 +20,8 @@ const Section1 = () => {
       <ContainerWrap>
         <Main>
           <div className="first" data-aos="fade-up">
-            <div className="left" data-aos="fade-right" data-aos-delay="100">
-              <div data-aos='fade-right' data-aos-delay="800">
+            <div className="left" data-aos="fade-down" data-aos-delay="100">
+              <div data-aos='fade-up' data-aos-delay="800">
                 <h2  data-aos='fade-up' data-aos-delay="1800">{SectionOne.boxOne[0].h2}</h2>
                 <p data-aos='fade-up' data-aos-delay="1900">{SectionOne.boxOne[0].p}</p>
                 <h5 data-aos='fade-up' data-aos-delay="2300">{SectionOne.boxOne[0].h5}</h5>
@@ -38,19 +38,19 @@ const Section1 = () => {
             </div>
             <div className="right" data-aos="fade-down" data-aos-delay="1000">
               <h1 data-aos='fade-up' data-aos-delay="2000">{SectionOne.boxTwo[0].h1}</h1>
-              <p  data-aos='fade-right' data-aos-delay="2000">{SectionOne.boxTwo[0].p}</p>
-              <hr data-aos='fade-left' data-aos-delay="2000" style={{ width: '170px' }} />
-              <h5  data-aos='fade-up' data-aos-delay="2000">
+              <p  data-aos='fade-down' data-aos-delay="2000">{SectionOne.boxTwo[0].p}</p>
+              <hr data-aos='fade-uo' data-aos-delay="2000" style={{ width: '170px' }} />
+              <h5  data-aos='fade-down' data-aos-delay="2000">
                 {SectionOne.boxTwo[0].h5} <br /> {SectionOne.boxTwo[0].break}
               </h5>
             </div>
           </div>
 
           <div className="second"  data-aos-delay="1500">
-            <div className="left" data-aos="fade-left" data-aos-delay="400">
+            <div className="left" data-aos="fade-down" data-aos-delay="400">
               <img src={SectionOne.img} alt="" />
             </div>
-            <div className="right" data-aos="fade-right" data-aos-delay="500">
+            <div className="right" data-aos="fade-up" data-aos-delay="500">
               <h5>{SectionOne.h5}</h5>
               <h1>{SectionOne.h1}<br />{SectionOne.h1Break}</h1>
               <h3>{SectionOne.h3}</h3>
