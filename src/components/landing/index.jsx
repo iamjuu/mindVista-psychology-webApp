@@ -20,19 +20,19 @@ const Index = () => {
   return (
     <div>
       <Navbar />
-      <div data-aos="fade-up"  >
+      <div  >
         <Bgsction />
       </div>
-      <div data-aos="fade-up" data-aos-delay="300">
+      <div >
         <BgsectionOne />
       </div>
-      <div data-aos="fade-in" data-aos-delay="400">
+      <div >
         <SectionTwo />
       </div>
-      <div data-aos="fade-down" data-aos-delay="400">
+      <div >
         <SectionThree />
       </div>
-      <div data-aos="fade-down" data-aos-delay="400">
+      <div >
         <SectionFour />
       </div>
 
