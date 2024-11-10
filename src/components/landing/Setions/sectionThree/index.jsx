@@ -52,7 +52,7 @@ const Index = () => {
                 <p   data-aos="fade-down" data-aos-delay="1200" >{sectionThreeData.third[0].p}</p>
               </div>
             </LeftSection>
-            <RightSection   data-aos="fade-left" data-aos-delay="1100">
+            <RightSection   data-aos="fade-up" data-aos-delay="1100">
               <Btn 
                 btnName="Book Now"
                 width="150px"

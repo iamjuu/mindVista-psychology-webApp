@@ -18,7 +18,7 @@ const BgSection = () => {
 
   return (
     <Container>
-      <BgContainer bg={Bgimg}>
+      <BgContainer data-aos="fade-up" data-aos-delay="600" bg={Bgimg}>
         <ContainerWrap>
           <Main data-aos="fade-up">
             <p data-aos="fade-up" data-aos-delay="100">{Data.p}</p>

@@ -22,11 +22,11 @@ const SectionTwo = () => {
         <Main>
           <div className="left" >
             <h3 data-aos='fade-up' data-aos-delay="1000">{sectionTwoData.left[0].h3}</h3>
-            <h1 data-aos='fade-right' data-aos-delay="1100">{sectionTwoData.left[0].h1}</h1>
-            <p data-aos='fade-left' data-aos-delay="1200">{sectionTwoData.left[0].p}</p>
+            <h1 data-aos='fade-down' data-aos-delay="1100">{sectionTwoData.left[0].h1}</h1>
+            <p data-aos='fade-up' data-aos-delay="1200">{sectionTwoData.left[0].p}</p>
             <Btn     color={'white'} bg={'#a57355'}  fontsize={'.9rem'} btnName={'FIND PROGRAMS'} />
           </div>
-          <div className="right" data-aos="fade-left">
+          <div className="right" data-aos="fade-up">
           {sectionTwoData.right.map((data, index) => (
   <FreeContainer
     width={'290px'}
