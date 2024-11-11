@@ -8,6 +8,8 @@ export const Nav = styled.nav`
   height: 80px;
   display: flex;
   justify-content: center;
+  position: fixed;
+  z-index: 10;
   align-items: center;
 `;
 

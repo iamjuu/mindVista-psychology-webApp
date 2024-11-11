@@ -8,6 +8,7 @@ import BgsectionOne from "./Setions/sectionOne";
 import SectionTwo from "./Setions/sectionTwo/";
 import SectionThree from "./Setions/sectionThree";
 import SectionFour from "./Setions/sectionFour";
+import SectionFive from './Setions/sectionFive'
 const Index = () => {
   useEffect(() => {
     AOS.init({
@@ -34,6 +35,9 @@ const Index = () => {
       </div>
       <div >
         <SectionFour />
+      </div>
+      <div>
+        <SectionFive/>
       </div>
 
       <Footer />
