@@ -1,7 +1,9 @@
 // datas.js
 import SectionImg from "../../../assets/landing/about-image-1 (1).jpg";
 import Cardimg1 from "../../../assets/landing/about-image-1 (1).jpg"
-
+import { BiMessageDetail } from "react-icons/bi";
+import { MdOutlinePhoneInTalk } from "react-icons/md";
+import { FaGlobeAsia } from "react-icons/fa";
 import {Logo,Psychologist } from '../../../assets'
 export const Data = {
   p: "Best psychologist",
@@ -108,3 +110,27 @@ export const SectionFive = {
   h11:'magical skills for helping people',
   h12:"with psychotherapy."
 }
+
+
+
+export const SectionSix = [
+  {
+    icon: '',
+    h1: 'Let’s Talk',
+    h4: 'Phone: +1 921-124-9220',
+    h5: 'Email: hi@psychare.com',
+  },
+  {
+    icon: '',
+    h1: 'Visiting here?',
+    h4: '1870 Alpaca Way Irvine,',
+    h5: 'New York, 92614. US',
+  },
+  {
+    icon:'',
+    h1: 'My Timings',
+    h4: 'Mon – Fri: (9 am to 6 pm)',
+    h5: 'Sat – Sun: (10 am to 5 pm)',
+    h5Alt: 'Sunday: (Closed)',  // Optional additional information
+  },
+];
