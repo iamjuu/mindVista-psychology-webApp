@@ -1,6 +1,5 @@
 // UserRouter.js
-import UserLayout from "../layout/"; // Ensure this is the correct path
-import Landing from '../components/landing/';
+import Landing from '../components/pages/landing';
 import About from '../components/pages/about';
 import Contact from '../components/pages/contact'; 
 import Service from '../components/pages/services';

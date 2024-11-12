@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 
 export const Main = styled.div`
-margin-top: 30px;
+margin: 50px;
 display: flex;
 justify-content: center;
 flex-wrap: wrap;
@@ -19,13 +19,13 @@ justify-content: center;
 .icon {
     font-size: 3rem;
     animation: icon 6s ease-in-out;
-    transition: transform 0.5s ease, color 0.5s ease; /* Smooth transition for transform and color */
-    transition-delay: 0.2s; /* Adds a delay before the transition starts */
+    transition: transform 0.5s ease, color 0.5s ease; 
+    transition-delay: 0.2s; 
 }
 
 .icon:hover {
-    transform: scale(1.2) rotate(10deg); /* Scales the icon and rotates it slightly on hover */
-    color: #A57355; /* Change this to any color you prefer */
+    transform: scale(1.2) rotate(10deg); 
+    color: #A57355; 
 }
 
 `
