@@ -1,32 +1,40 @@
-// styles.js
 import styled from "styled-components";
 
-export const Main = styled.div`
-  padding: 10px;
+export const Container = styled.div`
+  width: 100%;
+  display: flex;
+  background-color:${(props)=>props.bg||''} ;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const ContainerWrap = styled.div`
+background-color:${(props)=>props.bg||''} ;
+  max-width: 1300px;
   display: flex;
   justify-content: center;
   align-items: center;
-  color: aliceblue;
-
-  h1 {
-    font-size: 2.5rem;
-    font-family: Georgia, 'Times New Roman', Times, serif;
-    text-align: center;
-    
-    span {
-      display: inline-block;
-      margin-right: 8px; /* Adjust the spacing as needed */
-      transition: color 0.3s ease, transform 0.3s ease;
-
-      &:hover {
-        color: #d4a373; /* Change to your preferred hover color */
-        transform: scale(1.1); /* Slightly increase size on hover */
-      }
-    }
-
-    /* Remove extra margin from the last word */
-    span:last-child {
-      margin-right: 0;
-    }
-  }
+  width: 100%;
 `;
+
+export const BgContainer = styled.div`
+  width: 100%;
+  filter: brightness(50%);
+  background-image: url(${(props) => props.bg});
+  background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* background-position: center; */
+  background-position:${(props)=>props.position||'center'};
+  height: 700px; 
+`;
+export const FreeContainer =styled.div`
+width:  ${(props)=>props.width||''};
+background-color: ${(props)=> props.bg||''};
+height: ${(props)=>props.height||''};
+display: flex;
+justify-content: center;
+flex-direction: column;
+align-items: center;
+`
