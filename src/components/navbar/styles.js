@@ -17,7 +17,6 @@ export const NavContainer = styled.div`
   display: flex;
   align-items: center;
   max-width: 1300px;
-  /* background-color: red; */
   width: 100%;
 `;
 
@@ -68,7 +67,6 @@ export const Menu = styled.div`
     background: #f3ebe6;
     width: 100%;
     z-index: 10;
-    /* padding: 1.2rem; */
   }
 `;
 
