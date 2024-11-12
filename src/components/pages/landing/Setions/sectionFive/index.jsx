@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
-import 'aos/dist/aos.css';
 import { BgContainer, Container, ContainerWrap } from '../../Style';
 import { Bannar } from '../../../../../assets';
 import { Main } from './style';
@@ -9,9 +8,12 @@ import { SectionFive } from '../../../../../constant/datas';
 
 const Index = () => {
   useEffect(() => {
-    AOS.init({ duration: 1000 });
+    AOS.init({
+      duration: 1000, 
+      delay: 200,     
+      once: true,    
+    });
   }, []);
-
   return (
     <Container>
       <BgContainer  data-aos="fade-up" data-aos-delay="900" bg={Bannar} position="center" style={{ height: '350px' }}>
