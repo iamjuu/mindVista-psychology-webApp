@@ -5,23 +5,22 @@ import { Link } from 'react-router-dom';
 export const Nav = styled.nav`
   background-color: #F3EBE6;
   width: 100%;
-  height: 80px;
   display: flex;
   justify-content: center;
+  padding: 10px;
+  position: fixed;
+  z-index: 10;
   align-items: center;
 `;
 
 export const NavContainer = styled.div`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   max-width: 1300px;
-  padding: 10px;
   width: 100%;
 `;
 
 export const LogoDiv = styled.div` 
-/* background-color:green; */
 width: 100%;
 `;
 
@@ -29,8 +28,6 @@ export const LogoContainer = styled(Link)`
   width: 100%;
   font-size: 1.5rem;
   text-decoration: none;
-  /* background-color: red; */
-  padding: 5px;
   color: #dcdada;
   img{
     width: 6%;
@@ -65,12 +62,11 @@ export const Menu = styled.div`
     display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
     flex-direction: column;
     position: absolute;
-    top: 80px;
+    top: 40px;
     right: 0;
     background: #f3ebe6;
     width: 100%;
     z-index: 10;
-    /* padding: 1.2rem; */
   }
 `;
 

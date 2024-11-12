@@ -45,30 +45,38 @@ const Index = () => {
           </CardWrapper>
 
           <InfoSection className="third">
-            <LeftSection  >
-                         <img   data-aos="fade-down" data-aos-delay="1000"   src={sectionThreeData.third[0].icon} alt="" />
+            <LeftSection>
+              <img
+                data-aos="fade-down"
+                data-aos-delay="1000"
+                src={sectionThreeData.third[0].icon}
+                alt=""
+              />
               <div>
-                <h1   data-aos="fade-down" data-aos-delay="1100" >{sectionThreeData.third[0].h1}</h1>
-                <p   data-aos="fade-down" data-aos-delay="1200" >{sectionThreeData.third[0].p}</p>
+                <h1 data-aos="fade-down" data-aos-delay="1100">
+                  {sectionThreeData.third[0].h1}
+                </h1>
+                <p data-aos="fade-down" data-aos-delay="1200">
+                  {sectionThreeData.third[0].p}
+                </p>
               </div>
             </LeftSection>
-            <RightSection   data-aos="fade-up" data-aos-delay="1100">
-              <Btn 
+            <RightSection data-aos="fade-up" data-aos-delay="1100">
+              <Btn
                 btnName="Book Now"
                 width="150px"
                 fontSize="1.2rem"
                 color="white"
                 bg="#a57355"
               />
-            <Btn 
-  btnName="All programs"
-  width="150px"
-  fontSize="1.2rem"
-  color="#a57355"
-  bg="transparent"
-  border="1px solid #a57355"
-/>
-
+              <Btn
+                btnName="All programs"
+                width="150px"
+                fontSize="1.2rem"
+                color="#a57355"
+                bg="transparent"
+                border="1px solid #a57355"
+              />
             </RightSection>
           </InfoSection>
         </Main>

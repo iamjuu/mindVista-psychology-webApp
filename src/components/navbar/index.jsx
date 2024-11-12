@@ -6,7 +6,6 @@ import {
   LinksDiv, 
   LogoContainer, 
   LogoDiv, 
-  LogoutDiv, 
   Menu, 
   Nav, 
   NavContainer, 
@@ -35,11 +34,12 @@ const Navbar = () => {
             <MenuLink to="/about">About</MenuLink>
             <MenuLink to="/service">Services</MenuLink>
             <MenuLink to="/contact">Contact</MenuLink>
+            {/* Move LogOutbtn into Menu */}
+            {isOpen && (
+              <LogOutbtn color="white" bg="#a57355" btnName="Register" width="130px" />
+            )}
           </Menu>
         </LinksDiv>
-        <LogoutDiv isOpen={isOpen}>
-          <LogOutbtn color="white" bg="#a57355" btnName="Register" width="130px" />
-        </LogoutDiv>
       </NavContainer>
     </Nav>
   );
