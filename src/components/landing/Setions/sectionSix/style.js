@@ -15,22 +15,7 @@ width: 100%;
 display: flex;
 justify-content: center;
 }
-&>:nth-child(2){
-    flex-direction: column;
-    align-items: center;  
-      border-right: 3px dotted #A57355;
-    display: flex;
-justify-content: center;
-    width: 31%;
-}
-&>:nth-child(3){
-    flex-direction: column;
-    align-items: center;  
-    display: flex;
-justify-content: center;
-    width: 31%;
 
-}
 .icon {
     font-size: 3rem;
     animation: icon 6s ease-in-out;

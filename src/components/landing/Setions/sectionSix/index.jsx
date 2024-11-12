@@ -22,25 +22,6 @@ const index = () => {
       ))}
       </div>
 
-      {/* <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around',  backgroundColor:'red'}}>
-        <div className="icon" ><FaGlobeAsia/> </div>
-        <div>
-
-        <h1>Visiting here?</h1>
-        <h4>1870 Alpaca Way Irvine,</h4>
-        <h4>New York, 92614. US</h4>
-        </div>
-      </div>
-      <div style={{display:'flex', flexDirection:'row', justifyContent:'space-around',  backgroundColor:'red'}}>
-        <div className="icon" > <MdOutlinePhoneInTalk/></div>
-        <div>
-
-        <h1>My Timings</h1>
-        <h4>Mon – Fri: (9 am to 6 pm)</h4>
-        <h4>Sat – Sun: (10 am to 5 pm)</h4>
-        <h4>Sunday: (Closed)</h4>
-        </div>
-      </div> */}
     </Main>
     </ContainerWrap>
     </Container>
