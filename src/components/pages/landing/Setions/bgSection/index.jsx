@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
-import 'aos/dist/aos.css'; // Import AOS styles
 import Regbtn from '../../../../core/button';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from 'react';
+import AOS from 'aos';
 import { Container, ContainerWrap } from "../pages/landing/Style";
 import { Main } from "./style";
 import { SiWhatsapp } from "react-icons/si";
@@ -8,6 +9,13 @@ import { CiLinkedin } from "react-icons/ci";
 import { Logo } from "../../assets";
 
 const Index = () => {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, 
+      delay: 200,     
+      once: true,    
+    });
+  }, []);
   return (
     <Container bg={'#151110'}>
       <ContainerWrap>

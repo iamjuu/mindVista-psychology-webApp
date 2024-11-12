@@ -7,13 +7,13 @@ import { SectionOne } from '../../../../../constant/datas';
 import Btn from "../../../../core/button";
 
 const Section1 = () => {
-  useEffect(() => {
-    AOS.init({
-      duration: 1000, 
-      delay: 200,     
-      once: true,    
-    });
-  }, []);
+    useEffect(() => {
+      AOS.init({
+        duration: 1000, 
+        delay: 200,     
+        once: true,    
+      });
+    }, []);
 
   return (
     <Container>

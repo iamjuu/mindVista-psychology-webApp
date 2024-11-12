@@ -4,6 +4,8 @@ export const Main = styled.div`
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  max-width: 1300px;
+  align-items: center;
   padding: 30px;
   justify-content: center;
   color: #c3c7cc;
@@ -11,9 +13,8 @@ export const Main = styled.div`
   .first, .second, .third, .four {
     width: 23%;
     display: flex;
-
+justify-content: center;
     flex-direction: column;
-    padding: 20px;
     align-items: center;
     gap: 20px;
     box-sizing: border-box;
@@ -57,7 +58,6 @@ export const Main = styled.div`
   .second, .third {
     display: flex;
 flex-direction: column;
-    padding: 20px;
     justify-content: center;
     h1 {
       font-size: 1.2rem;
@@ -82,7 +82,6 @@ flex-direction: column;
       display: flex;
       justify-content: center;
       background-color: #211d1c;
-      padding: 20px;
       align-items: center;
       gap: 20px;
 
@@ -142,7 +141,7 @@ flex-direction: column;
 
   @media (max-width: 480px) {
     .first img {
-      width: 35%;
+      width: 30%;
     }
 
     h1 {

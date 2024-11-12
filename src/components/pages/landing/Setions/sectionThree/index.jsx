@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from 'react';
+import AOS from 'aos';
 import { Container, ContainerWrap } from "../../Style";
 import {
   Main,
@@ -13,6 +14,13 @@ import { sectionThreeData } from '../../../../../constant/datas';
 import Btn from "../../../../core/button";
 
 const Index = () => {
+  useEffect(() => {
+    AOS.init({
+      duration: 1000, 
+      delay: 200,     
+      once: true,    
+    });
+  }, []);
   return (
     <Container>
       <ContainerWrap>
