@@ -1,15 +1,15 @@
 import React, { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
-import Navbar from "../navbar";
-import Footer from "../footer";
-import Bgsction from "./Setions/bgSection";
-import BgsectionOne from "./Setions/sectionOne";
-import SectionTwo from "./Setions/sectionTwo/";
-import SectionThree from "./Setions/sectionThree";
-import SectionFour from "./Setions/sectionFour";
-import SectionFive from "./Setions/sectionFive";
-import SectionSix from "./Setions/sectionSix";
+import Navbar from "../../navbar";
+import Footer from "../../footer";
+import Bgsction from "../landing/Setions/bgSection";
+import BgsectionOne from "../landing/Setions/sectionOne";
+import SectionTwo from "../landing/Setions/sectionTwo/";
+import SectionThree from "../landing/Setions/sectionThree";
+import SectionFour from "../landing/Setions/sectionFour";
+import SectionFive from "../landing/Setions/sectionFive";
+import SectionSix from "../landing/Setions/sectionSix";
 const Index = () => {
   useEffect(() => {
     AOS.init({

@@ -1,8 +1,8 @@
 import React from 'react';
 import {Container,ContainerWrap} from'../../Style'
-import {SectionFour} from "../datas"
+import {SectionFour} from "../../Setions/datas"
 import {Main} from './style'
-import Btn from '../../../core/button'
+import Btn from "../../../../core/button";
 
 const index = () => {
   return (

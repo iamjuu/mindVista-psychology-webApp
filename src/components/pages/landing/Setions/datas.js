@@ -1,10 +1,10 @@
 // datas.js
-import SectionImg from "../../../assets/landing/about-image-1 (1).jpg";
-import Cardimg1 from "../../../assets/landing/about-image-1 (1).jpg"
-import { BiMessageDetail } from "react-icons/bi";
-import { MdOutlinePhoneInTalk } from "react-icons/md";
-import { FaGlobeAsia } from "react-icons/fa";
-import {Logo,Psychologist } from '../../../assets'
+import SectionImg from "../../../../assets/landing/about-image-1 (1).jpg";
+import Cardimg1 from "../../../../assets/landing/about-image-1 (1).jpg"
+// import { BiMessageDetail } from "react-icons/bi";
+// import { MdOutlinePhoneInTalk } from "react-icons/md";
+// import { FaGlobeAsia } from "react-icons/fa";
+import {Logo,Psychologist } from '../../../../assets'
 export const Data = {
   p: "Best psychologist",
   h1: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta, esse nobis reprehenderit aut cumque labore sapiente tempora eveniet veniam quaerat, distinctio minima est voluptatum, error tempore. Minima, totam. Ratione, ullam?",
@@ -25,7 +25,6 @@ h5:'Explore Programs'
   img: SectionImg,
   h5: "Let me introduce",
   h1: "I’m Vishnu priya – Expert Psychologist from India.",
-  // h1Break: "Vishnu priya from New York.",
   h3: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua minim veniam.",
   p: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Diam nascetur ad varius curabitur ante donec de proin auctor felis hendrerit.",
   h4: "Susan Lopez – Founder",
@@ -98,7 +97,6 @@ export const SectionFour = {
   img: Psychologist,
   h5: "Let me introduce",
   h1: "I’m Vishnu priya – Expert Psychologist from India.",
-  // h1Break: "Vishnu priya from New York.",
   h3: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua minim veniam.",
   p: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Diam nascetur ad varius curabitur ante donec de proin auctor felis hendrerit.",
   h4: "Susan Lopez – Founder",
@@ -131,6 +129,6 @@ export const SectionSix = [
     h1: 'My Timings',
     h4: 'Mon – Fri: (9 am to 6 pm)',
     h5: 'Sat – Sun: (10 am to 5 pm)',
-    h5Alt: 'Sunday: (Closed)',  // Optional additional information
+    h5Alt: 'Sunday: (Closed)',  
   },
 ];

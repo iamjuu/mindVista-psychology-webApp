@@ -1,11 +1,11 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css'; // Import AOS styles
-import Regbtn from '../../../core/button/index';
+import Regbtn from '../../../../core/button';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
-import { Data } from '../datas';
-import {Bgimg} from '../../../../assets/'
+import { Data } from '../../Setions/datas';
+import {Bgimg} from '../../../../../assets'
 
 const BgSection = () => {
   useEffect(() => {

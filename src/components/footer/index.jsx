@@ -1,5 +1,5 @@
 import React from "react";
-import { Container, ContainerWrap } from "../landing/Style";
+import { Container, ContainerWrap } from "../pages/landing/Style";
 import { Main } from "./style";
 import { SiWhatsapp } from "react-icons/si";
 import { LuFacebook } from "react-icons/lu";
@@ -14,35 +14,35 @@ const Index = () => {
         <Main>
           <div className="first">
             <div>
-              <img src={Logo} alt="MindVista Logo" />
-              <h1>mindVista</h1>
+              <img  data-aos='fade-up' data-aos-delay="1000" src={Logo} alt="MindVista Logo" />
+              <h1 data-aos='fade-down' data-aos-delay="1000" >mindVista</h1>
             </div>
-            <div>
+            <div data-aos='fade-up' data-aos-delay="1000">
               Being a full-time psychologist, I make my patients feel special so
               they can discuss their problems openly. My goal is to help people
               fighting their fears and life issues.
             </div>
             <div className="icon-div">
-              <SiWhatsapp />
-              <LuFacebook />
-              <FaInstagram />
-              <CiLinkedin />
+              <  SiWhatsapp  data-aos='fade-up' data-aos-delay="1000" />
+              <LuFacebook data-aos='fade-down' data-aos-delay="1200" />
+              <FaInstagram data-aos='fade-up' data-aos-delay="1300"/>
+              <CiLinkedin  data-aos='fade-down' data-aos-delay="1400"/>
             </div>
           </div>
 
           <div className="second">
             <div>
-              <h1>Contact Details</h1>
+              <h1 data-aos='fade-up' data-aos-delay="1000">Contact Details</h1>
             </div>
             <div>
-              <h3>
+              <h3 data-aos='fade-down' data-aos-delay="1100">
                 1870 Alpaca Way Irvine, CA 92614. <br /> United States
               </h3>
-              <h3>
+              <h3 data-aos='fade-down' data-aos-delay="1300">
                 Phone: +1 921 124 9220 <br />
                 Mail: info@psychare.com
               </h3>
-              <h3>
+              <h3 data-aos='fade-down' data-aos-delay="1400">
                 Mon - Fri: ( 9am - 6pm ) <br />
                 Sat & Sun: CLOSED
               </h3>
@@ -50,10 +50,10 @@ const Index = () => {
           </div>
           <div className="third">
             <div>
-              <h1>My Programs</h1>
+              <h1 data-aos='fade-down' data-aos-delay="1000">My Programs</h1>
             </div>
             <div>
-              <ul>
+              <ul data-aos='fade-down' data-aos-delay="1200">
                 <li>Dating & Relationship</li>
                 <li>Grief & Loss Counseling</li>
                 <li>Self Esteem Therapy</li>
@@ -65,21 +65,21 @@ const Index = () => {
           </div>
           <div className="four">
             <div>
-              <h1>Book Appointment</h1>
+              <h1 data-aos='fade-down' data-aos-delay="1000">Book Appointment</h1>
             </div>
-            <div>
-              <div>
-                <h3>
+            <div data-aos='fade-down' data-aos-delay="1200">
+              <div >
+                <h3 data-aos='fade-down' data-aos-delay="1100">
                   <SiWhatsapp />
                 </h3>
               </div>
-              <div>
-                <p>LET'S CHAT</p> <h2>702-571-5250</h2>
+              <div >
+                <p >LET'S CHAT</p> <h2>702-571-5250</h2>
               </div>
             </div>
             <div>
-              <h3>Contact us now for a quote about</h3>
-              <h3>consultation ( Available 24/7 )</h3>
+              <h3 data-aos='fade-down' data-aos-delay="1400">Contact us now for a quote about</h3>
+              <h3 data-aos='fade-down' data-aos-delay="1500">consultation ( Available 24/7 )</h3>
             </div>
           </div>
         </Main>

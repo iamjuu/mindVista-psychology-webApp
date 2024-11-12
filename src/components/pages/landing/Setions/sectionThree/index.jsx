@@ -8,9 +8,9 @@ import {
   LeftSection,
   RightSection,
 } from "./style";
-import { ThreeDCardDemo } from "../../../core/cards/3dcards";
-import { sectionThreeData } from "../datas";
-import Btn from "../../../core/button";
+import { ThreeDCardDemo } from "../../../../core/cards/3dcards";
+import { sectionThreeData } from "../../Setions/datas";
+import Btn from "../../../../core/button";
 
 const Index = () => {
   return (

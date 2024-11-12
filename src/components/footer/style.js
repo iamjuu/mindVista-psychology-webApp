@@ -10,9 +10,10 @@ export const Main = styled.div`
 
   .first, .second, .third, .four {
     width: 23%;
-    padding: 10px;
     display: flex;
+
     flex-direction: column;
+    padding: 20px;
     align-items: center;
     gap: 20px;
     box-sizing: border-box;
@@ -37,7 +38,7 @@ export const Main = styled.div`
       font-size: 1.5rem;
 
       svg {
-        transition: transform 0.3s ease, color 0.3s ease;
+        transition: transform 0.1s ease-in, color 0.1s ease;
         color: #c3c7cc;
         cursor: pointer;
 
@@ -47,9 +48,17 @@ export const Main = styled.div`
         }
       }
     }
+
+
+      
+    
   }
 
   .second, .third {
+    display: flex;
+flex-direction: column;
+    padding: 20px;
+    justify-content: center;
     h1 {
       font-size: 1.2rem;
       font-weight: 700;
@@ -97,7 +106,7 @@ export const Main = styled.div`
     }
 
     .first img {
-      width: 25%;
+      width: 10%;
     }
 
     .icon-div {
@@ -110,7 +119,7 @@ export const Main = styled.div`
   }
 
   @media (max-width: 768px) {
-    .first, .second, .third, .four {
+   .second, .third, .four {
       width: 100%;
     }
 

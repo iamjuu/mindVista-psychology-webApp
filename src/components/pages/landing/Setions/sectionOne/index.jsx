@@ -3,8 +3,8 @@ import AOS from 'aos';
 import 'aos/dist/aos.css'; // Import AOS styles
 import { Container, ContainerWrap } from "../../Style";
 import { Main } from "./style";
-import { SectionOne } from '../datas';
-import Btn from '../../../core/button';
+import { SectionOne } from '../../Setions/datas';
+import Btn from "../../../../core/button";
 
 const Section1 = () => {
   useEffect(() => {

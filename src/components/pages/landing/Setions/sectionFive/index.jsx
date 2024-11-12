@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
 import { BgContainer, Container, ContainerWrap } from '../../Style';
-import { Bannar } from '../../../../assets';
+import { Bannar } from '../../../../../assets';
 import { Main } from './style';
 import { SectionFive } from '../datas';
 
