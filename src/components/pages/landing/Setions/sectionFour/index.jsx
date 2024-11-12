@@ -1,6 +1,6 @@
 import React from 'react';
 import {Container,ContainerWrap} from'../../Style'
-import {SectionFour} from "../../Setions/datas"
+import {SectionFour} from '../../../../../constant/datas'
 import {Main} from './style'
 import Btn from "../../../../core/button";
 

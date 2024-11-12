@@ -3,7 +3,7 @@ import AOS from 'aos';
 import 'aos/dist/aos.css'; // Import AOS styles
 import { Container, ContainerWrap } from "../../Style";
 import { Main } from "./style";
-import { SectionOne } from '../../Setions/datas';
+import { SectionOne } from '../../../../../constant/datas';
 import Btn from "../../../../core/button";
 
 const Section1 = () => {
