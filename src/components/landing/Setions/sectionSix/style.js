@@ -2,7 +2,7 @@ import styled from "styled-components";
 
 
 export const Main = styled.div`
-margin-top: 30px;
+margin: 50px;
 display: flex;
 justify-content: center;
 flex-wrap: wrap;

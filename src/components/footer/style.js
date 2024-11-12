@@ -91,7 +91,6 @@ export const Main = styled.div`
     }
   }
 
-  /* Responsive Styling */
   @media (max-width: 1024px) {
     .first, .second, .third, .four {
       width: 45%;
