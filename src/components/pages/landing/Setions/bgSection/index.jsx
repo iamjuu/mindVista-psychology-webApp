@@ -4,7 +4,7 @@ import 'aos/dist/aos.css'; // Import AOS styles
 import Regbtn from '../../../../core/button';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
-import { Data } from '../../Setions/datas';
+import { Data } from '../../../../../constant/datas';
 import {Bgimg} from '../../../../../assets'
 
 const BgSection = () => {

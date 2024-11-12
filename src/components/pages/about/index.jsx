@@ -1,28 +1,16 @@
-// About.js
-import React from "react";
-import styled from "styled-components";
-import Navbar from "../../navbar";
-import Footer from "../../footer";
-import { Container, ContainerWrap ,BgContainer} from "../../pages/landing/Style";
-import BG from "../../../assets/landing/about-image-1 (1).jpg";
-const About = () => {
+import React from 'react';
+import Navbar from '../../navbar'
+import Footer from '../../footer'
+import Bgsection from './sections/sectionBg'
+import SectionOne from './sections/sectionOne'
+const index = () => {
   return (
-    <>
-      <Navbar />
-      <Container>
-        <BgContainer bg={BG}>
-          <ContainerWrap>
-            <h1>
-        fgf
-            </h1>
-          </ContainerWrap>
-        </BgContainer>
-      </Container>
-
-      <Footer />
+    <> 
+    <Navbar/>
+      <Bgsection/>
+      <SectionOne/>
+      <Footer/>
     </>
   );
-};
-
-export default About;
-
+}
+export default index;

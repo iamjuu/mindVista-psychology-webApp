@@ -9,7 +9,7 @@ import {
   RightSection,
 } from "./style";
 import { ThreeDCardDemo } from "../../../../core/cards/3dcards";
-import { sectionThreeData } from "../../Setions/datas";
+import { sectionThreeData } from '../../../../../constant/datas';
 import Btn from "../../../../core/button";
 
 const Index = () => {

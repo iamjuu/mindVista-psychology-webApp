@@ -2,7 +2,7 @@
 import React, { useEffect } from "react";
 import { Container, ContainerWrap, FreeContainer } from "../../Style";
 import { Main } from "./style";
-import { sectionTwoData } from "../datas";
+import { sectionTwoData } from '../../../../../constant/datas'
 import Btn from '../../../../core/button';
 import AOS from 'aos';
 import 'aos/dist/aos.css';

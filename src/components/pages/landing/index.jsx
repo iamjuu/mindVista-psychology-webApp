@@ -20,31 +20,17 @@ const Index = () => {
   }, []);
 
   return (
-    <div>
+    <>
       <Navbar />
-      <div>
-        <Bgsction />
-      </div>
-      <div>
-        <BgsectionOne />
-      </div>
-      <div>
-        <SectionTwo />
-      </div>
-      <div>
-        <SectionThree />
-      </div>
-      <div>
-        <SectionFour />
-      </div>
-      <div>
-        <SectionFive />
-      </div>
-      <div>
-        <SectionSix />
-      </div>
+      <Bgsction />
+      <BgsectionOne />
+      <SectionTwo />
+      <SectionThree />
+      <SectionFour />
+      <SectionFive />
+      <SectionSix />
       <Footer />
-    </div>
+    </>
   );
 };
 
