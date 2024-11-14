@@ -1,9 +1,10 @@
 import styled from "styled-components";
 
 export const Main = styled.div`
+margin-top: 50px;
   width: 100%;
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: wrap-reverse;
   max-width: 1300px;
   align-items: center;
   padding: 30px;
@@ -13,6 +14,7 @@ export const Main = styled.div`
   .first, .second, .third, .four {
     width: 23%;
     display: flex;
+    font-size: .9rem;
 justify-content: center;
     flex-direction: column;
     align-items: center;
@@ -98,7 +100,6 @@ flex-direction: column;
       }
     }
   }
-
   @media (max-width: 1024px) {
     .first, .second, .third, .four {
       width: 45%;

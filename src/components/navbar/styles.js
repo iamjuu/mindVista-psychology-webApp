@@ -75,11 +75,40 @@ export const MenuLink = styled(Link)`
   font-family: sans-serif;
   padding: 0.5rem;
   color: black;
-  
+  position: relative;
+
   &:hover {
-    color: brown;
+    color: #1D1614;
+  }
+
+  &:hover .SubMenu {
+    display: block;
   }
 `;
+
+ export const SubMenu = styled.ul`
+  display: none;
+  position: absolute;
+  z-index: 10;
+  top: 100%;
+  left: 0;
+  background-color: white;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  border: 1px solid #ddd;
+@media (max-width:768px) {
+}
+  li {
+    padding: 0.5rem;
+    white-space: nowrap;
+  }
+
+  li:hover {
+    background-color: #f0f0f0;
+  }
+`;
+
 
 export const LogoutDiv = styled.div`
   @media (max-width: 768px) {

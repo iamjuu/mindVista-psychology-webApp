@@ -107,8 +107,6 @@ export const SectionFive = {
   h12:"with psychotherapy."
 }
 
-
-
 export const SectionSix = [
   {
     icon: '',
@@ -133,7 +131,7 @@ export const SectionSix = [
 
 // *****************************************about page datas ********************************************************
 
-export const AboutSectionFour = {
+export const AboutSectionOne = {
   img: Psychologist,
   h5: "Let me introduce",
   h1: "I’m Vishnu priya – Expert Psychologist from India.",
@@ -141,3 +139,62 @@ export const AboutSectionFour = {
   p: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Diam nascetur ad varius curabitur ante donec de proin auctor felis hendrerit.",
   h4: "Susan Lopez – Founder",
 };
+
+export const AboutSectionTwo = [
+  {
+    icon: '',
+    h1: 'Let’s Talk',
+    h4: 'Phone: +1 921-124-9220',
+    h5: 'Email: hi@psychare.com',
+  },
+  {
+    icon: '',
+    h1: 'Visiting here?',
+    h4: '1870 Alpaca Way Irvine,',
+    h5: 'New York, 92614. US',
+  },
+  {
+    icon:'',
+    h1: 'My Timings',
+    h4: 'Mon – Fri: (9 am to 6 pm)',
+    h5: 'Sat – Sun: (10 am to 5 pm)',
+    h5Alt: 'Sunday: (Closed)',  
+  },
+];
+
+
+// ***********************************program pages data *************************************************************
+
+export const ProgramSectionOne = {
+  dating:[{
+    h1: 'Dating',
+    img:Psychologist,
+    p:'dated page'
+  }]
+  ,
+  grief:[{
+    h1: 'grief',
+    img:Psychologist,
+    p:'grief page'
+  }],
+  self:[{
+    h1: 'self',
+    img:Psychologist,
+    p:'self page'
+  }],
+  kids:[{
+    h1: 'kids',
+    img:Psychologist,
+    p:'kids page'
+  }],
+  future:[{
+    h1: 'future',
+    img:Psychologist,
+    p:'future page'
+  }],
+  old:[{
+    h1: 'old',
+    img:Psychologist,
+    p:'old page'
+  }],
+}

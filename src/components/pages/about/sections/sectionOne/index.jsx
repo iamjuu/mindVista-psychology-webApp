@@ -1,5 +1,5 @@
     import {Container,ContainerWrap} from'../../styles'
-    import {AboutSectionFour} from '../../../../../constant/datas'
+    import {AboutSectionOne} from '../../../../../constant/datas'
     import {Main} from './style'
     import Btn from "../../../../core/button";
     
@@ -10,17 +10,17 @@
           <Main>
             <div className="second"  data-aos-delay="1500">
               <div className="right" data-aos="fade-up" data-aos-delay="500">
-                <h5>{AboutSectionFour.h5}</h5>
-                <h1>{AboutSectionFour.h1}<br />{AboutSectionFour.h1Break}</h1>
-                <h3>{AboutSectionFour.h3}</h3>
-                <p>{AboutSectionFour.p}</p>
+                <h5>{AboutSectionOne.h5}</h5>
+                <h1>{AboutSectionOne.h1}<br />{AboutSectionOne.h1Break}</h1>
+                <h3>{AboutSectionOne.h3}</h3>
+                <p>{AboutSectionOne.p}</p>
                 <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
-                  <h4>{AboutSectionFour.h4}</h4>
+                  <h4>{AboutSectionOne.h4}</h4>
                   <Btn btnName={'About '}  color={'white'} bg={'#a57355'} width={'130px'} />
                 </div>
               </div>
               <div className="left" data-aos="fade-down" data-aos-delay="400">
-                <img src={AboutSectionFour.img} alt="" />
+                <img src={AboutSectionOne.img} alt="" />
               </div>
             </div>
     

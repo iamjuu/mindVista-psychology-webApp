@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
-import { Main } from './style';
-import { Container, ContainerWrap } from '../../Style';
-import { SectionSix } from '../../../../../constant/datas';
+import { Main } from './styles';
+import { Container,ContainerWrap } from '../../styles';
+import { AboutSectionTwo } from '../../../../../constant/datas';
 
 const Index = () => {
   useEffect(() => {
@@ -21,7 +21,7 @@ const Index = () => {
       <ContainerWrap>
         <Main>
           <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
-            {SectionSix.map((section, index) => (
+            {AboutSectionTwo.map((section, index) => (
               <div key={index} style={{ borderRight: '2px dotted #A57355', padding: '10px' }}>
                 <div data-aos="fade-up" data-aos-delay="1000" className="icon" style={{ fontSize: '3rem', marginBottom: '10px' }}>
                   {section.icon}
