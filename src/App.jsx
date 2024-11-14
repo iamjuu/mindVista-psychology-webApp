@@ -1,7 +1,7 @@
 // App.js
 import './App.css';
 import UserRouter from './Routes/UserRouter'; 
-import { BrowserRouter as Router } from 'react-router-dom'; // Import Router
+import { BrowserRouter as Router } from 'react-router-dom';
 
 function App() {
   return (

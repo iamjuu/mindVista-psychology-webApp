@@ -8,10 +8,12 @@ import Btn from '../../../../core/button';
 const Index = () => {
   useEffect(() => {
     AOS.init({
-      duration: 1000,
+      offset: 100,
+      duration: 800,
+      easing: "ease-in-sine",
       delay: 200,
-      once: true,
     });
+    AOS.refresh();
   }, []);
 
   return (
