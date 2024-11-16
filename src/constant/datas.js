@@ -471,3 +471,32 @@ points: [
 ],
 };
 
+export const ProgramSectionRight = {
+  first: [
+    {
+      h1: 'Old Age Therapy',
+      point:[
+       ' Dating & Relationship',
+       'Grief & Loss Counseling',
+       'Self Esteem Therapy',
+       'Kids & Family',
+       'Life & Future Planning',
+       'Old Age Therapy',
+      ]
+    },
+  ],
+  second: [
+    {
+      h1: 'Newsletter  ',
+      h5:'Join 50,000 Subscribers!',
+      p:'By Subscribing, you agree our Terms'
+    },
+  ],
+  third: [
+    {
+      img:Bgimg,
+      h3: 'EVENT',
+      h2:'joint the onlineYoga meditation event this weekend.'
+    },
+  ],
+};

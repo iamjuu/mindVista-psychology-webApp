@@ -1,119 +1,142 @@
-import React from "react";
-import { Container, ContainerWrap, FreeContainer } from "../../styles";
+import React, { useState, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Container, ContainerWrap } from "../../styles";
 import { Main, Left, Right } from "./style";
 import { Bgimg, Psychologist } from "../../../../../assets";
-const index = () => {
+import Navbar from "../../../../navbar";
+import Footer from "../../../../footer";
+
+// Program data mapping
+const PROGRAM_DATA_MAP = {
+  dating: "dating",
+  grief: "Grief",
+  self: "Self",
+  "kids-family": "kids",
+  "future-planning": "Life",
+  "old-age": "old",
+};
+
+const ProgramContent = ({ ProgramSectionleft, ProgramSectionRight }) => {
+  const { programId } = useParams();
+  const [programData, setProgramData] = useState(null);
+  const [hoverIndex, setHoverIndex] = useState(null);
+
+  useEffect(() => {
+    const dataKey = PROGRAM_DATA_MAP[programId];
+    if (dataKey && ProgramSectionleft[dataKey]) {
+      setProgramData(ProgramSectionleft[dataKey][0]);
+    }
+  }, [programId, ProgramSectionleft]);
+
   return (
+    <>
+   < Navbar/>
+   
     <Container>
       <ContainerWrap>
         <Main>
+          {/* Dynamic Left Section */}
           <Left>
-            <div className="first">
-              <h1>This program is perfect for you if...</h1>
-              <h5>
-                Elementum class viverra orci hymenaeos curae;. Rhoncus
-                adipiscing. Conubia condimentum quam taciti dictumst, diam proin
-                consectetuer leo malesuada fames praesent
-              </h5>
-              <p>
-                Vivamus hendrerit. Quisque donec in luctus tincidunt Aptent,
-                ipsum facilisi magna sagittis augue orci mattis tellus hendrerit
-                id vivamus hymenaeos. Senectus sociis, hac eleifend nisl et
-                ultrices eros. Condimentum ante egestas eget natoque. Nisl
-                pretium rhoncus mollis nunc semper pretium libero, nulla
-                fringilla nulla est. Tortor blandit torquent etiam, dolor
-                euismod, vulputate senectus.
-              </p>
-              <img src={Bgimg} alt="" />
-            </div>
-            {/* *************************second************************* */}
-            <div className="second">
-              <h1>
-                Let’s find out why your relationship is being affected by your
-                work life.
-              </h1>
-              <p>
-                Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet
-                convallis sapien lacinia aptent justo accumsan. Amet ut curae;
-                Maecenas. Nec varius pharetra auctor vel sed velit magna
-                nascetur sed eu tellus a egestas egestas euismod hymenaeos donec
-                donec ullamcorper litora amet phasellus dui, class at metus
-                pretium metus duis pharetra fringilla.
-              </p>
-              <ul>
-                <li>
-                  Nullam nostra dis nibh ut sollicitudin vel at eros Erat in
-                  ornare risus adipiscing eget suscipit.
-                </li>
-                <li>
-                  Eu mollis dictum metus nisl diam purus ante nam natoque risus
-                  netus condimentum etiam pede porttitor leo duis.
-                </li>
-                <li>
-                  Morbi faucibus iaculis faucibus mollis lacus platea velit
-                </li>
-              </ul>
-            </div>
-            {/* ************************third**************************** */}
-            <div className="third">
-              <h1>How therapy can save your relationship?</h1>
-              <p>
-                Condimentum torquent ornare conubia pede at ridiculus ad
-                consequat conubia etiam lacus tortor, ac phasellus ultrices
-                sollicitudin nullam fames odio suscipit tristique lacus luctus
-                integer Mauris ligula sed velit ullamcorper pellentesque dapibus
-                hymenaeos varius congue, libero et mattis. Ligula. Elit.
-                Faucibus class euismod non varius taciti sapien nostra euismod.
-              </p>
-              <div className="img-content">
-                <div className="img">
-                  <img src={Bgimg} alt="" />
+            {programData ? (
+              <>
+                <div className="first">
+                  <h1>{programData.second[0].h1}</h1>
+                  <h5>{programData.second[0].h5}</h5>
+                  <p>{programData.second[0].p}</p>
+                  <img src={programData.second[0].img} alt="" />
                 </div>
-                <div className="content">
-                  <p>
-                    At justo at nulla senectus phasellus porttitor op mattis dui
-                    mus per tincidunt Parturient class de blandit, montes nulla.
-                    Id habitasse ligula fames etiam. Quam hac etiam primis
-                    aptent nullam ligula dolor taciti quam.
-                  </p>
+
+                <div className="second">
+                  <h1>{programData.third[0].h1}</h1>
+                  <p>{programData.third[0].p}</p>
                   <ul>
-                    <li>
-                      Nullam nostra dis nibh ut sollicitudin vel at eros Erat in
-                      ornare risus adipiscing eget suscipit.
-                    </li>
-                    <li>
-                      Eu mollis dictum metus nisl diam purus ante nam natoque
-                      risus netus condimentum etiam pede porttitor leo duis.
-                    </li>
-                    <li>
-                      Morbi faucibus iaculis faucibus mollis lacus platea velit
-                    </li>
+                    {programData.third[0].points.map((point, index) => (
+                      <li key={index}>{point}</li>
+                    ))}
                   </ul>
                 </div>
-              </div>
-            </div>
-            {/* *************************four******************************* */}
-            <div className="four">
-              <h1>Our Therapy Process</h1>
-              <p>
-                Magnis hendrerit tempor commodo Venenatis quam nec nec. Purus
-                proin egestas mi donec dictumst eget rhoncus porttitor diam diam
-                placerat etiam ultricies. Morbi id feugiat sociosqu vel.
-                Bibendum nonummy hac. Varius. Sapien. Sociis nec per, sem dui
-                posuere in dis habitasse. Nec ultricies. Nec torquent posuere
-                habitasse gravida dictum purus.
-  
-              </p>
 
-              <h5>Call +1 921 124 9220 and book an appointment now.</h5>
-            </div>
+                <div className="third">
+                  <h1>{programData.four[0].h1}</h1>
+                  <p>{programData.four[0].p}</p>
+                  <div className="img-content">
+                    <div className="img">
+                      <img src={programData.four[0].img} alt="" />
+                    </div>
+                    <div className="content">
+                      <p>{programData.four[0].h5}</p>
+                      <ul>
+                        {programData.four[0].point.map((point, index) => (
+                          <li key={index}>{point}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="four">
+                  <h1>{programData.five[0].h1}</h1>
+                  <p>{programData.five[0].p}</p>
+                  <h5>Call +1 921 124 9220 and book an appointment now.</h5>
+                </div>
+              </>
+            ) : (
+              <div className="p-4">Select a program from the menu...</div>
+            )}
           </Left>
 
-          <Right></Right>
+          {/* Static Right Section */}
+          <Right>
+          <div className="first">
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "10px",
+        }}
+      >
+        <h1>{ProgramSectionRight.first[0].h1}</h1>
+        <hr style={{ width: "125px" }} />
+      </div>
+      <ul>
+        {ProgramSectionRight.first[0].point.map((item, index) => (
+          <li
+            key={index}
+            style={{
+              padding: "15px",
+              backgroundColor: hoverIndex === index ? "#333" : "#f9f7f7",
+              color: hoverIndex === index ? "#f7f7f7" : "#000",
+              transition: "background-color 0.3s ease, color 0.3s ease",
+            }}
+            onMouseEnter={() => setHoverIndex(index)}
+            onMouseLeave={() => setHoverIndex(null)}
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+
+            <div className="second">
+              {/* <h1>{ProgramSectionRight.second[0].h1}</h1>
+              <h5>{ProgramSectionRight.second[0].h5}</h5>
+              <p>{ProgramSectionRight.second[0].p}</p> */}
+            </div>
+
+            <div className="third">
+              {/* <img src={ProgramSectionRight.third[0].img} alt="" />
+              <h3>{ProgramSectionRight.third[0].h3}</h3>
+              <h2>{ProgramSectionRight.third[0].h2}</h2> */}
+            </div>
+          </Right>
         </Main>
       </ContainerWrap>
     </Container>
+    <Footer/>
+    </>
   );
 };
 
-export default index;
+export default ProgramContent;
