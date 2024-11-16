@@ -492,7 +492,7 @@ export const ProgramSectionRight = {
       p:'By Subscribing, you agree our Terms'
     },
   ],
-  third: [
+  third: [  
     {
       img:Bgimg,
       h3: 'EVENT',
