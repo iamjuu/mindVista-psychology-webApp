@@ -220,20 +220,21 @@ export const ProgramSectionleft = {
         {
 h1:'Let’s find out why your relationship is being affected by your work life.',
 p:'Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet convallis sapien lacinia aptent justo accumsan. Amet ut curae; Maecenas. Nec varius pharetra auctor vel sed velit magna nascetur sed eu tellus a egestas egestas euismod hymenaeos donec donec ullamcorper litora amet phasellus dui, class at metus pretium metus duis pharetra fringilla.',
-point1: 'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
-point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit'
-        }
+points: [
+  'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+  'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
+  'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+],     }
       ],
       four:[{
         h1:'How therapy can save your relationship?',
         p:'Condimentum torquent ornare conubia pede at ridiculus ad consequat conubia etiam lacus tortor, ac phasellus ultrices sollicitudin nullam fames odio suscipit tristique lacus luctus integer Mauris ligula sed velit ullamcorper pellentesque dapibus hymenaeos varius congue, libero et mattis. Ligula. Elit. Faucibus class euismod non varius taciti sapien nostra euismod.',
         img:Psychologist,
         h5:'At justo at nulla senectus phasellus porttitor op mattis dui mus per tincidunt Parturient class de blandit, montes nulla. Id habitasse ligula fames etiam. Quam hac etiam primis aptent nullam ligula dolor taciti quam.',
-        point1:'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-        point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
-        point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit',
-
+        point:['Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+          'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
+          'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+          ]
       }
       ],
 
@@ -264,21 +265,21 @@ point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit'
         {
 h1:'Let’s find out why your relationship is being affected by your work life.',
 p:'Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet convallis sapien lacinia aptent justo accumsan. Amet ut curae; Maecenas. Nec varius pharetra auctor vel sed velit magna nascetur sed eu tellus a egestas egestas euismod hymenaeos donec donec ullamcorper litora amet phasellus dui, class at metus pretium metus duis pharetra fringilla.',
-point1: 'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
-point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit'
-        }
+points: [
+  'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+  'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
+  'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+],     }
       ],
       four:[{
         h1:'How therapy can save your relationship?',
         p:'Condimentum torquent ornare conubia pede at ridiculus ad consequat conubia etiam lacus tortor, ac phasellus ultrices sollicitudin nullam fames odio suscipit tristique lacus luctus integer Mauris ligula sed velit ullamcorper pellentesque dapibus hymenaeos varius congue, libero et mattis. Ligula. Elit. Faucibus class euismod non varius taciti sapien nostra euismod.',
         img:Psychologist,
         h5:'At justo at nulla senectus phasellus porttitor op mattis dui mus per tincidunt Parturient class de blandit, montes nulla. Id habitasse ligula fames etiam. Quam hac etiam primis aptent nullam ligula dolor taciti quam.',
-        point1:'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-        point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
-        point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit',
-
-      }
+        point:['Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+          'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
+          'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+          ]   }
       ],
 
       five:[{
@@ -308,20 +309,21 @@ Self: [
       {
 h1:'Let’s find out why your relationship is being affected by your work life.',
 p:'Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet convallis sapien lacinia aptent justo accumsan. Amet ut curae; Maecenas. Nec varius pharetra auctor vel sed velit magna nascetur sed eu tellus a egestas egestas euismod hymenaeos donec donec ullamcorper litora amet phasellus dui, class at metus pretium metus duis pharetra fringilla.',
-point1: 'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
-point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit'
-      }
+points: [
+  'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+  'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
+  'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+],    }
     ],
     four:[{
       h1:'How therapy can save your relationship?',
       p:'Condimentum torquent ornare conubia pede at ridiculus ad consequat conubia etiam lacus tortor, ac phasellus ultrices sollicitudin nullam fames odio suscipit tristique lacus luctus integer Mauris ligula sed velit ullamcorper pellentesque dapibus hymenaeos varius congue, libero et mattis. Ligula. Elit. Faucibus class euismod non varius taciti sapien nostra euismod.',
       img:Psychologist,
       h5:'At justo at nulla senectus phasellus porttitor op mattis dui mus per tincidunt Parturient class de blandit, montes nulla. Id habitasse ligula fames etiam. Quam hac etiam primis aptent nullam ligula dolor taciti quam.',
-      point1:'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-      point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
-      point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit',
-
+      point:['Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+        'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
+        'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+        ]
     }
     ],
 
@@ -352,20 +354,21 @@ kids: [
       {
 h1:'Let’s find out why your relationship is being affected by your work life.',
 p:'Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet convallis sapien lacinia aptent justo accumsan. Amet ut curae; Maecenas. Nec varius pharetra auctor vel sed velit magna nascetur sed eu tellus a egestas egestas euismod hymenaeos donec donec ullamcorper litora amet phasellus dui, class at metus pretium metus duis pharetra fringilla.',
-point1: 'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
-point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit'
-      }
+points: [
+  'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+  'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
+  'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+],  }
     ],
     four:[{
       h1:'How therapy can save your relationship?',
       p:'Condimentum torquent ornare conubia pede at ridiculus ad consequat conubia etiam lacus tortor, ac phasellus ultrices sollicitudin nullam fames odio suscipit tristique lacus luctus integer Mauris ligula sed velit ullamcorper pellentesque dapibus hymenaeos varius congue, libero et mattis. Ligula. Elit. Faucibus class euismod non varius taciti sapien nostra euismod.',
       img:Psychologist,
       h5:'At justo at nulla senectus phasellus porttitor op mattis dui mus per tincidunt Parturient class de blandit, montes nulla. Id habitasse ligula fames etiam. Quam hac etiam primis aptent nullam ligula dolor taciti quam.',
-      point1:'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-      point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
-      point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit',
-
+      point:['Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+        'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
+        'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+        ]
     }
     ],
 
@@ -396,20 +399,22 @@ Life: [
       {
 h1:'Let’s find out why your relationship is being affected by your work life.',
 p:'Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet convallis sapien lacinia aptent justo accumsan. Amet ut curae; Maecenas. Nec varius pharetra auctor vel sed velit magna nascetur sed eu tellus a egestas egestas euismod hymenaeos donec donec ullamcorper litora amet phasellus dui, class at metus pretium metus duis pharetra fringilla.',
-point1: 'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
-point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit'
-      }
+points: [
+  'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+  'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
+  'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+],
+}
     ],
     four:[{
       h1:'How therapy can save your relationship?',
       p:'Condimentum torquent ornare conubia pede at ridiculus ad consequat conubia etiam lacus tortor, ac phasellus ultrices sollicitudin nullam fames odio suscipit tristique lacus luctus integer Mauris ligula sed velit ullamcorper pellentesque dapibus hymenaeos varius congue, libero et mattis. Ligula. Elit. Faucibus class euismod non varius taciti sapien nostra euismod.',
       img:Psychologist,
       h5:'At justo at nulla senectus phasellus porttitor op mattis dui mus per tincidunt Parturient class de blandit, montes nulla. Id habitasse ligula fames etiam. Quam hac etiam primis aptent nullam ligula dolor taciti quam.',
-      point1:'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-      point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
-      point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit',
-
+      point:['Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+        'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
+        'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+        ]
     }
     ],
 
@@ -440,20 +445,21 @@ old: [
       {
 h1:'Let’s find out why your relationship is being affected by your work life.',
 p:'Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet convallis sapien lacinia aptent justo accumsan. Amet ut curae; Maecenas. Nec varius pharetra auctor vel sed velit magna nascetur sed eu tellus a egestas egestas euismod hymenaeos donec donec ullamcorper litora amet phasellus dui, class at metus pretium metus duis pharetra fringilla.',
-point1: 'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
-point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit'
-      }
+points: [
+  'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+  'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
+  'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+],  }
     ],
     four:[{
       h1:'How therapy can save your relationship?',
       p:'Condimentum torquent ornare conubia pede at ridiculus ad consequat conubia etiam lacus tortor, ac phasellus ultrices sollicitudin nullam fames odio suscipit tristique lacus luctus integer Mauris ligula sed velit ullamcorper pellentesque dapibus hymenaeos varius congue, libero et mattis. Ligula. Elit. Faucibus class euismod non varius taciti sapien nostra euismod.',
       img:Psychologist,
       h5:'At justo at nulla senectus phasellus porttitor op mattis dui mus per tincidunt Parturient class de blandit, montes nulla. Id habitasse ligula fames etiam. Quam hac etiam primis aptent nullam ligula dolor taciti quam.',
-      point1:'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-      point2:'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
-      point3:'Morbi faucibus iaculis faucibus mollis lacus platea velit',
-
+      point:['Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
+      'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
+      'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+      ]
     }
     ],
 
