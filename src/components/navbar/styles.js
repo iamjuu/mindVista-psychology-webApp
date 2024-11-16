@@ -1,4 +1,4 @@
-// styles.js
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 
@@ -20,8 +20,8 @@ export const NavContainer = styled.div`
   width: 100%;
 `;
 
-export const LogoDiv = styled.div` 
-width: 100%;
+export const LogoDiv = styled.div`
+  width: 100%;
 `;
 
 export const LogoContainer = styled(Link)`
@@ -29,13 +29,12 @@ export const LogoContainer = styled(Link)`
   font-size: 1.5rem;
   text-decoration: none;
   color: #dcdada;
-  img{
+  img {
     width: 6%;
     border-radius: 50%;
-    @media (max-width:425px) {
+    @media (max-width: 425px) {
       width: 10%;
     }
-    
   }
 `;
 
@@ -55,6 +54,7 @@ export const Hamburger = styled.div`
 
 export const Menu = styled.div`
   display: flex;
+  padding: 10px;
   color: #dcdada;
   gap: 1rem;
 
@@ -80,25 +80,21 @@ export const MenuLink = styled(Link)`
   &:hover {
     color: #1D1614;
   }
-
-  &:hover .SubMenu {
-    display: block;
-  }
 `;
 
- export const SubMenu = styled.ul`
-  display: none;
+export const SubMenu = styled.ul`
+  display: ${({ isSubMenuOpen }) => (isSubMenuOpen ? 'block' : 'none')}; /* Control visibility based on state */
   position: absolute;
-  z-index: 10;
   top: 100%;
-  left: 0;
+  left: 80%;
   background-color: white;
   padding: 0;
   margin: 0;
   list-style: none;
   border: 1px solid #ddd;
-@media (max-width:768px) {
-}
+  width: 200px; /* Adjust width to your needs */
+  z-index: 10;
+  
   li {
     padding: 0.5rem;
     white-space: nowrap;
@@ -107,8 +103,15 @@ export const MenuLink = styled(Link)`
   li:hover {
     background-color: #f0f0f0;
   }
-`;
 
+  @media (max-width: 1024px) {
+    left: 75%;
+  }
+
+  @media (max-width: 768px) {
+    left: 1%;
+  }
+`;
 
 export const LogoutDiv = styled.div`
   @media (max-width: 768px) {

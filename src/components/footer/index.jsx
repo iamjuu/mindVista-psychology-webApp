@@ -25,7 +25,7 @@ const Index = () => {
               <img  data-aos='fade-up' data-aos-delay="1000" src={Logo} alt="MindVista Logo" />
               <h1 data-aos='fade-down' data-aos-delay="1000" >mindVista</h1>
             </div>
-            <div data-aos='fade-up' data-aos-delay="1000">
+            <div>
               Being a full-time psychologist, I make my patients feel special so
               they can discuss their problems openly. My goal is to help people
               fighting their fears and life issues.
@@ -86,8 +86,8 @@ const Index = () => {
               </div>
             </div>
             <div>
-              <h3 data-aos='fade-down' data-aos-delay="1400">Contact us now for a quote about</h3>
-              <h3 data-aos='fade-down' data-aos-delay="1500">consultation ( Available 24/7 )</h3>
+              <h3 data-aos='fade-up' data-aos-delay="1400">Contact us now for a quote about</h3>
+              <h3 data-aos='fade-up' data-aos-delay="1500">consultation ( Available 24/7 )</h3>
             </div>
           </div>
         </Main>

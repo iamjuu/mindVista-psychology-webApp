@@ -25,7 +25,6 @@ export const BgContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-position: center; */
   background-position:${(props)=>props.position||'center'};
   height: 700px; 
 `;

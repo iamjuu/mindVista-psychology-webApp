@@ -10,9 +10,7 @@ const UserRouter = () => {
       <Route path="/" element={<Landing />} />
       <Route path="/about" element={<About />} />
       <Route path="/contact" element={<Contact />} />
-      {/* Redirect /programs to /programs/dating as default */}
-      <Route path="/programs/:program" element={<Programs />} />    
-      <Route path="/programs" element={<Navigate to="/programs/dating" replace />} />
+      <Route path="/programs" element={<Programs />} />    
     </Routes>
   );
 };

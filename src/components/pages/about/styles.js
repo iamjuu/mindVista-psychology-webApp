@@ -25,7 +25,6 @@ export const BgContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  /* background-position: center; */
   background-position:${(props)=>props.position||'center'};
   height: 700px; 
 `;
@@ -37,4 +36,14 @@ display: flex;
 justify-content: center;
 flex-direction: column;
 align-items: center;
+`
+export const FreeBgContainer= styled.div`
+width:  ${(props)=>props.width||''};
+background-image: url(${(props) => props.bg});
+background-position:${(props)=>props.position||'center'};
+height: ${(props)=>props.height||''};
+
+background-size: cover;
+
+
 `
