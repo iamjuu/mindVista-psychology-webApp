@@ -10,6 +10,7 @@ export const Container = styled.div`
 
 export const ContainerWrap = styled.div`
 background-color:${(props)=>props.bg||''} ;
+/* flex-direction: column; */
   max-width: 1300px;
   display: flex;
   justify-content: center;

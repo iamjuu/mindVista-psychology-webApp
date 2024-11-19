@@ -1,15 +1,20 @@
-import React, { useEffect } from "react";
+import React, { useEffect, lazy, Suspense } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
 import Navbar from "../../navbar";
-import Footer from "../../footer";
-import Bgsction from "../landing/Setions/bgSection";
-import BgsectionOne from "../landing/Setions/sectionOne";
-import SectionTwo from "../landing/Setions/sectionTwo/";
-import SectionThree from "../landing/Setions/sectionThree";
-import SectionFour from "../landing/Setions/sectionFour";
-import SectionFive from "../landing/Setions/sectionFive";
-import SectionSix from "../landing/Setions/sectionSix";
+import Loader from "../../../common/Loader"; // Create a simple Loader component
+
+// Lazy load sections
+const Bgsction = lazy(() => import("../landing/Setions/bgSection"));
+const BgsectionOne = lazy(() => import("../landing/Setions/sectionOne"));
+const SectionTwo = lazy(() => import("../landing/Setions/sectionTwo/"));
+const SectionThree = lazy(() => import("../landing/Setions/sectionThree"));
+const SectionFour = lazy(() => import("../landing/Setions/sectionFour"));
+const SectionFive = lazy(() => import("../landing/Setions/sectionFive"));
+const SectionSix = lazy(() => import("../landing/Setions/sectionSix"));
+const SectionSeven = lazy(() => import("../landing/Setions/sectionSeven"));
+const Footer = lazy(() => import("../../footer"));
+
 const Index = () => {
   useEffect(() => {
     AOS.init({
@@ -22,14 +27,17 @@ const Index = () => {
   return (
     <>
       <Navbar />
-      <Bgsction />
-      <BgsectionOne />
-      <SectionTwo />
-      <SectionThree />
-      <SectionFour />
-      <SectionFive />
-      <SectionSix />
-      <Footer />
+      <Suspense fallback={<Loader />}>
+        <Bgsction />
+        <BgsectionOne />
+        <SectionTwo />
+        <SectionThree />
+        <SectionSeven />
+        <SectionFour />
+        <SectionFive />
+        <SectionSix />
+        <Footer />
+      </Suspense>
     </>
   );
 };

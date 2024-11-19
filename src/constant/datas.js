@@ -492,11 +492,21 @@ export const ProgramSectionRight = {
       p:'By Subscribing, you agree our Terms'
     },
   ],
-  third: [
+  third: [  
     {
       img:Bgimg,
       h3: 'EVENT',
       h2:'joint the onlineYoga meditation event this weekend.'
     },
   ],
+};
+// *******************************Contect page******************************
+
+export const ContectSectionFour = {
+  img: Psychologist,
+  h5: "Let me introduce",
+  h1: "I’m Vishnu priya – Expert Psychologist from India.",
+  h3: "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua minim veniam.",
+  p: "Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Diam nascetur ad varius curabitur ante donec de proin auctor felis hendrerit.",
+  h4: "Susan Lopez – Founder",
 };
