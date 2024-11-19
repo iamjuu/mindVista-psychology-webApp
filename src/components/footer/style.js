@@ -157,4 +157,17 @@ flex-direction: column;
       font-size: 1.5rem;
     }
   }
+
+  .floating-div{
+    background-color: red;
+  }
 `;
+export const FloatingNav = styled.div`
+background-color: red;
+display: none;
+@media (max-width:768px) {
+  display: block;
+  
+}
+
+`

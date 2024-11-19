@@ -92,7 +92,8 @@ export const Left = styled.div`
 // ***********************************
 export const Right = styled.div`
   display: flex;
-  gap: 30px;
+  gap: 130px;    
+  /* background-color: red; */
   flex-direction: column;
   width: 35%;
   .first {
