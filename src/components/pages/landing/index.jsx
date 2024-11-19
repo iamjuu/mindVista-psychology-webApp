@@ -12,7 +12,7 @@ const SectionThree = lazy(() => import("../landing/Setions/sectionThree"));
 const SectionFour = lazy(() => import("../landing/Setions/sectionFour"));
 const SectionFive = lazy(() => import("../landing/Setions/sectionFive"));
 const SectionSix = lazy(() => import("../landing/Setions/sectionSix"));
-const SectionSeven =lazy(()=>import("../landing/Setions/sectionSeven"))
+const SectionSeven = lazy(() => import("../landing/Setions/sectionSeven"));
 const Footer = lazy(() => import("../../footer"));
 
 const Index = () => {
@@ -32,7 +32,7 @@ const Index = () => {
         <BgsectionOne />
         <SectionTwo />
         <SectionThree />
-        <SectionSeven/>
+        <SectionSeven />
         <SectionFour />
         <SectionFive />
         <SectionSix />

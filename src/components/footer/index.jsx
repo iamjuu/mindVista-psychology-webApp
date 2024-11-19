@@ -8,8 +8,13 @@ import { FaInstagram } from "react-icons/fa";
 import { CiLinkedin } from "react-icons/ci";
 import { Logo } from "../../assets";
 import {FloatingDockDemo} from '../../components/navbar/floatingNav'
+import { useNavigate } from 'react-router-dom';
 
 const Index = () => {
+  const navigate = useNavigate();
+  const DashBoard =()=>{
+    navigate('/dashboard')
+  }
   useEffect(() => {
     AOS.init({
       duration: 1000,
@@ -23,7 +28,7 @@ const Index = () => {
         <Main>
           <div className="first">
             <div>
-              <img
+              <img 
                 data-aos="fade-up"
                 data-aos-delay="1000"
                 src={Logo}
