@@ -8,7 +8,7 @@ function App() {
   return (
     <Router>
       <UserRouter /> 
-      <AdminRouter/>
+      {/* <AdminRouter/> */}
       </Router>
   );
 }

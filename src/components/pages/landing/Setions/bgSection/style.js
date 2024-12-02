@@ -45,4 +45,14 @@ export const Main = styled.div`
         background-color: #F3EBE6;
     }
   }
+  h1{
+    font-size: 2rem;
+    @media (max-width:768px) {
+      font-size: 1.5rem;
+    }
+    
+    @media (max-width:425px) {
+      font-size: 1rem;
+    }
+  }
 `;

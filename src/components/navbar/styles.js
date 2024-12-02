@@ -54,18 +54,6 @@ export const Hamburger = styled.div`
 `;
 // **************
 
-// Animation for fade and slide effect
-const fadeIn = keyframes`
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
 export const Menu = styled.div`
   display: flex;
   padding: 10px;
@@ -81,7 +69,6 @@ export const Menu = styled.div`
     background: #f3ebe6;
     width: 100%;
     z-index: 10;
-    animation: ${({ isOpen }) => (isOpen ? fadeIn : "none")} 0.3s ease-in-out;
   }
 
   /* Hover effect for Menu, if needed in the future */
@@ -112,10 +99,9 @@ export const SubMenu = styled.ul`
   margin: 0;
   list-style: none;
   border: 1px solid #ddd;
-  width: 200px; /* Adjust width to your needs */
+  width: 200px;
   z-index: 10;
-  animation: ${({ isSubMenuOpen }) =>
-    isSubMenuOpen ? fadeIn : "none"} 0.3s ease-in-out;
+
 
   li {
     padding: 0.5rem;

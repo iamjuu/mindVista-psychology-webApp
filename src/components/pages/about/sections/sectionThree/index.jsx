@@ -15,7 +15,7 @@ const Index = () => {
                 <img src={item.book} alt="" />
                 <div className="book-details">
                   <p>{item.name}</p>
-                  <p>{item.id}</p>
+                  {/* <p>{item.id}</p> */}
                 </div>
               </div>
             ))}

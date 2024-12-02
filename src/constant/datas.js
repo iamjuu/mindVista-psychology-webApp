@@ -173,26 +173,26 @@ export const AboutSectionTwo = [
 export const AboutSectionThree = [
   {
     id: 1,
-    name: "Mindblog",
+    name: "",
     book: Bookimg,
     link: "",
   },
   {
     id: 2,
     book: Bookimg,
-    name: "The Brain",
+    name: "",
     link: "",
   },
   {
     id: 3,
     book: Bookimg,
-    name: "Human ",
+    name: " ",
     link: "",
   },
   {
     id: 4,
     book: Bookimg,
-    name: "The drug",
+    name: "",
     link: "",
   },
 ];

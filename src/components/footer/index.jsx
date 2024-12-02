@@ -15,13 +15,6 @@ const Index = () => {
   const DashBoard =()=>{
     navigate('/dashboard')
   }
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      delay: 200,
-      once: true,
-    });
-  }, []);
   return (
     <Container bg={"#151110"}>
       <ContainerWrap direction="column">
@@ -44,28 +37,28 @@ const Index = () => {
               fighting their fears and life issues.
             </div>
             <div className="icon-div">
-              <SiWhatsapp data-aos="fade-up" data-aos-delay="1000" />
-              <LuFacebook data-aos="fade-down" data-aos-delay="1200" />
-              <FaInstagram data-aos="fade-up" data-aos-delay="1300" />
-              <CiLinkedin data-aos="fade-down" data-aos-delay="1400" />
+              <SiWhatsapp  />
+              <LuFacebook  />
+              <FaInstagram  />
+              <CiLinkedin  />
             </div>
           </div>
 
           <div className="second">
             <div>
-              <h1 data-aos="fade-up" data-aos-delay="1000">
+              <h1 >
                 Contact Details
               </h1>
             </div>
             <div>
-              <h3 data-aos="fade-down" data-aos-delay="1100">
+              <h3 >
                 1870 Alpaca Way Irvine, CA 92614. <br /> United States
               </h3>
-              <h3 data-aos="fade-down" data-aos-delay="1300">
+              <h3 >
                 Phone: +1 921 124 9220 <br />
                 Mail: info@psychare.com
               </h3>
-              <h3 data-aos="fade-down" data-aos-delay="1400">
+              <h3 >
                 Mon - Fri: ( 9am - 6pm ) <br />
                 Sat & Sun: CLOSED
               </h3>
@@ -73,12 +66,12 @@ const Index = () => {
           </div>
           <div className="third">
             <div>
-              <h1 data-aos="fade-down" data-aos-delay="1000">
+              <h1 >
                 My Programs
               </h1>
             </div>
             <div>
-              <ul data-aos="fade-down" data-aos-delay="1200">
+              <ul >
                 <li>Dating & Relationship</li>
                 <li>Grief & Loss Counseling</li>
                 <li>Self Esteem Therapy</li>
@@ -90,13 +83,13 @@ const Index = () => {
           </div>
           <div className="four">
             <div>
-              <h1 data-aos="fade-down" data-aos-delay="1000">
+              <h1 >
                 Book Appointment
               </h1>
             </div>
-            <div data-aos="fade-down" data-aos-delay="1200">
+            <div >
               <div>
-                <h3 data-aos="fade-down" data-aos-delay="1100">
+                <h3>
                   <SiWhatsapp />
                 </h3>
               </div>
@@ -105,10 +98,10 @@ const Index = () => {
               </div>
             </div>
             <div>
-              <h3 data-aos="fade-up" data-aos-delay="1400">
+              <h3>
                 Contact us now for a quote about
               </h3>
-              <h3 data-aos="fade-up" data-aos-delay="1500">
+              <h3>
                 consultation ( Available 24/7 )
               </h3>
             </div>
