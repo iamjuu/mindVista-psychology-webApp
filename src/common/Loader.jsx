@@ -76,19 +76,18 @@ const BrandName = styled.h1`
   font-family: 'Arial', sans-serif;
   font-weight: bold;
   margin-bottom: 20px;
-  animation: ${fadeIn} 2s ease-out; /* Applying the fade-in animation */
+  animation: ${fadeIn} 2s ease-out; 
 `;
 
 const Loader = () => {
   return (
     <LoaderContainer>
-      <BrandName>MindVista</BrandName> {/* Display brand name with animation */}
+      <BrandName>MindVista</BrandName> 
       <LoaderDots>
         <Dot />
         <Dot />
         <Dot />
       </LoaderDots>
-      {/* <LoadingText>Loading...</LoadingText> */}
     </LoaderContainer>
   );
 };
