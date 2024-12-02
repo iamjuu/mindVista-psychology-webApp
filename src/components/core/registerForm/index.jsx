@@ -1,5 +1,7 @@
 import React, { useState } from "react";
 import { Button, Form, FormContainer, Input } from "./style";
+import Swal from 'sweetalert2';
+import axios from 'axios'; // Import Axios for making HTTP requests
 
 const Index = () => {
   const [formData, setFormData] = useState({
@@ -7,7 +9,7 @@ const Index = () => {
     phone: '',
     email: '',
     date: '',
-    time: '10:00 AM', 
+    time: '10:00 AM',
   });
 
   const handleChange = (e) => {
@@ -18,15 +20,55 @@ const Index = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  // Function to send form data to the backend
+  const submitting = async (data) => {
+    try {
+      const response = await axios.post('/registration', data);
+      return response.data;
+    } catch (error) {
+      console.error('Error submitting the form:', error);
+      throw error;
+    }
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.phone || !formData.email || !formData.date || !formData.time) {
       alert("Please fill in all the fields");
       return;
     }
 
-    console.log(formData);
-    alert("Form submitted successfully!");
+    try {
+      // Send the form data to the backend
+      const result = await submitting(formData);
+
+      console.log(result); // Log the response from the backend (optional)
+
+      // Show SweetAlert success message
+      Swal.fire({
+        title: 'Thank You!',
+        text: 'Your slot booking is confirmed.',
+        icon: 'success',
+        confirmButtonText: 'OK',
+      });
+
+      // Reset the form after successful submission (optional)
+      setFormData({
+        name: '',
+        phone: '',
+        email: '',
+        date: '',
+        time: '10:00 AM',
+      });
+
+    } catch (error) {
+      Swal.fire({
+        title: 'Oops!',
+        text: 'Something went wrong. Please try again later.',
+        icon: 'error',
+        confirmButtonText: 'OK',
+      });
+    }
   };
 
   const convertTo12HourFormat = (hour) => {
@@ -75,7 +117,7 @@ const Index = () => {
           value={formData.date}
           onChange={handleChange}
         />
-        
+
         {/* Time Slot Dropdown */}
         <Input
           as="select"

@@ -1,29 +1,34 @@
+import React, { Suspense } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Landing from "../components/pages/landing";
-import About from "../components/pages/about";
-import Contact from "../components/pages/contact";
-import Programs from "../components/pages/programs"; // Your Programs component
+
+// Lazy loading components
+const Landing = React.lazy(() => import("../components/pages/landing"));
+const About = React.lazy(() => import("../components/pages/about"));
+const Contact = React.lazy(() => import("../components/pages/contact"));
+const ProgramContent = React.lazy(() => import("../components/pages/programs/sections/sectionOne"));
+const Regitser = React.lazy(() => import('../components/pages/register'));
+import Loader from '../common/Loader.jsx';  // Importing the Loader component
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
-import ProgramContent from "../components/pages/programs/sections/sectionOne";
-import Regitser from '../components/pages/register'
 
 const UserRouter = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Landing />} />
-      <Route path="/about" element={<About />} />
-      <Route path="/contact" element={<Contact />} />
-      <Route path="/register" element={<Regitser />} />    
-      <Route
-        path="/programs/:programId"
-        element={
-          <ProgramContent
-            ProgramSectionleft={ProgramSectionleft}
-            ProgramSectionRight={ProgramSectionRight}
-          />
-        }
-      />
-    </Routes>
+    <Suspense fallback={<Loader />}> {/* Added the missing closing '>' */}
+      <Routes>
+        <Route path="/" element={<Landing />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/register" element={<Regitser />} />
+        <Route
+          path="/programs/:programId"
+          element={
+            <ProgramContent
+              ProgramSectionleft={ProgramSectionleft}
+              ProgramSectionRight={ProgramSectionRight}
+            />
+          }
+        />
+      </Routes>
+    </Suspense>
   );
 };
 

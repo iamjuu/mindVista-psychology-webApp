@@ -6,22 +6,14 @@ import { Main } from './style';
 import Btn from '../../../../core/button';
 
 const Index = () => {
-  useEffect(() => {
-    AOS.init({
-      offset: 100,
-      duration: 800,
-      easing: "ease-in-sine",
-      delay: 200,
-    });
-    AOS.refresh();
-  }, []);
+
 
   return (
     <Container>
       <ContainerWrap>
         <Main>
-          <div className="second" data-aos="fade-up" data-aos-delay="1500">
-            <div className="right" data-aos="fade-up" data-aos-delay="500">
+          <div className="second" >
+            <div className="right" >
               <h5>{SectionFour.h5}</h5>
               <h1>
                 {SectionFour.h1}
@@ -39,7 +31,7 @@ const Index = () => {
               <img src={SectionFour.img} alt="Section Four" />
             </div>
           </div>
-          <div className="third" data-aos="fade-up" data-aos-delay="600"></div>
+          <div className="third"></div>
         </Main>
       </ContainerWrap>
     </Container>

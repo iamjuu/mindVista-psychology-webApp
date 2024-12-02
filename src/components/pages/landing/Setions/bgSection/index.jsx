@@ -1,25 +1,15 @@
-import React, { useEffect } from 'react';
-import AOS from 'aos';
-import Regbtn from '../../../../core/button'; // Import the Button component
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
 import { Data } from '../../../../../constant/datas';
 import { Bgimg } from '../../../../../assets';
+import Regbtn from '../../../../core/button'; 
 
 const BgSection = () => {
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      delay: 200,
-      once: true,
-    });
-  }, []);
-
   return (
     <Container>
-      <BgContainer data-aos="fade-up" data-aos-delay="600">
-        {/* Lazy-loaded background image */}
+      <BgContainer>
         <img 
           src={Bgimg} 
           alt="Background" 
@@ -33,14 +23,16 @@ const BgSection = () => {
             objectFit: 'cover',
             zIndex: -1,
           }}
+          width="1920" 
+          height="1080" 
         />
         <ContainerWrap>
-          <Main data-aos="fade-up">
-            <p data-aos="fade-up" data-aos-delay="100">{Data.p}</p>
-            <h1 style={{ color: 'white', fontFamily: "monospace" }} data-aos="fade-up" data-aos-delay="200">
+          <Main>
+            <p>{Data.p}</p>
+            <h1 style={{ color: 'white', fontFamily: "monospace" }}>
               {Data.h1}
             </h1>
-            <div className="btn-container" data-aos="fade-up" data-aos-delay="300">
+            <div className="btn-container">
               <Link to="/register">
                 <Regbtn bg="white" color="brown" hoverBg="pink" btnName="Book Now" />
               </Link>
