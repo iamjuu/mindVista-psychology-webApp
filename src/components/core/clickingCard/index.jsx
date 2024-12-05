@@ -4,15 +4,14 @@ export function AnimatedTestimonialsDemo() {
   const testimonials = [
     {
       quote:
-      "The attention to detail and innovative features have completely transformed our workflow. This is exactly what we've been looking for.",
-      name: "Sarah Chen",
-      designation: "Mern stack developer",
+    `In the development of MindVista, Muhammed Ajmalcc played a key role in integrating video conferencing, live chat, and an AI-powered chatbot to enhance user experience and provide instant mental health support. `,
+      designation: "software   developer",
       src: Pic3,
     },
     {
       quote:
         "Implementation was seamless and the results exceeded our expectations. The platform's flexibility is remarkable.",
-      name: "Michael Rodriguez",
+      name: "muhammed ajmalcc",
       designation: "CTO at InnovateSphere",
       src: Pic2,
     },

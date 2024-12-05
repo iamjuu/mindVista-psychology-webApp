@@ -6,9 +6,19 @@ import Bookimg from './landing/book.png'
 import Pic1 from './cards/IMG-20240921-WA0050.jpg'
 import Pic2 from './cards/IMG-20240921-WA0051.jpg'
 import Pic3 from './cards/IMG-20240921-WA0055.jpg'
+import TheBrain from './landing/SocialMediaBrain.png'
+import Brain from './landing/Brain.png'
+import Consulting from './landing/Consulting.jpg'
+import Sleepless from './landing/SleepingPateint.jpg'
+import depressed from './landing/pexels-timur-weber-8560013.jpg'
 
 
-export { 
+export {
+    depressed,
+    Sleepless,
+    Consulting,
+    Brain, 
+    TheBrain,
     Pic1,
     Pic2,
     Pic3,

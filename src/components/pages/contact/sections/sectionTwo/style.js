@@ -3,7 +3,8 @@ import styled from "styled-components";
 export const Main = styled.div`
  width: 100%;
  max-width: 1300px;
-  background-color: #E3E3E3;
+ border: 1px solid #E2E4E9;
+  /* background-color: #efefef; */
   border-radius: 10px;
   display: flex;
   position: relative;
@@ -18,8 +19,7 @@ export const Main = styled.div`
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #E3E3E3;
-    filter: blur(8px); 
+    filter: blur(2px); 
     z-index: -1; 
   }
   .form{
