@@ -2,9 +2,9 @@
 import React from "react";
 import Navbar from "../../navbar";
 import Footer from "../../footer/";
-import Form from "../../core/registerform";
 import { Container, ContainerWrap } from "../landing/Style";
 import { Main } from "./styles";
+import Index from "../../core/registerform";
 const index = () => {
   return (
     <>
@@ -12,7 +12,7 @@ const index = () => {
       <Container>
         <ContainerWrap>
           <Main>
-            <Form />
+            <Index />
           </Main>
         </ContainerWrap>
       </Container>
