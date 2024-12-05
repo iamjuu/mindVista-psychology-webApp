@@ -6,7 +6,7 @@ const Landing = React.lazy(() => import("../components/pages/landing"));
 const About = React.lazy(() => import("../components/pages/about"));
 const Contact = React.lazy(() => import("../components/pages/contact"));
 const ProgramContent = React.lazy(() => import("../components/pages/programs/sections/sectionOne"));
-const Register = React.lazy(() => import("../components/pages/register"));
+// const Register = React.lazy(() => import("../components/pages/register"));
 
 import Loader from "../common/Loader.jsx"; // Importing the Loader component
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
@@ -18,7 +18,7 @@ const UserRouter = () => {
         <Route path="/" element={<Landing />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
-        <Route path="/register" element={<Register />} />
+        {/* <Route path="/register" element={<Register />} /> */}
         <Route
           path="/programs/:programId"
           element={
