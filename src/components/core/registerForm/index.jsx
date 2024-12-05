@@ -22,13 +22,13 @@ const Index = () => {
 
   // Function to send form data to the backend
   const submitting = async (data) => {
-    try {
-      const response = await axios.post('/registration', data);
-      return response.data;
-    } catch (error) {
-      console.error('Error submitting the form:', error);
-      throw error;
-    }
+    // try {
+    //   const response = await axios.post('/registration', data);
+    //   return response.data;
+    // } catch (error) {
+    //   console.error('Error submitting the form:', error);
+    //   throw error;
+    // }
   };
 
   const handleSubmit = async (e) => {
