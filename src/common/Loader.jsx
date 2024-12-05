@@ -1,5 +1,4 @@
-// src/common/Loader.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 
 // Bounce animation for the loader dots
@@ -60,15 +59,6 @@ const Dot = styled.div`
   }
 `;
 
-// Styled text for the loading message
-const LoadingText = styled.p`
-  font-size: 1.2rem;
-  color: #a57355;  /* Update to match your theme */
-  font-family: Arial, sans-serif;
-  margin-top: 20px;
-  font-weight: bold;
-`;
-
 // Styled brand name with fade-in effect
 const BrandName = styled.h1`
   font-size: 2rem;
@@ -80,9 +70,24 @@ const BrandName = styled.h1`
 `;
 
 const Loader = () => {
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 1000); // Replace 3000 with your desired timeout duration in milliseconds
+
+    return () => clearTimeout(timer); // Cleanup the timeout on component unmount
+  }, []);
+
+  if (!isLoading) {
+    return null; // Render nothing after the loader disappears
+
+  }
+
   return (
     <LoaderContainer>
-      <BrandName>MindVista</BrandName> 
+      <BrandName>MindVista</BrandName>
       <LoaderDots>
         <Dot />
         <Dot />

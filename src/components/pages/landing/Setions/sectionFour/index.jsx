@@ -27,7 +27,7 @@ const Index = () => {
                 <Btn btnName="About" color="white" bg="#a57355" width="130px" />
               </div>
             </div>
-            <div className="left" data-aos="fade-down" data-aos-delay="400">
+            <div className="left" >
               <img src={SectionFour.img} alt="Section Four" />
             </div>
           </div>

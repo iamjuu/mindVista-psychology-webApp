@@ -2,7 +2,7 @@
 // import { BiMessageDetail } from "react-icons/bi";
 // import { MdOutlinePhoneInTalk } from "react-icons/md";
 // import { FaGlobeAsia } from "react-icons/fa";
-import { Logo, Psychologist, Bgimg, Bookimg } from "../assets";
+import { Logo, Psychologist, Bgimg, Bookimg,Consulting,Sleepless,depressed } from "../assets";
 export const Data = {
   p: "Best psychologist",
   h1: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta, esse nobis reprehenderit aut cumque labore sapiente tempora eveniet veniam quaerat, distinctio minima est voluptatum, error tempore. Minima, totam. Ratione, ullam?",
@@ -73,19 +73,19 @@ export const sectionThreeData = {
   secondCard: [
     {
       h1: "heading",
-      img: Bgimg,
+      img: Consulting,
       p: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor",
       link: "/about",
     },
     {
       h1: "heading1",
-      img: Bgimg,
+      img: depressed,
       p: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor",
       link: "/about",
     },
     {
       h1: "heading",
-      img: Bgimg,
+      img: Sleepless,
       p: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed sit amet nulla auctor",
       link: "/about",
     },

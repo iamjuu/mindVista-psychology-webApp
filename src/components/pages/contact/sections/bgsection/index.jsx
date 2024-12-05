@@ -1,6 +1,6 @@
 
 import { Container, ContainerWrap, BgContainer } from "../../../../pages/landing/Style";
-import { Psychologist } from "../../../../../assets";
+import { Psychologist,Consulting } from "../../../../../assets";
 import { Main } from "./style";
 
 const index = () => {
@@ -9,7 +9,7 @@ const index = () => {
   return (
     <>
       <Container>
-        <BgContainer bg={Psychologist}>
+        <BgContainer bg={Consulting}>
           <ContainerWrap>
             <Main>
               <h1>
