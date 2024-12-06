@@ -1,5 +1,4 @@
 import React from "react";
-import { SignupFormDemo } from "../../../../core/contectForm";
 import { Container, ContainerWrap } from "../../styles";
 import { Main } from "./style";
 import {Bgimg} from '../../../../../assets'
@@ -9,7 +8,6 @@ const index = () => {
       <ContainerWrap>
         <Main>
           <div className="form">
-          <SignupFormDemo />
           </div>
           <div className="content">
             <img src={Bgimg} alt="" />
