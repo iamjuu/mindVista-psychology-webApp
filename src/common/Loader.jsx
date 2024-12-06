@@ -1,100 +1,112 @@
-import React, { useState, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
 
-// Bounce animation for the loader dots
-const bounce = keyframes`
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-`;
-
-// Fade-in animation for the brand name
-const fadeIn = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
-
-// Styled container for the loader
-const LoaderContainer = styled.div`
+const SpinnerWrapper = styled.div`
+  height: 100vh;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
-  height: 100vh;
-  text-align: center;
 `;
 
-// Styled div for the bouncing dots
-const LoaderDots = styled.div`
-  display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+const StyledSvg = styled.svg`
+  width: 150px;
+  height: 150px;
 `;
 
-// Styled individual dot
-const Dot = styled.div`
-  width: 15px;
-  height: 15px;
-  border-radius: 50%;
-  background-color: #a57355; /* Update the color to match your branding */
-  animation: ${bounce} 1.2s infinite ease-in-out;
-
-  &:nth-child(1) {
-    animation-delay: 0s;
-  }
-  &:nth-child(2) {
-    animation-delay: 0.2s;
-  }
-  &:nth-child(3) {
-    animation-delay: 0.4s;
-  }
+const BackgroundPath = styled.path`
+  opacity: 0.05;
+  fill: none;
+  stroke: #000000;
+  stroke-width: 3;
 `;
 
-// Styled brand name with fade-in effect
-const BrandName = styled.h1`
-  font-size: 2rem;
-  color: #a57355; /* Brand color */
-  font-family: 'Arial', sans-serif;
-  font-weight: bold;
-  margin-bottom: 20px;
-  animation: ${fadeIn} 2s ease-out; 
+const ProgressPath = styled.path`
+  fill: none;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-dasharray: 60, 310;
+  will-change: stroke, stroke-dashoffset;
+  stroke: ${(props) => props.stroke};
+  stroke-dashoffset: ${(props) => props.offset};
 `;
 
-const Loader = () => {
-  const [isLoading, setIsLoading] = useState(true);
+const lerp = (x, x0, x1, y0, y1) => {
+  const t = (x - x0) / (x1 - x0);
+  return y0 + t * (y1 - y0);
+};
+
+const lerpColor = (x, x0, x1, y0, y1) => {
+  const b0 = y0 & 0xff;
+  const g0 = (y0 & 0xff00) >> 8;
+  const r0 = (y0 & 0xff0000) >> 16;
+
+  const b1 = y1 & 0xff;
+  const g1 = (y1 & 0xff00) >> 8;
+  const r1 = (y1 & 0xff0000) >> 16;
+
+  const r = Math.floor(lerp(x, x0, x1, r0, r1));
+  const g = Math.floor(lerp(x, x0, x1, g0, g1));
+  const b = Math.floor(lerp(x, x0, x1, b0, b1));
+
+  return `#${("00000" + ((r << 16) | (g << 8) | b).toString(16)).slice(-6)}`;
+};
+
+const Spinner = () => {
+  const [stroke, setStroke] = useState("#ededed");
+  const [offset, setOffset] = useState(445);
+  const animStartRef = useRef(null);
+  const animIdRef = useRef(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000); // Replace 3000 with your desired timeout duration in milliseconds
+    animStartRef.current = Date.now();
+    const animate = () => {
+      const pathWidth = 372;
+      const speed = 2;
+      const colorTable = [
+        [0.0, 0xf15a31],
+        [0.2, 0xffd31b],
+        [0.33, 0xa6ce42],
+        [0.4, 0x007ac1],
+        [0.45, 0x007ac1],
+        [0.55, 0x007ac1],
+        [0.6, 0x007ac1],
+        [0.67, 0xa6ce42],
+        [0.8, 0xffd31b],
+        [1.0, 0xf15a31],
+      ];
 
-    return () => clearTimeout(timer); // Cleanup the timeout on component unmount
-  }, []);
+      const currentAnim = Date.now();
+      const t = ((currentAnim - animStartRef.current) % 6000) / 6000;
+      const colorValue = lerpColor(t, 0, 1, colorTable[0][1], colorTable[colorTable.length - 1][1]);
 
-  if (!isLoading) {
-    return null; // Render nothing after the loader disappears
+      let newOffset = offset - speed;
+      if (newOffset < 0) newOffset = pathWidth;
 
-  }
+      setStroke(colorValue);
+      setOffset(newOffset);
+
+      animIdRef.current = requestAnimationFrame(animate);
+    };
+
+    animIdRef.current = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animIdRef.current);
+    };
+  }, [offset]);
 
   return (
-    <LoaderContainer>
-      <BrandName>MindVista</BrandName>
-      <LoaderDots>
-        <Dot />
-        <Dot />
-        <Dot />
-      </LoaderDots>
-    </LoaderContainer>
+    <SpinnerWrapper>
+      <StyledSvg viewBox="0 0 115 115" preserveAspectRatio="xMidYMid meet">
+        <BackgroundPath d="M 85 85 C -5 16 -39 127 78 30 C 126 -9 57 -16 85 85 C 94 123 124 111 85 85 Z" />
+        <ProgressPath
+          stroke={stroke}
+          offset={offset}
+          d="M 85 85 C -5 16 -39 127 78 30 C 126 -9 57 -16 85 85 C 94 123 124 111 85 85 Z"
+        />
+      </StyledSvg>
+    </SpinnerWrapper>
   );
 };
 
-export default Loader;
+export default Spinner;
