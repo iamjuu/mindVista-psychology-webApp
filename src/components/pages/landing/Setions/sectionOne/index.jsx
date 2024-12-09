@@ -30,9 +30,13 @@ const Section1 = () => {
               <h1>{SectionOne.boxTwo[0].h1}</h1>
               <p>{SectionOne.boxTwo[0].p}</p>
               <hr style={{ width: '170px' }} />
-              <h5>
+              <div style={{width:'100%', display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center'}}>
+                <h5>{SectionOne.boxTwo[0].h5}</h5>
+                <p>{SectionOne.boxTwo[0].break}</p>
+              </div>
+              {/* <h5>
                 {SectionOne.boxTwo[0].h5} <br /> {SectionOne.boxTwo[0].break}
-              </h5>
+              </h5> */}
             </div>
           </div>
 

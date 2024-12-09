@@ -2,7 +2,7 @@
 // import { BiMessageDetail } from "react-icons/bi";
 // import { MdOutlinePhoneInTalk } from "react-icons/md";
 // import { FaGlobeAsia } from "react-icons/fa";
-import { Logo, Psychologist, Bgimg, Bookimg,Consulting,Sleepless,depressed } from "../assets";
+import { Logo, Psychologist, Bgimg, Bookimg,Consulting,Sleepless,depressed,Medition } from "../assets";
 export const Data = {
   p: "Best psychologist",
   h1: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Soluta, esse nobis reprehenderit aut cumque labore sapiente tempora eveniet veniam quaerat, distinctio minima est voluptatum, error tempore. Minima, totam. Ratione, ullam?",
@@ -200,40 +200,36 @@ export const AboutSectionThree = [
 // ***********************************program pages data *************************************************************
 
 export const ProgramSectionleft = {
-  dating: [
+  MindfulnessMeditation: [
     {
       fist: [
         {
-          img: Psychologist,
-          content: "dating",
+          img: Medition,
+          content: " Mindfulness Meditation",
         },
       ],
       second: [
         {
-          h1: "This program is perfect for you if...",
-          h5: "Elementum class viverra orci hymenaeos curae;. Rhoncus adipiscing. Conubia condimentum quam taciti dictumst, diam proin consectetuer leo malesuada fames praesent",
-          p: "Vivamus hendrerit. Quisque donec in luctus tincidunt Aptent, ipsum facilisi magna sagittis augue orci mattis tellus hendrerit id vivamus hymenaeos. Senectus sociis, hac eleifend nisl et ultrices eros. Condimentum ante egestas eget natoque. Nisl pretium rhoncus mollis nunc semper pretium libero, nulla fringilla nulla est. Tortor blandit torquent etiam, dolor euismod, vulputate senectus.",
-        img:Bgimg
+          h1: "Mindfulness Meditation",
+          h5: "Are you feeling overwhelmed by the demands of daily life? Discover the transformative power of mindfulness meditation, designed to help you reconnect with yourself and the present moment.",
+          // p: "Vivamus hendrerit. Quisque donec in luctus tincidunt Aptent, ipsum facilisi magna sagittis augue orci mattis tellus hendrerit id vivamus hymenaeos. Senectus sociis, hac eleifend nisl et ultrices eros. Condimentum ante egestas eget natoque. Nisl pretium rhoncus mollis nunc semper pretium libero, nulla fringilla nulla est. Tortor blandit torquent etiam, dolor euismod, vulputate senectus.",
+        img:Medition
       },
       ],
       third: [
         {
-h1:'Let’s find out why your relationship is being affected by your work life.',
-p:'Aliquam hymenaeos fusce urna massa nec quis, ut, imperdiet convallis sapien lacinia aptent justo accumsan. Amet ut curae; Maecenas. Nec varius pharetra auctor vel sed velit magna nascetur sed eu tellus a egestas egestas euismod hymenaeos donec donec ullamcorper litora amet phasellus dui, class at metus pretium metus duis pharetra fringilla.',
+h1:'Why Mindfulness Meditation?',
+p:`Stress Reduction: Learn techniques to calm your mind and release tension.Enhanced Focus: Improve your ability to concentrate and remain grounded in the moment.Emotional Balance: Cultivate a sense of calm and resilience to face life's challenges.Better Sleep: Achieve a restful and rejuvenating sleep pattern.`,
 points: [
-  'Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-  'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pedeporttitor leo duis.',
-  'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+''
 ],     }
       ],
       four:[{
-        h1:'How therapy can save your relationship?',
-        p:'Condimentum torquent ornare conubia pede at ridiculus ad consequat conubia etiam lacus tortor, ac phasellus ultrices sollicitudin nullam fames odio suscipit tristique lacus luctus integer Mauris ligula sed velit ullamcorper pellentesque dapibus hymenaeos varius congue, libero et mattis. Ligula. Elit. Faucibus class euismod non varius taciti sapien nostra euismod.',
+        h1:'What We Offer',
+        p:'Guided Meditation Sessions: Expert-led practices suitable for beginners and advanced participants.Interactive Workshops: Explore mindfulness techniques in a supportive group setting.Customized Programs: Tailored sessions to meet your personal or professional needs.On-Demand Resources: Access videos, tips, and exercises anytime to support your journey.',
         img:Psychologist,
-        h5:'At justo at nulla senectus phasellus porttitor op mattis dui mus per tincidunt Parturient class de blandit, montes nulla. Id habitasse ligula fames etiam. Quam hac etiam primis aptent nullam ligula dolor taciti quam.',
-        point:['Nullam nostra dis nibh ut sollicitudin vel at eros Erat in ornare risus adipiscing eget suscipit.',
-          'Eu mollis dictum metus nisl diam purus ante nam natoque risus netus condimentum etiam pede porttitor leo duis.',
-          'Morbi faucibus iaculis faucibus mollis lacus platea velit',
+        h5:'Take a Step Towards a Happier, Healthier You',
+        point:[''
           ]
       }
       ],
