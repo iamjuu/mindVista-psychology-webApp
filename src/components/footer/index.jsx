@@ -1,7 +1,7 @@
 import React from "react";
 import AOS from "aos";
 import { Container, ContainerWrap } from "../pages/landing/Style";
-import { Main, FloatingNav } from "./style";
+import { Main,  } from "./style";
 import { SiWhatsapp } from "react-icons/si";
 import { LuFacebook } from "react-icons/lu";
 import { FaInstagram } from "react-icons/fa";
@@ -10,15 +10,12 @@ import { Logo } from "../../assets";
 import { useNavigate } from "react-router-dom";
 
 const Index = () => {
-  const navigate = useNavigate();
 
   React.useEffect(() => {
     AOS.init({ duration: 800 });
   }, []);
 
-  const DashBoard = () => {
-    navigate("/dashboard");
-  };
+
 
   return (
     <Container bg={"#151110"}>
@@ -92,11 +89,7 @@ const Index = () => {
             </div>
           </div>
         </Main>
-        <FloatingNav>
-          <ContainerWrap>
-            {/* Floating Nav or Any Additional Component */}
-          </ContainerWrap>
-        </FloatingNav>
+   
       </ContainerWrap>
     </Container>
   );

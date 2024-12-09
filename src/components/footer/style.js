@@ -118,17 +118,4 @@ export const Main = styled.div`
   }
 `;
 
-export const FloatingNav = styled.div`
-  display: none;
 
-  @media (max-width: 768px) {
-    display: block;
-    background-color: red;
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-    padding: 10px;
-    color: white;
-  }
-`;

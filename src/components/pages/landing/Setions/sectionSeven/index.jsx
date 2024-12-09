@@ -1,13 +1,11 @@
 import React from 'react';
 import {Container,ContainerWrap} from '../../Style'
-// import {AnimatedTestimonialsDemo} from '../../../../core/clickingCard'
 
 const index = () => {
   return (
     <Container>
         <ContainerWrap>
-          <h1>xcvc</h1>
-{/* <AnimatedTestimonialsDemo/> */}
+<h1> section seven</h1>
         </ContainerWrap>
     </Container>
   );
