@@ -11,9 +11,11 @@ import Brain from './landing/Brain.png'
 import Consulting from './landing/Consulting.jpg'
 import Sleepless from './landing/SleepingPateint.jpg'
 import depressed from './landing/pexels-timur-weber-8560013.jpg'
+import Medition from './landing/Embrace Serenity_ Master Emotional Control with Mindfulness.jpeg'
 
 
 export {
+    Medition,
     depressed,
     Sleepless,
     Consulting,

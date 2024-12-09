@@ -9,7 +9,7 @@ import {Bgimg} from '../../../../../assets'
 
 // Program data mapping
 const PROGRAM_DATA_MAP = {
-  dating: "dating",
+  MindfulnessMeditation: "MindfulnessMeditation",
   grief: "Grief",
   self: "Self",
   "kids-family": "kids",
@@ -44,7 +44,10 @@ const ProgramContent = ({ ProgramSectionleft, ProgramSectionRight }) => {
                     <h1>{programData.second[0].h1}</h1>
                     <h5>{programData.second[0].h5}</h5>
                     <p>{programData.second[0].p}</p>
+                    <div style={{width:'500px'}}>
                     <img src={programData.second[0].img} alt="" />
+
+                    </div>
                   </div>
 
                   <div className="second">

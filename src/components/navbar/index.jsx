@@ -57,7 +57,7 @@ const Navbar = () => {
             >
               <MenuLink as="span">Programs</MenuLink>
               <SubMenu isSubMenuOpen={hovered}>
-                <li onClick={() => navigatePage("dating")}>Mindfulness Meditation</li>
+                <li onClick={() => navigatePage("MindfulnessMeditation")}>Mindfulness Meditation</li>
                 <li onClick={() => navigatePage("grief")}>Solution-Focused Brief Therapy</li>
                 <li onClick={() => navigatePage("self")}>Behavioral Issues in Children</li>
                 <li onClick={() => navigatePage("kids-family")}>Learning Disabilities</li>
