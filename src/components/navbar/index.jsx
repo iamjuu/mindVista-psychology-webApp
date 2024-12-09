@@ -57,25 +57,19 @@ const Navbar = () => {
             >
               <MenuLink as="span">Programs</MenuLink>
               <SubMenu isSubMenuOpen={hovered}>
-                <li onClick={() => navigatePage("dating")}>
-                  Dating & Relationships
-                </li>
-                <li onClick={() => navigatePage("grief")}>
-                  Grief & Loss Counseling
-                </li>
-                <li onClick={() => navigatePage("self")}>
-                  Self-Esteem Therapy
-                </li>
-                <li onClick={() => navigatePage("kids-family")}>
-                  Kids & Family
-                </li>
-                <li onClick={() => navigatePage("future-planning")}>
-                  Life & Future Planning
-                </li>
-                <li onClick={() => navigatePage("old-age")}>Old Age Therapy</li>
+                <li onClick={() => navigatePage("dating")}>Mindfulness Meditation</li>
+                <li onClick={() => navigatePage("grief")}>Solution-Focused Brief Therapy</li>
+                <li onClick={() => navigatePage("self")}>Behavioral Issues in Children</li>
+                <li onClick={() => navigatePage("kids-family")}>Learning Disabilities</li>
+                <li onClick={() => navigatePage("future-planning")}>Career Coaching for Young Adults</li>
+                <li onClick={() => navigatePage("stress-management")}>Stress Management Therapy</li>
+                <li onClick={() => navigatePage("old-age")}>Parenting Counseling</li>
+                <li onClick={() => navigatePage("old-age")}>Financial Stress Counseling</li>
+                <li onClick={() => navigatePage("eco-therapy")}>Eco Therapy</li>
+                <li onClick={() => navigatePage("art-music-therapy")}>Art or Music Therapy</li>
               </SubMenu>
             </div>
-            {isOpen && <LogOutbtn btnName={'register'}  bg={'#A57355'} />}
+            {isOpen && <LogOutbtn btnName={"register"} bg={"#A57355"} />}
           </Menu>
         </LinksDiv>
       </NavContainer>
