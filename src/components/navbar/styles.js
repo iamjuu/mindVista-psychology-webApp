@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import styled, { keyframes } from 'styled-components';
 
@@ -9,7 +8,6 @@ export const Nav = styled.nav`
   justify-content: center;
   padding: 10px;
   position: fixed;
-
   z-index: 15;
   align-items: center;
 `;
@@ -30,6 +28,7 @@ export const LogoContainer = styled(Link)`
   font-size: 1.5rem;
   text-decoration: none;
   color: #dcdada;
+
   img {
     width: 6%;
     border-radius: 50%;
@@ -52,7 +51,6 @@ export const Hamburger = styled.div`
     display: block;
   }
 `;
-// **************
 
 export const Menu = styled.div`
   display: flex;
@@ -70,11 +68,6 @@ export const Menu = styled.div`
     width: 100%;
     z-index: 10;
   }
-
-  /* Hover effect for Menu, if needed in the future */
-  &:hover {
-    /* color: white; */
-  }
 `;
 
 export const MenuLink = styled(Link)`
@@ -82,7 +75,6 @@ export const MenuLink = styled(Link)`
   font-family: sans-serif;
   color: black;
   position: relative;
-  /* padding: 0.5rem; */
 
   &:hover {
     color: #a57355;
@@ -93,15 +85,14 @@ export const SubMenu = styled.ul`
   display: ${({ isSubMenuOpen }) => (isSubMenuOpen ? "block" : "none")};
   position: absolute;
   top: 100%;
-  left: 0;
+  /* left: 0; */
+  right: 10px;
   background-color: white;
   padding: 0;
   margin: 0;
   list-style: none;
-  border: 1px solid #ddd;
-  width: 200px;
+  /* width: 200px; */
   z-index: 10;
-
 
   li {
     padding: 0.5rem;
