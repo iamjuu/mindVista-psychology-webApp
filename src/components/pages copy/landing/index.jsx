@@ -2,7 +2,7 @@ import React, { useEffect, lazy, Suspense } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
 import Navbar from "../../navbar";
-// import Loader from "../../../common/Loader"; // Create a simple Loader component
+import Loader from "../../../common/Loader"; // Create a simple Loader component
 
 // const Bgsction = lazy(() => import("../landing/Setions/bgSection"));
 // const BgsectionOne = lazy(() => import("../landing/Setions/sectionOne"));

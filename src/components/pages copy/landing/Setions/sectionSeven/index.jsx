@@ -1,13 +1,12 @@
 import React from 'react';
 import {Container,ContainerWrap} from '../../Style'
-// import {AnimatedTestimonialsDemo} from '../../../../core/clickingCard'
+import {AnimatedTestimonialsDemo} from '../../../../core/clickingCard'
 
 const index = () => {
   return (
     <Container>
         <ContainerWrap>
-          <h1>xcvc</h1>
-{/* <AnimatedTestimonialsDemo/> */}
+<AnimatedTestimonialsDemo/>
         </ContainerWrap>
     </Container>
   );

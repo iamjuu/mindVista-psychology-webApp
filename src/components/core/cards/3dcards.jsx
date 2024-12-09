@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom"; // Import Link from react-router-dom
-import { CardBody, CardContainer, CardItem } from "../../../components/ui/3dcards/3dcards";
+import { CardBody, CardContainer, CardItem } from "../../../components/ui/cards/3dcards";
 
 export function ThreeDCardDemo({ h1, img, p, link }) {
   return (

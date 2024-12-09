@@ -5,7 +5,7 @@ import Bgsection from "./sections/sectionBg";
 import SectionOne from "./sections/sectionOne";
 import SectionTwo from "./sections/sectiontwo";
 import SectionThree from "./sections/sectionThree";
-// import SectionFour from "./sections/sectionFour";
+import SectionFour from "./sections/sectionFour";
 
 const Index = () => {
   useEffect(() => {
@@ -33,7 +33,7 @@ const Index = () => {
         <SectionThree />
       </div>
       <div data-aos="zoom-in">
-        {/* <SectionFour /> */}
+        <SectionFour />
       </div>
       <Footer />
     </>

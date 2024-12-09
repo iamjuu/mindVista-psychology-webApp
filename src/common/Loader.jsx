@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
 const SpinnerWrapper = styled.div`
@@ -53,30 +53,27 @@ const lerpColor = (x, x0, x1, y0, y1) => {
 
 const Spinner = () => {
   const [stroke, setStroke] = useState("#ededed");
-  const [offset, setOffset] = useState(445);
-  const animStartRef = useRef(null);
-  const animIdRef = useRef(null);
+  const [offset, setOffset] = useState(0);
 
   useEffect(() => {
-    animStartRef.current = Date.now();
-    const animate = () => {
-      const pathWidth = 372;
-      const speed = 2;
-      const colorTable = [
-        [0.0, 0xf15a31],
-        [0.2, 0xffd31b],
-        [0.33, 0xa6ce42],
-        [0.4, 0x007ac1],
-        [0.45, 0x007ac1],
-        [0.55, 0x007ac1],
-        [0.6, 0x007ac1],
-        [0.67, 0xa6ce42],
-        [0.8, 0xffd31b],
-        [1.0, 0xf15a31],
-      ];
+    const pathWidth = 372;
+    const speed = 5;
+    const colorTable = [
+      [0.0, 0xf15a31],
+      [0.2, 0xffd31b],
+      [0.33, 0xa6ce42],
+      [0.4, 0x007ac1],
+      [0.45, 0x007ac1],
+      [0.55, 0x007ac1],
+      [0.6, 0x007ac1],
+      [0.67, 0xa6ce42],
+      [0.8, 0xffd31b],
+      [1.0, 0xf15a31],
+    ];
 
-      const currentAnim = Date.now();
-      const t = ((currentAnim - animStartRef.current) % 6000) / 6000;
+    let progress = 0;
+    const interval = setInterval(() => {
+      const t = (progress % 100) / 100; // Normalized time (0 to 1 over 1 second)
       const colorValue = lerpColor(t, 0, 1, colorTable[0][1], colorTable[colorTable.length - 1][1]);
 
       let newOffset = offset - speed;
@@ -85,13 +82,11 @@ const Spinner = () => {
       setStroke(colorValue);
       setOffset(newOffset);
 
-      animIdRef.current = requestAnimationFrame(animate);
-    };
-
-    animIdRef.current = requestAnimationFrame(animate);
+      progress += 5; // Increment progress
+    }, 10); // 10ms for smooth animation
 
     return () => {
-      cancelAnimationFrame(animIdRef.current);
+      clearInterval(interval);
     };
   }, [offset]);
 
