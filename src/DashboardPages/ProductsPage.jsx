@@ -1,12 +1,12 @@
 import { motion } from "framer-motion";
 
-import Header from "../components/common/Header";
-import StatCard from "../components/common/StatCard";
+import Header from "../components/DashBoard/common/Header";
+import StatCard from "../components/DashBoard/common/StatCard";
 
 import { AlertTriangle, DollarSign, Package, TrendingUp } from "lucide-react";
-import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import SalesTrendChart from "../components/products/SalesTrendChart";
-import ProductsTable from "../components/products/ProductsTable";
+import CategoryDistributionChart from "../components/DashBoard/overview/CategoryDistributionChart";
+import SalesTrendChart from "../components/DashBoard/products/SalesTrendChart";
+import ProductsTable from "../components/DashBoard/products/ProductsTable";
 
 const ProductsPage = () => {
 	return (

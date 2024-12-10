@@ -6,6 +6,7 @@ const Landing = React.lazy(() => import("../pages/landing"));
 const About = React.lazy(() => import("../pages/about"));
 const Contact = React.lazy(() => import("../pages/contact"));
 const ProgramContent = React.lazy(() => import("../pages/programs/sections/sectionOne"));
+const UserProfile = React.lazy(()=> import('../pages/profile'))
 
 // Loader component
 import Loader from '../common/Loader';
@@ -30,6 +31,8 @@ function UserRouter() {
               />
             }
           />
+                    <Route path="/profile" element={<UserProfile />} />
+
         </Routes>
       </Suspense>
     </Router>

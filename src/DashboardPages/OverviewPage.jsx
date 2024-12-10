@@ -1,11 +1,11 @@
 import { BarChart2, ShoppingBag, Users, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
-import Header from "../components/common/Header";
-import StatCard from "../components/common/StatCard";
-import SalesOverviewChart from "../components/overview/SalesOverviewChart";
-import CategoryDistributionChart from "../components/overview/CategoryDistributionChart";
-import SalesChannelChart from "../components/overview/SalesChannelChart";
+import Header from "../components/DashBoard/common/Header";
+import StatCard from "../components/DashBoard/common/StatCard";
+import SalesOverviewChart from "../components/DashBoard/overview/SalesOverviewChart";
+import CategoryDistributionChart from "../components/DashBoard/overview/CategoryDistributionChart";
+import SalesChannelChart from "../components/DashBoard/overview/SalesChannelChart";
 
 const OverviewPage = () => {
 	return (
