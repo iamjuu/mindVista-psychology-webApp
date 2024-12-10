@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import AOS from 'aos';
 import { Container, ContainerWrap } from '../../styles.js';
-import {ContectSectionFour } from '../../../../../constant/datas.js';
+import {ContectSectionFour } from '../../../../constant/datas.js';
 import { Main } from './style.js';
-import Btn from '../../../../core/button';
+import Btn from '../../../../components/core/button';
 
 const Index = () => {
   useEffect(() => {

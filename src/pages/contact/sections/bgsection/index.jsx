@@ -1,6 +1,6 @@
 
-import { Container, ContainerWrap, BgContainer } from "../../../../pages/landing/Style";
-import { Psychologist,Consulting } from "../../../../../assets";
+import { Container, ContainerWrap, BgContainer } from "../../../landing/Style";
+import { Consulting } from "../../../../assets";
 import { Main } from "./style";
 
 const index = () => {

@@ -10,7 +10,7 @@ import {
   FormInput,
   FormButton,
 } from "./style";
-import { Bgimg } from "../../../../../assets";
+import { Bgimg } from "../../../../assets";
 
 const Index = () => {
   const [formData, setFormData] = useState({
