@@ -2,7 +2,7 @@
 import React from 'react';
 import{Main} from './style'
 import { Container,BgContainer,ContainerWrap } from '../../styles';
-import { Psychologist } from "../../../../../assets";
+import { Psychologist } from "../../../../constant/datas";
 
 
 const index = () => {
