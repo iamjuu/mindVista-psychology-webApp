@@ -5,13 +5,12 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 const Landing = React.lazy(() => import("../pages/landing"));
 const About = React.lazy(() => import("../pages/about"));
 const Contact = React.lazy(() => import("../pages/contact"));
-const ProgramContent = React.lazy(() => import("../pages/programs/sections/sectionOne"));
-const UserProfile = React.lazy(()=> import('../pages/profile'))
-
-// Loader component
-import Loader from '../common/Loader';
-
-// Mock Data for Props
+const ProgramContent = React.lazy(() =>import("../pages/programs/sections/sectionOne"));
+const UserProfile = React.lazy(() => import("../pages/profile"));
+import RegisterForm from "../components/registerForm";
+import Signup from "../pages/signup";
+import Login from "../pages/login"
+import Loader from "../common/Loader";
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 
 function UserRouter() {
@@ -31,7 +30,10 @@ function UserRouter() {
               />
             }
           />
-                    <Route path="/profile" element={<UserProfile />} />
+          <Route path="/profile" element={<UserProfile />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/login" element={<Login />} />
 
         </Routes>
       </Suspense>

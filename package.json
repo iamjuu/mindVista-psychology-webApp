@@ -18,7 +18,7 @@
     "@react-three/drei": "^9.115.0",
     "@tabler/icons-react": "^3.22.0",
     "aos": "^2.3.4",
-    "axios": "^1.7.7",
+    "axios": "^1.7.9",
     "clsx": "^2.1.1",
     "framer-motion": "^11.13.3",
     "lucide-react": "^0.454.0",
