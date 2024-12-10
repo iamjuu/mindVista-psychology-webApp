@@ -5,8 +5,16 @@ import { Main } from "./style";
 import { Data } from '../../../../constant/datas';
 import { Bgimg } from '../../../../assets';
 import Regbtn from '../../../../components/core/button'; 
+import {useNavigate} from 'react-router-dom'
 
 const BgSection = () => {
+  const Navigate = useNavigate
+
+   const Register = ()=>{
+    Navigate('/register')
+    console.log('dsgsd');
+    
+   }
   return (
     <Container>
       <BgContainer>
@@ -34,7 +42,7 @@ const BgSection = () => {
             </h1>
             <div className="btn-container">
               <Link to="/register">
-                <Regbtn bg="white" color="brown" hoverBg="pink" btnName="Book Now" />
+                <Regbtn bg="white" color="brown" hoverBg="pink"  onClick={Register} btnName="Book Now" />
               </Link>
               <Regbtn bg="brown" color="white" hoverBg="pink" btnName="About me" />
             </div>
