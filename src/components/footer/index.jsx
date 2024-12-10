@@ -1,13 +1,12 @@
 import React from "react";
 import AOS from "aos";
-import { Container, ContainerWrap } from "../pages/landing/Style";
+import { Container, ContainerWrap } from "../../pages/landing/Style";
 import { Main,  } from "./style";
 import { SiWhatsapp } from "react-icons/si";
 import { LuFacebook } from "react-icons/lu";
 import { FaInstagram } from "react-icons/fa";
 import { CiLinkedin } from "react-icons/ci";
 import { Logo } from "../../assets";
-import { useNavigate } from "react-router-dom";
 
 const Index = () => {
 
