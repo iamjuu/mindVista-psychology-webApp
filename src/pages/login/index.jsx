@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios'; // Import Axios
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LoginWrapper = styled.div`
   max-width: 400px;
@@ -70,7 +70,7 @@ const Message = styled.p`
 `;
 
 const Login = () => {
-    const Navigate = useNavigate
+  const navigate = useNavigate(); // Correctly call `useNavigate` hook
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -89,7 +89,9 @@ const Login = () => {
       const response = await axios.post('http://localhost:3000/login', { email, password });
   
       if (response.status === 200) {
-        Navigate('/register')
+        console.log('success');
+        
+        navigate('/register')
         setMessage('Login successful!');
         setIsError(false);
         console.log('User logged in:', response.data);
@@ -97,13 +99,15 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response?.status === 404) {
+        console.log('fail');
+        
         setMessage('Email not registered. Redirecting to signup...');
         setIsError(true);
   
         // Redirect to the signup page after a delay
         setTimeout(() => {
           window.location.href = '/signup'; // Adjust the path as needed
-        }, 3000);
+        }, 2000);
       } else {
         setMessage(error.response?.data?.message || 'An error occurred. Please try again.');
         setIsError(true);
@@ -133,6 +137,9 @@ const Login = () => {
           />
         </InputWrapper>
         <Button type="submit">Login</Button>
+<Link to="/signup">
+      <Label> signup </Label>
+</Link>
       </Form>
       {message && <Message error={isError}>{message}</Message>}
     </LoginWrapper>

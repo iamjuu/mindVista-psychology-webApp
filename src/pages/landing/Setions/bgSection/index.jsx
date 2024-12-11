@@ -1,20 +1,19 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
 import { Data } from '../../../../constant/datas';
 import { Bgimg } from '../../../../assets';
 import Regbtn from '../../../../components/core/button'; 
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
 const BgSection = () => {
-  const Navigate = useNavigate
+  const navigate = useNavigate(); // Correctly call `useNavigate` as a function
 
-   const Register = ()=>{
-    Navigate('/register')
-    console.log('dsgsd');
-    
-   }
+  const handleRegister = () => {
+    navigate('/login'); // Use `navigate` function here
+    console.log('Navigating to login');
+  };
+
   return (
     <Container>
       <BgContainer>
@@ -41,10 +40,19 @@ const BgSection = () => {
               {Data.h1}
             </h1>
             <div className="btn-container">
-              <Link to="/register">
-                <Regbtn bg="white" color="brown" hoverBg="pink"  onClick={Register} btnName="Book Now" />
-              </Link>
-              <Regbtn bg="brown" color="white" hoverBg="pink" btnName="About me" />
+              <Regbtn 
+                bg="white" 
+                color="brown" 
+                hoverBg="pink" 
+                onClick={handleRegister} // Call the function correctly
+                btnName="Book Now" 
+              />
+              <Regbtn 
+                bg="brown" 
+                color="white" 
+                hoverBg="pink" 
+                btnName="About me" 
+              />
             </div>
           </Main>
         </ContainerWrap>

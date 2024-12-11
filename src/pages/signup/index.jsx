@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
-import Swal from 'sweetalert2'; // SweetAlert2 for feedback
+import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
+import {Link} from 'react-router-dom'
 
 const FormContainer = styled.form`
   width: 100%;
@@ -52,7 +53,7 @@ const Button = styled.button`
 `;
 
 function SignupForm() {
-    const Navigate = useNavigate
+  const navigate = useNavigate(); // Fixed here
   const [formData, setFormData] = useState({
     username: '',
     email: '',
@@ -102,8 +103,9 @@ function SignupForm() {
         password: '',
         confirmPassword: '',
       });
-      
-      Navigate('/login')
+
+      // Navigate to login page
+      navigate('/login');
     } catch (error) {
       Swal.fire({
         icon: 'error',
@@ -166,6 +168,9 @@ function SignupForm() {
       </FormGroup>
 
       <Button type="submit">Signup</Button>
+      <Link to="/login">
+      <Label> login </Label>
+</Link>
     </FormContainer>
   );
 }
