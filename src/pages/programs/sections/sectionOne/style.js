@@ -65,11 +65,13 @@ export const Left = styled.div`
       width: 100%;
       gap: 10px;
       .img {
-        width: 49%;
+        width: 100%;
+
         @media (max-width: 768px) {
           width: 100%;
         }
       }
+
       .content {
         width: 49%;
         @media (max-width: 768px) {

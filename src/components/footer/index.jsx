@@ -77,7 +77,7 @@ const Index = () => {
           <div className="four">
             <h1>Book Appointment</h1>
             <div>
-              <SiWhatsapp />
+              {/* <SiWhatsapp /> */}
               <div>
                 <p>LET'S CHAT</p> <h2>702-571-5250</h2>
               </div>

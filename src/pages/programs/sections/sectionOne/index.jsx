@@ -44,7 +44,7 @@ const ProgramContent = ({ ProgramSectionleft, ProgramSectionRight }) => {
                     <h1>{programData.second[0].h1}</h1>
                     <h5>{programData.second[0].h5}</h5>
                     <p>{programData.second[0].p}</p>
-                    <div style={{width:'500px'}}>
+                    <div style={{maxWidth:'500px'}}>
                     <img src={programData.second[0].img} alt="" />
 
                     </div>
