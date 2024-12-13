@@ -1,7 +1,7 @@
-import axios from 'axios';
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import styled from 'styled-components';
-import { useParams } from 'react-router-dom'; // If using React Router
+import { useParams } from 'react-router-dom';
 
 const TableContainer = styled.div`
   width: 100%;
@@ -19,8 +19,7 @@ const Table = styled.table`
   border-collapse: collapse;
   text-align: left;
 
-  th,
-  td {
+  th, td {
     padding: 12px 15px;
     border-bottom: 1px solid #ddd;
   }
@@ -36,8 +35,7 @@ const Table = styled.table`
   }
 
   @media (max-width: 600px) {
-    th,
-    td {
+    th, td {
       padding: 10px 8px;
       font-size: 14px;
     }
@@ -75,30 +73,30 @@ const CheckoutButton = styled.button`
 `;
 
 function DetailsPage() {
-  const [form, setForm] = useState(null);
-  const { id } = useParams(); // Get ID from route params
+  const [formData, setFormData] = useState(null);
+  const [user, setUser] = useState(null);
+  const { id } = useParams(); 
 
   useEffect(() => {
     const fetchFormData = async () => {
+
       try {
-        const response = await axios.get(`http://localhost:3000/formdata/${id}`);
+        const response = await axios.get(`http://localhost:3000/formdata/${id}`, {
+        });
         console.log(response.data, 'Data fetched by ID');
-        setForm(response.data);
+        setFormData(response.data.formData);
+        setUser(response.data.user);
       } catch (error) {
-        console.error('Error fetching form data by ID:', error);
+        console.error('Error fetching form data:', error);
       }
     };
-
-    if (id) fetchFormData(); 
+    fetchFormData()
   }, [id]);
-
-  if (!form) {
-    return <p>Loading...</p>; 
-  }
+  
 
   return (
     <TableContainer>
-      <Title>Form Details</Title>
+      <Title>Form and User Details</Title>
       <Table>
         <thead>
           <tr>
@@ -107,33 +105,44 @@ function DetailsPage() {
           </tr>
         </thead>
         <tbody>
+          {/* Display user information */}
           <tr>
-            <td>Name</td>
-            <td>{form.name}</td>
+            <td>Username</td>
+            <td></td>
           </tr>
           <tr>
             <td>Email</td>
-            <td>{form.email}</td>
+            {/* <td>{user.email}</td> */}
+          </tr>
+
+          {/* Display form information */}
+          <tr>
+            <td>Name</td>
+            <td>{formData.name}</td>
+          </tr>
+          <tr>
+            <td>Email</td>
+            <td>{formData.email}</td>
           </tr>
           <tr>
             <td>Phone Number</td>
-            <td>{form.number}</td>
+            <td>{formData.number}</td>
           </tr>
           <tr>
             <td>Location</td>
-            <td>{form.location}</td>
+            <td>{formData.location}</td>
           </tr>
           <tr>
             <td>Age</td>
-            <td>{form.age}</td>
+            <td>{formData.age}</td>
           </tr>
           <tr>
             <td>Slot</td>
-            <td>{form.slot}</td>
+            <td>{formData.slot}</td>
           </tr>
           <tr>
             <td>Date</td>
-            <td>{form.date}</td>
+            <td>{formData.date}</td>
           </tr>
         </tbody>
       </Table>
