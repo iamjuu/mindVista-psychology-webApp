@@ -11,6 +11,7 @@ import RegisterForm from "../components/registerForm";
 import Signup from "../pages/signup";
 import Login from "../pages/login"
 import Loader from "../common/Loader";
+import DetailsPage from "../pages/details page"
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 
 function UserRouter() {
@@ -31,9 +32,10 @@ function UserRouter() {
             }
           />
           <Route path="/profile" element={<UserProfile />} />
-          <Route path="/register" element={<RegisterForm />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<RegisterForm />} />
+          <Route path="/details/:id" element={<DetailsPage />} />
 
         </Routes>
       </Suspense>

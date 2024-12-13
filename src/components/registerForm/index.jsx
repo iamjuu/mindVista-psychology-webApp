@@ -1,62 +1,22 @@
 import React, { useState } from 'react';
-import styled from 'styled-components';
 import axios from 'axios';
-import Swal from 'sweetalert2'; // Import SweetAlert2
+import Swal from 'sweetalert2';
+import { useNavigate } from 'react-router-dom';
+import {jwtDecode} from "jwt-decode";
 
-const FormContainer = styled.form`
-  width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-`;
 
-const FormGroup = styled.div`
-  margin-bottom: 15px;
-`;
 
-const Label = styled.label`
-  display: block;
-  font-size: 14px;
-  color: #333;
-  margin-bottom: 5px;
-`;
-
-const Input = styled.input`
-  width: 100%;
-  padding: 10px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  &:focus {
-    border-color: #4CAF50;
-    outline: none;
-  }
-`;
-
-const Button = styled.button`
-  background-color: #4CAF50;
-  color: white;
-  padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  width: 100%;
-  &:hover {
-    background-color: #45a049;
-  }
-`;
+import { Button, FormContainer, FormGroup, Input, Label, Select } from './style';
 
 function Form() {
+  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     number: '',
     location: '',
     age: '5',
+    slot: '10:00 AM', // Default slot value
     time: '',
     date: ''
   });
@@ -74,6 +34,7 @@ function Form() {
 
     try {
       const response = await axios.post('http://localhost:3000/register', formData, {
+        
         headers: {
           'Content-Type': 'application/json',
         },
@@ -87,6 +48,11 @@ function Form() {
       });
 
       console.log('Form submitted successfully:', response.data);
+      const  userid = localStorage.getItem("userId")
+      
+console.log("oh yeah baby",userid)
+      // Navigate to the details page and pass the userId through URL
+      Navigate(`/details/${userid}`); 
     } catch (error) {
       // Show SweetAlert on error
       Swal.fire({
@@ -135,6 +101,24 @@ function Form() {
           onChange={handleChange}
           required
         />
+      </FormGroup>
+
+      <FormGroup>
+        <Label htmlFor="slot">Slot:</Label>
+        <Select
+          id="slot"
+          name="slot"
+          value={formData.slot}
+          onChange={handleChange}
+          required
+        >
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="01:00 PM">01:00 PM</option>
+          <option value="02:00 PM">02:00 PM</option>
+          <option value="03:00 PM">03:00 PM</option>
+        </Select>
       </FormGroup>
 
       <FormGroup>

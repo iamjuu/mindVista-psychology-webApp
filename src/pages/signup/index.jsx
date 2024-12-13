@@ -68,10 +68,9 @@ function SignupForm() {
       [name]: value,
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       Swal.fire({
@@ -81,7 +80,7 @@ function SignupForm() {
       });
       return;
     }
-
+  
     // Sending form data to the server
     try {
       const response = await axios.post('http://localhost:3000/signup', formData, {
@@ -89,13 +88,19 @@ function SignupForm() {
           'Content-Type': 'application/json',
         },
       });
-
+  
+      // Store token in localStorage
+      if (response.data.token) {
+        localStorage.setItem('token', response.data.token);
+        localStorage.setItem('userId', response.data.userId); // Optional, if needed
+      }
+  
       Swal.fire({
         icon: 'success',
         title: 'Signup Successful',
         text: response.data.message || 'You have signed up successfully!',
       });
-
+  
       // Clear the form
       setFormData({
         username: '',
@@ -103,8 +108,8 @@ function SignupForm() {
         password: '',
         confirmPassword: '',
       });
-
-      // Navigate to login page
+  
+      // Navigate to login page or home
       navigate('/login');
     } catch (error) {
       Swal.fire({
@@ -114,7 +119,7 @@ function SignupForm() {
       });
     }
   };
-
+  
   return (
     <FormContainer onSubmit={handleSubmit}>
       <h2>Signup</h2>

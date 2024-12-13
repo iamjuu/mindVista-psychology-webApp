@@ -10,9 +10,17 @@ const BgSection = () => {
   const navigate = useNavigate(); // Correctly call `useNavigate` as a function
 
   const handleRegister = () => {
-    navigate('/login'); // Use `navigate` function here
-    console.log('Navigating to login');
+    const token = localStorage.getItem('token'); // Check if token exists in localStorage
+  
+    if (token) {
+      console.log('Token found:', token);
+      navigate('/register'); // Navigate to /register if the token is present
+    } else {
+      console.log('No token found. Navigating to login.');
+      navigate('/login'); // Navigate to /login if the token is absent
+    }
   };
+  
 
   return (
     <Container>
