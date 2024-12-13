@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import Swal from 'sweetalert2'; // Import SweetAlert2
+import { useNavigate } from 'react-router-dom';
 
 const FormContainer = styled.form`
   width: 100%;
@@ -36,6 +37,18 @@ const Input = styled.input`
   }
 `;
 
+const Select = styled.select`
+  width: 100%;
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  &:focus {
+    border-color: #4CAF50;
+    outline: none;
+  }
+`;
+
 const Button = styled.button`
   background-color: #4CAF50;
   color: white;
@@ -51,12 +64,14 @@ const Button = styled.button`
 `;
 
 function Form() {
+  const Navigate = useNavigate()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     number: '',
     location: '',
     age: '5',
+    slot: '10:00 AM', // Default slot value
     time: '',
     date: ''
   });
@@ -87,6 +102,7 @@ function Form() {
       });
 
       console.log('Form submitted successfully:', response.data);
+      Navigate('/details')
     } catch (error) {
       // Show SweetAlert on error
       Swal.fire({
@@ -135,6 +151,24 @@ function Form() {
           onChange={handleChange}
           required
         />
+      </FormGroup>
+
+      <FormGroup>
+        <Label htmlFor="slot">Slot:</Label>
+        <Select
+          id="slot"
+          name="slot"
+          value={formData.slot}
+          onChange={handleChange}
+          required
+        >
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="01:00 PM">01:00 PM</option>
+          <option value="02:00 PM">02:00 PM</option>
+          <option value="03:00 PM">03:00 PM</option>
+        </Select>
       </FormGroup>
 
       <FormGroup>
