@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
 import { Data } from '../../../../constant/datas';
@@ -44,7 +43,7 @@ const BgSection = () => {
         <ContainerWrap>
           <Main>
             <p>{Data.p}</p>
-            <h1 style={{ color: 'white', fontFamily: "monospace" }}>
+            <h1 style={{ color: 'white', fontSize:'22px' ,marginTop:'200px', fontFamily: "monospace" }}>
               {Data.h1}
             </h1>
             <div className="btn-container">

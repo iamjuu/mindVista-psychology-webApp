@@ -16,7 +16,7 @@ import LogOutbtn from "../core/button/";
 import { Logo } from "../../assets/";
 
 const Navbar = () => {
-  const [isOpen, setIsOpen] = useState(false); // For mobile menu toggle
+  const [isOpen, setIsOpen] = useState(false); 
   const [hovered, setHovered] = useState(false); // For submenu hover control
   const navigate = useNavigate();
 

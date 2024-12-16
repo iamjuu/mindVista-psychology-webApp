@@ -17,7 +17,6 @@ function Form() {
     location: '',
     age: '5',
     slot: '10:00 AM', // Default slot value
-    time: '',
     date: ''
   });
 
@@ -144,19 +143,6 @@ console.log("oh yeah baby",userid)
           required
         />
       </FormGroup>
-
-      <FormGroup>
-        <Label htmlFor="time">Time:</Label>
-        <Input
-          type="time"
-          id="time"
-          name="time"
-          value={formData.time}
-          onChange={handleChange}
-          required
-        />
-      </FormGroup>
-
       <FormGroup>
         <Label htmlFor="date">Date:</Label>
         <Input

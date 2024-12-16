@@ -76,23 +76,24 @@ function DetailsPage() {
   const [formData, setFormData] = useState(null);
   const [user, setUser] = useState(null);
   const { id } = useParams(); 
-
   useEffect(() => {
     const fetchFormData = async () => {
-
       try {
-        const response = await axios.get(`http://localhost:3000/formdata/${id}`, {
-        });
-        console.log(response.data, 'Data fetched by ID');
-        setFormData(response.data.formData);
-        setUser(response.data.user);
+        if (!id) {
+          console.error('No ID provided');
+          return;
+        }
+
+        const response = await axios.get(`http://localhost:3000/formdata/${id}`);
+        console.log(response.data.userData, 'Data fetched by ID');
+
       } catch (error) {
         console.error('Error fetching form data:', error);
       }
     };
-    fetchFormData()
+
+    fetchFormData();
   }, [id]);
-  
 
   return (
     <TableContainer>
@@ -118,31 +119,31 @@ function DetailsPage() {
           {/* Display form information */}
           <tr>
             <td>Name</td>
-            <td>{formData.name}</td>
+            {/* <td>{formData.name}</td> */}
           </tr>
           <tr>
             <td>Email</td>
-            <td>{formData.email}</td>
+            {/* <td>{formData.email}</td> */}
           </tr>
           <tr>
             <td>Phone Number</td>
-            <td>{formData.number}</td>
+            {/* <td>{formData.number}</td> */}
           </tr>
           <tr>
             <td>Location</td>
-            <td>{formData.location}</td>
+            {/* <td>{formData.location}</td> */}
           </tr>
           <tr>
             <td>Age</td>
-            <td>{formData.age}</td>
+            {/* <td>{formData.age}</td> */}
           </tr>
           <tr>
             <td>Slot</td>
-            <td>{formData.slot}</td>
+            {/* <td>{formData.slot}</td> */}
           </tr>
           <tr>
             <td>Date</td>
-            <td>{formData.date}</td>
+            {/* <td>{formData.date}</td> */}
           </tr>
         </tbody>
       </Table>

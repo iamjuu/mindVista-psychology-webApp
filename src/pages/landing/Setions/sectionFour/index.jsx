@@ -1,5 +1,3 @@
-import React, { useEffect } from 'react';
-import AOS from 'aos';
 import { Container, ContainerWrap } from '../../Style';
 import { SectionFour } from '../../../../constant/datas';
 import { Main } from './style';
@@ -12,23 +10,35 @@ const Index = () => {
     <Container>
       <ContainerWrap>
         <Main>
-          <div className="second" >
-            <div className="right" >
-              <h5>{SectionFour.h5}</h5>
-              <h1>
+        <div className="second">
+            {/* <div className="left">
+              <img src={SectionFour.img} alt="" />
+            </div> */}
+            <div className="right">
+              <h5 >{SectionFour.h5}</h5>
+              <h1 style={{fontSize:'1.5rem',fontFamily:'monospace'}}>
                 {SectionFour.h1}
-                <br />
-                {SectionFour.h1Break}
+
               </h1>
-              <h3>{SectionFour.h3}</h3>
+              <p style={{fontWeight:'bold'}}>
+                {SectionFour.h3}
+
+              </p>
               <p>{SectionFour.p}</p>
-              <div style={{ display: 'flex', gap: '20px', justifyContent: 'center', alignItems: 'center' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: '20px',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
                 <h4>{SectionFour.h4}</h4>
-                <Btn btnName="About" color="white" bg="#a57355" width="130px" />
+                <Btn btnName={'Contact '} color={'white'} bg={'#a57355'} width={'130px'} />
               </div>
             </div>
-            <div className="left" >
-              <img src={SectionFour.img} alt="Section Four" />
+               <div className="left">
+              <img src={SectionFour.img} alt="" />
             </div>
           </div>
           <div className="third"></div>
