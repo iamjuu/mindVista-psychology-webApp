@@ -1,11 +1,8 @@
 // SectionTwo.js
-import React, { useEffect } from "react";
 import { Container, ContainerWrap, FreeContainer } from "../../Style";
 import { Main } from "./style";
 import { sectionTwoData } from '../../../../constant/datas'
 import Btn from '../../../../components/core/button';
-import AOS from 'aos';
-import 'aos/dist/aos.css';
 
 const SectionTwo = () => {
 
@@ -21,7 +18,7 @@ const SectionTwo = () => {
             <Btn     color={'white'} bg={'#a57355'}  fontsize={'.9rem'} btnName={'FIND PROGRAMS'} />
           </div>
           <div className="right" >
-          {sectionTwoData.right.map((data, index) => (
+          {sectionTwoData.right.map((data) => (
   <FreeContainer
     width={'290px'}
     key={data.id}

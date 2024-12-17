@@ -1,4 +1,4 @@
-import React, { useEffect, lazy, Suspense } from "react";
+import { useEffect} from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
 import Navbar from "../../components/navbar";
@@ -23,6 +23,7 @@ const Index = () => {
   return (
     <>
         <Navbar />
+        
         <div data-aos="fade-in">
           <Bgsction />
         </div>
@@ -35,9 +36,7 @@ const Index = () => {
         <div data-aos="fade-up">
           <SectionThree />
         </div>
-        <div data-aos="zoom-in">
-          <SectionSeven />
-        </div>
+       
         <div data-aos="fade-up">
           <SectionFour />
         </div>
@@ -48,7 +47,7 @@ const Index = () => {
           <SectionSix />
         </div>
         <div data-aos="fade-in">
-          <Footer />
+          {/* <Footer /> */}
         </div>
     </>
   );

@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import styled, { keyframes } from 'styled-components';
+import styled from 'styled-components';
 
 export const Nav = styled.nav`
   background-color: #f3ebe6;
@@ -14,6 +14,7 @@ export const Nav = styled.nav`
 
 export const NavContainer = styled.div`
   display: flex;
+  padding: 10px;
   align-items: center;
   max-width: 1300px;
   width: 100%;
@@ -45,6 +46,7 @@ export const LinksDiv = styled.div`
 
 export const Hamburger = styled.div`
   display: none;
+  margin-left:-50px;
   cursor: pointer;
 
   @media (max-width: 768px) {
@@ -54,18 +56,23 @@ export const Hamburger = styled.div`
 
 export const Menu = styled.div`
   display: flex;
-  padding: 10px;
-  color: #6b6b6b;
+align-items: center;
+padding:5px;
+justify-content: center;
+  // color: #6b6b6b;
   gap: 1rem;
 
   @media (max-width: 768px) {
     display: ${({ isOpen }) => (isOpen ? "flex" : "none")};
+    justify-content: start;
+
     flex-direction: column;
     position: absolute;
-    top: 40px;
-    right: 0;
+    top: 70px;
+    right: 10px;
+
     background: #f3ebe6;
-    width: 100%;
+    width: 60%;
     z-index: 10;
   }
 `;
@@ -85,13 +92,11 @@ export const SubMenu = styled.ul`
   display: ${({ isSubMenuOpen }) => (isSubMenuOpen ? "block" : "none")};
   position: absolute;
   top: 100%;
-  /* left: 0; */
   right: 10px;
   background-color: white;
   padding: 0;
   margin: 0;
   list-style: none;
-  /* width: 200px; */
   z-index: 10;
 
   li {

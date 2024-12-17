@@ -69,7 +69,7 @@ export const Main = styled.div`
       flex-direction: column;
       justify-content: center;
       align-items: center;
-      gap: 20px;
+      gap: 10px;
       padding: 10px;
       font-size: 1.2rem;
       @media (max-width: 1024px) {

@@ -32,9 +32,12 @@ const Index = () => {
               <h1 data-aos="fade-down" data-aos-delay="1000">mindVista</h1>
             </div>
             <div>
+              <p style={{fontSize:'.9rem'}}>
               Being a full-time psychologist, I make my patients feel special so
               they can discuss their problems openly. My goal is to help people
               fighting their fears and life issues.
+              </p>
+        
             </div>
             <div className="icon-div">
               <SiWhatsapp />
@@ -47,22 +50,22 @@ const Index = () => {
           {/* Second Section */}
           <div className="second">
             <h1>Contact Details</h1>
-            <div>
-              <h3>1870 Alpaca Way Irvine, CA 92614. <br /> United States</h3>
-              <h3>
+            <div style={{display:'flex',flexDirection:'column',gap:'20px'}}>
+              <p>1870 Alpaca Way Irvine, CA 92614. <br /> United States</p>
+              <p>
                 Phone: +1 921 124 9220 <br />
                 Mail: info@psychare.com
-              </h3>
-              <h3>
+              </p>
+              <p>
                 Mon - Fri: (9am - 6pm) <br />
                 Sat & Sun: CLOSED
-              </h3>
+              </p>
             </div>
           </div>
 
           {/* Third Section */}
           <div className="third">
-            <h1>My Programs</h1>
+            <h3>My Programs</h3>
             <ul>
               <li>Dating & Relationship</li>
               <li>Grief & Loss Counseling</li>
@@ -75,16 +78,16 @@ const Index = () => {
 
           {/* Fourth Section */}
           <div className="four">
-            <h1>Book Appointment</h1>
+            <p>Book Appointment</p>
             <div>
               {/* <SiWhatsapp /> */}
               <div>
-                <p>LET'S CHAT</p> <h2>702-571-5250</h2>
+                <p>LET'S CHAT</p> <p>702-571-5250</p>
               </div>
             </div>
             <div>
-              <h3>Contact us now for a quote about</h3>
-              <h3>consultation (Available 24/7)</h3>
+              <p>Contact us now for a quote about</p>
+              <p>consultation (Available 24/7)</p>
             </div>
           </div>
         </Main>

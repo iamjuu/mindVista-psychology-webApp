@@ -1,4 +1,3 @@
-import React from 'react';
 import { BgContainer, Container, ContainerWrap } from '../../Style';
 import { Bannar } from '../../../../assets';
 import { Main } from './style';

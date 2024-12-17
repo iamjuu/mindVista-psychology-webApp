@@ -17,7 +17,6 @@ function Form() {
     location: '',
     age: '5',
     slot: '10:00 AM', // Default slot value
-    time: '',
     date: ''
   });
 
@@ -31,39 +30,49 @@ function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const response = await axios.post('http://localhost:3000/register', formData, {
-        
         headers: {
           'Content-Type': 'application/json',
         },
       });
-
-      // Show SweetAlert on success
+  
+      // Check if request was successful
       Swal.fire({
         icon: 'success',
         title: 'Success',
         text: 'Form submitted successfully!',
       });
-
+  
       console.log('Form submitted successfully:', response.data);
-      const  userid = localStorage.getItem("userId")
-      
-console.log("oh yeah baby",userid)
-      // Navigate to the details page and pass the userId through URL
-      Navigate(`/details/${userid}`); 
+  
+      // Retrieve userId from localStorage
+      const userId = localStorage.getItem("userId");
+      console.log("Retrieved User ID:", userId);
+  
+      // Navigate to details page
+      Navigate(`/details/${userId}`);
     } catch (error) {
-      // Show SweetAlert on error
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Something went wrong. Please try again!',
-      });
-
+      // Handle error responses
+      if (error.response && error.response.status === 403) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: error.response.data.message || 'Please use a registered email!',
+        });
+      } else {
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'Something went wrong. Please try again!',
+        });
+      }
+  
       console.error('Error during form submission:', error);
     }
   };
+  
 
   return (
     <FormContainer onSubmit={handleSubmit}>
@@ -144,19 +153,6 @@ console.log("oh yeah baby",userid)
           required
         />
       </FormGroup>
-
-      <FormGroup>
-        <Label htmlFor="time">Time:</Label>
-        <Input
-          type="time"
-          id="time"
-          name="time"
-          value={formData.time}
-          onChange={handleChange}
-          required
-        />
-      </FormGroup>
-
       <FormGroup>
         <Label htmlFor="date">Date:</Label>
         <Input

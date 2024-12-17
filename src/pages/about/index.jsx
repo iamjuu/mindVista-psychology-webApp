@@ -28,7 +28,7 @@ const Index = () => {
       <div data-aos="zoom-in">
         {/* <SectionFour /> */}
       </div>
-      <Footer />
+      {/* <Footer /> */}
     </>
   );
 };

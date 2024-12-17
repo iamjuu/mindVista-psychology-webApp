@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, ContainerWrap } from "../../Style";
 import { Main } from "./style";
 import { SectionOne } from '../../../../constant/datas';
@@ -11,9 +10,9 @@ const Section1 = () => {
         <Main>
           <div className="first">
             <div className="left">
-              <div>
-                <h2>{SectionOne.boxOne[0].h2}</h2>
-                <p>{SectionOne.boxOne[0].p}</p>
+              <div >
+                <h2 style={{fontSize:'1.7rem',fontFamily:'cursive'}}> {SectionOne.boxOne[0].h2}</h2>
+                <p  >{SectionOne.boxOne[0].p}</p>
                 <h5>{SectionOne.boxOne[0].h5}</h5>
               </div>
               <div>
@@ -27,16 +26,14 @@ const Section1 = () => {
               </div>
             </div>
             <div className="right">
-              <h1>{SectionOne.boxTwo[0].h1}</h1>
+              <p style={{fontSize:'1.2rem'}}> {SectionOne.boxTwo[0].h1}</p>
               <p>{SectionOne.boxTwo[0].p}</p>
               <hr style={{ width: '170px' }} />
-              <div style={{width:'100%', display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center'}}>
-                <h5>{SectionOne.boxTwo[0].h5}</h5>
-                <p>{SectionOne.boxTwo[0].break}</p>
+              <div style={{width:'100%', fontSize:'1.3rem',display:'flex',flexDirection:'column', justifyContent:'center',alignItems:'center'}}>
+                <p style={{color:'#2C1708'}}>{SectionOne.boxTwo[0].h5}</p>
+                <p style={{fontSize:'1rem'}}>{SectionOne.boxTwo[0].break}</p>
               </div>
-              {/* <h5>
-                {SectionOne.boxTwo[0].h5} <br /> {SectionOne.boxTwo[0].break}
-              </h5> */}
+           
             </div>
           </div>
 
@@ -45,13 +42,15 @@ const Section1 = () => {
               <img src={SectionOne.img} alt="" />
             </div>
             <div className="right">
-              <h5>{SectionOne.h5}</h5>
-              <h1>
+              <h5 >{SectionOne.h5}</h5>
+              <h1 style={{fontSize:'1.5rem',fontFamily:'monospace'}}>
                 {SectionOne.h1}
-                <br />
-                {SectionOne.h1Break}
+
               </h1>
-              <h3>{SectionOne.h3}</h3>
+              <p style={{fontWeight:'bold'}}>
+                {SectionOne.h3}
+
+              </p>
               <p>{SectionOne.p}</p>
               <div
                 style={{

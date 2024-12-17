@@ -1,4 +1,3 @@
-import React from 'react';
 import {Container,ContainerWrap} from '../../Style'
 
 const index = () => {

@@ -1,5 +1,3 @@
-import React, { useEffect } from 'react';
-import AOS from 'aos';
 import { Container, ContainerWrap } from "../../Style";
 import {
   Main,
@@ -9,7 +7,6 @@ import {
   LeftSection,
   RightSection,
 } from "./style";
-import { ThreeDCardDemo } from "../../../../components/core/cards/3dcards";
 import { sectionThreeData } from '../../../../constant/datas';
 import Btn from "../../../../components/core/button";
 
@@ -35,7 +32,7 @@ const Index = () => {
           </div>
 
           <CardWrapper className="second">
-            {sectionThreeData.secondCard.map((card, index) => (
+            {/* {sectionThreeData.secondCard.map((card, index) => (
               <ThreeDCardDemo
                 key={index}
                 h1={card.h1}
@@ -43,7 +40,7 @@ const Index = () => {
                 p={card.p}
                 link={card.link}
               />
-            ))}
+            ))} */}
           </CardWrapper>
 
           <InfoSection className="third">
