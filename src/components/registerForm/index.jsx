@@ -106,6 +106,7 @@ function Form() {
           type="tel"
           id="number"
           name="number"
+          maxLength={10}
           value={formData.number}
           onChange={handleChange}
           required

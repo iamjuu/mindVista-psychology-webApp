@@ -57,68 +57,97 @@ function SignupForm() {
   const [formData, setFormData] = useState({
     username: '',
     email: '',
+    phone:'',
     password: '',
     confirmPassword: '',
+
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+  
+    // Ensure phone input contains only valid numbers
+    if (name === "phone" && value.length > 0) {
+      const invalidPhonePattern = /^(\d)\1{9}$/; // Matches repeated digits like "1111111111"
+      if (invalidPhonePattern.test(value)) {
+        Swal.fire({
+          icon: "error",
+          title: "മാറിയാദിക് ഫോൺ നമ്പർ അടിക്കു",
+          text: "നായിന്റെ മോനെ!",
+        });
+        return; // Prevent state update for invalid input
+      }
+    }
+  
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
     }));
   };
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
   
     // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Passwords do not match!',
+        icon: "error",
+        title: "Error",
+        text: "Passwords do not match!",
+      });
+      return;
+    }
+  
+    // Validate phone number length (assuming 10 digits required)
+    if (!formData.phone || formData.phone.length !== 10) {
+      Swal.fire({
+        icon: "error",
+        title: "Invalid Phone Number",
+        text: "Phone number must be exactly 10 digits!",
       });
       return;
     }
   
     // Sending form data to the server
     try {
-      const response = await axios.post('http://localhost:3000/signup', formData, {
+      const response = await axios.post("http://localhost:3000/signup", formData, {
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
       });
   
       // Store token in localStorage
       if (response.data.token) {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('userId', response.data.userId); // Optional, if needed
+        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("userId", response.data.userId);
       }
   
       Swal.fire({
-        icon: 'success',
-        title: 'Signup Successful',
-        text: response.data.message || 'You have signed up successfully!',
+        icon: "success",
+        title: "Signup Successful",
+        text: response.data.message || "You have signed up successfully!",
       });
   
       // Clear the form
       setFormData({
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+        username: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
       });
   
       // Navigate to login page or home
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
       Swal.fire({
-        icon: 'error',
-        title: 'Signup Failed',
-        text: error.response?.data?.message || 'An error occurred during signup.',
+        icon: "error",
+        title: "Signup Failed",
+        text: error.response?.data?.message || "An error occurred during signup.",
       });
     }
   };
+  
   
   return (
     <FormContainer onSubmit={handleSubmit}>
@@ -143,6 +172,17 @@ function SignupForm() {
           id="email"
           name="email"
           value={formData.email}
+          onChange={handleChange}
+          required
+        />
+      </FormGroup>
+      <FormGroup>
+        <Label htmlFor="phone">Phone:</Label>
+        <Input
+          type="number"
+          id="phone"
+          name="phone"
+          value={formData.phone}
           onChange={handleChange}
           required
         />
