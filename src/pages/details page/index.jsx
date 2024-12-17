@@ -73,8 +73,7 @@ const CheckoutButton = styled.button`
 `;
 
 function DetailsPage() {
-  const [formData, setFormData] = useState(null);
-  const [user, setUser] = useState(null);
+  const [formData, setFormData] = useState(null); 
   const { id } = useParams(); 
   useEffect(() => {
     const fetchFormData = async () => {
@@ -85,72 +84,48 @@ function DetailsPage() {
         }
 
         const response = await axios.get(`http://localhost:3000/formdata/${id}`);
-        console.log(response.data.userData, 'Data fetched by ID');
-
+        console.log(response.data, 'Data fetched by ID');
+        setFormData(response.data.formData || null);
       } catch (error) {
         console.error('Error fetching form data:', error);
       }
-    };
-
+    }
     fetchFormData();
-  }, [id]);
+  },    [id]);
+  console.log(formData,'form data');
+  
 
   return (
     <TableContainer>
-      <Title>Form and User Details</Title>
-      <Table>
-        <thead>
-          <tr>
-            <th>Field</th>
-            <th>Value</th>
-          </tr>
-        </thead>
-        <tbody>
-          {/* Display user information */}
-          <tr>
-            <td>Username</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Email</td>
-            {/* <td>{user.email}</td> */}
-          </tr>
+    <Title>Form and User Details</Title>
+    <Table>
+      <thead>
+        <tr>
+          <th>Field</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {/* Display form data dynamically */}
+        {formData
+          ? Object.entries(formData).map(([key, value]) => (
+              <tr key={key}>
+                <td>{key.charAt(0).toUpperCase() + key.slice(1)}</td>
+                <td>{value || 'N/A'}</td>
+              </tr>
+            ))
+          : (
+            <tr>
+              <td colSpan="2" style={{ textAlign: 'center' }}>No data available</td>
+            </tr>
+          )}
+      </tbody>
+    </Table>
+    <ButtonContainer>
+      <CheckoutButton>Checkout</CheckoutButton>
+    </ButtonContainer>
+  </TableContainer>
 
-          {/* Display form information */}
-          <tr>
-            <td>Name</td>
-            {/* <td>{formData.name}</td> */}
-          </tr>
-          <tr>
-            <td>Email</td>
-            {/* <td>{formData.email}</td> */}
-          </tr>
-          <tr>
-            <td>Phone Number</td>
-            {/* <td>{formData.number}</td> */}
-          </tr>
-          <tr>
-            <td>Location</td>
-            {/* <td>{formData.location}</td> */}
-          </tr>
-          <tr>
-            <td>Age</td>
-            {/* <td>{formData.age}</td> */}
-          </tr>
-          <tr>
-            <td>Slot</td>
-            {/* <td>{formData.slot}</td> */}
-          </tr>
-          <tr>
-            <td>Date</td>
-            {/* <td>{formData.date}</td> */}
-          </tr>
-        </tbody>
-      </Table>
-      <ButtonContainer>
-        <CheckoutButton>Checkout</CheckoutButton>
-      </ButtonContainer>
-    </TableContainer>
   );
 }
 
