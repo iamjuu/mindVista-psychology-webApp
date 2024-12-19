@@ -33,7 +33,7 @@ function UserRouter() {
           />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/signup" element={<Signup />} />
-          <Route path="/login" element={<Login />} />
+                    <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/details/:id" element={<DetailsPage />} />
 

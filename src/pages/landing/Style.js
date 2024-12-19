@@ -24,8 +24,8 @@ export const BgContainer = styled.div`
   background-image: url(${(props) => props.bg});
   background-size: cover;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  /* justify-content: ; */
+  /* align-items:; */
   background-position: ${(props) => props.position || "center"};
   height: 700px;
 `;

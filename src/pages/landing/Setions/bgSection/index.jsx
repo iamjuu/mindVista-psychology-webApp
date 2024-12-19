@@ -3,6 +3,7 @@ import { Main } from "./style";
 import { Data } from '../../../../constant/datas';
 import { Bgimg } from '../../../../assets';
 import Regbtn from '../../../../components/core/button'; 
+import {Link} from "react-router-dom"
 import { useNavigate } from 'react-router-dom';
 
 const BgSection = () => {
@@ -23,27 +24,12 @@ const BgSection = () => {
 
   return (
     <Container>
-      <BgContainer>
-        <img 
-          src={Bgimg} 
-          alt="Background" 
-          loading="lazy" 
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            zIndex: -1,
-          }}
-          width="1920" 
-          height="1080" 
-        />
+      <BgContainer bg={Bgimg}>
+     
         <ContainerWrap>
           <Main>
             <p>{Data.p}</p>
-            <h1 style={{ color: 'white', fontSize:'22px' ,marginTop:'200px', fontFamily: "monospace" }}>
+            <h1 style={{ color: 'white', fontSize:'22px' , fontFamily: "monospace" }}>
               {Data.h1}
             </h1>
             <div className="btn-container">
@@ -54,12 +40,14 @@ const BgSection = () => {
                 onClick={handleRegister} // Call the function correctly
                 btnName="Book Now" 
               />
+              <Link to='/login'>
               <Regbtn 
                 bg="brown" 
                 color="white" 
                 hoverBg="pink" 
-                btnName="About me" 
-              />
+                btnName="Login" 
+                />
+                </Link>
             </div>
           </Main>
         </ContainerWrap>
