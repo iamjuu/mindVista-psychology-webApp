@@ -47,7 +47,7 @@ const Index = () => {
           <SectionSix />
         </div>
         <div data-aos="fade-in">
-          {/* <Footer /> */}
+          <Footer />
         </div>
     </>
   );

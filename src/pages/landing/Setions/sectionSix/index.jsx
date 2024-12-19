@@ -12,7 +12,7 @@ const Index = () => {
         <Main>
           <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', justifyContent: 'space-around', width: '100%' }}>
             {SectionSix.map((section, index) => (
-              <div key={index} style={{ display:'flex',flexDirection:'column',gap:'10px' , borderRight: '2px dotted #A57355', padding: '10px' }}>
+              <div key={index} style={{ display:'flex',flexDirection:'column',gap:'10px' , padding: '10px' }}>
                 <div  className="icon" style={{ fontSize: '3rem', marginBottom: '10px' }}>
                   {section.icon}
                 </div>

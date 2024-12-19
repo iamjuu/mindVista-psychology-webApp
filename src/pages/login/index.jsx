@@ -70,7 +70,7 @@ const Message = styled.p`
 `;
 
 const Login = () => {
-  const navigate = useNavigate(); // Correctly call `useNavigate` hook
+  const navigate = useNavigate(); // Correctly call useNavigate hook
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -148,3 +148,19 @@ const Login = () => {
 export default Login;
 
 
+// import React from 'react'
+// import styled from 'styled-components'
+// const index = () => {
+//   return (
+//     <div>
+      
+//     </div>
+//   )
+// }
+
+// export default index
+
+// const Container = styled.div`
+// background-color:red;
+
+// `

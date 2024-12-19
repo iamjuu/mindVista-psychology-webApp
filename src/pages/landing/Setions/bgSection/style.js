@@ -2,10 +2,12 @@ import styled from "styled-components";
 
 export const Main = styled.div`
   padding: 10px;
+  max-width: 700px;
   width: 100%;
   display: flex;
+  background-color: red;
   flex-direction: column;
-  justify-content: center;
+ 
   gap: 20px;
 
   p {
@@ -49,6 +51,7 @@ export const Main = styled.div`
     font-size: 2rem;
     @media (max-width:768px) {
       font-size: 1.5rem;
+      text-align: left;
     }
     
     @media (max-width:425px) {
