@@ -4,8 +4,8 @@
 // import { FaGlobeAsia } from "react-icons/fa";
 import { Logo, Psychologist, Bgimg, Bookimg,Consulting,Sleepless,depressed,Medition } from "../assets";
 export const Data = {
-  p: "Best psychologist",
-  h1:'Psychology is the scientific study of the mind and behavior. It explores how individuals think, feel, and act, both as individuals and within groups, as well as the biological, psychological, and social processes underlying these behaviors.'
+  title: "Best psychologist",
+  p:'Psychology is the scientific study of the mind and behavior. It explores how individuals think, feel, and act, both as individuals and within groups, as well as the biological, psychological, and social processes underlying these behaviors.'
 };
 
 export const SectionOne = {

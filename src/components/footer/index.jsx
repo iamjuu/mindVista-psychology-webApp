@@ -145,7 +145,7 @@ const index = () => {
           <ul className="col-span-2 flex justify-start gap-6 lg:col-span-5 lg:justify-end">
           <li>
               <a
-      href='https://wa.me/7902903243'
+      href='https://wa.me/7025715250'
       rel="noreferrer"
                 target="_blank"
                 className="text-gray-700 transition hover:opacity-75"
@@ -167,7 +167,7 @@ const index = () => {
             </li>
             <li>
               <a
-                href="https://www.instagram.com/nos2kannur_enginedecarbonising?igsh=MWllMDZmcXJtM2MyNQ=="
+                href="https://www.instagram.com/muhammed_ajmalcc/?hl=en"
                 rel="noreferrer"
                 target="_blank"
                 className="text-gray-700 transition hover:opacity-75"
@@ -206,7 +206,7 @@ const index = () => {
           
             <li>
   <a
-    href="mailto:nos2kannur.in@gmail.com"
+    href="muhammedajmalcc6424094@gmail.com"
     rel="noreferrer"
     target="_blank"
     className="text-gray-700 transition hover:opacity-75"

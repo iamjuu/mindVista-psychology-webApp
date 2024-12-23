@@ -28,9 +28,9 @@ const BgSection = () => {
      
         <ContainerWrap>
           <Main>
-            <p>{Data.p}</p>
-            <h1 style={{ color: 'white', fontSize:'22px' , fontFamily: "monospace" }}>
-              {Data.h1}
+            <p>{Data.title}</p>
+            <h1 style={{ marginTop:'150px', color: 'white', fontSize:'22px' , fontFamily: "monospace" }}>
+              {Data.p}
             </h1>
             <div className="btn-container">
               <Regbtn 
