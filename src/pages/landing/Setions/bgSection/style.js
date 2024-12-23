@@ -5,7 +5,7 @@ export const Main = styled.div`
   max-width: 700px;
   width: 100%;
   display: flex;
-  background-color: red;
+  /* background-color: red; */
   flex-direction: column;
  
   gap: 20px;
@@ -52,6 +52,8 @@ export const Main = styled.div`
     @media (max-width:768px) {
       font-size: 1.5rem;
       text-align: left;
+      display: none;
+
     }
     
     @media (max-width:425px) {
