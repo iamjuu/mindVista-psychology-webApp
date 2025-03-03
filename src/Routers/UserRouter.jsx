@@ -12,6 +12,8 @@ import Signup from "../pages/signup";
 import Login from "../pages/login"
 import Loader from "../common/Loader";
 import DetailsPage from "../pages/details page"
+// ****************************
+import DashbaordHome from '../pages/Dashboard/home'
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 
 function UserRouter() {
@@ -36,6 +38,8 @@ function UserRouter() {
                     <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/details/:id" element={<DetailsPage />} />
+{/* ************************** */}
+<Route path="/Dashboard" element={< DashbaordHome/>} />
 
         </Routes>
       </Suspense>
