@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import {jwtDecode} from "jwt-decode";
-
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import { Button, FormContainer, FormGroup, Input, Label, Select } from './style';
 
@@ -38,41 +38,27 @@ function Form() {
         },
       });
   
-      // Check if request was successful
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: 'Form submitted successfully!',
-      });
-  
+      // Show success toast
+      toast.success('Form submitted successfully!');
+      
       console.log('Form submitted successfully:', response.data);
-  
-      // Retrieve userId from localStorage
-      const userId = localStorage.getItem("userId");
-      console.log("Retrieved User ID:", userId);
-  
-      // Navigate to details page
-      Navigate(`/details/${userId}`);
+      
+      // Navigate to about page after a short delay
+      setTimeout(() => {
+        Navigate('/about');
+      }, 1500);
+      
     } catch (error) {
       // Handle error responses
       if (error.response && error.response.status === 403) {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: error.response.data.message || 'Please use a registered email!',
-        });
+        toast.error(error.response.data.message || 'Please use a registered email!');
       } else {
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Something went wrong. Please try again!',
-        });
+        toast.error('Something went wrong. Please try again!');
       }
   
       console.error('Error during form submission:', error);
     }
   };
-  
 
   return (
     <FormContainer onSubmit={handleSubmit}>
@@ -154,6 +140,7 @@ function Form() {
           required
         />
       </FormGroup>
+      
       <FormGroup>
         <Label htmlFor="date">Date:</Label>
         <Input
@@ -167,6 +154,7 @@ function Form() {
       </FormGroup>
 
       <Button type="submit">Submit</Button>
+      <ToastContainer />
     </FormContainer>
   );
 }
