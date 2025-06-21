@@ -1,15 +1,40 @@
-import React from 'react';
-import Swal from 'sweetalert2';
-import {ActionButton,Actions,BasicInfo,Company,Container,Content,Description,Experience,ExperienceDetails,ExperienceItem,
-    InfoItem,Label,LeftColumn,Logo,Name,Notes,NotesButton,NotesTextarea,NotesTitle,
-    PageWrapper,Period,ProfileImage,ProfileSection,RightColumn,Role,SectionTitle,Skill,Skills,Value
-} from './style'
-import {Pic1} from '../../assets'
+import React from "react";
+import Swal from "sweetalert2";
+import {
+  ActionButton,
+  Actions,
+  BasicInfo,
+  Company,
+  Container,
+  Content,
+  Description,
+  Experience,
+  ExperienceDetails,
+  ExperienceItem,
+  InfoItem,
+  Label,
+  LeftColumn,
+  Logo,
+  Name,
+  Notes,
+  NotesButton,
+  NotesTextarea,
+  NotesTitle,
+  PageWrapper,
+  Period,
+  ProfileImage,
+  ProfileSection,
+  RightColumn,
+  Role,
+  SectionTitle,
+  Skill,
+  Skills,
+  Value,
+} from "./style";
+import { Pic1 } from "../../assets";
+import { Link } from "react-router-dom";
 const ProfilePage = () => {
-  const skills = [
-    "mindVista",
-    "+91 702-571-5250"
-  ];
+  const skills = ["mindVista", "+91 702-571-5250"];
 
   const experience = [
     {
@@ -17,7 +42,7 @@ const ProfilePage = () => {
       name: "john",
       period: "Apr 2022 - Present",
       location: "Pune, India",
-      age: '30',
+      age: "30",
       logo: "MV",
     },
     {
@@ -25,7 +50,7 @@ const ProfilePage = () => {
       name: "john",
       period: "Jan 2023 - Present",
       location: "Pune, India",
-      age: '31',
+      age: "31",
       logo: "MV",
     },
     {
@@ -33,17 +58,17 @@ const ProfilePage = () => {
       name: "john",
       period: "Jan 2024 - Present",
       location: "Pune, India",
-      age: '32',
+      age: "32",
       logo: "MV",
     },
   ];
 
   const handleSendMessage = () => {
     Swal.fire({
-      title: 'Message Sent!',
-      text: 'Your message has been sent successfully.',
-      icon: 'success',
-      confirmButtonText: 'OK',
+      title: "Message Sent!",
+      text: "Your message has been sent successfully.",
+      icon: "success",
+      confirmButtonText: "OK",
     });
   };
 
@@ -103,24 +128,24 @@ const ProfilePage = () => {
             </BasicInfo>
             <Actions>
               <ActionButton>Download History</ActionButton>
-              <ActionButton secondary>Send Email</ActionButton>
+              <Link to="https://wa.me/917025715250?text=Hello%2C%20I%20need%20help%20with%20Diprella">
+                <ActionButton secondary>Help</ActionButton>
+              </Link>
             </Actions>
             <Experience>
               <SectionTitle>History of Consultant</SectionTitle>
               {experience.map((exp, index) => (
                 <ExperienceItem key={index}>
-                  <Logo
-                    color={
-                      exp.logo === "MV" ? "#4e95ff" : "#ffb74e"
-                    }
-                  >
+                  <Logo color={exp.logo === "MV" ? "#4e95ff" : "#ffb74e"}>
                     {exp.logo}
                   </Logo>
                   <ExperienceDetails>
                     <Company>{exp.company}</Company>
                     <Period>{exp.name}</Period>
                     <Period>{exp.age}</Period>
-                    <Period>{exp.period} | {exp.location}</Period>
+                    <Period>
+                      {exp.period} | {exp.location}
+                    </Period>
                   </ExperienceDetails>
                 </ExperienceItem>
               ))}
