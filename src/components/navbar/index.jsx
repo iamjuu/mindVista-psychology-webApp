@@ -33,12 +33,15 @@ const Navbar = () => {
     setHovered(false);
   };
 
+  const dasboardfunction = ()=> {
+navigate('/dashboard')
+  }
   return (
     <Nav>
       <NavContainer>
         <LogoDiv>
           <LogoContainer to="/">
-            <img src={Logo} alt="Logo" />
+            <img   onDoubleClick={dasboardfunction} src={Logo} alt="Logo" />
           </LogoContainer>
         </LogoDiv>
         <LinksDiv>

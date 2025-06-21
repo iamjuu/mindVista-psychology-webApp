@@ -6,7 +6,7 @@ export const Nav = styled.nav`
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 10px;
+  /* padding: 10px; */
   position: fixed;
   z-index: 15;
   align-items: center;
@@ -14,7 +14,7 @@ export const Nav = styled.nav`
 
 export const NavContainer = styled.div`
   display: flex;
-  padding: 10px;
+  /* padding: 10px; */
   align-items: center;
   max-width: 1300px;
   width: 100%;
