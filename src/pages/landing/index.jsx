@@ -14,9 +14,9 @@ import Footer from '../../components/footer'
 const Index = () => {
   useEffect(() => {
     AOS.init({
-      duration: 1200, // Animation duration in milliseconds
-      easing: "ease-in-out", // Easing animation
-      once: true, // Whether animation should happen only once
+      duration: 1200, 
+      easing: "ease-in-out",
+      once: true, 
     });
   }, []);
 

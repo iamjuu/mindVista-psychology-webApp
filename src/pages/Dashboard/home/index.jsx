@@ -54,7 +54,7 @@ const Dashboard = () => {
     <div className={`p-4 rounded-lg shadow ${bgColor} text-white`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm opacity-80">{title}</p>
+          <p className="text-sm opacity-80">{title}</p>  
           <p className="text-2xl font-bold">{value}</p>
         </div>
         <div className="p-3 bg-white bg-opacity-30 rounded-full">

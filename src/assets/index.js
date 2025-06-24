@@ -12,7 +12,7 @@ import Consulting from './landing/Consulting.jpg'
 import Sleepless from './landing/SleepingPateint.jpg'
 import depressed from './landing/pexels-timur-weber-8560013.jpg'
 import Medition from './landing/Embrace Serenity_ Master Emotional Control with Mindfulness.jpeg'
-
+import Scanner from "./scanner/WhatsApp Image 2025-06-24 at 19.08.11_f5a44c06.jpg"
 
 export {
     Medition,
@@ -28,5 +28,6 @@ export {
     Psychologist,
     Logo,
     Bgimg,
-    Bannar
+    Bannar,
+    Scanner
 }

@@ -2,9 +2,10 @@ import styled from "styled-components";
 
 export const Main = styled.div`
   padding: 10px;
-  max-width: 700px;
+  max-width: 100%;
   width: 100%;
   display: flex;
+  padding-bottom: 100px;
   /* background-color: red; */
   flex-direction: column;
  

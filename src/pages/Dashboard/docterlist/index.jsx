@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
 
 const DoctorList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
+  const [showModal, setShowModal] = useState(false);
+  const [editingDoctor, setEditingDoctor] = useState(null);
   
-  // Mock data for doctors
-  const doctorData = [
+  // Initial mock data for doctors
+  const [doctorData, setDoctorData] = useState([
     { id: 1, name: 'Dr. Alex Martinez', specialization: 'Cardiology', patients: 45, rating: 4.8, available: true, experience: '8 years', phone: '+1 (555) 123-4567' },
     { id: 2, name: 'Dr. Sarah Johnson', specialization: 'Pediatrics', patients: 38, rating: 4.7, available: true, experience: '10 years', phone: '+1 (555) 234-5678' },
     { id: 3, name: 'Dr. William Chen', specialization: 'Neurology', patients: 42, rating: 4.9, available: false, experience: '15 years', phone: '+1 (555) 345-6789' },
@@ -18,7 +20,18 @@ const DoctorList = () => {
     { id: 8, name: 'Dr. Lisa Anderson', specialization: 'Psychiatry', patients: 35, rating: 4.9, available: true, experience: '14 years', phone: '+1 (555) 890-1234' },
     { id: 9, name: 'Dr. Robert Garcia', specialization: 'Urology', patients: 30, rating: 4.6, available: false, experience: '8 years', phone: '+1 (555) 901-2345' },
     { id: 10, name: 'Dr. Jennifer Lee', specialization: 'Endocrinology', patients: 28, rating: 4.7, available: true, experience: '10 years', phone: '+1 (555) 012-3456' },
-  ];
+  ]);
+
+  // Form state for add/edit modal
+  const [formData, setFormData] = useState({
+    name: '',
+    specialization: '',
+    phone: '',
+    experience: '',
+    patients: '',
+    rating: '',
+    available: true
+  });
   
   // Get unique specializations for filter
   const specializations = ['all', ...new Set(doctorData.map(doctor => doctor.specialization))];
@@ -44,6 +57,103 @@ const DoctorList = () => {
   const goToPage = (page) => {
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
+  };
+
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  };
+
+  // Open modal for adding new doctor
+  const openAddModal = () => {
+    setEditingDoctor(null);
+    setFormData({
+      name: '',
+      specialization: '',
+      phone: '',
+      experience: '',
+      patients: '',
+      rating: '',
+      available: true
+    });
+    setShowModal(true);
+  };
+
+  // Open modal for editing doctor
+  const openEditModal = (doctor) => {
+    setEditingDoctor(doctor);
+    setFormData({
+      name: doctor.name,
+      specialization: doctor.specialization,
+      phone: doctor.phone,
+      experience: doctor.experience,
+      patients: doctor.patients.toString(),
+      rating: doctor.rating.toString(),
+      available: doctor.available
+    });
+    setShowModal(true);
+  };
+
+  // Close modal
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingDoctor(null);
+    setFormData({
+      name: '',
+      specialization: '',
+      phone: '',
+      experience: '',
+      patients: '',
+      rating: '',
+      available: true
+    });
+  };
+
+  // Handle form submission
+  const handleSubmit = () => {
+    // Basic validation
+    if (!formData.name || !formData.specialization || !formData.phone || !formData.experience) {
+      alert('Please fill in all required fields');
+      return;
+    }
+    
+    const doctorToSave = {
+      name: formData.name,
+      specialization: formData.specialization,
+      phone: formData.phone,
+      experience: formData.experience,
+      patients: parseInt(formData.patients) || 0,
+      rating: parseFloat(formData.rating) || 0,
+      available: formData.available
+    };
+
+    if (editingDoctor) {
+      // Edit existing doctor
+      setDoctorData(prev => 
+        prev.map(doctor => 
+          doctor.id === editingDoctor.id 
+            ? { ...doctor, ...doctorToSave }
+            : doctor
+        )
+      );
+    } else {
+      // Add new doctor
+      const newId = Math.max(...doctorData.map(d => d.id)) + 1;
+      setDoctorData(prev => [...prev, { id: newId, ...doctorToSave }]);
+    }
+
+    closeModal();
+  };
+
+  // Handle delete doctor
+  const handleDelete = (doctorId) => {
+    if (window.confirm('Are you sure you want to delete this doctor?')) {
+      setDoctorData(prev => prev.filter(doctor => doctor.id !== doctorId));
+    }
   };
   
   // Generate star rating display
@@ -110,7 +220,10 @@ const DoctorList = () => {
             </select>
           </div>
           
-          <button className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">
+          <button 
+            onClick={openAddModal}
+            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+          >
             Add Doctor
           </button>
         </div>
@@ -154,8 +267,18 @@ const DoctorList = () => {
                   </td>
                   <td className="p-3">
                     <div className="flex space-x-2">
-                      <button className="text-blue-500 hover:underline">Edit</button>
-                      <button className="text-red-500 hover:underline">Delete</button>
+                      <button 
+                        onClick={() => openEditModal(doctor)}
+                        className="text-blue-500 hover:underline"
+                      >
+                        Edit
+                      </button>
+                      <button 
+                        onClick={() => handleDelete(doctor.id)}
+                        className="text-red-500 hover:underline"
+                      >
+                        Delete
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -233,6 +356,153 @@ const DoctorList = () => {
             >
               <ChevronRight size={16} />
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Add/Edit Doctor Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-bold">
+                {editingDoctor ? 'Edit Doctor' : 'Add New Doctor'}
+              </h3>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Doctor Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Dr. John Doe"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Specialization
+                </label>
+                <input
+                  type="text"
+                  name="specialization"
+                  value={formData.specialization}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Cardiology"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="+1 (555) 123-4567"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Experience
+                </label>
+                <input
+                  type="text"
+                  name="experience"
+                  value={formData.experience}
+                  onChange={handleInputChange}
+                  required
+                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="5 years"
+                />
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Patients
+                  </label>
+                  <input
+                    type="number"
+                    name="patients"
+                    value={formData.patients}
+                    onChange={handleInputChange}
+                    required
+                    min="0"
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="30"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Rating
+                  </label>
+                  <input
+                    type="number"
+                    name="rating"
+                    value={formData.rating}
+                    onChange={handleInputChange}
+                    required
+                    min="0"
+                    max="5"
+                    step="0.1"
+                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="4.5"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  name="available"
+                  checked={formData.available}
+                  onChange={handleInputChange}
+                  className="mr-2"
+                />
+                <label className="text-sm font-medium text-gray-700">
+                  Available
+                </label>
+              </div>
+              
+              <div className="flex justify-end space-x-3 pt-4">
+                <button
+                  type="button"
+                  onClick={closeModal}
+                  className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                >
+                  {editingDoctor ? 'Update Doctor' : 'Add Doctor'}
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
