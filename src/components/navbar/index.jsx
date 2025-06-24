@@ -71,7 +71,6 @@ navigate('/dashboard')
                 <li onClick={() => navigatePage("eco-therapy")}>Eco Therapy</li>
                 <li onClick={() => navigatePage("art-music-therapy")}>Art or Music Therapy</li>
               </SubMenu>
-
             </div>
             <MenuLink to="/profile">profile</MenuLink>
             {isOpen && <LogOutbtn btnName={"register"} bg={"#A57355"} />}

@@ -15,7 +15,8 @@ import DetailsPage from "../pages/details page"
 // ****************************
 import DashbaordHome from '../pages/Dashboard/home'
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
-
+// ***************scanner page****************
+import ScannerPage from "../pages/scanner"
 function UserRouter() {
   return (
     <Router>
@@ -34,7 +35,7 @@ function UserRouter() {
             }
           />
           <Route path="/profile" element={<UserProfile />} />
-          {/* <Route path="/signup" element={<Signup />} /> */}
+          <Route path="/scanner" element={<ScannerPage />} />
                     <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/details/:id" element={<DetailsPage />} />

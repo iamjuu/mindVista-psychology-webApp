@@ -65,7 +65,7 @@ const ProgramContent = ({ ProgramSectionleft, ProgramSectionRight }) => {
                     <p>{programData.four[0].p}</p>
                     <div className="img-content">
                       <div className="img">
-                        <img src={programData.four[0].img} alt="" />
+                        <img className="w-[500px]  " src={programData.four[0].img} alt="" />  
                       </div>
                       <div className="content">
                         <p>{programData.four[0].h5}</p>
@@ -138,7 +138,7 @@ const ProgramContent = ({ ProgramSectionleft, ProgramSectionRight }) => {
 
               <div className="third">
           <div>
-            <img src={Bgimg} alt="" />
+            <img  className="" src={Bgimg} alt="" />
           </div>
               </div>
             </Right>
