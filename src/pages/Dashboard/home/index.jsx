@@ -6,6 +6,7 @@ import { Users, DollarSign, HelpCircle, Activity } from 'lucide-react';
 import Sidebar from '../../../components/DashBoardcomponents/slideBar';
 import UserList from '../dashboarduserlist';
 import DoctorList from '../docterlist';
+import Appoiment from '../appoinment'
 
 const Dashboard = () => {
   const [activePage, setActivePage] = useState('dashboard');
@@ -172,6 +173,9 @@ const Dashboard = () => {
         return <UserList />;
       case 'doctors':
         return <DoctorList />;
+case 'appointments':
+return <Appoiment/> ;
+
       default:
         return (
           <div className="bg-white p-6 rounded-lg shadow text-center">

@@ -18,7 +18,7 @@ const UserList = () => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        const response = await axios.get('http://localhost:3000/dashboard');
+        const response = await Ipi.get('http://localhost:3000/dashboard');
         console.log(response.data, 'data fetched');
         
         // Check if Data property exists in the response
