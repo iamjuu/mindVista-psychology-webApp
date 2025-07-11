@@ -10,15 +10,7 @@ const BgSection = () => {
   const navigate = useNavigate();
 
   const handleRegister = () => {
-    const token = localStorage.getItem("token");
-
-    if (token) {
-      console.log("Token found:", token);
-      navigate("/register");
-    } else {
-      console.log("No token found. Navigating to login.");
-      navigate("/login");
-    }
+    navigate("/register");
   };
 
   return (
@@ -35,12 +27,6 @@ const BgSection = () => {
               >
                 Register
               </button>
-
-              <Link to="/login">
-                <button className="px-8 py-3 bg-amber-700 text-white font-medium rounded-lg shadow-sm transition-all duration-200 hover:bg-amber-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2">
-                  Login
-                </button>
-              </Link>
             </div>
           </Main>
         </ContainerWrap>

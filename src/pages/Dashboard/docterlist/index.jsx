@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Search, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { toast } from 'react-toastify';
+import apiInstance from '../../../instance';
 
 const DoctorList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -7,20 +9,11 @@ const DoctorList = () => {
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [showModal, setShowModal] = useState(false);
   const [editingDoctor, setEditingDoctor] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
   
-  // Initial mock data for doctors
-  const [doctorData, setDoctorData] = useState([
-    { id: 1, name: 'Dr. Alex Martinez', specialization: 'Cardiology', patients: 45, rating: 4.8, available: true, experience: '8 years', phone: '+1 (555) 123-4567' },
-    { id: 2, name: 'Dr. Sarah Johnson', specialization: 'Pediatrics', patients: 38, rating: 4.7, available: true, experience: '10 years', phone: '+1 (555) 234-5678' },
-    { id: 3, name: 'Dr. William Chen', specialization: 'Neurology', patients: 42, rating: 4.9, available: false, experience: '15 years', phone: '+1 (555) 345-6789' },
-    { id: 4, name: 'Dr. Maria Rodriguez', specialization: 'Dermatology', patients: 36, rating: 4.6, available: true, experience: '7 years', phone: '+1 (555) 456-7890' },
-    { id: 5, name: 'Dr. James Wilson', specialization: 'Orthopedics', patients: 40, rating: 4.5, available: true, experience: '12 years', phone: '+1 (555) 567-8901' },
-    { id: 6, name: 'Dr. Emily Taylor', specialization: 'Gynecology', patients: 32, rating: 4.8, available: false, experience: '9 years', phone: '+1 (555) 678-9012' },
-    { id: 7, name: 'Dr. Michael Brown', specialization: 'Ophthalmology', patients: 38, rating: 4.7, available: true, experience: '11 years', phone: '+1 (555) 789-0123' },
-    { id: 8, name: 'Dr. Lisa Anderson', specialization: 'Psychiatry', patients: 35, rating: 4.9, available: true, experience: '14 years', phone: '+1 (555) 890-1234' },
-    { id: 9, name: 'Dr. Robert Garcia', specialization: 'Urology', patients: 30, rating: 4.6, available: false, experience: '8 years', phone: '+1 (555) 901-2345' },
-    { id: 10, name: 'Dr. Jennifer Lee', specialization: 'Endocrinology', patients: 28, rating: 4.7, available: true, experience: '10 years', phone: '+1 (555) 012-3456' },
-  ]);
+  // Initialize with empty array - no static data
+  const [doctorData, setDoctorData] = useState([]);
 
   // Form state for add/edit modal
   const [formData, setFormData] = useState({
@@ -32,6 +25,85 @@ const DoctorList = () => {
     rating: '',
     available: true
   });
+
+  // API call function for fetching doctors
+  const fetchDoctorsAPI = async () => {
+    console.log('Making API call to fetch doctors');
+    
+    try {
+      const response = await apiInstance.get('/doctors');
+      console.log('API response for fetch doctors:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('API call failed for fetching doctors:', error);
+      throw error;
+    }
+  };
+
+  // API call function for adding doctor
+  const addDoctorAPI = async (doctorData) => {
+    console.log('Making API call to add doctor:', doctorData);
+    
+    try {
+      const response = await apiInstance.post('/doctors', doctorData);
+      console.log('API response for add doctor:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('API call failed for adding doctor:', error);
+      throw error;
+    }
+  };
+
+  // API call function for updating doctor
+  const updateDoctorAPI = async (doctorId, doctorData) => {
+    console.log('Making API call to update doctor:', doctorId, doctorData);
+    
+    try {
+      const response = await apiInstance.put(`/api/doctors/${doctorId}`, doctorData);
+      console.log('API response for update doctor:', response.data);
+      return response.data;
+    } catch (error) {
+      console.error('API call failed for updating doctor:', error);
+      throw error;
+    }
+  };
+
+  // Load doctors on component mount
+  const loadDoctors = async () => {
+    console.log('Loading doctors from API');
+    setInitialLoading(true);
+    
+    try {
+      const apiResponse = await fetchDoctorsAPI();
+      
+      if (apiResponse.success && apiResponse.data) {
+        setDoctorData(apiResponse.data);
+        console.log('Doctors loaded successfully:', apiResponse.data.length, 'doctors');
+      } else {
+        console.error('Invalid API response format:', apiResponse);
+      }
+    } catch (error) {
+      console.error('Failed to load doctors:', error);
+      toast.error('Failed to load doctors. Please refresh the page.', {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      // Keep empty array if loading fails
+    } finally {
+      setInitialLoading(false);
+    }
+  };
+
+  // Load doctors on component mount
+  useEffect(() => {
+    loadDoctors();
+  }, []);
+  
+  console.log('DoctorList component rendered. Total doctors:', doctorData.length);
   
   // Get unique specializations for filter
   const specializations = ['all', ...new Set(doctorData.map(doctor => doctor.specialization))];
@@ -48,6 +120,8 @@ const DoctorList = () => {
     return matchesSearch && matchesSpecialty;
   });
   
+  console.log('Filtered doctors count:', filteredDoctors.length, 'Search term:', searchTerm, 'Specialty filter:', specialtyFilter);
+  
   // Calculate pagination
   const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -55,6 +129,7 @@ const DoctorList = () => {
   
   // Handle page change
   const goToPage = (page) => {
+    console.log('Navigating to page:', page);
     if (page < 1 || page > totalPages) return;
     setCurrentPage(page);
   };
@@ -62,6 +137,7 @@ const DoctorList = () => {
   // Handle form input changes
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
+    console.log('Form input changed:', name, type === 'checkbox' ? checked : value);
     setFormData(prev => ({
       ...prev,
       [name]: type === 'checkbox' ? checked : value
@@ -70,6 +146,7 @@ const DoctorList = () => {
 
   // Open modal for adding new doctor
   const openAddModal = () => {
+    console.log('Opening add doctor modal');
     setEditingDoctor(null);
     setFormData({
       name: '',
@@ -85,6 +162,7 @@ const DoctorList = () => {
 
   // Open modal for editing doctor
   const openEditModal = (doctor) => {
+    console.log('Opening edit modal for doctor:', doctor.name, 'ID:', doctor.id);
     setEditingDoctor(doctor);
     setFormData({
       name: doctor.name,
@@ -100,8 +178,10 @@ const DoctorList = () => {
 
   // Close modal
   const closeModal = () => {
+    console.log('Closing modal');
     setShowModal(false);
     setEditingDoctor(null);
+    setIsLoading(false);
     setFormData({
       name: '',
       specialization: '',
@@ -114,12 +194,25 @@ const DoctorList = () => {
   };
 
   // Handle form submission
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    console.log('Submitting form with data:', formData);
+    
     // Basic validation
     if (!formData.name || !formData.specialization || !formData.phone || !formData.experience) {
-      alert('Please fill in all required fields');
+      console.log('Form validation failed - missing required fields');
+      toast.error('Please fill in all required fields', {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
       return;
     }
+
+    setIsLoading(true);
+    console.log('Setting loading state to true');
     
     const doctorToSave = {
       name: formData.name,
@@ -131,28 +224,95 @@ const DoctorList = () => {
       available: formData.available
     };
 
-    if (editingDoctor) {
-      // Edit existing doctor
-      setDoctorData(prev => 
-        prev.map(doctor => 
-          doctor.id === editingDoctor.id 
-            ? { ...doctor, ...doctorToSave }
-            : doctor
-        )
-      );
-    } else {
-      // Add new doctor
-      const newId = Math.max(...doctorData.map(d => d.id)) + 1;
-      setDoctorData(prev => [...prev, { id: newId, ...doctorToSave }]);
-    }
+    try {
+      if (editingDoctor) {
+        // Edit existing doctor
+        console.log('Updating existing doctor with ID:', editingDoctor.id);
+        await updateDoctorAPI(editingDoctor.id, doctorToSave);
+        
+        setDoctorData(prev => 
+          prev.map(doctor => 
+            doctor.id === editingDoctor.id 
+              ? { ...doctor, ...doctorToSave }
+              : doctor
+          )
+        );
+        console.log('Doctor updated successfully');
+        toast.success('Doctor updated successfully!', {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        // Add new doctor with API call
+        console.log('Adding new doctor with API call');
+        const apiResponse = await addDoctorAPI(doctorToSave);
+        
+        // Handle API response format
+        if (apiResponse.success && apiResponse.data) {
+          const newDoctor = apiResponse.data;
+          setDoctorData(prev => [...prev, newDoctor]);
+          console.log('New doctor added successfully:', newDoctor);
+          toast.success('Doctor added successfully!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        } else {
+          // Fallback for older API format
+          const newId = apiResponse.id || (doctorData.length > 0 ? Math.max(...doctorData.map(d => d.id)) + 1 : 1);
+          const newDoctor = { id: newId, ...doctorToSave };
+          setDoctorData(prev => [...prev, newDoctor]);
+          console.log('New doctor added successfully with ID:', newId);
+          toast.success('Doctor added successfully!', {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      }
 
-    closeModal();
+      closeModal();
+    } catch (error) {
+      console.error('Error submitting doctor data:', error);
+      toast.error('Failed to save doctor. Please try again.', {
+        position: "top-right",
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      setIsLoading(false);
+    }
   };
 
   // Handle delete doctor
   const handleDelete = (doctorId) => {
+    console.log('Delete requested for doctor ID:', doctorId);
     if (window.confirm('Are you sure you want to delete this doctor?')) {
+      console.log('Deleting doctor with ID:', doctorId);
       setDoctorData(prev => prev.filter(doctor => doctor.id !== doctorId));
+      console.log('Doctor deleted successfully');
+      toast.success('Doctor deleted successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } else {
+      console.log('Delete cancelled by user');
     }
   };
   
@@ -174,6 +334,22 @@ const DoctorList = () => {
     return <div className="flex">{stars} <span className="ml-1 text-gray-600">({rating})</span></div>;
   };
   
+  // Show loading spinner while fetching initial data
+  if (initialLoading) {
+    return (
+      <div className="bg-white rounded-lg shadow">
+        <div className="p-4 border-b">
+          <h2 className="text-xl font-bold">Doctor Management</h2>
+          <p className="text-gray-500 text-sm">Manage your medical staff</p>
+        </div>
+        <div className="flex justify-center items-center h-64">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+          <span className="ml-3 text-gray-600">Loading doctors...</span>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow">
       {/* Header */}
@@ -498,8 +674,9 @@ const DoctorList = () => {
                   type="button"
                   onClick={handleSubmit}
                   className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+                  disabled={isLoading}
                 >
-                  {editingDoctor ? 'Update Doctor' : 'Add Doctor'}
+                  {isLoading ? 'Saving...' : (editingDoctor ? 'Update Doctor' : 'Add Doctor')}
                 </button>
               </div>
             </div>

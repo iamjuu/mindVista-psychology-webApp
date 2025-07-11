@@ -1,17 +1,17 @@
 import { useEffect, useState } from 'react'
-// import apiInstance from '../../../instance' // Uncomment when using real API
+import apiInstance from '../../../instance'
 
 const Index = () => {
     const [appointments, setAppointments] = useState([])
     const [filteredAppointments, setFilteredAppointments] = useState([])
     const [loading, setLoading] = useState(true)
-    // const [error, setError] = useState(null) // Uncomment when using real API
+    const [error, setError] = useState(null)
     const [statusFilter, setStatusFilter] = useState('all')
     const [nameFilter, setNameFilter] = useState('')
     const [doctorFilter, setDoctorFilter] = useState('all')
     const [timeFilter, setTimeFilter] = useState('all')
 
-    // Mock data for demonstration
+    // Mock data for demonstration (keeping as fallback)
     const mockAppointments = [
         {
             id: 1,
@@ -71,20 +71,13 @@ const Index = () => {
     ]
 
     useEffect(() => {
-        console.log('Appointment component mounted, fetching appointments...')
-        // Using mock data instead of API call for demonstration
-        setTimeout(() => {
-            setAppointments(mockAppointments)
-            setFilteredAppointments(mockAppointments)
-            setLoading(false)
-        }, 1000)
-        
-        // Uncomment below to use real API
-        // fetchAppointments()
+        console.log('Appointment component mounted, initiating API call to fetch appointments...')
+        fetchAppointments()
     }, [])
 
     // Helper function to get time category
     const getTimeCategory = (timeString) => {
+        console.log(`Processing time category for: ${timeString}`)
         const hour = parseInt(timeString.split(':')[0])
         const ampm = timeString.split(' ')[1]
         let hour24 = hour
@@ -103,6 +96,13 @@ const Index = () => {
 
     // Filter appointments when filters change
     useEffect(() => {
+        console.log('Filtering appointments with current filters:', {
+            statusFilter,
+            nameFilter,
+            doctorFilter,
+            timeFilter
+        })
+        
         let filtered = appointments.filter(appointment => {
             const matchesStatus = statusFilter === 'all' || appointment.status === statusFilter
             const matchesName = nameFilter === '' || 
@@ -112,37 +112,58 @@ const Index = () => {
             
             return matchesStatus && matchesName && matchesDoctor && matchesTime
         })
+        
+        console.log(`Filtered appointments: ${filtered.length} out of ${appointments.length}`)
         setFilteredAppointments(filtered)
     }, [appointments, statusFilter, nameFilter, doctorFilter, timeFilter])
 
-    // Uncomment this function when you want to use real API data
-    // const fetchAppointments = async () => {
-    //     try {
-    //         console.log('Starting to fetch appointments from API...')
-    //         setLoading(true)
-    //         const response = await apiInstance.get('/appoiment')
-    //         console.log('Appointments fetched successfully:', response.data)
-    //         
-    //         // Ensure appointments is always an array
-    //         const appointmentsData = Array.isArray(response.data) ? response.data : []
-    //         console.log('Processed appointments data:', appointmentsData)
-    //         setAppointments(appointmentsData)
-    //         setFilteredAppointments(appointmentsData)
-    //     } catch (err) {
-    //         console.error('Error fetching appointments:', err)
-    //         setError('Failed to fetch appointments')
-    //         setAppointments([]) // Set empty array on error
-    //         setFilteredAppointments([])
-    //     } finally {
-    //         console.log('Finished fetching appointments, loading state set to false')
-    //         setLoading(false)
-    //     }
-    // }
+    const fetchAppointments = async () => {
+        try {
+            console.log('Starting API call to fetch appointments from /appointment endpoint...')
+            setLoading(true)
+            setError(null)
+            
+            const response = await apiInstance.get('/appointment')
+            console.log('API Response received:', response.status, response.statusText)
+            console.log('Appointments data from API:', response.data)
+            
+            // Ensure appointments is always an array - handle the API response structure
+            const appointmentsData = Array.isArray(response.data) ? response.data : 
+                                   Array.isArray(response.data.data) ? response.data.data : 
+                                   Array.isArray(response.data.appointments) ? response.data.appointments : []
+            
+            console.log('Processed appointments data:', appointmentsData)
+            console.log(`Total appointments fetched: ${appointmentsData.length}`)
+            
+            setAppointments(appointmentsData)
+            setFilteredAppointments(appointmentsData)
+            
+        } catch (err) {
+            console.error('Error fetching appointments from API:', err)
+            console.error('Error details:', {
+                message: err.message,
+                status: err.response?.status,
+                statusText: err.response?.statusText,
+                data: err.response?.data
+            })
+            
+            // Fallback to mock data if API fails
+            console.log('API call failed, falling back to mock data...')
+            setError('Failed to fetch appointments from server. Using demo data.')
+            setAppointments(mockAppointments)
+            setFilteredAppointments(mockAppointments)
+            
+        } finally {
+            console.log('Appointment fetching process completed, setting loading to false')
+            setLoading(false)
+        }
+    }
 
     const handleApprove = async (appointmentId) => {
         try {
-            console.log(`Approving appointment with ID: ${appointmentId}`)
-            // For mock data, we'll update locally
+            console.log(`Starting approval process for appointment ID: ${appointmentId}`)
+            
+            // Update UI optimistically
             const updateAppointments = (prev) => 
                 prev.map(appointment => 
                     appointment.id === appointmentId 
@@ -152,18 +173,29 @@ const Index = () => {
             
             setAppointments(updateAppointments)
             
-            // Uncomment below for real API call
-            // await apiInstance.put(`/appoiment/${appointmentId}/approve`)
-            console.log(`Appointment ${appointmentId} approved successfully`)
+            // Make API call to approve appointment
+            const response = await apiInstance.put(`/appointment/${appointmentId}/approve`)
+            console.log(`Appointment ${appointmentId} approved successfully via API:`, response.data)
+            
         } catch (err) {
-            console.error('Error approving appointment:', err)
+            console.error('Error approving appointment via API:', err)
+            console.error('Approval error details:', {
+                appointmentId,
+                message: err.message,
+                status: err.response?.status,
+                data: err.response?.data
+            })
+            
+            // Revert optimistic update on error
+            fetchAppointments()
         }
     }
 
     const handleDecline = async (appointmentId) => {
         try {
-            console.log(`Declining appointment with ID: ${appointmentId}`)
-            // For mock data, we'll update locally
+            console.log(`Starting decline process for appointment ID: ${appointmentId}`)
+            
+            // Update UI optimistically
             const updateAppointments = (prev) => 
                 prev.map(appointment => 
                     appointment.id === appointmentId 
@@ -173,15 +205,26 @@ const Index = () => {
             
             setAppointments(updateAppointments)
             
-            // Uncomment below for real API call
-            // await apiInstance.put(`/appoiment/${appointmentId}/decline`)
-            console.log(`Appointment ${appointmentId} declined successfully`)
+            // Make API call to decline appointment
+            const response = await apiInstance.put(`/appointment/${appointmentId}/decline`)
+            console.log(`Appointment ${appointmentId} declined successfully via API:`, response.data)
+            
         } catch (err) {
-            console.error('Error declining appointment:', err)
+            console.error('Error declining appointment via API:', err)
+            console.error('Decline error details:', {
+                appointmentId,
+                message: err.message,
+                status: err.response?.status,
+                data: err.response?.data
+            })
+            
+            // Revert optimistic update on error
+            fetchAppointments()
         }
     }
 
     const clearFilters = () => {
+        console.log('Clearing all appointment filters')
         setStatusFilter('all')
         setNameFilter('')
         setDoctorFilter('all')
@@ -200,16 +243,15 @@ const Index = () => {
         )
     }
 
-    // Uncomment this error handling when using real API
-    // if (error) {
-    //     return (
-    //         <div className="flex justify-center items-center min-h-screen">
-    //             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-    //                 Error: {error}
-    //             </div>
-    //         </div>
-    //     )
-    // }
+    if (error) {
+        return (
+            <div className="flex justify-center items-center min-h-screen">
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+                    Error: {error}
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className="container mx-auto px-4 py-8 max-w-7xl">

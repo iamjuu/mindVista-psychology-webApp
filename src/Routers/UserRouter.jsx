@@ -8,8 +8,6 @@ const Contact = React.lazy(() => import("../pages/contact"));
 const ProgramContent = React.lazy(() =>import("../pages/programs/sections/sectionOne"));
 const UserProfile = React.lazy(() => import("../pages/profile"));
 import RegisterForm from "../components/registerForm";
-import Signup from "../pages/signup";
-import Login from "../pages/login"
 import {CustomSpinner}from "../common/Loader";
 import DetailsPage from "../pages/details page"
 // ****************************
@@ -36,7 +34,6 @@ function UserRouter() {
           />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/scanner" element={<ScannerPage />} />
-                    <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/details/:id" element={<DetailsPage />} />
 {/* ************************** */}
