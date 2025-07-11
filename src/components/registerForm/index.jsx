@@ -7,6 +7,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Button, FormContainer, FormGroup, Input, Label, Select } from './style';
+import apiInstance from '../../instance';
 
 function Form() {
   const Navigate = useNavigate();
@@ -16,7 +17,7 @@ function Form() {
     number: '',
     location: '',
     age: '5',
-    slot: '10:00 AM', // Default slot value
+    slot: 'morning', // Default slot value updated
     date: ''
   });
 
@@ -30,9 +31,10 @@ function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    
+    console.log('[RegisterForm] Submitting slot:', formData.slot); // Log slot value
     try {
-      const response = await axios.post('http://localhost:3000/register', formData, {
+      const response = await apiInstance.post('/register', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -108,12 +110,10 @@ function Form() {
           onChange={handleChange}
           required
         >
-          <option value="10:00 AM">10:00 AM</option>
-          <option value="11:00 AM">11:00 AM</option>
-          <option value="12:00 PM">12:00 PM</option>
-          <option value="01:00 PM">01:00 PM</option>
-          <option value="02:00 PM">02:00 PM</option>
-          <option value="03:00 PM">03:00 PM</option>
+          <option value="morning">Morning</option>
+          <option value="afternoon">Afternoon</option>
+          <option value="evening">Evening</option>
+          <option value="night">Night</option>
         </Select>
       </FormGroup>
 
