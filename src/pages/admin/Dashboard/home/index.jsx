@@ -7,6 +7,7 @@ import UserList from '../dashboarduserlist';
 import DoctorList from '../docterlist';
 import Appoiment from '../appoinment';
 import Finance from '../finance';
+import Settings from '../settings';
 
 const Dashboard = () => {
   const [activePage, setActivePage] = useState('dashboard');
@@ -168,8 +169,8 @@ const Dashboard = () => {
     <div className="space-y-6">
       {/* Doctor Cards */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Doctor Performance Dashboard</h3>
-        <p className="text-gray-600 mb-4">Click on any doctor card to view their detailed analytics</p>
+        {/* <h3 className="text-lg font-semibold mb-4">Doctor Performance Dashboard</h3> */}
+        {/* <p className="text-gray-600 mb-4">Click on any doctor card to view their detailed analytics</p> */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {doctorsData.map((doctor) => (
             <DoctorCard
@@ -301,6 +302,8 @@ const Dashboard = () => {
         return <Appoiment/>;
       case 'finance':
         return <Finance />;
+      case 'settings':
+        return <Settings />;
       default:
         return (
           <div className="bg-white p-6 rounded-lg shadow text-center">
@@ -327,6 +330,7 @@ const Dashboard = () => {
               {activePage === 'appointments' && 'Appointment Management'}
               {activePage === 'finance' && 'Finance Overview'}
               {!['dashboard', 'users', 'doctors', 'appointments', 'finance'].includes(activePage) && ''}
+              {activePage === 'settings' && 'Settings'}
             </h1>
             <p className="text-gray-500">Welcome back, Admin</p>
           </div>

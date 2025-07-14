@@ -16,10 +16,12 @@
     "@mui/icons-material": "^6.1.7",
     "@mui/material": "^6.1.7",
     "@radix-ui/react-label": "^2.1.0",
+    "@radix-ui/react-slot": "^1.2.3",
     "@react-three/drei": "^9.115.0",
     "@tabler/icons-react": "^3.22.0",
     "aos": "^2.3.4",
     "axios": "^1.7.9",
+    "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "framer-motion": "^11.13.3",
     "jwt-decode": "^4.0.0",
@@ -42,7 +44,7 @@
     "slick-carousel": "^1.8.1",
     "styled-components": "^6.1.13",
     "sweetalert2": "^11.6.13",
-    "tailwind-merge": "^2.5.4",
+    "tailwind-merge": "^2.6.0",
     "twin.macro": "^3.4.1"
   },
   "devDependencies": {

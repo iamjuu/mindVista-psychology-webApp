@@ -1,6 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import PropTypes from 'prop-types';
+import { Search, Filter, ChevronLeft, ChevronRight, X, Phone, Users, Star, Clock } from 'lucide-react';
 import { toast } from 'react-toastify';
+import { Button } from '../../../../components/shadcn/button/button';
+import { Input } from '../../../../components/shadcn/input/input';
 import apiInstance from '../../../../instance';
 
 const DoctorList = () => {
@@ -11,6 +14,7 @@ const DoctorList = () => {
   const [editingDoctor, setEditingDoctor] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
   
   // Initialize with empty array - no static data
   const [doctorData, setDoctorData] = useState([]);
@@ -25,6 +29,18 @@ const DoctorList = () => {
     rating: '',
     available: true
   });
+
+  // Check if mobile view
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   // API call function for fetching doctors
   const fetchDoctorsAPI = async () => {
@@ -109,7 +125,7 @@ const DoctorList = () => {
   const specializations = ['all', ...new Set(doctorData.map(doctor => doctor.specialization))];
   
   // Items per page
-  const itemsPerPage = 5;
+  const itemsPerPage = isMobile ? 3 : 5;
   
   // Filter doctors based on search term and specialty
   const filteredDoctors = doctorData.filter(doctor => {
@@ -331,7 +347,79 @@ const DoctorList = () => {
         stars.push(<span key={i} className="text-gray-300">★</span>);
       }
     }
-    return <div className="flex">{stars} <span className="ml-1 text-gray-600">({rating})</span></div>;
+    return <div className="flex items-center">{stars} <span className="ml-1 text-gray-600 text-sm">({rating})</span></div>;
+  };
+
+  // Mobile card component
+  const DoctorCard = ({ doctor }) => (
+    <div className="bg-white border rounded-lg p-4 mb-4 shadow-sm">
+      <div className="flex justify-between items-start mb-3">
+        <div className="flex-1">
+          <h3 className="font-semibold text-lg text-gray-800">{doctor.name}</h3>
+          <p className="text-blue-600 text-sm font-medium">{doctor.specialization}</p>
+          <p className="text-gray-500 text-xs">ID: #{doctor.id}</p>
+        </div>
+        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+          doctor.available 
+            ? 'bg-green-100 text-green-800' 
+            : 'bg-red-100 text-red-800'
+        }`}>
+          {doctor.available ? 'Available' : 'Unavailable'}
+        </span>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-3 mb-3">
+        <div className="flex items-center text-sm text-gray-600">
+          <Phone size={14} className="mr-2" />
+          <span>{doctor.phone}</span>
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+          <Clock size={14} className="mr-2" />
+          <span>{doctor.experience}</span>
+        </div>
+        <div className="flex items-center text-sm text-gray-600">
+          <Users size={14} className="mr-2" />
+          <span>{doctor.patients} patients</span>
+        </div>
+        <div className="flex items-center text-sm">
+          <Star size={14} className="mr-2 text-yellow-400" />
+          {renderStars(doctor.rating)}
+        </div>
+      </div>
+      
+      <div className="flex justify-end space-x-2 pt-2 border-t">
+        <Button 
+          variant="ghost"
+          size="sm"
+          onClick={() => openEditModal(doctor)}
+          className="text-blue-600 hover:bg-blue-50"
+        >
+          Edit
+        </Button>
+        <Button 
+          variant="ghost"
+          size="sm"
+          onClick={() => handleDelete(doctor.id)}
+          className="text-red-600 hover:bg-red-50"
+        >
+          Delete
+        </Button>
+      </div>
+    </div>
+  );
+
+  // PropTypes for DoctorCard
+  DoctorCard.propTypes = {
+    doctor: PropTypes.shape({
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      name: PropTypes.string.isRequired,
+      specialization: PropTypes.string.isRequired,
+      phone: PropTypes.string.isRequired,
+      experience: PropTypes.string.isRequired,
+      patients: PropTypes.number.isRequired,
+      rating: PropTypes.number.isRequired,
+      available: PropTypes.bool.isRequired,
+    }).isRequired,
   };
   
   // Show loading spinner while fetching initial data
@@ -339,8 +427,8 @@ const DoctorList = () => {
     return (
       <div className="bg-white rounded-lg shadow">
         <div className="p-4 border-b">
-          <h2 className="text-xl font-bold">Doctor Management</h2>
-          <p className="text-gray-500 text-sm">Manage your medical staff</p>
+          {/* <h2 className="text-xl font-bold">Doctor Management</h2> */}
+          {/* <p className="text-gray-500 text-sm">Manage your medical staff</p> */}
         </div>
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -354,330 +442,376 @@ const DoctorList = () => {
     <div className="bg-white rounded-lg shadow">
       {/* Header */}
       <div className="p-4 border-b">
-        <h2 className="text-xl font-bold">Doctor Management</h2>
-        <p className="text-gray-500 text-sm">Manage your medical staff</p>
+        {/* <h2 className="text-xl font-bold">Doctor Management</h2> */}
+        {/* <p className="text-gray-500 text-sm">Manage your medical staff</p> */}
       </div>
       
       {/* Filters and search */}
-      <div className="p-4 flex flex-col md:flex-row justify-between gap-4">
-        <div className="relative flex-1">
-          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Search size={18} className="text-gray-400" />
-          </div>
-          <input
-            type="text"
-            placeholder="Search doctors by name or specialty..."
-            className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setCurrentPage(1); // Reset to first page on search
-            }}
-          />
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <div className="relative">
+      <div className="p-4 space-y-4">
+        <div className="flex flex-col sm:flex-row gap-4">
+          <div className="relative flex-1">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <Filter size={18} className="text-gray-400" />
+              <Search size={18} className="text-gray-400" />
             </div>
-            <select
-              className="pl-10 pr-4 py-2 border rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={specialtyFilter}
+            <Input
+              type="text"
+              placeholder="Search doctors by name or specialty..."
+              className="pl-10 pr-4 py-2 w-full"
+              value={searchTerm}
               onChange={(e) => {
-                setSpecialtyFilter(e.target.value);
-                setCurrentPage(1); // Reset to first page on filter change
+                setSearchTerm(e.target.value);
+                setCurrentPage(1); // Reset to first page on search
               }}
-            >
-              <option value="all">All Specialties</option>
-              {specializations.filter(spec => spec !== 'all').map(specialty => (
-                <option key={specialty} value={specialty}>{specialty}</option>
-              ))}
-            </select>
+            />
           </div>
           
-          <button 
-            onClick={openAddModal}
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-          >
-            Add Doctor
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="relative min-w-0 flex-1 sm:flex-initial">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Filter size={18} className="text-gray-400" />
+              </div>
+              <select
+                className="pl-10 pr-8 py-2 border rounded-lg w-full appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={specialtyFilter}
+                onChange={(e) => {
+                  setSpecialtyFilter(e.target.value);
+                  setCurrentPage(1); // Reset to first page on filter change
+                }}
+              >
+                <option value="all">All Specialties</option>
+                {specializations.filter(spec => spec !== 'all').map(specialty => (
+                  <option key={specialty} value={specialty}>{specialty}</option>
+                ))}
+              </select>
+            </div>
+            
+            <Button 
+              variant="default"
+              onClick={openAddModal}
+              className="bg-blue-500 text-white hover:bg-blue-600 whitespace-nowrap"
+            >
+              Add Doctor
+            </Button>
+          </div>
         </div>
       </div>
       
-      {/* Doctor list table */}
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead>
-            <tr className="bg-gray-50">
-              <th className="p-3 text-left font-semibold text-gray-600">ID</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Name</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Specialty</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Phone</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Experience</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Patients</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Rating</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Status</th>
-              <th className="p-3 text-left font-semibold text-gray-600">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {paginatedDoctors.length > 0 ? (
-              paginatedDoctors.map(doctor => (
-                <tr key={doctor.id} className="border-t hover:bg-gray-50">
-                  <td className="p-3 text-gray-500">#{doctor.id}</td>
-                  <td className="p-3 font-medium">{doctor.name}</td>
-                  <td className="p-3 text-gray-500">{doctor.specialization}</td>
-                  <td className="p-3 text-gray-500">{doctor.phone}</td>
-                  <td className="p-3 text-gray-500">{doctor.experience}</td>
-                  <td className="p-3 text-gray-500">{doctor.patients}</td>
-                  <td className="p-3">{renderStars(doctor.rating)}</td>
-                  <td className="p-3">
-                    <span className={`px-2 py-1 rounded-full text-xs ${
-                      doctor.available 
-                        ? 'bg-green-100 text-green-800' 
-                        : 'bg-red-100 text-red-800'
-                    }`}>
-                      {doctor.available ? 'Available' : 'Unavailable'}
-                    </span>
-                  </td>
-                  <td className="p-3">
-                    <div className="flex space-x-2">
-                      <button 
-                        onClick={() => openEditModal(doctor)}
-                        className="text-blue-500 hover:underline"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(doctor.id)}
-                        className="text-red-500 hover:underline"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan="9" className="p-4 text-center text-gray-500">
-                  No doctors found matching your criteria
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      {/* Doctor list - Mobile Cards or Desktop Table */}
+      {isMobile ? (
+        <div className="p-4">
+          {paginatedDoctors.length > 0 ? (
+            paginatedDoctors.map(doctor => (
+              <DoctorCard key={doctor.id} doctor={doctor} />
+            ))
+          ) : (
+            <div className="text-center py-8">
+              <p className="text-gray-500">No doctors found matching your criteria</p>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="max-w-full">
+          <div className="max-w-7xl mx-auto">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[900px] table-auto">
+                <thead>
+                  <tr className="bg-gray-50">
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[60px]">ID</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[150px]">Name</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[120px]">Specialty</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[120px]">Phone</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[100px]">Experience</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[80px]">Patients</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[100px]">Rating</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[100px]">Status</th>
+                    <th className="p-3 text-left font-semibold text-gray-600 min-w-[120px]">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedDoctors.length > 0 ? (
+                    paginatedDoctors.map(doctor => (
+                      <tr key={doctor.id} className="border-t hover:bg-gray-50">
+                        <td className="p-3 text-gray-500">#{doctor.id}</td>
+                        <td className="p-3 font-medium">{doctor.name}</td>
+                        <td className="p-3 text-gray-500">{doctor.specialization}</td>
+                        <td className="p-3 text-gray-500">{doctor.phone}</td>
+                        <td className="p-3 text-gray-500">{doctor.experience}</td>
+                        <td className="p-3 text-gray-500">{doctor.patients}</td>
+                        <td className="p-3">{renderStars(doctor.rating)}</td>
+                        <td className="p-3">
+                          <span className={`px-2 py-1 rounded-full text-xs ${
+                            doctor.available 
+                              ? 'bg-green-100 text-green-800' 
+                              : 'bg-red-100 text-red-800'
+                          }`}>
+                            {doctor.available ? 'Available' : 'Unavailable'}
+                          </span>
+                        </td>
+                        <td className="p-3">
+                          <div className="flex space-x-2">
+                            <Button 
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => openEditModal(doctor)}
+                              className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
+                            >
+                              Edit
+                            </Button>
+                            <Button 
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => handleDelete(doctor.id)}
+                              className="text-red-500 hover:text-red-700 underline hover:no-underline"
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="9" className="p-4 text-center text-gray-500">
+                        No doctors found matching your criteria
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      )}
       
       {/* Pagination */}
       {filteredDoctors.length > 0 && (
-        <div className="p-4 border-t flex items-center justify-between">
-          <div className="text-sm text-gray-500">
-            Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredDoctors.length)} of {filteredDoctors.length} doctors
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <button
-              onClick={() => goToPage(currentPage - 1)}
-              disabled={currentPage === 1}
-              className={`p-2 rounded-lg border ${
-                currentPage === 1 
-                  ? 'text-gray-300 cursor-not-allowed' 
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <ChevronLeft size={16} />
-            </button>
+        <div className="p-4 border-t">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div className="text-sm text-gray-500 order-2 sm:order-1">
+              Showing {startIndex + 1} to {Math.min(startIndex + itemsPerPage, filteredDoctors.length)} of {filteredDoctors.length} doctors
+            </div>
             
-            {[...Array(totalPages)].map((_, index) => {
-              const pageNumber = index + 1;
-              // Show current page, first, last, and adjacent pages
-              if (
-                pageNumber === 1 ||
-                pageNumber === totalPages ||
-                (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
-              ) {
-                return (
-                  <button
-                    key={pageNumber}
-                    onClick={() => goToPage(pageNumber)}
-                    className={`w-8 h-8 rounded-lg ${
-                      currentPage === pageNumber
-                        ? 'bg-blue-500 text-white'
-                        : 'text-gray-600 hover:bg-gray-50'
-                    }`}
-                  >
-                    {pageNumber}
-                  </button>
-                );
-              } else if (
-                (pageNumber === 2 && currentPage > 3) ||
-                (pageNumber === totalPages - 1 && currentPage < totalPages - 2)
-              ) {
-                return <span key={pageNumber} className="px-1">...</span>;
-              } else {
-                return null;
-              }
-            })}
-            
-            <button
-              onClick={() => goToPage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className={`p-2 rounded-lg border ${
-                currentPage === totalPages 
-                  ? 'text-gray-300 cursor-not-allowed' 
-                  : 'text-gray-600 hover:bg-gray-50'
-              }`}
-            >
-              <ChevronRight size={16} />
-            </button>
+            <div className="flex items-center justify-center space-x-1 order-1 sm:order-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`p-2 ${
+                  currentPage === 1 
+                    ? 'text-gray-300 cursor-not-allowed' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <ChevronLeft size={16} />
+              </Button>
+              
+              {/* Mobile pagination - show fewer pages */}
+              {isMobile ? (
+                <span className="px-3 py-2 text-sm text-gray-600">
+                  {currentPage} of {totalPages}
+                </span>
+              ) : (
+                [...Array(totalPages)].map((_, index) => {
+                  const pageNumber = index + 1;
+                  // Show current page, first, last, and adjacent pages
+                  if (
+                    pageNumber === 1 ||
+                    pageNumber === totalPages ||
+                    (pageNumber >= currentPage - 1 && pageNumber <= currentPage + 1)
+                  ) {
+                    return (
+                      <Button
+                        key={pageNumber}
+                        variant={currentPage === pageNumber ? "default" : "ghost"}
+                        size="sm"
+                        onClick={() => goToPage(pageNumber)}
+                        className={`w-8 h-8 text-sm ${
+                          currentPage === pageNumber
+                            ? 'bg-blue-500 text-white'
+                            : 'text-gray-600 hover:bg-gray-50'
+                        }`}
+                      >
+                        {pageNumber}
+                      </Button>
+                    );
+                  } else if (
+                    (pageNumber === 2 && currentPage > 3) ||
+                    (pageNumber === totalPages - 1 && currentPage < totalPages - 2)
+                  ) {
+                    return <span key={pageNumber} className="px-1 text-gray-400">...</span>;
+                  } else {
+                    return null;
+                  }
+                })
+              )}
+              
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => goToPage(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`p-2 ${
+                  currentPage === totalPages 
+                    ? 'text-gray-300 cursor-not-allowed' 
+                    : 'text-gray-600 hover:bg-gray-50'
+                }`}
+              >
+                <ChevronRight size={16} />
+              </Button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Add/Edit Doctor Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">
-                {editingDoctor ? 'Edit Doctor' : 'Add New Doctor'}
-              </h3>
-              <button
-                onClick={closeModal}
-                className="text-gray-400 hover:text-gray-600"
-              >
-                <X size={20} />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Doctor Name
-                </label>
-                <input
-                  type="text"
-                  name="name"
-                  value={formData.name}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Dr. John Doe"
-                />
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-4">
+                <h3 className="text-lg font-bold">
+                  {editingDoctor ? 'Edit Doctor' : 'Add New Doctor'}
+                </h3>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={closeModal}
+                  className="text-gray-400 hover:text-gray-600"
+                >
+                  <X size={20} />
+                </Button>
               </div>
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Specialization
-                </label>
-                <input
-                  type="text"
-                  name="specialization"
-                  value={formData.specialization}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="Cardiology"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Phone Number
-                </label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="+1 (555) 123-4567"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Experience
-                </label>
-                <input
-                  type="text"
-                  name="experience"
-                  value={formData.experience}
-                  onChange={handleInputChange}
-                  required
-                  className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  placeholder="5 years"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Patients
+                    Doctor Name
                   </label>
-                  <input
-                    type="number"
-                    name="patients"
-                    value={formData.patients}
+                  <Input
+                    type="text"
+                    name="name"
+                    value={formData.name}
                     onChange={handleInputChange}
                     required
-                    min="0"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="30"
+                    className="w-full"
+                    placeholder="Dr. John Doe"
                   />
                 </div>
                 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Rating
+                    Specialization
                   </label>
-                  <input
-                    type="number"
-                    name="rating"
-                    value={formData.rating}
+                  <Input
+                    type="text"
+                    name="specialization"
+                    value={formData.specialization}
                     onChange={handleInputChange}
                     required
-                    min="0"
-                    max="5"
-                    step="0.1"
-                    className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="4.5"
+                    className="w-full"
+                    placeholder="Cardiology"
                   />
                 </div>
-              </div>
-              
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  name="available"
-                  checked={formData.available}
-                  onChange={handleInputChange}
-                  className="mr-2"
-                />
-                <label className="text-sm font-medium text-gray-700">
-                  Available
-                </label>
-              </div>
-              
-              <div className="flex justify-end space-x-3 pt-4">
-                <button
-                  type="button"
-                  onClick={closeModal}
-                  className="px-4 py-2 text-gray-600 border rounded-lg hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="button"
-                  onClick={handleSubmit}
-                  className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-                  disabled={isLoading}
-                >
-                  {isLoading ? 'Saving...' : (editingDoctor ? 'Update Doctor' : 'Add Doctor')}
-                </button>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Phone Number
+                  </label>
+                  <Input
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full"
+                    placeholder="+1 (555) 123-4567"
+                  />
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Experience
+                  </label>
+                  <Input
+                    type="text"
+                    name="experience"
+                    value={formData.experience}
+                    onChange={handleInputChange}
+                    required
+                    className="w-full"
+                    placeholder="5 years"
+                  />
+                </div>
+                
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Patients
+                    </label>
+                    <Input
+                      type="number"
+                      name="patients"
+                      value={formData.patients}
+                      onChange={handleInputChange}
+                      required
+                      min="0"
+                      className="w-full"
+                      placeholder="30"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Rating
+                    </label>
+                    <Input
+                      type="number"
+                      name="rating"
+                      value={formData.rating}
+                      onChange={handleInputChange}
+                      required
+                      min="0"
+                      max="5"
+                      step="0.1"
+                      className="w-full"
+                      placeholder="4.5"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex items-center">
+                  <input
+                    type="checkbox"
+                    name="available"
+                    checked={formData.available}
+                    onChange={handleInputChange}
+                    className="mr-2"
+                  />
+                  <label className="text-sm font-medium text-gray-700">
+                    Available
+                  </label>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row justify-end gap-3 pt-4">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={closeModal}
+                    className="text-gray-600 hover:bg-gray-50"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="default"
+                    onClick={handleSubmit}
+                    className="bg-blue-500 text-white hover:bg-blue-600"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? 'Saving...' : (editingDoctor ? 'Update Doctor' : 'Add Doctor')}
+                  </Button>
+                </div>
               </div>
             </div>
           </div>

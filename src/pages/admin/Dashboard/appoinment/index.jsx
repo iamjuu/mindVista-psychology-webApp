@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import { Button } from '../../../../components/shadcn/button/button'
+import { Input } from '../../../../components/shadcn/input/input'
 // import apiInstance from '../../../../instance' // Commented out - using static data
 
 const Index = () => {
@@ -506,12 +508,12 @@ const Index = () => {
                         {/* Name Filter */}
                         <div className="flex flex-col">
                             <label className="text-sm font-medium text-gray-700 mb-1">Patient Name</label>
-                            <input
+                            <Input
                                 type="text"
                                 value={nameFilter}
                                 onChange={(e) => setNameFilter(e.target.value)}
                                 placeholder="Search by name..."
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="w-full"
                             />
                         </div>
 
@@ -549,12 +551,13 @@ const Index = () => {
                         {/* Clear Filters Button */}
                         <div className="flex flex-col">
                             <label className="text-sm font-medium text-gray-700 mb-1 opacity-0">Clear</label>
-                            <button
+                            <Button
+                                variant="outline"
                                 onClick={clearFilters}
-                                className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-colors duration-200"
+                                className="bg-gray-100 text-gray-700 hover:bg-gray-200"
                             >
                                 Clear Filters
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
