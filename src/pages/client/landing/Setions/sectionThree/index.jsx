@@ -7,8 +7,8 @@ import {
   LeftSection,
   RightSection,
 } from "./style";
-import { sectionThreeData } from '../../../../constant/datas';
-import Btn from "../../../../components/core/button";
+import { sectionThreeData } from '../../../../../constant/datas';
+import Btn from "../../../../../components/core/button";
 
 const Index = () => {
 

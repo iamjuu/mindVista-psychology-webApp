@@ -1,7 +1,7 @@
 import { Container, ContainerWrap } from '../../Style';
-import { SectionFour } from '../../../../constant/datas';
+import { SectionFour } from '../../../../../constant/datas';
 import { Main } from './style';
-import Btn from '../../../../components/core/button';
+import Btn from '../../../../../components/core/button';
 
 const Index = () => {
 

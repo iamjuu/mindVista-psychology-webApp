@@ -1,7 +1,7 @@
 import { useEffect} from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
-import Navbar from "../../components/navbar";
+import Navbar from "../../../components/navbar";
  import Bgsction from "../landing/Setions/bgSection"
  import BgsectionOne from "../landing/Setions/sectionOne"
  import SectionTwo from "../landing/Setions/sectionTwo/"
@@ -10,7 +10,7 @@ import Navbar from "../../components/navbar";
 import SectionFive from "../landing/Setions/sectionFive"
 import SectionSix from "../landing/Setions/sectionSix"
 import  SectionSeven from "../landing/Setions/sectionSeven"
-import Footer from '../../components/footer'
+import Footer from '../../../components/footer'
 const Index = () => {
   useEffect(() => {
     AOS.init({

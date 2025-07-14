@@ -2,21 +2,21 @@ import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Lazy loading components
-const Landing = React.lazy(() => import("../pages/landing"));
-const About = React.lazy(() => import("../pages/about"));
-const Contact = React.lazy(() => import("../pages/contact"));
-const ProgramContent = React.lazy(() =>import("../pages/programs/sections/sectionOne"));
-const UserProfile = React.lazy(() => import("../pages/profile"));
+const Landing = React.lazy(() => import("../pages/client/landing"));
+const About = React.lazy(() => import("../pages/client/about"));
+const Contact = React.lazy(() => import("../pages/client/contact"));
+const ProgramContent = React.lazy(() =>import("../pages/client/programs/sections/sectionOne"));
+const UserProfile = React.lazy(() => import("../pages/client/profile"));
 import RegisterForm from "../components/registerForm";
-import Signup from "../pages/signup";
-import Login from "../pages/login"
 import {CustomSpinner}from "../common/Loader";
-import DetailsPage from "../pages/details page"
-// ****************************
-import DashbaordHome from '../pages/Dashboard/home'
+import DetailsPage from "../pages/client/details page"
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
-// ***************scanner page****************
 import ScannerPage from "../pages/scanner"
+// ***************  admin  *************
+import DashbaordHome from '../pages/admin/Dashboard/home'
+// ***************  docter  *************
+import Docter from '../pages/docter'
+
 function UserRouter() {
   return (
     <Router>
@@ -36,12 +36,12 @@ function UserRouter() {
           />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/scanner" element={<ScannerPage />} />
-                    <Route path="/login" element={<Login />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/details/:id" element={<DetailsPage />} />
 {/* ************************** */}
 <Route path="/Dashboard" element={< DashbaordHome/>} />
-
+{/* **************************** */}
+<Route path="/docter" element={<Docter />} />
         </Routes>
       </Suspense>
     </Router>

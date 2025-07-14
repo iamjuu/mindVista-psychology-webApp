@@ -1,6 +1,6 @@
 import { Main } from './style';
 import { Container, ContainerWrap } from '../../Style';
-import { SectionSix } from '../../../../constant/datas';
+import { SectionSix } from '../../../../../constant/datas';
 
 const Index = () => {
 

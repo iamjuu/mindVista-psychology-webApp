@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import {jwtDecode} from "jwt-decode";
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { Button, FormContainer, FormGroup, Input, Label, Select } from './style';
+import apiInstance from '../../instance';
 
 function Form() {
   const Navigate = useNavigate();
@@ -16,7 +15,8 @@ function Form() {
     number: '',
     location: '',
     age: '5',
-    slot: '10:00 AM', // Default slot value
+    slot: 'morning', // Default slot value updated
+    time: '09:00-10:00', // Default time slot
     date: ''
   });
 
@@ -30,9 +30,11 @@ function Form() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+    
+    console.log('[RegisterForm] Submitting slot:', formData.slot); // Log slot value
+    console.log('[RegisterForm] Submitting time:', formData.time); // Log time value
     try {
-      const response = await axios.post('http://localhost:3000/register', formData, {
+      const response = await apiInstance.post('/appointment', formData, {
         headers: {
           'Content-Type': 'application/json',
         },
@@ -108,12 +110,36 @@ function Form() {
           onChange={handleChange}
           required
         >
-          <option value="10:00 AM">10:00 AM</option>
-          <option value="11:00 AM">11:00 AM</option>
-          <option value="12:00 PM">12:00 PM</option>
-          <option value="01:00 PM">01:00 PM</option>
-          <option value="02:00 PM">02:00 PM</option>
-          <option value="03:00 PM">03:00 PM</option>
+          <option value="morning">Morning</option>
+          <option value="afternoon">Afternoon</option>
+          <option value="evening">Evening</option>
+          <option value="night">Night</option>
+        </Select>
+      </FormGroup>
+
+      <FormGroup>
+        <Label htmlFor="time">Time Slot:</Label>
+        <Select
+          id="time"
+          name="time"
+          value={formData.time}
+          onChange={handleChange}
+          required
+        >
+          <optgroup label="Morning (3 slots)">
+            <option value="09:00-10:00">9:00 AM - 10:00 AM</option>
+            <option value="10:00-11:00">10:00 AM - 11:00 AM</option>
+            <option value="11:00-12:00">11:00 AM - 12:00 PM</option>
+          </optgroup>
+          <optgroup label="Afternoon (3 slots)">
+            <option value="12:00-13:00">12:00 PM - 1:00 PM</option>
+            <option value="13:00-14:00">1:00 PM - 2:00 PM</option>
+            <option value="14:00-15:00">2:00 PM - 3:00 PM</option>
+          </optgroup>
+          <optgroup label="Evening (2 slots)">
+            <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
+            <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
+          </optgroup>
         </Select>
       </FormGroup>
 

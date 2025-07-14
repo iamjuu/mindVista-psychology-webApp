@@ -1,7 +1,7 @@
 import { Container, ContainerWrap } from "../../Style";
 import { Main } from "./style";
-import { SectionOne } from '../../../../constant/datas';
-import Btn from "../../../../components/core/button";
+import { SectionOne } from '../../../../../constant/datas';
+import Btn from "../../../../../components/core/button";
 
 const Section1 = () => {
   return (

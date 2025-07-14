@@ -38,7 +38,7 @@ const index = () => {
                 <button
                   className="mt-1 w-full bg-amber-700 px-6 py-3 text-sm font-bold uppercase tracking-wide text-white transition-none hover:bg-amber-800 sm:mt-0 sm:w-auto sm:shrink-0"
                 >
-                  Sign Up
+                  Register
                 </button>
               </div>
             </form>
