@@ -2,16 +2,16 @@ import React, { Suspense } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 // Lazy loading components
-const Landing = React.lazy(() => import("../pages/landing"));
-const About = React.lazy(() => import("../pages/about"));
-const Contact = React.lazy(() => import("../pages/contact"));
-const ProgramContent = React.lazy(() =>import("../pages/programs/sections/sectionOne"));
-const UserProfile = React.lazy(() => import("../pages/profile"));
+const Landing = React.lazy(() => import("../pages/client/landing"));
+const About = React.lazy(() => import("../pages/client/about"));
+const Contact = React.lazy(() => import("../pages/client/contact"));
+const ProgramContent = React.lazy(() =>import("../pages/client/programs/sections/sectionOne"));
+const UserProfile = React.lazy(() => import("../pages/client/profile"));
 import RegisterForm from "../components/registerForm";
 import {CustomSpinner}from "../common/Loader";
-import DetailsPage from "../pages/details page"
+import DetailsPage from "../pages/client/details page"
 // ****************************
-import DashbaordHome from '../pages/Dashboard/home'
+import DashbaordHome from '../pages/admin/Dashboard/home'
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 // ***************scanner page****************
 import ScannerPage from "../pages/scanner"

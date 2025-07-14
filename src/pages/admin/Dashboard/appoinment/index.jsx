@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import apiInstance from '../../../instance'
+import apiInstance from '../../../../instance'
 
 const Index = () => {
     const [appointments, setAppointments] = useState([])

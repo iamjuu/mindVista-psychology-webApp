@@ -1,8 +1,8 @@
 // SectionTwo.js
 import { Container, ContainerWrap, FreeContainer } from "../../Style";
 import { Main } from "./style";
-import { sectionTwoData } from '../../../../constant/datas'
-import Btn from '../../../../components/core/button';
+import { sectionTwoData } from '../../../../../constant/datas'
+import Btn from '../../../../../components/core/button';
 
 const SectionTwo = () => {
 

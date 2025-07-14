@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Search, Filter, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { toast } from 'react-toastify';
-import apiInstance from '../../../instance';
+import apiInstance from '../../../../instance';
 
 const DoctorList = () => {
   const [currentPage, setCurrentPage] = useState(1);

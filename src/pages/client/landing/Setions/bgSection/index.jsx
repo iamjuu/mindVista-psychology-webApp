@@ -1,8 +1,8 @@
 import { Container, ContainerWrap, BgContainer } from "../../Style";
 import { Main } from "./style";
-import { Data } from "../../../../constant/datas";
-import { Bgimg } from "../../../../assets";
-import Regbtn from "../../../../components/core/button";
+import { Data } from "../../../../../constant/datas";
+import { Bgimg } from "../../../../../assets";
+import Regbtn from "../../../../../components/core/button";
 import { Link } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 

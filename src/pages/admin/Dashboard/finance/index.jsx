@@ -415,7 +415,7 @@ const Finance = () => {
 
       {/* Doctor Overview - Only show on overview (All Doctors) */}
       {selectedDoctor === 'all' && (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+        <div className=" p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4 text-gray-800">Doctor Overview</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Doctor List */}
@@ -441,9 +441,9 @@ const Finance = () => {
             </div>
             
             {/* Specialization Breakdown */}
-            <div>
-              <h4 className="font-medium text-gray-700 mb-3">Specialization Breakdown</h4>
-              <div className="space-y-3">
+            <div className="">
+              <h4 className="font-medium text-gray-700 mb-3 ">Specialization Breakdown</h4>
+              <div className=" max-h-80 overflow-y-auto space-y-3">
                 {Array.from(new Set(mockDoctorData.map(d => d.specialization))).map((specialization) => {
                   const count = mockDoctorData.filter(d => d.specialization === specialization).length;
                   const totalPatients = mockDoctorData.filter(d => d.specialization === specialization).reduce((sum, d) => sum + d.patients, 0);

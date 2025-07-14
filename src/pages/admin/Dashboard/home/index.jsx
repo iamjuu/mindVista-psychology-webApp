@@ -1,9 +1,8 @@
 import React, { useState } from 'react';
-import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { Users, DollarSign, HelpCircle, Activity } from 'lucide-react';
+import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Import components
-import Sidebar from '../../../components/DashBoardcomponents/slideBar';
+import Sidebar from '../../../../components/DashBoardcomponents/slideBar';
 import UserList from '../dashboarduserlist';
 import DoctorList from '../docterlist';
 import Appoiment from '../appoinment';
