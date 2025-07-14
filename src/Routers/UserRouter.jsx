@@ -10,11 +10,13 @@ const UserProfile = React.lazy(() => import("../pages/client/profile"));
 import RegisterForm from "../components/registerForm";
 import {CustomSpinner}from "../common/Loader";
 import DetailsPage from "../pages/client/details page"
-// ****************************
-import DashbaordHome from '../pages/admin/Dashboard/home'
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
-// ***************scanner page****************
 import ScannerPage from "../pages/scanner"
+// ***************  admin  *************
+import DashbaordHome from '../pages/admin/Dashboard/home'
+// ***************  docter  *************
+import Docter from '../pages/docter'
+
 function UserRouter() {
   return (
     <Router>
@@ -38,7 +40,8 @@ function UserRouter() {
           <Route path="/details/:id" element={<DetailsPage />} />
 {/* ************************** */}
 <Route path="/Dashboard" element={< DashbaordHome/>} />
-
+{/* **************************** */}
+<Route path="/docter" element={<Docter />} />
         </Routes>
       </Suspense>
     </Router>

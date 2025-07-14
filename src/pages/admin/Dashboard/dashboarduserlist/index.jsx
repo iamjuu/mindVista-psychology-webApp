@@ -3,10 +3,12 @@ import { Search, Filter, ChevronLeft, ChevronRight } from 'lucide-react';
 // import apiInstance from '../../../instance';
 
 const DoctorList = () => {
+  const [activeTab, setActiveTab] = useState('doctors');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [doctorData, setDoctorData] = useState([]);
+  const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   
@@ -119,9 +121,85 @@ const DoctorList = () => {
       joinDate: '2022-11-20',
       status: 'active'
     }
+  ];
+
+  // Mock user data array based on registration form
+  const mockUserData = [
+    {
+      id: '1',
+      name: 'John Smith',
+      email: 'john.smith@gmail.com',
+      number: '9876543210',
+      location: 'Mumbai',
+      age: '32',
+      slot: 'morning',
+      time: '09:00-10:00',
+      date: '2024-01-15',
+      status: 'active'
+    },
+    {
+      id: '2',
+      name: 'Sarah Johnson',
+      email: 'sarah.johnson@gmail.com',
+      number: '9876543211',
+      location: 'Delhi',
+      age: '28',
+      slot: 'afternoon',
+      time: '14:00-15:00',
+      date: '2024-01-16',
+      status: 'active'
+    },
+    {
+      id: '3',
+      name: 'Mike Davis',
+      email: 'mike.davis@gmail.com',
+      number: '9876543212',
+      location: 'Bangalore',
+      age: '35',
+      slot: 'evening',
+      time: '18:00-19:00',
+      date: '2024-01-17',
+      status: 'active'
+    },
+    {
+      id: '4',
+      name: 'Emma Wilson',
+      email: 'emma.wilson@gmail.com',
+      number: '9876543213',
+      location: 'Chennai',
+      age: '29',
+      slot: 'morning',
+      time: '10:00-11:00',
+      date: '2024-01-18',
+      status: 'inactive'
+    },
+    {
+      id: '5',
+      name: 'David Brown',
+      email: 'david.brown@gmail.com',
+      number: '9876543214',
+      location: 'Hyderabad',
+      age: '42',
+      slot: 'afternoon',
+      time: '15:00-16:00',
+      date: '2024-01-19',
+      status: 'active'
+    },
+    {
+      id: '6',
+      name: 'Lisa Anderson',
+      email: 'lisa.anderson@gmail.com',
+      number: '9876543215',
+      location: 'Pune',
+      age: '31',
+      slot: 'evening',
+      time: '19:00-20:00',
+      date: '2024-01-20',
+      status: 'active'
+    }
   ]
   
-  // Fetch doctor data from API (commented out for demo)
+  // Fetch data from API (commented out for demo)
   useEffect(() => {
     const loadMockData = () => {
       setLoading(true);
@@ -129,11 +207,13 @@ const DoctorList = () => {
       // Simulate API call delay
       setTimeout(() => {
         try {
-          console.log('Mock data loaded:', mockDoctorData);
+          console.log('Mock doctor data loaded:', mockDoctorData);
+          console.log('Mock user data loaded:', mockUserData);
           setDoctorData(mockDoctorData);
+          setUserData(mockUserData);
         } catch (error) {
           console.error('Error loading mock data:', error);
-          setError('Failed to load doctors. Please try again later.');
+          setError('Failed to load data. Please try again later.');
         } finally {
           setLoading(false);
         }
@@ -142,46 +222,7 @@ const DoctorList = () => {
     
     loadMockData();
 
-    // Original API call - commented out
-    /* 
-    const fetchUsers = async () => {
-      setLoading(true);
-      try {
-        const response = await apiInstance.get('/dashboard');
-        console.log(response.data, 'data fetched');
-        
-        // Check if Data property exists in the response
-        if (response.data && response.data.Data) {
-          // Map the API response to match the format we need
-          const formattedUsers = response.data.Data.map((user, index) => ({
-            id: user._id || index + 1,
-            name: user.name || 'Unknown',
-            email: user.email || 'No email',
-            joinDate: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : 'Unknown',
-            status: user.status || 'Unknown',
-            lastLogin: user.lastLogin ? new Date(user.lastLogin).toISOString().split('T')[0] : 'Never',
-            phone: user.number || user.phone || 'No phone',
-            location: user.location || 'Not provided',
-            age: user.age || 'Not provided',
-            slot: user.slot || 'Not provided',
-            appointmentDate: user.date ? new Date(user.date).toISOString().split('T')[0] : 'Not provided'
-          }));
-          
-          setUserData(formattedUsers);
-        } else {
-          console.error('Unexpected API response format:', response.data);
-          setError('Unexpected data format received from server');
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-        setError('Failed to load users. Please try again later.');
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchUsers();
-    */
+  
   }, []);
   
   // Filter doctors based on search term and status
@@ -195,11 +236,27 @@ const DoctorList = () => {
     
     return matchesSearch && matchesStatus;
   });
+
+  // Filter users based on search term and status
+  const filteredUsers = userData.filter(user => {
+    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.age.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         user.slot.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || user.status.toLowerCase() === statusFilter.toLowerCase();
+    
+    return matchesSearch && matchesStatus;
+  });
+  
+  // Get current data based on active tab
+  const currentData = activeTab === 'doctors' ? filteredDoctors : filteredUsers;
   
   // Calculate pagination
-  const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
+  const totalPages = Math.ceil(currentData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedDoctors = filteredDoctors.slice(startIndex, startIndex + itemsPerPage);
+  const paginatedData = currentData.slice(startIndex, startIndex + itemsPerPage);
   
   // Handle page change
   const goToPage = (page) => {
@@ -209,10 +266,38 @@ const DoctorList = () => {
   
   return (
     <div className="bg-white rounded-lg shadow">
-      {/* Header */}
+      {/* Header with Tabs */}
       <div className="p-4 border-b">
-        <h2 className="text-xl font-bold">Doctor Management</h2>
-        <p className="text-gray-500 text-sm">Manage your doctors and their profiles</p>
+        <div className="flex space-x-1 bg-gray-100 p-1 rounded-lg w-fit">
+          <button
+            onClick={() => {
+              console.log('Switching to doctors tab');
+              setActiveTab('doctors');
+              setCurrentPage(1);
+            }}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'doctors'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Doctors
+          </button>
+          <button
+            onClick={() => {
+              console.log('Switching to users tab');
+              setActiveTab('users');
+              setCurrentPage(1);
+            }}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === 'users'
+                ? 'bg-white text-blue-600 shadow-sm'
+                : 'text-gray-600 hover:text-gray-900'
+            }`}
+          >
+            Users
+          </button>
+        </div>
       </div>
       
       {/* Filters and search */}
@@ -271,74 +356,144 @@ const DoctorList = () => {
         </div>
       )}
       
-      {/* Doctor list table */}
+      {/* Data table */}
       {!loading && !error && (
         <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-50">
-                <th className="p-3 text-left font-semibold text-gray-600">ID</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Doctor Name</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Email</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Phone</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Specialization</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Experience</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Total Income</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Monthly Income</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Total Patients</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Status</th>
-                <th className="p-3 text-left font-semibold text-gray-600">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedDoctors.length > 0 ? (
-                paginatedDoctors.map(doctor => (
-                  <tr key={doctor.id} className="border-t hover:bg-gray-50">
-                    <td className="p-3 text-gray-500">#{typeof doctor.id === 'number' ? doctor.id : doctor.id.slice(-4)}</td>
-                    <td className="p-3 font-medium">{doctor.name}</td>
-                    <td className="p-3 text-gray-500">{doctor.email}</td>
-                    <td className="p-3 text-gray-500">{doctor.phone}</td>
-                    <td className="p-3 text-gray-500">{doctor.specialization}</td>
-                    <td className="p-3 text-gray-500">{doctor.experience}</td>
-                    <td className="p-3 text-gray-500 font-semibold text-green-600">
-                      ₹{doctor.totalIncome.toLocaleString()}
-                    </td>
-                    <td className="p-3 text-gray-500">
-                      ₹{doctor.monthlyIncome.toLocaleString()}
-                    </td>
-                    <td className="p-3 text-gray-500">
-                      <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
-                        {doctor.totalPatients} patients
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        doctor.status?.toLowerCase() === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {doctor.status || 'Unknown'}
-                      </span>
-                    </td>
-                    <td className="p-3">
-                      <div className="flex space-x-2">
-                        <button className="text-blue-500 hover:underline">Edit</button>
-                        <button className="text-red-500 hover:underline">Delete</button>
-                      </div>
+          {activeTab === 'doctors' ? (
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="p-3 text-left font-semibold text-gray-600">ID</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Doctor Name</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Email</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Phone</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Specialization</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Experience</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Total Income</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Monthly Income</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Total Patients</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Status</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {paginatedData.length > 0 ? (
+                  paginatedData.map(doctor => (
+                    <tr key={doctor.id} className="border-t hover:bg-gray-50">
+                      <td className="p-3 text-gray-500">#{typeof doctor.id === 'number' ? doctor.id : doctor.id.slice(-4)}</td>
+                      <td className="p-3 font-medium">{doctor.name}</td>
+                      <td className="p-3 text-gray-500">{doctor.email}</td>
+                      <td className="p-3 text-gray-500">{doctor.phone}</td>
+                      <td className="p-3 text-gray-500">{doctor.specialization}</td>
+                      <td className="p-3 text-gray-500">{doctor.experience}</td>
+                      <td className="p-3 text-gray-500 font-semibold text-green-600">
+                        ₹{doctor.totalIncome.toLocaleString()}
+                      </td>
+                      <td className="p-3 text-gray-500">
+                        ₹{doctor.monthlyIncome.toLocaleString()}
+                      </td>
+                      <td className="p-3 text-gray-500">
+                        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">
+                          {doctor.totalPatients} patients
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          doctor.status?.toLowerCase() === 'active' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {doctor.status || 'Unknown'}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex space-x-2">
+                          <button className="text-blue-500 hover:underline">Edit</button>
+                          <button className="text-red-500 hover:underline">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="11" className="p-4 text-center text-gray-500">
+                      {doctorData.length > 0 
+                        ? 'No doctors found matching your criteria' 
+                        : 'No doctors available'}
                     </td>
                   </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="11" className="p-4 text-center text-gray-500">
-                    {doctorData.length > 0 
-                      ? 'No doctors found matching your criteria' 
-                      : 'No doctors available'}
-                  </td>
+                )}
+              </tbody>
+            </table>
+          ) : (
+            <table className="w-full">
+              <thead>
+                <tr className="bg-gray-50">
+                  <th className="p-3 text-left font-semibold text-gray-600">ID</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Name</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Email</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Phone</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Location</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Age</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Slot</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Time</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Date</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Status</th>
+                  <th className="p-3 text-left font-semibold text-gray-600">Actions</th>
                 </tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paginatedData.length > 0 ? (
+                  paginatedData.map(user => (
+                    <tr key={user.id} className="border-t hover:bg-gray-50">
+                      <td className="p-3 text-gray-500">#{typeof user.id === 'number' ? user.id : user.id.slice(-4)}</td>
+                      <td className="p-3 font-medium">{user.name}</td>
+                      <td className="p-3 text-gray-500">{user.email}</td>
+                      <td className="p-3 text-gray-500">{user.number}</td>
+                      <td className="p-3 text-gray-500">{user.location}</td>
+                      <td className="p-3 text-gray-500">{user.age}</td>
+                      <td className="p-3 text-gray-500">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          user.slot === 'morning' 
+                            ? 'bg-yellow-100 text-yellow-800' 
+                            : user.slot === 'afternoon' 
+                              ? 'bg-orange-100 text-orange-800' 
+                              : 'bg-purple-100 text-purple-800'
+                        }`}>
+                          {user.slot}
+                        </span>
+                      </td>
+                      <td className="p-3 text-gray-500">{user.time}</td>
+                      <td className="p-3 text-gray-500">{user.date}</td>
+                      <td className="p-3">
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          user.status?.toLowerCase() === 'active' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {user.status || 'Unknown'}
+                        </span>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex space-x-2">
+                          <button className="text-blue-500 hover:underline">Edit</button>
+                          <button className="text-red-500 hover:underline">Delete</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan="11" className="p-4 text-center text-gray-500">
+                      {userData.length > 0 
+                        ? 'No users found matching your criteria' 
+                        : 'No users available'}
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          )}
         </div>
       )}
       
