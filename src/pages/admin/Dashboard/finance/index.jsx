@@ -79,48 +79,19 @@ const Finance = () => {
   ];
 
   useEffect(() => {
-    // Simulate API call to fetch finance data
-    const fetchFinanceData = () => {
-      setLoading(true);
-      
-      setTimeout(() => {
-        // Calculate total users
-        const totalUsers = mockUserData.length;
-        
-        // Calculate total income from approved appointments
-        const approvedAppointments = mockAppointments.filter(app => app.status === 'approved');
-        const totalIncome = approvedAppointments.reduce((sum, app) => sum + app.fee, 0);
-        
-        // Calculate monthly growth
-        const currentMonth = monthlyRevenue[monthlyRevenue.length - 1].revenue;
-        const previousMonth = monthlyRevenue[monthlyRevenue.length - 2].revenue;
-        const monthlyGrowth = ((currentMonth - previousMonth) / previousMonth * 100).toFixed(1);
-        
-        // Calculate total appointments
-        const totalAppointments = mockAppointments.length;
-        
-        // Calculate average revenue per user
-        const averageRevenuePerUser = totalUsers > 0 ? (totalIncome / totalUsers).toFixed(0) : 0;
-        
-        // Calculate doctor statistics
-        const totalDoctors = mockDoctorData.length;
-        const availableDoctors = mockDoctorData.filter(doctor => doctor.available).length;
-        
-        setFinanceData({
-          totalUsers,
-          totalIncome,
-          monthlyGrowth,
-          totalAppointments,
-          averageRevenuePerUser,
-          totalDoctors,
-          availableDoctors
-        });
-        
-        setLoading(false);
-      }, 1000);
-    };
-    
-    fetchFinanceData();
+    // Simulate API call
+    setTimeout(() => {
+      setFinanceData({
+        totalUsers: 1250,
+        totalIncome: 750000,
+        monthlyGrowth: 12.5,
+        totalAppointments: 850,
+        averageRevenuePerUser: 600,
+        totalDoctors: 15,
+        availableDoctors: 12
+      });
+      setLoading(false);
+    }, 1500);
   }, []);
 
   // Filter data based on selected doctor
@@ -162,19 +133,19 @@ const Finance = () => {
 
   // Stats Card Component
   const StatsCard = ({ icon, title, value, subtext, trend, bgColor }) => (
-    <div className={`p-6 rounded-lg shadow-lg ${bgColor} text-white`}>
+    <div className={`p-4 sm:p-6 rounded-lg shadow-lg ${bgColor} text-white`}>
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm opacity-80">{title}</p>
-          <p className="text-3xl font-bold">{value}</p>
-          {subtext && <p className="text-sm opacity-80">{subtext}</p>}
+          <p className="text-2xl sm:text-3xl font-bold mt-1">{value}</p>
+          {subtext && <p className="text-sm opacity-80 mt-1">{subtext}</p>}
         </div>
-        <div className="p-3 bg-white bg-opacity-20 rounded-full">
+        <div className="p-2 sm:p-3 bg-white bg-opacity-20 rounded-full">
           {icon}
         </div>
       </div>
       {trend && (
-        <div className="mt-4 flex items-center">
+        <div className="mt-3 flex items-center">
           {trend > 0 ? (
             <TrendingUp size={16} className="text-green-300" />
           ) : (
@@ -190,7 +161,7 @@ const Finance = () => {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center min-h-screen">
+      <div className="flex justify-center items-center min-h-[400px]">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
         <span className="ml-3 text-gray-600">Loading finance data...</span>
       </div>
@@ -200,21 +171,21 @@ const Finance = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
         <h2 className="text-2xl font-bold text-gray-800">Finance Overview</h2>
         <p className="text-gray-600 mt-2">Monitor your platform's financial performance and user metrics</p>
       </div>
 
       {/* Doctor Selection Navbar */}
-      <div className="bg-white p-6 rounded-lg shadow-sm">
-        <div className="flex items-center justify-between mb-4">
+      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <h3 className="text-lg font-semibold text-gray-800">Doctor Analytics</h3>
-          <div className="flex items-center space-x-4">
-            <label className="text-sm font-medium text-gray-700">Select Doctor:</label>
+          <div className="flex items-center gap-4">
+            <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Select Doctor:</label>
             <select
               value={selectedDoctor}
               onChange={(e) => setSelectedDoctor(e.target.value)}
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             >
               <option value="all">All Doctors</option>
               {mockDoctorData.map((doctor) => (
@@ -228,25 +199,25 @@ const Finance = () => {
         
         {/* Doctor-specific stats */}
         {selectedDoctor !== 'all' && (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
               <h4 className="font-medium text-blue-800">Total Patients</h4>
-              <p className="text-2xl font-bold text-blue-600">{filteredData.users.length}</p>
-              <p className="text-sm text-blue-600">Paid patients</p>
+              <p className="text-2xl font-bold text-blue-600 mt-2">{filteredData.users.length}</p>
+              <p className="text-sm text-blue-600 mt-1">Paid patients</p>
             </div>
             <div className="bg-green-50 p-4 rounded-lg border border-green-200">
               <h4 className="font-medium text-green-800">Total Revenue</h4>
-              <p className="text-2xl font-bold text-green-600">₹{filteredData.totalAmount.toLocaleString()}</p>
-              <p className="text-sm text-green-600">From approved appointments</p>
+              <p className="text-2xl font-bold text-green-600 mt-2">₹{filteredData.totalAmount.toLocaleString()}</p>
+              <p className="text-sm text-green-600 mt-1">From approved appointments</p>
             </div>
             <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
               <h4 className="font-medium text-purple-800">Total Appointments</h4>
-              <p className="text-2xl font-bold text-purple-600">{filteredData.appointmentCount}</p>
-              <p className="text-sm text-purple-600">All appointments</p>
+              <p className="text-2xl font-bold text-purple-600 mt-2">{filteredData.appointmentCount}</p>
+              <p className="text-sm text-purple-600 mt-1">All appointments</p>
             </div>
           </div>
-                 )}
-       </div>
+        )}
+      </div>
 
       {/* Doctor-specific User List */}
       {selectedDoctor !== 'all' && filteredData.users.length > 0 && (
@@ -329,9 +300,9 @@ const Finance = () => {
         </div>
       )}
 
-      {/* Stats Cards - Only show on overview (All Doctors) */}
+      {/* Overview Stats */}
       {selectedDoctor === 'all' && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-6">
           <StatsCard 
             icon={<Users size={24} />} 
             title="Total Users" 
@@ -371,59 +342,63 @@ const Finance = () => {
         </div>
       )}
 
-      {/* Charts Section - Only show on overview (All Doctors) */}
+      {/* Charts Section */}
       {selectedDoctor === 'all' && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Monthly Revenue Chart */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-4 text-gray-800">Monthly Revenue</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <LineChart data={monthlyRevenue}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
-                <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="revenue" 
-                  stroke="#10B981" 
-                  strokeWidth={3}
-                  dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
-                />
-              </LineChart>
-            </ResponsiveContainer>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <LineChart data={monthlyRevenue}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip formatter={(value) => [`₹${value.toLocaleString()}`, 'Revenue']} />
+                  <Legend />
+                  <Line 
+                    type="monotone" 
+                    dataKey="revenue" 
+                    stroke="#10B981" 
+                    strokeWidth={3}
+                    dot={{ fill: '#10B981', strokeWidth: 2, r: 4 }}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
+            </div>
           </div>
 
           {/* User Growth Chart */}
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
             <h3 className="text-lg font-semibold mb-4 text-gray-800">User Growth</h3>
-            <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={userGrowthData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="users" fill="#3B82F6" name="Total Users" />
-                <Bar dataKey="newUsers" fill="#8B5CF6" name="New Users" />
-              </BarChart>
-            </ResponsiveContainer>
+            <div className="h-[300px] w-full">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={userGrowthData}>
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="users" fill="#3B82F6" name="Total Users" />
+                  <Bar dataKey="newUsers" fill="#8B5CF6" name="New Users" />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
           </div>
         </div>
       )}
 
-      {/* Doctor Overview - Only show on overview (All Doctors) */}
+      {/* Doctor Overview */}
       {selectedDoctor === 'all' && (
-        <div className=" p-6 rounded-lg shadow-sm">
+        <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
           <h3 className="text-lg font-semibold mb-4 text-gray-800">Doctor Overview</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Doctor List */}
             <div>
               <h4 className="font-medium text-gray-700 mb-3">All Doctors ({financeData.totalDoctors})</h4>
-              <div className="space-y-3 max-h-80 overflow-y-auto">
+              <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2">
                 {mockDoctorData.map((doctor) => (
-                  <div key={doctor.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={doctor.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     <div className="flex items-center space-x-3">
                       <div className={`w-3 h-3 rounded-full ${doctor.available ? 'bg-green-500' : 'bg-red-500'}`}></div>
                       <div>
@@ -440,107 +415,67 @@ const Finance = () => {
               </div>
             </div>
             
-            {/* Specialization Breakdown */}
-            <div className="">
-              <h4 className="font-medium text-gray-700 mb-3 ">Specialization Breakdown</h4>
-              <div className=" max-h-80 overflow-y-auto space-y-3">
-                {Array.from(new Set(mockDoctorData.map(d => d.specialization))).map((specialization) => {
-                  const count = mockDoctorData.filter(d => d.specialization === specialization).length;
-                  const totalPatients = mockDoctorData.filter(d => d.specialization === specialization).reduce((sum, d) => sum + d.patients, 0);
-                  const avgRating = (mockDoctorData.filter(d => d.specialization === specialization).reduce((sum, d) => sum + d.rating, 0) / count).toFixed(1);
-                  
-                  return (
-                    <div key={specialization} className="p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-gray-900">{specialization}</p>
-                          <p className="text-sm text-gray-600">{count} doctor{count > 1 ? 's' : ''}</p>
-                        </div>
-                        <div className="text-right">
-                          <p className="text-sm font-medium text-gray-900">{totalPatients} patients</p>
-                          <p className="text-xs text-gray-500">★ {avgRating} rating</p>
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
+            {/* Revenue Breakdown */}
+            <div>
+              <h4 className="font-medium text-gray-700 mb-3">Revenue Breakdown</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="p-4 bg-green-50 rounded-lg border border-green-200">
+                  <h5 className="font-medium text-green-800">Approved Appointments</h5>
+                  <p className="text-2xl font-bold text-green-600 mt-2">
+                    {mockAppointments.filter(app => app.status === 'approved').length}
+                  </p>
+                  <p className="text-sm text-green-600 mt-1">
+                    Revenue: ₹{mockAppointments.filter(app => app.status === 'approved').reduce((sum, app) => sum + app.fee, 0).toLocaleString()}
+                  </p>
+                </div>
+                <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
+                  <h5 className="font-medium text-yellow-800">Pending Appointments</h5>
+                  <p className="text-2xl font-bold text-yellow-600 mt-2">
+                    {mockAppointments.filter(app => app.status === 'pending').length}
+                  </p>
+                  <p className="text-sm text-yellow-600 mt-1">
+                    Potential: ₹{mockAppointments.filter(app => app.status === 'pending').reduce((sum, app) => sum + app.fee, 0).toLocaleString()}
+                  </p>
+                </div>
+              </div>
+
+              {/* Recent Transactions */}
+              <div className="mt-6">
+                <h4 className="font-medium text-gray-700 mb-3">Recent Transactions</h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-sm text-left">
+                    <thead className="bg-gray-50">
+                      <tr>
+                        <th className="px-4 py-3 font-medium text-gray-900">ID</th>
+                        <th className="px-4 py-3 font-medium text-gray-900">Status</th>
+                        <th className="px-4 py-3 font-medium text-gray-900">Amount</th>
+                        <th className="px-4 py-3 font-medium text-gray-900">Date</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {mockAppointments.slice(0, 5).map((appointment) => (
+                        <tr key={appointment.id} className="border-b border-gray-200 hover:bg-gray-50">
+                          <td className="px-4 py-3">#{appointment.id}</td>
+                          <td className="px-4 py-3">
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              appointment.status === 'approved' 
+                                ? 'bg-green-100 text-green-800' 
+                                : appointment.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800'
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {appointment.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3 font-medium">₹{appointment.fee}</td>
+                          <td className="px-4 py-3 text-gray-600">{appointment.date}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
-      )}
-
-      {/* Revenue Breakdown - Only show on overview (All Doctors) */}
-      {selectedDoctor === 'all' && (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Revenue Breakdown</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="p-4 bg-green-50 rounded-lg border border-green-200">
-              <h4 className="font-medium text-green-800">Approved Appointments</h4>
-              <p className="text-2xl font-bold text-green-600">
-                {mockAppointments.filter(app => app.status === 'approved').length}
-              </p>
-              <p className="text-sm text-green-600">
-                Revenue: ₹{mockAppointments.filter(app => app.status === 'approved').reduce((sum, app) => sum + app.fee, 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="p-4 bg-yellow-50 rounded-lg border border-yellow-200">
-              <h4 className="font-medium text-yellow-800">Pending Appointments</h4>
-              <p className="text-2xl font-bold text-yellow-600">
-                {mockAppointments.filter(app => app.status === 'pending').length}
-              </p>
-              <p className="text-sm text-yellow-600">
-                Potential: ₹{mockAppointments.filter(app => app.status === 'pending').reduce((sum, app) => sum + app.fee, 0).toLocaleString()}
-              </p>
-            </div>
-            <div className="p-4 bg-red-50 rounded-lg border border-red-200">
-              <h4 className="font-medium text-red-800">Declined Appointments</h4>
-              <p className="text-2xl font-bold text-red-600">
-                {mockAppointments.filter(app => app.status === 'declined').length}
-              </p>
-              <p className="text-sm text-red-600">
-                Lost: ₹{mockAppointments.filter(app => app.status === 'declined').reduce((sum, app) => sum + app.fee, 0).toLocaleString()}
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Recent Transactions - Only show on overview (All Doctors) */}
-      {selectedDoctor === 'all' && (
-        <div className="bg-white p-6 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Recent Transactions</h3>
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm text-left">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-4 py-3 font-medium text-gray-900">Appointment ID</th>
-                  <th className="px-4 py-3 font-medium text-gray-900">Status</th>
-                  <th className="px-4 py-3 font-medium text-gray-900">Amount</th>
-                  <th className="px-4 py-3 font-medium text-gray-900">Date</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockAppointments.slice(0, 5).map((appointment) => (
-                  <tr key={appointment.id} className="border-b border-gray-200">
-                    <td className="px-4 py-3">#{appointment.id}</td>
-                    <td className="px-4 py-3">
-                      <span className={`px-2 py-1 rounded-full text-xs ${
-                        appointment.status === 'approved' 
-                          ? 'bg-green-100 text-green-800' 
-                          : appointment.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {appointment.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-medium">₹{appointment.fee}</td>
-                    <td className="px-4 py-3 text-gray-600">{appointment.date}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
           </div>
         </div>
       )}

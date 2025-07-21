@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../../../../components/shadcn/button/button'
 import { Input } from '../../../../components/shadcn/input/input'
+import { Search, Filter, X } from 'lucide-react'
 // import apiInstance from '../../../../instance' // Commented out - using static data
 
 const Index = () => {
@@ -254,6 +255,7 @@ const Index = () => {
             )
         
         setAppointments(updateAppointments)
+        setFilteredAppointments(updateAppointments)
         console.log(`Appointment ${appointmentId} approved successfully in static data`)
         
         // Commented out API call - using static data instead
@@ -303,6 +305,7 @@ const Index = () => {
                 )
             
             setAppointments(updateAppointments)
+            setFilteredAppointments(updateAppointments)
             
             // Make API call to decline appointment
             const response = await apiInstance.put(`/appointment/${appointmentId}/decline`)
@@ -373,7 +376,7 @@ const Index = () => {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
+            <div className="flex justify-center items-center min-h-[400px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
                 <span className="ml-3 text-gray-600">Loading appointments...</span>
             </div>
@@ -382,121 +385,43 @@ const Index = () => {
 
     if (error) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-                    Error: {error}
-                </div>
+            <div className="text-center py-8">
+                <p className="text-red-500">{error}</p>
+                <Button onClick={() => window.location.reload()} className="mt-4">
+                    Try Again
+                </Button>
             </div>
         )
     }
 
     return (
-        <div className="container mx-auto px-4 py-8 max-w-7xl">
-            {/* Doctor Cards Section */}
-            <div className="mb-8">
-                <h2 className="text-2xl font-bold text-gray-800 mb-6">Our Doctors</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {doctorCards.map((doctor) => {
-                        const stats = getDoctorStats(doctor.name)
-                        const isSelected = selectedDoctorCard === doctor.name
-                        
-                        return (
-                            <div
-                                key={doctor.id}
-                                onClick={() => handleDoctorCardClick(doctor.name)}
-                                className={`${doctor.color} ${doctor.textColor} rounded-lg p-6 cursor-pointer transform transition-all duration-300 hover:scale-105 hover:shadow-lg ${
-                                    isSelected ? 'ring-4 ring-white ring-opacity-50 shadow-2xl' : ''
-                                } ${
-                                    selectedDoctorCard && !isSelected ? 'blur-sm' : ''
-                                }`}
-                            >
-                                <div className="flex justify-between items-start mb-4">
-                                    <div>
-                                        <h3 className="text-lg font-semibold">{doctor.name}</h3>
-                                        <p className="text-sm opacity-90">{doctor.specialty}</p>
-                                    </div>
-                                    <div className="text-right">
-                                        <p className="text-sm opacity-90">Total Income</p>
-                                        <p className="text-xl font-bold">{doctor.totalIncome}</p>
-                                    </div>
-                                </div>
-                                <div className="space-y-2">
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm opacity-90">Total Appointments</span>
-                                        <span className="font-semibold">{stats.total}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm opacity-90">Approved</span>
-                                        <span className="font-semibold">{stats.approved}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center">
-                                        <span className="text-sm opacity-90">Pending</span>
-                                        <span className="font-semibold">{stats.pending}</span>
-                                    </div>
-                                </div>
-                                {isSelected && (
-                                    <div className="mt-4 text-center">
-                                        <span className="text-sm bg-white bg-opacity-20 px-3 py-1 rounded-full">
-                                            Click to clear filter
-                                        </span>
-                                    </div>
-                                )}
-                            </div>
-                        )
-                    })}
-                </div>
+        <div className="space-y-6">
+            {/* Header */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-800">Appointment Management</h2>
+                <p className="text-gray-600 mt-2">Manage and track all patient appointments</p>
             </div>
 
-            {/* Total Appointments Summary */}
-            <div className="mb-8">
-                <div className="bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg p-6">
-                    <h3 className="text-xl font-semibold mb-4">Appointment Summary</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        <div className="text-center">
-                            <div className="text-3xl font-bold">{appointments.length}</div>
-                            <div className="text-sm opacity-90">Total Appointments</div>
+            {/* Filters */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+                    <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center flex-1">
+                        <div className="relative flex-1">
+                            <Input
+                                type="text"
+                                placeholder="Search by name..."
+                                value={nameFilter}
+                                onChange={(e) => setNameFilter(e.target.value)}
+                                className="pl-10"
+                            />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                         </div>
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-green-300">
-                                {appointments.filter(app => app.status === 'approved').length}
-                            </div>
-                            <div className="text-sm opacity-90">Approved</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-yellow-300">
-                                {appointments.filter(app => app.status === 'pending').length}
-                            </div>
-                            <div className="text-sm opacity-90">Pending</div>
-                        </div>
-                        <div className="text-center">
-                            <div className="text-3xl font-bold text-red-300">
-                                {appointments.filter(app => app.status === 'declined').length}
-                            </div>
-                            <div className="text-sm opacity-90">Declined</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div className="mb-8">
-                <h1 className="text-3xl font-bold text-gray-800 mb-2">Appointments</h1>
-                <p className="text-gray-600">
-                    {selectedDoctorCard ? `Showing appointments for ${selectedDoctorCard}` : 'Manage patient appointments'}
-                </p>
-            </div>
-
-            {/* Filter Section */}
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                <div className="flex flex-wrap gap-4 items-center justify-between">
-                    <h2 className="text-lg font-semibold text-gray-800">Filter Appointments</h2>
-                    <div className="flex flex-wrap gap-4 items-center">
-                        {/* Status Filter */}
-                        <div className="flex flex-col">
-                            <label className="text-sm font-medium text-gray-700 mb-1">Status</label>
-                            <select 
-                                value={statusFilter} 
+                        <div className="flex gap-2 items-center">
+                            <Filter size={20} className="text-gray-400" />
+                            <select
+                                value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                             >
                                 <option value="all">All Status</option>
                                 <option value="pending">Pending</option>
@@ -504,207 +429,128 @@ const Index = () => {
                                 <option value="declined">Declined</option>
                             </select>
                         </div>
-
-                        {/* Name Filter */}
-                        <div className="flex flex-col">
-                            <label className="text-sm font-medium text-gray-700 mb-1">Patient Name</label>
-                            <Input
-                                type="text"
-                                value={nameFilter}
-                                onChange={(e) => setNameFilter(e.target.value)}
-                                placeholder="Search by name..."
-                                className="w-full"
-                            />
-                        </div>
-
-                        {/* Doctor Filter */}
-                        <div className="flex flex-col">
-                            <label className="text-sm font-medium text-gray-700 mb-1">Doctor</label>
-                            <select 
-                                value={doctorFilter} 
-                                onChange={(e) => setDoctorFilter(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option value="all">All Doctors</option>
-                                {uniqueDoctors.map(doctor => (
-                                    <option key={doctor} value={doctor}>{doctor}</option>
-                                ))}
-                            </select>
-                        </div>
-
-                        {/* Time Filter */}
-                        <div className="flex flex-col">
-                            <label className="text-sm font-medium text-gray-700 mb-1">Time</label>
-                            <select 
-                                value={timeFilter} 
-                                onChange={(e) => setTimeFilter(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            >
-                                <option value="all">All Times</option>
-                                <option value="morning">Morning (8AM - 12PM)</option>
-                                <option value="afternoon">Afternoon (12PM - 5PM)</option>
-                                <option value="evening">Evening (5PM - 8PM)</option>
-                                <option value="other">Other Times</option>
-                            </select>
-                        </div>
-
-                        {/* Clear Filters Button */}
-                        <div className="flex flex-col">
-                            <label className="text-sm font-medium text-gray-700 mb-1 opacity-0">Clear</label>
-                            <Button
-                                variant="outline"
-                                onClick={clearFilters}
-                                className="bg-gray-100 text-gray-700 hover:bg-gray-200"
-                            >
-                                Clear Filters
-                            </Button>
-                        </div>
                     </div>
+                    {(nameFilter || statusFilter !== 'all' || doctorFilter !== 'all' || timeFilter !== 'all') && (
+                        <Button 
+                            onClick={clearFilters}
+                            variant="outline"
+                            className="flex items-center gap-2"
+                        >
+                            <X size={16} />
+                            Clear Filters
+                        </Button>
+                    )}
                 </div>
 
-                {/* Results Count */}
-                <div className="mt-4 text-sm text-gray-600">
-                    Showing {filteredAppointments.length} of {appointments.length} appointments
-                    {selectedDoctorCard && ` (filtered by ${selectedDoctorCard})`}
+                {/* Doctor Cards */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {uniqueDoctors.map(doctorName => {
+                        const stats = getDoctorStats(doctorName)
+                        return (
+                            <div
+                                key={doctorName}
+                                onClick={() => handleDoctorCardClick(doctorName)}
+                                className={`p-4 rounded-lg border cursor-pointer transition-all duration-200 ${
+                                    selectedDoctorCard === doctorName
+                                        ? 'border-blue-500 bg-blue-50'
+                                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                                }`}
+                            >
+                                <h3 className="font-medium text-gray-900">{doctorName}</h3>
+                                <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
+                                    <div>
+                                        <p className="text-gray-500">Total</p>
+                                        <p className="font-medium text-gray-900">{stats.total}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-green-500">Approved</p>
+                                        <p className="font-medium text-gray-900">{stats.approved}</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-yellow-500">Pending</p>
+                                        <p className="font-medium text-gray-900">{stats.pending}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        )
+                    })}
                 </div>
             </div>
-            
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+
+            {/* Appointments Table */}
+            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm overflow-hidden">
                 <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
+                    <table className="w-full text-sm text-left">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Patient Name
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Phone
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Age
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Location
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Doctor
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Date & Time
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Status
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
+                                <th className="px-4 py-3 font-medium text-gray-900">Patient</th>
+                                <th className="px-4 py-3 font-medium text-gray-900">Doctor</th>
+                                <th className="px-4 py-3 font-medium text-gray-900">Date & Time</th>
+                                <th className="px-4 py-3 font-medium text-gray-900">Status</th>
+                                <th className="px-4 py-3 font-medium text-gray-900">Actions</th>
                             </tr>
                         </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {!Array.isArray(filteredAppointments) || filteredAppointments.length === 0 ? (
-                                <tr>
-                                    <td colSpan="8" className="px-6 py-12">
-                                        <div className="flex justify-center items-center">
-                                            <h2 className="text-xl font-semibold text-black bg-blue-300 bg-opacity-30 px-6 py-3 rounded-lg">
-                                                {appointments.length === 0 ? 'No Data' : 'No appointments match your filters'}
-                                            </h2>
+                        <tbody className="divide-y divide-gray-200">
+                            {filteredAppointments.map((appointment) => (
+                                <tr key={appointment.id} className="hover:bg-gray-50">
+                                    <td className="px-4 py-3">
+                                        <div>
+                                            <p className="font-medium text-gray-900">{appointment.name}</p>
+                                            <p className="text-gray-500">{appointment.phone}</p>
+                                        </div>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <p className="font-medium text-gray-900">{appointment.doctor}</p>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <p className="text-gray-900">{appointment.date}</p>
+                                        <p className="text-gray-500">{appointment.time}</p>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                            appointment.status === 'approved'
+                                                ? 'bg-green-100 text-green-800'
+                                                : appointment.status === 'pending'
+                                                ? 'bg-yellow-100 text-yellow-800'
+                                                : 'bg-red-100 text-red-800'
+                                        }`}>
+                                            {appointment.status}
+                                        </span>
+                                    </td>
+                                    <td className="px-4 py-3">
+                                        <div className="flex gap-2">
+                                            {appointment.status === 'pending' && (
+                                                <>
+                                                    <Button
+                                                        onClick={() => handleApprove(appointment.id)}
+                                                        className="bg-green-500 hover:bg-green-600 text-white"
+                                                        size="sm"
+                                                    >
+                                                        Approve
+                                                    </Button>
+                                                    <Button
+                                                        onClick={() => handleDecline(appointment.id)}
+                                                        variant="outline"
+                                                        className="border-red-500 text-red-500 hover:bg-red-50"
+                                                        size="sm"
+                                                    >
+                                                        Decline
+                                                    </Button>
+                                                </>
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
-                            ) : (
-                                filteredAppointments.map((appointment, index) => (
-                                    <tr key={appointment.id} className={`hover:bg-gray-50 transition-colors duration-150 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center">
-                                                <div className="flex-shrink-0 h-10 w-10">
-                                                    <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                                                        <span className="text-blue-600 font-medium text-sm">
-                                                            {appointment.name?.charAt(0).toUpperCase()}
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                                <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">
-                                                        {appointment.name}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{appointment.phone}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{appointment.age}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{appointment.location}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{appointment.doctor}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                <div className="font-medium">{appointment.date}</div>
-                                                <div className="text-gray-500">{appointment.time}</div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                                                appointment.status === 'approved' 
-                                                    ? 'bg-green-100 text-green-800' 
-                                                    : appointment.status === 'declined'
-                                                    ? 'bg-red-100 text-red-800'
-                                                    : 'bg-yellow-100 text-yellow-800'
-                                            }`}>
-                                                {appointment.status || 'pending'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            {appointment.status === 'pending' && (
-                                                <div className="flex space-x-2">
-                                                    <button 
-                                                        onClick={() => handleApprove(appointment.id)}
-                                                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200"
-                                                    >
-                                                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                                        </svg>
-                                                        Approve
-                                                    </button>
-                                                    <button 
-                                                        onClick={() => handleDecline(appointment.id)}
-                                                        className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-colors duration-200"
-                                                    >
-                                                        <svg className="w-3 h-3 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                                        </svg>
-                                                        Decline
-                                                    </button>
-                                                </div>
-                                            )}
-                                            {appointment.status === 'approved' && (
-                                                <div className="flex items-center text-green-600">
-                                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    <span className="text-sm font-medium">Approved</span>
-                                                </div>
-                                            )}
-                                            {appointment.status === 'declined' && (
-                                                <div className="flex items-center text-red-600">
-                                                    <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                    </svg>
-                                                    <span className="text-sm font-medium">Declined</span>
-                                                </div>
-                                            )}
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
+                            ))}
                         </tbody>
                     </table>
                 </div>
+
+                {filteredAppointments.length === 0 && (
+                    <div className="text-center py-8">
+                        <p className="text-gray-500">No appointments found</p>
+                    </div>
+                )}
             </div>
         </div>
     )
