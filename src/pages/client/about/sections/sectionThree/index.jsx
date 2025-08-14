@@ -1,7 +1,7 @@
 import React from "react";
 import { Container, ContainerWrap,  } from "../../styles";
 import { Link } from "react-router-dom";
-import { AboutSectionThree } from "../../../../constant/datas";
+import { AboutSectionThree } from "../../../../../constant/datas";
 import { Main } from "./style";
 
 const Index = () => {

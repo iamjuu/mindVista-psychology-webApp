@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
@@ -151,8 +151,6 @@ const Dashboard = () => {
       ]
     }
   ];
-  
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
   
   // Get selected doctor data
   const selectedDoctor = doctorsData.find(doctor => doctor.id === selectedDoctorId) || doctorsData[0];
@@ -369,127 +367,7 @@ const Dashboard = () => {
           
           {/* Dynamic Content based on active page */}
           <div className="space-y-6">
-            {/* Doctor Cards */}
-            <div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-                {doctorsData.map((doctor) => (
-                  <DoctorCard
-                    key={doctor.id}
-                    doctor={doctor}
-                    isSelected={selectedDoctorId === doctor.id}
-                    onClick={() => setSelectedDoctorId(doctor.id)}
-                  />
-                ))}
-              </div>
-            </div>
-            
-            {/* Selected Doctor Info */}
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-              <h3 className="text-xl font-bold mb-4">
-                {selectedDoctor.name} - Analytics Dashboard
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600">Specialization</p>
-                  <p className="text-lg font-semibold">{selectedDoctor.specialization}</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600">Total Patients</p>
-                  <p className="text-lg font-semibold text-blue-600">{selectedDoctor.totalPatients}</p>
-                </div>
-                <div className="text-center p-4 bg-gray-50 rounded-lg">
-                  <p className="text-sm text-gray-600">Total Income</p>
-                  <p className="text-lg font-semibold text-green-600">₹{selectedDoctor.totalIncome.toLocaleString()}</p>
-                </div>
-              </div>
-            </div>
-            
-            {/* Charts for Selected Doctor */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">
-                  Monthly Income - {selectedDoctor.name}
-                </h3>
-                <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <LineChart data={selectedDoctor.monthlyIncome}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip 
-                        formatter={(value) => [`₹${value.toLocaleString()}`, 'Income']}
-                        labelFormatter={(label) => `Month: ${label}`}
-                      />
-                      <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="income" 
-                        stroke="#10B981" 
-                        strokeWidth={3}
-                        dot={{ fill: '#10B981', strokeWidth: 2, r: 6 }}
-                        activeDot={{ r: 8 }}
-                      />
-                    </LineChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-              
-              <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-                <h3 className="text-lg font-semibold mb-4">
-                  Patient Growth - {selectedDoctor.name}
-                </h3>
-                <div className="h-[300px] w-full">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={selectedDoctor.patientGrowth}>
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <XAxis dataKey="name" />
-                      <YAxis />
-                      <Tooltip 
-                        formatter={(value) => [value, 'Patients']}
-                        labelFormatter={(label) => `Month: ${label}`}
-                      />
-                      <Legend />
-                      <Bar 
-                        dataKey="patients" 
-                        fill="#3B82F6"
-                        radius={[4, 4, 0, 0]}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-            
-            {/* Summary Statistics */}
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-4">Performance Summary</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div className="text-center p-4 bg-blue-50 rounded-lg">
-                  <p className="text-2xl font-bold text-blue-600">
-                    ₹{selectedDoctor.monthlyIncome[selectedDoctor.monthlyIncome.length - 1].income.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-600">Latest Monthly Income</p>
-                </div>
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <p className="text-2xl font-bold text-green-600">
-                    {selectedDoctor.patientGrowth[selectedDoctor.patientGrowth.length - 1].patients}
-                  </p>
-                  <p className="text-sm text-gray-600">Monthly New Patients</p>
-                </div>
-                <div className="text-center p-4 bg-purple-50 rounded-lg">
-                  <p className="text-2xl font-bold text-purple-600">
-                    ₹{Math.round(selectedDoctor.totalIncome / selectedDoctor.totalPatients).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-600">Average Income per Patient</p>
-                </div>
-                <div className="text-center p-4 bg-orange-50 rounded-lg">
-                  <p className="text-2xl font-bold text-orange-600">
-                    {Math.round(selectedDoctor.monthlyIncome.reduce((acc, curr) => acc + curr.income, 0) / selectedDoctor.monthlyIncome.length).toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-600">Avg Monthly Income</p>
-                </div>
-              </div>
-            </div>
+            {renderContent()}
           </div>
         </div>
       </div>

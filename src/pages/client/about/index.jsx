@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
-import Navbar from "../../components/navbar";
-import Footer from "../../components/footer";
+import Navbar from "../../../components/navbar";
+import Footer from "../../../components/footer";
 import Bgsection from "./sections/sectionBg";
 import SectionOne from "./sections/sectionOne";
 import SectionTwo from "./sections/sectiontwo";

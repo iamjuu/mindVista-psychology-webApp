@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import { Button } from '../../../../components/shadcn/button/button';
 import { Input } from '../../../../components/shadcn/input/input';
 import apiInstance from '../../../../instance';
+import AddDoctorModal from '../../../../components/DashBoardcomponents/AddDoctorModal';
 
 const DoctorList = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -11,6 +12,7 @@ const DoctorList = () => {
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [initialLoading, setInitialLoading] = useState(true);
   const [doctorData, setDoctorData] = useState([]);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   // API call function for fetching doctors
   const fetchDoctorsAPI = async () => {
@@ -19,7 +21,13 @@ const DoctorList = () => {
     try {
       const response = await apiInstance.get('/doctors');
       console.log('API response for fetch doctors:', response.data);
-      return response.data;
+      
+      // Ensure we have an array of doctors
+      const doctors = Array.isArray(response.data) ? response.data : 
+                     response.data.doctors ? response.data.doctors : [];
+                     
+      console.log('Processed doctors data:', doctors);
+      return doctors;
     } catch (err) {
       console.error('API call failed for fetching doctors:', err);
       throw err;
@@ -31,8 +39,16 @@ const DoctorList = () => {
     const loadDoctors = async () => {
       try {
         const data = await fetchDoctorsAPI();
+        if (!Array.isArray(data)) {
+          console.error('Expected array of doctors but got:', data);
+          setDoctorData([]);
+          toast.error('Invalid data format received from server');
+          return;
+        }
         setDoctorData(data);
-      } catch {
+      } catch (err) {
+        console.error('Failed to load doctors:', err);
+        setDoctorData([]);
         toast.error('Failed to load doctors. Please try again.');
       } finally {
         setInitialLoading(false);
@@ -42,19 +58,22 @@ const DoctorList = () => {
     loadDoctors();
   }, []);
 
-  // Filter doctors based on search and specialty
-  const filteredDoctors = doctorData.filter(doctor => {
-    const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doctor.phone.toLowerCase().includes(searchTerm.toLowerCase());
+  // Filter doctors based on search and specialty - add null check
+  const filteredDoctors = Array.isArray(doctorData) ? doctorData.filter(doctor => {
+    if (!doctor) return false;
+    
+    const matchesSearch = (doctor.name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (doctor.specialization?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+                         (doctor.phone?.toLowerCase() || '').includes(searchTerm.toLowerCase());
     
     const matchesSpecialty = specialtyFilter === 'all' || doctor.specialization === specialtyFilter;
     
     return matchesSearch && matchesSpecialty;
-  });
+  }) : [];
 
-  // Get unique specialties for filter
-  const specialties = [...new Set(doctorData.map(doctor => doctor.specialization))];
+  // Get unique specialties for filter - add null check
+  const specialties = Array.isArray(doctorData) ? 
+    [...new Set(doctorData.filter(d => d && d.specialization).map(doctor => doctor.specialization))] : [];
 
   // Pagination
   const itemsPerPage = 8;
@@ -67,6 +86,12 @@ const DoctorList = () => {
     if (newPage >= 1 && newPage <= totalPages) {
       setCurrentPage(newPage);
     }
+  };
+
+  // Add new doctor handler
+  const handleDoctorAdded = (newDoctor) => {
+    console.log('New doctor added:', newDoctor);
+    setDoctorData(prevDoctors => [...prevDoctors, newDoctor]);
   };
 
   if (initialLoading) {
@@ -83,18 +108,21 @@ const DoctorList = () => {
       {/* Header */}
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-800">Doctor Management</h2>
-            <p className="text-gray-600 mt-1">Manage and monitor all registered doctors</p>
-          </div>
           <Button 
-            onClick={() => toast.info('Add doctor functionality coming soon')}
+            onClick={() => setIsAddModalOpen(true)}
             className="w-full sm:w-auto"
           >
             Add New Doctor
           </Button>
         </div>
       </div>
+
+      {/* Add Doctor Modal */}
+      <AddDoctorModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onDoctorAdded={handleDoctorAdded}
+      />
 
       {/* Filters */}
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
