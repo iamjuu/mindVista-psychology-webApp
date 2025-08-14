@@ -1,6 +1,6 @@
 // About.js
 import { Container, ContainerWrap, BgContainer } from "../../../landing/Style";
-import { Psychologist } from "../../../../assets";
+import { Psychologist } from "../../../../../assets";
 import { Main } from "./style";
 
 const index = () => {

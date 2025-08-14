@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 // Import components
@@ -7,6 +8,21 @@ import UserList from '../dashboarduserlist';
 import DoctorList from '../docterlist';
 import Appoiment from '../appoinment';
 import Finance from '../finance';
+import Settings from '../settings';
+
+// DoctorCard PropTypes
+const DoctorCardPropTypes = {
+  doctor: PropTypes.shape({
+    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+    name: PropTypes.string.isRequired,
+    specialization: PropTypes.string.isRequired,
+    totalPatients: PropTypes.number.isRequired,
+    totalIncome: PropTypes.number.isRequired,
+    bgColor: PropTypes.string.isRequired,
+  }).isRequired,
+  isSelected: PropTypes.bool.isRequired,
+  onClick: PropTypes.func.isRequired,
+};
 
 const Dashboard = () => {
   const [activePage, setActivePage] = useState('dashboard');
@@ -136,8 +152,6 @@ const Dashboard = () => {
     }
   ];
   
-  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d'];
-  
   // Get selected doctor data
   const selectedDoctor = doctorsData.find(doctor => doctor.id === selectedDoctorId) || doctorsData[0];
   
@@ -163,13 +177,16 @@ const Dashboard = () => {
     </div>
   );
   
+  // Add PropTypes to DoctorCard
+  DoctorCard.propTypes = DoctorCardPropTypes;
+  
   // Dashboard Overview Content
   const renderDashboardContent = () => (
     <div className="space-y-6">
       {/* Doctor Cards */}
       <div>
-        <h3 className="text-lg font-semibold mb-4">Doctor Performance Dashboard</h3>
-        <p className="text-gray-600 mb-4">Click on any doctor card to view their detailed analytics</p>
+        {/* <h3 className="text-lg font-semibold mb-4">Doctor Performance Dashboard</h3> */}
+        {/* <p className="text-gray-600 mb-4">Click on any doctor card to view their detailed analytics</p> */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {doctorsData.map((doctor) => (
             <DoctorCard
@@ -301,6 +318,8 @@ const Dashboard = () => {
         return <Appoiment/>;
       case 'finance':
         return <Finance />;
+      case 'settings':
+        return <Settings />;
       default:
         return (
           <div className="bg-white p-6 rounded-lg shadow text-center">
@@ -312,40 +331,45 @@ const Dashboard = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-100 flex">
+    <div className="min-h-screen bg-gray-100">
       {/* Sidebar Component */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
       
       {/* Main content */}
-      <div className="flex-1 p-6 pb-20 md:pb-6">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-2xl font-bold">
-              {activePage === 'dashboard' && 'Dashboard Overview'}
-              {activePage === 'users' && 'User Management'}
-              {activePage === 'doctors' && 'Doctor Management'}
-              {activePage === 'appointments' && 'Appointment Management'}
-              {activePage === 'finance' && 'Finance Overview'}
-              {!['dashboard', 'users', 'doctors', 'appointments', 'finance'].includes(activePage) && ''}
-            </h1>
-            <p className="text-gray-500">Welcome back, Admin</p>
+      <div className="md:pl-64 min-h-screen">
+        <div className="p-4 sm:p-6 pb-20 md:pb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-800">
+                {activePage === 'dashboard' && 'Dashboard Overview'}
+                {activePage === 'users' && 'User Management'}
+                {activePage === 'doctors' && 'Doctor Management'}
+                {activePage === 'appointments' && 'Appointment Management'}
+                {activePage === 'finance' && 'Finance Overview'}
+                {!['dashboard', 'users', 'doctors', 'appointments', 'finance'].includes(activePage) && ''}
+                {activePage === 'settings' && 'Settings'}
+              </h1>
+              <p className="text-gray-500 mt-1">Welcome back, Admin</p>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1 sm:flex-none">
+                <input 
+                  type="text" 
+                  placeholder="Search..." 
+                  className="w-full sm:w-auto px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold flex-shrink-0">
+                A
+              </div>
+            </div>
           </div>
-          <div className="flex items-center space-x-4">
-            <div className="relative">
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                className="px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold">
-              A
-            </div>
+          
+          {/* Dynamic Content based on active page */}
+          <div className="space-y-6">
+            {renderContent()}
           </div>
         </div>
-        
-        {/* Dynamic Content based on active page */}
-        {renderContent()}
       </div>
     </div>
   );

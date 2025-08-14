@@ -31,7 +31,7 @@ import {
   Skills,
   Value,
 } from "./style";
-import { Pic1 } from "../../assets";
+import { Pic1 } from "../../../assets";
 import { Link } from "react-router-dom";
 const ProfilePage = () => {
   const skills = ["mindVista", "+91 702-571-5250"];

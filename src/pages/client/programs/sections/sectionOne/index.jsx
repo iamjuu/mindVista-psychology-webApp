@@ -2,10 +2,10 @@ import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { Container, ContainerWrap } from "../../styles";
 import { Main, Left, Right } from "./style";
-import Btn from "../../../../components/core/button";
-import Navbar from "../../../../components/navbar";
-import Footer from "../../../../components/footer";
-import {Bgimg} from '../../../../assets'
+import Btn from "../../../../../components/core/button";
+import Navbar from "../../../../../components/navbar";
+import Footer from "../../../../../components/footer";
+import {Bgimg} from '../../../../../assets'
 
 // Program data mapping
 const PROGRAM_DATA_MAP = {

@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import AOS from 'aos';
 import { Main } from './styles';
 import { Container,ContainerWrap } from '../../styles';
-import { AboutSectionTwo } from '../../../../constant/datas';
+import { AboutSectionTwo } from '../../../../../constant/datas';
 
 const Index = () => {
   useEffect(() => {

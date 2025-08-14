@@ -1,7 +1,7 @@
     import {Container,ContainerWrap} from'../../styles'
-    import {AboutSectionOne} from '../../../../constant/datas'
+    import {AboutSectionOne} from '../../../../../constant/datas'
     import {Main} from './style'
-    import Btn from "../../../../components/core/button";
+    import Btn from "../../../../../components/core/button";
     
     const index = () => {
       return (
