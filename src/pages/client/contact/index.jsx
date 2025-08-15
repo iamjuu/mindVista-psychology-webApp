@@ -1,8 +1,9 @@
 import React, { useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css"; // Import AOS styles
-import Navbar from "../../components/navbar";
-import Footer from "../../components/footer";
+import Navbar from "../../../components/navbar";
+import Footer from "../../../components/footer";
+// import Bgsection from "../../../components/sections/bgsection";
 import Bgsection from "./sections/bgsection";
 import SectionOne from "./sections/sectionOne";
 import SectionTwo from "./sections/sectionTwo";
