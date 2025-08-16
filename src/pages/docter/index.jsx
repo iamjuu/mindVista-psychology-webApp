@@ -1,188 +1,230 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, MapPin, Clock, Award, Star } from 'lucide-react';
+import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, MapPin, Clock, Award, Star, LogOut, Menu, X, Filter, Search, Download, Bell, Settings, Eye } from 'lucide-react';
 
 const DoctorDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [doctorData, setDoctorData] = useState({});
   const [incomeData, setIncomeData] = useState({});
   const [patientsList, setPatientsList] = useState([]);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState('monthly');
+  const [patientRequests, setPatientRequests] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  const [profileRefreshing, setProfileRefreshing] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
 
-  // Mock doctor data - replace with API call
-  const mockDoctorData = {
-    id: 1,
-    name: 'Dr. Sarah Johnson',
-    email: 'sarah.johnson@mindvista.com',
-    phone: '+1 (555) 123-4567',
-    specialization: 'Clinical Psychology',
-    experience: '8 years',
-    location: 'New York, NY',
-    rating: 4.8,
-    totalPatients: 156,
-    joinDate: '2020-01-15',
-    profileImage: '/api/placeholder/150/150',
-    bio: 'Specialized in cognitive behavioral therapy and anxiety disorders. Helping patients achieve better mental health for over 8 years.',
-    qualifications: ['PhD in Clinical Psychology', 'Licensed Clinical Psychologist', 'CBT Certified Therapist']
+  // Mock API instance for demo
+  const apiInstance = {
+    get: (url) => Promise.resolve({
+      data: {
+        success: true,
+        data: [],
+        doctor: {},
+        message: 'Success'
+      }
+    }),
+    put: (url) => Promise.resolve({
+      data: {
+        success: true,
+        message: 'Updated successfully'
+      }
+    })
   };
 
-  // Mock income data
-  const mockIncomeData = {
-    daily: 850,
-    weekly: 5950,
-    monthly: 23800,
-    yearly: 285600,
+  // Check authentication on component mount
+  useEffect(() => {
+    // Mock authentication check
+    const mockDoctorData = {
+      _id: 'doc123',
+      name: 'Dr. Sarah Johnson',
+      email: 'sarah.johnson@hospital.com',
+      phone: '+1 (555) 123-4567',
+      address: '123 Medical Center Dr, Healthcare City, HC 12345',
+      specialization: 'Cardiology',
+      experience: 15,
+      patients: 247,
+      rating: 4.8,
+      bio: 'Experienced cardiologist with over 15 years of practice. Specializing in interventional cardiology and heart disease prevention.',
+      qualification: 'MD, FACC',
+      designation: 'Senior Cardiologist',
+      department: 'Cardiology Department',
+      consultationFee: 150,
+      age: 42,
+      gender: 'Female',
+      availableSlots: [
+        { day: 'Monday', startTime: '09:00', endTime: '17:00' },
+        { day: 'Tuesday', startTime: '09:00', endTime: '17:00' },
+        { day: 'Wednesday', startTime: '09:00', endTime: '15:00' }
+      ],
+      createdAt: '2020-01-15T00:00:00.000Z'
+    };
+    
+    setDoctorData(mockDoctorData);
+    setLoading(false);
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isDoctorLoggedIn');
+    localStorage.removeItem('doctorData');
+    navigate('/docter/login');
+  };
+
+  // Default income data structure
+  const defaultIncomeData = {
+    daily: 1250,
+    weekly: 8750,
+    monthly: 35000,
+    yearly: 420000,
     dailyGrowth: 5.2,
-    weeklyGrowth: 12.3,
-    monthlyGrowth: 8.7,
-    yearlyGrowth: 15.4,
+    weeklyGrowth: 12.8,
+    monthlyGrowth: 8.5,
+    yearlyGrowth: 15.3,
     monthlyChart: [
-      { name: 'Jan', income: 18000 },
-      { name: 'Feb', income: 20000 },
-      { name: 'Mar', income: 22000 },
-      { name: 'Apr', income: 19000 },
-      { name: 'May', income: 25000 },
-      { name: 'Jun', income: 23800 },
+      { name: 'Jan', income: 25000 },
+      { name: 'Feb', income: 28000 },
+      { name: 'Mar', income: 32000 },
+      { name: 'Apr', income: 30000 },
+      { name: 'May', income: 35000 },
+      { name: 'Jun', income: 38000 },
     ],
     weeklyChart: [
-      { name: 'Mon', income: 850 },
-      { name: 'Tue', income: 920 },
-      { name: 'Wed', income: 760 },
-      { name: 'Thu', income: 1100 },
-      { name: 'Fri', income: 980 },
-      { name: 'Sat', income: 1200 },
-      { name: 'Sun', income: 1140 },
+      { name: 'Mon', income: 1200 },
+      { name: 'Tue', income: 1500 },
+      { name: 'Wed', income: 1100 },
+      { name: 'Thu', income: 1800 },
+      { name: 'Fri', income: 1400 },
+      { name: 'Sat', income: 900 },
+      { name: 'Sun', income: 750 },
     ]
   };
 
   // Mock patients data
-  const mockPatientsList = [
+  const defaultPatientsList = [
     {
       id: 1,
       name: 'John Smith',
       email: 'john.smith@email.com',
-      phone: '+1 (555) 234-5678',
-      age: 34,
-      location: 'Brooklyn, NY',
-      joinDate: '2024-01-15',
-      lastAppointment: '2024-01-20',
-      totalSessions: 8,
+      phone: '+1 (555) 987-6543',
+      age: 45,
+      location: 'New York, NY',
+      joinDate: '2023-01-15',
+      lastAppointment: '2024-08-10',
+      totalSessions: 12,
       status: 'active',
-      nextAppointment: '2024-01-27',
-      totalPaid: 1200
+      nextAppointment: '2024-08-20',
+      totalPaid: 18000
     },
     {
       id: 2,
-      name: 'Emily Davis',
-      email: 'emily.davis@email.com',
-      phone: '+1 (555) 345-6789',
-      age: 28,
-      location: 'Manhattan, NY',
-      joinDate: '2024-01-10',
-      lastAppointment: '2024-01-18',
-      totalSessions: 12,
-      status: 'active',
-      nextAppointment: '2024-01-25',
-      totalPaid: 1800
-    },
-    {
-      id: 3,
-      name: 'Michael Johnson',
-      email: 'michael.johnson@email.com',
+      name: 'Emma Davis',
+      email: 'emma.davis@email.com',
       phone: '+1 (555) 456-7890',
-      age: 42,
-      location: 'Queens, NY',
-      joinDate: '2024-01-05',
-      lastAppointment: '2024-01-22',
-      totalSessions: 15,
-      status: 'completed',
-      nextAppointment: null,
-      totalPaid: 2250
-    },
-    {
-      id: 4,
-      name: 'Sarah Wilson',
-      email: 'sarah.wilson@email.com',
-      phone: '+1 (555) 567-8901',
-      age: 31,
-      location: 'Bronx, NY',
-      joinDate: '2024-01-12',
-      lastAppointment: '2024-01-19',
-      totalSessions: 6,
+      age: 38,
+      location: 'Los Angeles, CA',
+      joinDate: '2023-03-22',
+      lastAppointment: '2024-08-12',
+      totalSessions: 8,
       status: 'active',
-      nextAppointment: '2024-01-26',
-      totalPaid: 900
-    },
-    {
-      id: 5,
-      name: 'David Brown',
-      email: 'david.brown@email.com',
-      phone: '+1 (555) 678-9012',
-      age: 39,
-      location: 'Staten Island, NY',
-      joinDate: '2024-01-08',
-      lastAppointment: '2024-01-21',
-      totalSessions: 10,
-      status: 'active',
-      nextAppointment: '2024-01-28',
-      totalPaid: 1500
+      nextAppointment: '2024-08-25',
+      totalPaid: 12000
     }
   ];
 
   // Mock appointments data
-  const mockAppointmentsList = [
+  const defaultAppointmentsList = [
     {
       id: 1,
-      name: 'John Smith',
-      phone: '+1 (555) 234-5678',
-      age: 34,
-      location: 'Brooklyn, NY',
-      date: '2024-01-27',
-      time: '09:00 AM',
+      name: 'Michael Brown',
+      phone: '+1 (555) 321-9876',
+      age: 52,
+      location: 'Chicago, IL',
+      date: '2024-08-18',
+      time: '10:00 AM',
       status: 'pending'
     },
     {
       id: 2,
-      name: 'Emily Davis',
-      phone: '+1 (555) 345-6789',
-      age: 28,
-      location: 'Manhattan, NY',
-      date: '2024-01-25',
-      time: '10:30 AM',
+      name: 'Lisa Wilson',
+      phone: '+1 (555) 654-3210',
+      age: 29,
+      location: 'Houston, TX',
+      date: '2024-08-19',
+      time: '2:30 PM',
       status: 'approved'
-    },
-    {
-      id: 3,
-      name: 'Sarah Wilson',
-      phone: '+1 (555) 567-8901',
-      age: 31,
-      location: 'Bronx, NY',
-      date: '2024-01-26',
-      time: '02:00 PM',
-      status: 'pending'
-    },
-    {
-      id: 4,
-      name: 'David Brown',
-      phone: '+1 (555) 678-9012',
-      age: 39,
-      location: 'Staten Island, NY',
-      date: '2024-01-28',
-      time: '11:15 AM',
-      status: 'approved'
-    },
-    {
-      id: 5,
-      name: 'Lisa Anderson',
-      phone: '+1 (555) 789-0123',
-      age: 26,
-      location: 'Queens, NY',
-      date: '2024-01-29',
-      time: '03:30 PM',
-      status: 'pending'
     }
   ];
+
+  // Function to fetch patient requests from API
+  const fetchPatientRequests = async () => {
+    setRequestsLoading(true);
+    try {
+      const response = await apiInstance.get('/request-pateint');
+      console.log('Patient requests fetched:', response.data);
+      
+      if (response.data.success) {
+        setPatientRequests(response.data.data || []);
+      } else {
+        console.error('Failed to fetch patient requests:', response.data.message);
+        setPatientRequests([]);
+      }
+    } catch (error) {
+      console.error('Error fetching patient requests:', error);
+      setPatientRequests([]);
+    } finally {
+      setRequestsLoading(false);
+    }
+  };
+
+  // Function to fetch doctor profile data from API
+  const fetchDoctorProfile = async () => {
+    setProfileRefreshing(true);
+    try {
+      const doctorId = doctorData._id;
+      if (!doctorId) {
+        console.log('No doctor ID available, using stored data');
+        return;
+      }
+
+      const response = await apiInstance.get(`/doctors/${doctorId}`);
+      console.log('Doctor profile fetched:', response.data);
+      
+      if (response.data.success) {
+        const updatedDoctorData = response.data.doctor;
+        setDoctorData(updatedDoctorData);
+        localStorage.setItem('doctorData', JSON.stringify(updatedDoctorData));
+      } else {
+        console.error('Failed to fetch doctor profile:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching doctor profile:', error);
+    } finally {
+      setProfileRefreshing(false);
+    }
+  };
+
+  // Function to handle appointment approval
+  const handleAppointmentAction = async (appointmentId, action) => {
+    try {
+      const endpoint = action === 'approve' ? `/appointment/${appointmentId}/approve` : `/appointment/${appointmentId}/decline`;
+      const method = 'PUT';
+      
+      const response = await apiInstance[method.toLowerCase()](endpoint);
+      
+      if (response.data.success) {
+        console.log(`Appointment ${action}d successfully:`, response.data);
+        await fetchPatientRequests();
+      } else {
+        console.error(`Failed to ${action} appointment:`, response.data.message);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing appointment:`, error);
+    }
+  };
 
   useEffect(() => {
     const loadDoctorData = async () => {
@@ -190,48 +232,60 @@ const DoctorDashboard = () => {
       setLoading(true);
       
       try {
-        // Simulate API call
-        setTimeout(() => {
-          console.log('Doctor data loaded successfully:', mockDoctorData);
-          console.log('Income data loaded successfully:', mockIncomeData);
-          console.log('Patients list loaded successfully:', mockPatientsList.length, 'patients');
-          
-          setDoctorData(mockDoctorData);
-          setIncomeData(mockIncomeData);
-          setPatientsList(mockPatientsList);
-          setLoading(false);
-        }, 1000);
+        await fetchDoctorProfile();
+        setIncomeData(defaultIncomeData);
+        setPatientsList(defaultPatientsList);
+        
+        console.log('Doctor data loaded successfully:', doctorData);
+        console.log('Income data loaded successfully:', defaultIncomeData);
+        console.log('Patients list loaded successfully:', defaultPatientsList.length, 'patients');
+        
+        setLoading(false);
       } catch (error) {
         console.error('Error loading doctor data:', error);
         setLoading(false);
       }
     };
 
-    loadDoctorData();
+    if (doctorData && Object.keys(doctorData).length > 0 && loading) {
+      loadDoctorData();
+    }
   }, []);
 
-  // Income Cards Component
-  const IncomeCard = ({ title, amount, growth, icon, bgColor, timeFrame }) => (
-    <div className={`p-6 rounded-xl shadow-lg ${bgColor} text-white relative overflow-hidden`}>
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -mr-16 -mt-16"></div>
+  // Filter functions
+  const filteredRequests = patientRequests.filter(request => {
+    const matchesSearch = request.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                         request.phone?.includes(searchTerm);
+    const matchesFilter = filterStatus === 'all' || request.status === filterStatus;
+    return matchesSearch && matchesFilter;
+  });
+
+  // Enhanced Income Card Component
+  const IncomeCard = ({ title, amount = 0, growth = 0, icon, bgColor, timeFrame }) => (
+    <div className={`group relative p-6 rounded-2xl shadow-lg ${bgColor} text-white transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden`}>
+      {/* Decorative Background Elements */}
+      <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -mr-16 -mt-16 transition-transform duration-300 group-hover:scale-110"></div>
+      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-5 rounded-full -ml-12 -mb-12"></div>
+      
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-4">
-          <div className="p-3 bg-white bg-opacity-20 rounded-lg">
+          <div className="p-3 bg-white bg-opacity-20 rounded-xl backdrop-blur-sm">
             {icon}
           </div>
           <div className="text-right">
-            <p className="text-sm opacity-80">{title}</p>
-            <p className="text-2xl font-bold">₹{amount.toLocaleString()}</p>
+            <p className="text-sm opacity-80 font-medium">{title}</p>
+            <p className="text-3xl font-bold tracking-tight">₹{amount.toLocaleString()}</p>
           </div>
         </div>
+        
         <div className="flex items-center justify-between">
-          <div className="flex items-center">
+          <div className="flex items-center bg-white bg-opacity-10 rounded-lg px-3 py-1">
             {growth > 0 ? (
               <TrendingUp size={16} className="text-green-300" />
             ) : (
               <TrendingDown size={16} className="text-red-300" />
             )}
-            <span className="ml-2 text-sm">
+            <span className="ml-2 text-sm font-medium">
               {growth > 0 ? '+' : ''}{growth}%
             </span>
           </div>
@@ -243,67 +297,86 @@ const DoctorDashboard = () => {
 
   IncomeCard.propTypes = {
     title: PropTypes.string.isRequired,
-    amount: PropTypes.number.isRequired,
-    growth: PropTypes.number.isRequired,
+    amount: PropTypes.number,
+    growth: PropTypes.number,
     icon: PropTypes.element.isRequired,
     bgColor: PropTypes.string.isRequired,
     timeFrame: PropTypes.string.isRequired
   };
 
-  // Patient Card Component
+  // Enhanced Patient Card Component
   const PatientCard = ({ patient }) => (
-    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 hover:shadow-md transition-shadow">
+    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
       <div className="flex items-start justify-between">
         <div className="flex-1">
-          <div className="flex items-center mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">{patient.name}</h3>
-            <span className={`ml-3 px-2 py-1 rounded-full text-xs font-medium ${
-              patient.status === 'active' 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-gray-100 text-gray-800'
-            }`}>
-              {patient.status}
-            </span>
+          <div className="flex items-center mb-3">
+            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 text-white font-bold shadow-md">
+              {patient.name.split(' ').map(n => n[0]).join('')}
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                {patient.name}
+              </h3>
+              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                patient.status === 'active' 
+                  ? 'bg-green-100 text-green-800' 
+                  : 'bg-gray-100 text-gray-800'
+              }`}>
+                {patient.status}
+              </span>
+            </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <div>
-              <div className="flex items-center text-sm text-gray-600 mb-1">
-                <Mail size={14} className="mr-2" />
-                {patient.email}
-              </div>
-              <div className="flex items-center text-sm text-gray-600 mb-1">
-                <Phone size={14} className="mr-2" />
-                {patient.phone}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
+            <div className="space-y-2">
+              <div className="flex items-center text-sm text-gray-600">
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
+                  <Mail size={14} className="text-blue-500" />
+                </div>
+                <span className="truncate">{patient.email}</span>
               </div>
               <div className="flex items-center text-sm text-gray-600">
-                <MapPin size={14} className="mr-2" />
-                {patient.location}
+                <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mr-3">
+                  <Phone size={14} className="text-green-500" />
+                </div>
+                <span>{patient.phone}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center mr-3">
+                  <MapPin size={14} className="text-red-500" />
+                </div>
+                <span className="truncate">{patient.location}</span>
               </div>
             </div>
             
-            <div>
-              <div className="flex items-center text-sm text-gray-600 mb-1">
-                <Users size={14} className="mr-2" />
-                Age: {patient.age}
-              </div>
-              <div className="flex items-center text-sm text-gray-600 mb-1">
-                <Calendar size={14} className="mr-2" />
-                Sessions: {patient.totalSessions}
+            <div className="space-y-2">
+              <div className="flex items-center text-sm text-gray-600">
+                <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
+                  <Users size={14} className="text-purple-500" />
+                </div>
+                <span>Age: {patient.age}</span>
               </div>
               <div className="flex items-center text-sm text-gray-600">
-                <DollarSign size={14} className="mr-2" />
-                Total: ₹{patient.totalPaid.toLocaleString()}
+                <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+                  <Calendar size={14} className="text-indigo-500" />
+                </div>
+                <span>Sessions: {patient.totalSessions}</span>
+              </div>
+              <div className="flex items-center text-sm text-gray-600">
+                <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
+                  <DollarSign size={14} className="text-emerald-500" />
+                </div>
+                <span>Total: ₹{patient.totalPaid.toLocaleString()}</span>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center justify-between text-sm">
-            <div className="text-gray-600">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm bg-gray-50 p-3 rounded-lg">
+            <div className="text-gray-600 mb-2 sm:mb-0">
               <span className="font-medium">Last Session:</span> {patient.lastAppointment}
             </div>
             {patient.nextAppointment && (
-              <div className="text-blue-600 font-medium">
+              <div className="text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-lg">
                 Next: {patient.nextAppointment}
               </div>
             )}
@@ -332,279 +405,683 @@ const DoctorDashboard = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mb-4"></div>
-          <p className="text-gray-600">Loading doctor dashboard...</p>
+          <div className="relative">
+            <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mb-6"></div>
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-8 h-8 bg-blue-600 rounded-full animate-pulse"></div>
+            </div>
+          </div>
+          <p className="text-gray-600 text-lg font-medium">Loading your dashboard...</p>
+          <p className="text-gray-400 text-sm mt-2">Please wait while we fetch your data</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
-          <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
-            <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-4xl font-bold text-blue-600">
-                {doctorData.name?.split(' ').map(n => n[0]).join('')}
-              </span>
-            </div>
-            
-            <div className="flex-1">
-              <div className="flex items-center gap-4 mb-4">
-                <h1 className="text-3xl font-bold text-gray-900">{doctorData.name}</h1>
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+      {/* Mobile Sidebar Overlay */}
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
+      )}
+
+      <div className="flex min-h-screen">
+        {/* Mobile Header */}
+        <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm p-4 flex items-center justify-between z-30">
+          <button 
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+          >
+            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+          <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+          <div className="flex items-center gap-2">
+            <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
+              <Bell size={20} />
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+            </button>
+            <button 
+              onClick={handleLogout}
+              className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-red-600"
+            >
+              <LogOut size={20} />
+            </button>
+          </div>
+        </div>
+        {/* Sidebar - Enhanced */}
+        <div className={`fixed lg:relative inset-y-0 left-0 z-40 w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
+          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
+        }`}>
+          <div className="flex flex-col h-full">
+            {/* Sidebar Header */}
+            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+              <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Star className="text-yellow-400 fill-current" size={20} />
-                  <span className="ml-1 text-lg font-semibold text-gray-700">{doctorData.rating}</span>
+                  <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mr-3">
+                    <Users size={24} />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-semibold">MediCare</h2>
+                    <p className="text-sm opacity-80">Doctor Portal</p>
+                  </div>
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-                <div className="flex items-center text-gray-600">
-                  <Mail size={18} className="mr-3 text-blue-500" />
-                  <span>{doctorData.email}</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <Phone size={18} className="mr-3 text-green-500" />
-                  <span>{doctorData.phone}</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <MapPin size={18} className="mr-3 text-red-500" />
-                  <span>{doctorData.location}</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <Award size={18} className="mr-3 text-purple-500" />
-                  <span>{doctorData.specialization}</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <Clock size={18} className="mr-3 text-orange-500" />
-                  <span>{doctorData.experience} experience</span>
-                </div>
-                <div className="flex items-center text-gray-600">
-                  <Users size={18} className="mr-3 text-indigo-500" />
-                  <span>{doctorData.totalPatients} patients</span>
-                </div>
-              </div>
-              
-              <p className="text-gray-600 mb-4">{doctorData.bio}</p>
-              
-              <div className="flex flex-wrap gap-2">
-                {doctorData.qualifications?.map((qual, index) => (
-                  <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                    {qual}
-                  </span>
-                ))}
+                <button 
+                  onClick={() => setSidebarOpen(false)}
+                  className="lg:hidden p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
+                >
+                  <X size={20} />
+                </button>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Income Statistics Cards */}
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Income Statistics</h2>
-            <div className="flex items-center gap-2">
-              <label className="text-sm text-gray-600">View:</label>
-              <select 
-                value={selectedTimeFrame} 
-                onChange={(e) => setSelectedTimeFrame(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            {/* Doctor Profile Section */}
+            <div className="p-6 border-b border-gray-200">
+              <div className="flex items-center mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
+                  {doctorData.name?.split(' ').map(n => n[0]).join('') || 'D'}
+                </div>
+                <div className="ml-4 flex-1">
+                  <h3 className="text-lg font-semibold text-gray-900 truncate">{doctorData.name || 'Doctor Name'}</h3>
+                  <p className="text-sm text-gray-600 truncate">{doctorData.specialization || 'Specialist'}</p>
+                  <div className="flex items-center mt-1">
+                    <Star className="text-yellow-400 fill-current w-4 h-4" />
+                    <span className="ml-1 text-sm font-medium text-gray-700">{doctorData.rating || 0}</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div className="bg-blue-50 p-3 rounded-lg text-center">
+                  <div className="text-xl font-bold text-blue-600">{doctorData.patients || 0}</div>
+                  <div className="text-xs text-gray-600">Patients</div>
+                </div>
+                <div className="bg-green-50 p-3 rounded-lg text-center">
+                  <div className="text-xl font-bold text-green-600">{doctorData.experience || 0}y</div>
+                  <div className="text-xs text-gray-600">Experience</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Navigation Menu */}
+            <nav className="flex-1 p-4">
+              <ul className="space-y-2">
+                <li>
+                  <a href="#overview" className="flex items-center p-3 rounded-lg bg-blue-50 text-blue-700 font-medium">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                      <TrendingUp size={16} />
+                    </div>
+                    Overview
+                  </a>
+                </li>
+                <li>
+                  <a href="#patients" className="flex items-center p-3 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
+                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                      <Users size={16} />
+                    </div>
+                    Patients
+                  </a>
+                </li>
+                <li>
+                  <a href="#appointments" className="flex items-center p-3 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
+                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                      <Calendar size={16} />
+                    </div>
+                    Appointments
+                  </a>
+                </li>
+                <li>
+                  <a href="#settings" className="flex items-center p-3 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
+                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                      <Settings size={16} />
+                    </div>
+                    Settings
+                  </a>
+                </li>
+              </ul>
+            </nav>
+
+            {/* Sidebar Footer */}
+            <div className="p-4 border-t border-gray-200">
+              <button
+                onClick={fetchDoctorProfile}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium"
+                disabled={profileRefreshing}
               >
-                <option value="daily">Daily</option>
-                <option value="weekly">Weekly</option>
-                <option value="monthly">Monthly</option>
-                <option value="yearly">Yearly</option>
-              </select>
+                {profileRefreshing ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                )}
+                {profileRefreshing ? 'Refreshing...' : 'Refresh Profile'}
+              </button>
+              
+              <button
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors duration-200 font-medium"
+              >
+                <LogOut size={16} />
+                Logout
+              </button>
             </div>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <IncomeCard
-              title="Daily Income"
-              amount={incomeData.daily}
-              growth={incomeData.dailyGrowth}
-              icon={<DollarSign size={24} />}
-              bgColor="bg-gradient-to-r from-blue-500 to-blue-600"
-              timeFrame="day"
-            />
-            <IncomeCard
-              title="Weekly Income"
-              amount={incomeData.weekly}
-              growth={incomeData.weeklyGrowth}
-              icon={<TrendingUp size={24} />}
-              bgColor="bg-gradient-to-r from-green-500 to-green-600"
-              timeFrame="week"
-            />
-            <IncomeCard
-              title="Monthly Income"
-              amount={incomeData.monthly}
-              growth={incomeData.monthlyGrowth}
-              icon={<Calendar size={24} />}
-              bgColor="bg-gradient-to-r from-purple-500 to-purple-600"
-              timeFrame="month"
-            />
-            <IncomeCard
-              title="Yearly Income"
-              amount={incomeData.yearly}
-              growth={incomeData.yearlyGrowth}
-              icon={<Award size={24} />}
-              bgColor="bg-gradient-to-r from-orange-500 to-orange-600"
-              timeFrame="year"
-            />
           </div>
         </div>
 
-        {/* Income Chart */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4">
-            {selectedTimeFrame === 'daily' ? 'Daily' : 
-             selectedTimeFrame === 'weekly' ? 'Weekly' : 
-             selectedTimeFrame === 'monthly' ? 'Monthly' : 'Yearly'} Income Trend
-          </h3>
-          <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={selectedTimeFrame === 'weekly' ? incomeData.weeklyChart : incomeData.monthlyChart}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip 
-                formatter={(value) => [`₹${value.toLocaleString()}`, 'Income']}
-                labelFormatter={(label) => `${selectedTimeFrame === 'weekly' ? 'Day' : 'Month'}: ${label}`}
-              />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="income" 
-                stroke="#3B82F6" 
-                strokeWidth={3}
-                dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Appointments Table */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">
-                Total: {mockAppointmentsList.length} appointments
-              </span>
-              <span className="text-sm text-gray-600">
-                Pending: {mockAppointmentsList.filter(a => a.status === 'pending').length}
-              </span>
+        {/* Main Content */}
+        <div className="flex-1 lg:ml-0 w-full">
+          {/* Add top padding for mobile to account for fixed header */}
+          <div className="pt-20 lg:pt-0 p-4 lg:p-8 max-w-7xl mx-auto">
+            {/* Main Header - Desktop Only */}
+            <div className="hidden lg:flex items-center justify-between mb-8">
+              <div>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, Dr. {doctorData.name?.split(' ')[1] || 'Doctor'}!</h1>
+                <p className="text-gray-600">Here's what's happening with your practice today.</p>
+              </div>
+              <div className="flex items-center gap-4">
+                <button className="relative p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <Bell size={20} className="text-gray-600" />
+                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+                </button>
+                <button className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                  <Download size={20} className="text-gray-600" />
+                </button>
+              </div>
             </div>
-          </div>
-          
-          <div className="overflow-x-auto">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200">
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">PATIENT NAME</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">PHONE</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">AGE</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">LOCATION</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">DATE & TIME</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">STATUS</th>
-                  <th className="text-left py-3 px-4 font-medium text-gray-600">ACTIONS</th>
-                </tr>
-              </thead>
-              <tbody>
-                {mockAppointmentsList.map((appointment) => (
-                  <tr key={appointment.id} className="border-b border-gray-100 hover:bg-gray-50">
-                    <td className="py-4 px-4">
-                      <div className="flex items-center">
-                        <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
-                          <span className="text-blue-600 font-semibold text-sm">
-                            {appointment.name.split(' ').map(n => n[0]).join('')}
+
+            {/* Income Statistics Cards */}
+            <div className="mb-8">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <h2 className="text-2xl font-bold text-gray-900">Income Statistics</h2>
+                <div className="flex items-center gap-3">
+                  <label className="text-sm text-gray-600 font-medium">View:</label>
+                  <select 
+                    value={selectedTimeFrame} 
+                    onChange={(e) => setSelectedTimeFrame(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
+                  >
+                    <option value="daily">Daily</option>
+                    <option value="weekly">Weekly</option>
+                    <option value="monthly">Monthly</option>
+                    <option value="yearly">Yearly</option>
+                  </select>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <IncomeCard
+                  title="Daily Income"
+                  amount={incomeData.daily}
+                  growth={incomeData.dailyGrowth}
+                  icon={<DollarSign size={24} />}
+                  bgColor="bg-gradient-to-br from-blue-500 to-blue-600"
+                  timeFrame="day"
+                />
+                <IncomeCard
+                  title="Weekly Income"
+                  amount={incomeData.weekly}
+                  growth={incomeData.weeklyGrowth}
+                  icon={<TrendingUp size={24} />}
+                  bgColor="bg-gradient-to-br from-emerald-500 to-emerald-600"
+                  timeFrame="week"
+                />
+                <IncomeCard
+                  title="Monthly Income"
+                  amount={incomeData.monthly}
+                  growth={incomeData.monthlyGrowth}
+                  icon={<Calendar size={24} />}
+                  bgColor="bg-gradient-to-br from-purple-500 to-purple-600"
+                  timeFrame="month"
+                />
+                <IncomeCard
+                  title="Yearly Income"
+                  amount={incomeData.yearly}
+                  growth={incomeData.yearlyGrowth}
+                  icon={<Award size={24} />}
+                  bgColor="bg-gradient-to-br from-orange-500 to-orange-600"
+                  timeFrame="year"
+                />
+              </div>
+            </div>
+
+            {/* Income Chart */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2 sm:mb-0">
+                  {selectedTimeFrame === 'daily' ? 'Daily' : 
+                   selectedTimeFrame === 'weekly' ? 'Weekly' : 
+                   selectedTimeFrame === 'monthly' ? 'Monthly' : 'Yearly'} Income Trend
+                </h3>
+                <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 text-sm text-gray-600">
+                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                    Income
+                  </div>
+                </div>
+              </div>
+              <div className="h-80">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={selectedTimeFrame === 'weekly' ? incomeData.weeklyChart : incomeData.monthlyChart}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                    <XAxis 
+                      dataKey="name" 
+                      stroke="#6b7280"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                    />
+                    <YAxis 
+                      stroke="#6b7280"
+                      fontSize={12}
+                      tickLine={false}
+                      axisLine={false}
+                      tickFormatter={(value) => `₹${value.toLocaleString()}`}
+                    />
+                    <Tooltip 
+                      formatter={(value) => [`₹${value.toLocaleString()}`, 'Income']}
+                      labelFormatter={(label) => `${selectedTimeFrame === 'weekly' ? 'Day' : 'Month'}: ${label}`}
+                      contentStyle={{
+                        backgroundColor: 'white',
+                        border: '1px solid #e5e7eb',
+                        borderRadius: '12px',
+                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                      }}
+                    />
+                    <Legend />
+                    <Line 
+                      type="monotone" 
+                      dataKey="income" 
+                      stroke="#3B82F6" 
+                      strokeWidth={3}
+                      dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
+                      activeDot={{ r: 8, fill: '#1D4ED8' }}
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Patient Requests Section */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Patient Requests</h2>
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-gray-600">Total: {patientRequests.length}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <span className="text-gray-600">Pending: {patientRequests.filter(r => r.status === 'pending').length}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-gray-600">Approved: {patientRequests.filter(r => r.status === 'approved').length}</span>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
+                  {/* Search and Filter */}
+                  <div className="flex flex-col sm:flex-row gap-3">
+                    <div className="relative">
+                      <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <input
+                        type="text"
+                        placeholder="Search patients..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 w-full sm:w-64"
+                      />
+                    </div>
+                    
+                    <div className="relative">
+                      <Filter size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                      <select
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        className="pl-10 pr-8 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none w-full sm:w-auto"
+                      >
+                        <option value="all">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="declined">Declined</option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                  <button 
+                    onClick={fetchPatientRequests}
+                    disabled={requestsLoading}
+                    className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
+                  >
+                    {requestsLoading ? (
+                      <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                      </svg>
+                    ) : (
+                      <Eye size={16} />
+                    )}
+                    {requestsLoading ? 'Loading...' : 'Load Requests'}
+                  </button>
+                </div>
+              </div>
+              
+              {requestsLoading ? (
+                <div className="text-center py-12">
+                  <div className="relative inline-block">
+                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mb-4"></div>
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="w-4 h-4 bg-blue-600 rounded-full animate-pulse"></div>
+                    </div>
+                  </div>
+                  <p className="text-gray-600 font-medium">Loading patient requests...</p>
+                </div>
+              ) : filteredRequests.length > 0 ? (
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="border-b border-gray-200 bg-gray-50">
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-l-xl">PATIENT</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700">CONTACT</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700">DETAILS</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700">DOCTOR</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700">APPOINTMENT</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700">STATUS</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-r-xl">ACTIONS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredRequests.map((request, index) => (
+                        <tr key={request.id || request._id || index} className="border-b border-gray-100 hover:bg-blue-50 transition-colors group">
+                          <td className="py-4 px-6">
+                            <div className="flex items-center">
+                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 text-white font-bold shadow-md">
+                                {request.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
+                              </div>
+                              <div>
+                                <div className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                  {request.name || 'N/A'}
+                                </div>
+                                <div className="text-sm text-gray-500">
+                                  {request.age ? `${request.age} years` : 'Age not specified'}
+                                </div>
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">
+                            <div className="space-y-1">
+                              <div className="flex items-center text-sm text-gray-600">
+                                <Phone size={12} className="mr-2 text-green-500" />
+                                {request.phone || request.number || 'N/A'}
+                              </div>
+                              <div className="flex items-center text-sm text-gray-600">
+                                <MapPin size={12} className="mr-2 text-red-500" />
+                                {request.location || 'N/A'}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6 text-gray-600">
+                            <div className="text-sm">
+                              <div>Age: {request.age || 'N/A'}</div>
+                              <div className="text-gray-500 truncate max-w-32">
+                                {request.location || 'Location not specified'}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">
+                            <div className="text-sm">
+                              <div className="font-medium text-gray-900">
+                                {request.doctorName || doctorData.name || 'N/A'}
+                              </div>
+                              <div className="text-gray-500">
+                                {request.doctorSpecialization || doctorData.specialization || 'N/A'}
+                              </div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">
+                            <div className="text-sm">
+                              <div className="font-medium text-gray-900">{request.date || 'N/A'}</div>
+                              <div className="text-gray-500">{request.time || 'N/A'}</div>
+                            </div>
+                          </td>
+                          <td className="py-4 px-6">
+                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                              request.status === 'approved' 
+                                ? 'bg-green-100 text-green-800 border border-green-200' 
+                                : request.status === 'pending'
+                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                                : request.status === 'declined'
+                                ? 'bg-red-100 text-red-800 border border-red-200'
+                                : 'bg-gray-100 text-gray-800 border border-gray-200'
+                            }`}>
+                              {request.status || 'pending'}
+                            </span>
+                          </td>
+                          <td className="py-4 px-6">
+                            {request.status === 'pending' ? (
+                              <div className="flex items-center gap-2">
+                                <button 
+                                  onClick={() => handleAppointmentAction(request.id || request._id, 'approve')}
+                                  className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm"
+                                >
+                                  <span className="mr-1">✓</span>
+                                  Approve
+                                </button>
+                                <button 
+                                  onClick={() => handleAppointmentAction(request.id || request._id, 'decline')}
+                                  className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
+                                >
+                                  <span className="mr-1">✗</span>
+                                  Decline
+                                </button>
+                              </div>
+                            ) : (
+                              <span className={`flex items-center text-sm font-medium ${
+                                request.status === 'approved' ? 'text-green-600' : 'text-red-600'
+                              }`}>
+                                <span className="mr-1">{request.status === 'approved' ? '✓' : '✗'}</span>
+                                {request.status === 'approved' ? 'Approved' : 'Declined'}
+                              </span>
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Calendar size={24} className="text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No requests found</h3>
+                  <p className="text-gray-600 mb-6">
+                    {searchTerm || filterStatus !== 'all' 
+                      ? 'Try adjusting your search or filter criteria.' 
+                      : 'Click "Load Requests" to fetch patient requests from the server.'
+                    }
+                  </p>
+                  {!searchTerm && filterStatus === 'all' && (
+                    <button 
+                      onClick={fetchPatientRequests}
+                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                    >
+                      <Eye size={16} />
+                      Load Patient Requests
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* All Appointments Section */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">All Appointments</h2>
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-gray-600">Total: {defaultAppointmentsList.length}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                      <span className="text-gray-600">Pending: {defaultAppointmentsList.filter(a => a.status === 'pending').length}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-gray-600">Approved: {defaultAppointmentsList.filter(a => a.status === 'approved').length}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200 bg-gray-50">
+                      <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-l-xl">PATIENT</th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-700">CONTACT</th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-700">DETAILS</th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-700">APPOINTMENT</th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-700">STATUS</th>
+                      <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-r-xl">ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {defaultAppointmentsList.map((appointment) => (
+                      <tr key={appointment.id} className="border-b border-gray-100 hover:bg-blue-50 transition-colors group">
+                        <td className="py-4 px-6">
+                          <div className="flex items-center">
+                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4 text-white font-bold shadow-md">
+                              {appointment.name.split(' ').map(n => n[0]).join('')}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
+                                {appointment.name}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {appointment.age} years
+                              </div>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="space-y-1">
+                            <div className="flex items-center text-sm text-gray-600">
+                              <Phone size={12} className="mr-2 text-green-500" />
+                              {appointment.phone}
+                            </div>
+                            <div className="flex items-center text-sm text-gray-600">
+                              <MapPin size={12} className="mr-2 text-red-500" />
+                              {appointment.location}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6 text-gray-600">
+                          <div className="text-sm">
+                            <div>Age: {appointment.age}</div>
+                            <div className="text-gray-500 truncate max-w-32">
+                              {appointment.location}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <div className="text-sm">
+                            <div className="font-medium text-gray-900">{appointment.date}</div>
+                            <div className="text-gray-500">{appointment.time}</div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-6">
+                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                            appointment.status === 'approved' 
+                              ? 'bg-green-100 text-green-800 border border-green-200' 
+                              : appointment.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                              : 'bg-red-100 text-red-800 border border-red-200'
+                          }`}>
+                            {appointment.status}
                           </span>
-                        </div>
-                        <span className="font-medium text-gray-900">{appointment.name}</span>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4 text-gray-600">{appointment.phone}</td>
-                    <td className="py-4 px-4 text-gray-600">{appointment.age}</td>
-                    <td className="py-4 px-4 text-gray-600">{appointment.location}</td>
-                    <td className="py-4 px-4 text-gray-600">
-                      <div>
-                        <div className="font-medium">{appointment.date}</div>
-                        <div className="text-sm text-gray-500">{appointment.time}</div>
-                      </div>
-                    </td>
-                    <td className="py-4 px-4">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        appointment.status === 'approved' 
-                          ? 'bg-green-100 text-green-800' 
-                          : appointment.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
-                      }`}>
-                        {appointment.status}
-                      </span>
-                    </td>
-                    <td className="py-4 px-4">
-                      {appointment.status === 'pending' ? (
-                        <div className="flex items-center gap-2">
-                          <button className="flex items-center px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm">
-                            <span className="mr-1">✓</span>
-                            Approve
-                          </button>
-                          <button className="flex items-center px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm">
-                            <span className="mr-1">✗</span>
-                            Decline
-                          </button>
-                        </div>
-                      ) : (
-                        <span className="flex items-center text-green-600 text-sm">
-                          <span className="mr-1">✓</span>
-                          {appointment.status === 'approved' ? 'Approved' : 'Declined'}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          
-          {mockAppointmentsList.length === 0 && (
-            <div className="text-center py-8">
-              <Calendar size={48} className="text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No appointments scheduled</p>
+                        </td>
+                        <td className="py-4 px-6">
+                          {appointment.status === 'pending' ? (
+                            <div className="flex items-center gap-2">
+                              <button className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm">
+                                <span className="mr-1">✓</span>
+                                Approve
+                              </button>
+                              <button className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm">
+                                <span className="mr-1">✗</span>
+                                Decline
+                              </button>
+                            </div>
+                          ) : (
+                            <span className={`flex items-center text-sm font-medium ${
+                              appointment.status === 'approved' ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                              <span className="mr-1">{appointment.status === 'approved' ? '✓' : '✗'}</span>
+                              {appointment.status === 'approved' ? 'Approved' : 'Declined'}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              
+              {defaultAppointmentsList.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Calendar size={24} className="text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments scheduled</h3>
+                  <p className="text-gray-600">Appointments will appear here once patients book sessions with you.</p>
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* Patients List */}
-        <div className="bg-white rounded-xl shadow-sm p-6">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">My Patients</h2>
-            <div className="flex items-center gap-4">
-              <span className="text-sm text-gray-600">
-                Total: {patientsList.length} patients
-              </span>
-              <span className="text-sm text-gray-600">
-                Active: {patientsList.filter(p => p.status === 'active').length}
-              </span>
+            {/* My Patients Section */}
+            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">My Patients</h2>
+                  <div className="flex flex-wrap items-center gap-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                      <span className="text-gray-600">Total: {patientsList.length}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                      <span className="text-gray-600">Active: {patientsList.filter(p => p.status === 'active').length}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                {patientsList.map((patient) => (
+                  <PatientCard key={patient.id} patient={patient} />
+                ))}
+              </div>
+              
+              {patientsList.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users size={24} className="text-gray-400" />
+                  </div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">No patients yet</h3>
+                  <p className="text-gray-600">Your patient list will appear here as you start treating patients.</p>
+                </div>
+              )}
             </div>
           </div>
-          
-          <div className="space-y-4">
-            {patientsList.map((patient) => (
-              <PatientCard key={patient.id} patient={patient} />
-            ))}
-          </div>
-          
-          {patientsList.length === 0 && (
-            <div className="text-center py-8">
-              <Users size={48} className="text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-600">No patients found</p>
-            </div>
-          )}
         </div>
       </div>
     </div>

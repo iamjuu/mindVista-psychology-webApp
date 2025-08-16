@@ -3,13 +3,14 @@ import PropTypes from 'prop-types';
 import { Search, Filter, ChevronLeft, ChevronRight, User, Mail, Phone, MapPin, Clock, Calendar, DollarSign, Users, Award } from 'lucide-react';
 import { Button } from '../../../../components/shadcn/button/button';
 import { Input } from '../../../../components/shadcn/input/input';
-// import apiInstance from '../../../instance';
+import apiInstance from '../../../../instance';
 
 const DoctorList = () => {
   const [activeTab, setActiveTab] = useState('doctors');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [approvalFilter, setApprovalFilter] = useState('all');
   const [doctorData, setDoctorData] = useState([]);
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,8 @@ const DoctorList = () => {
       monthlyIncome: 18000,
       totalPatients: 156,
       joinDate: '2020-01-15',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '2',
@@ -44,7 +46,8 @@ const DoctorList = () => {
       monthlyIncome: 15000,
       totalPatients: 134,
       joinDate: '2021-03-22',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '3',
@@ -57,7 +60,8 @@ const DoctorList = () => {
       monthlyIncome: 22000,
       totalPatients: 198,
       joinDate: '2019-07-10',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '4',
@@ -70,7 +74,8 @@ const DoctorList = () => {
       monthlyIncome: 12000,
       totalPatients: 89,
       joinDate: '2022-02-18',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '5',
@@ -83,7 +88,8 @@ const DoctorList = () => {
       monthlyIncome: 25000,
       totalPatients: 245,
       joinDate: '2018-09-05',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '6',
@@ -96,7 +102,8 @@ const DoctorList = () => {
       monthlyIncome: 16000,
       totalPatients: 142,
       joinDate: '2021-01-12',
-      status: 'inactive'
+      status: 'inactive',
+      isActive: false
     },
     {
       id: '7',
@@ -109,7 +116,8 @@ const DoctorList = () => {
       monthlyIncome: 20000,
       totalPatients: 178,
       joinDate: '2020-06-30',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '8',
@@ -122,7 +130,8 @@ const DoctorList = () => {
       monthlyIncome: 11000,
       totalPatients: 76,
       joinDate: '2022-11-20',
-      status: 'active'
+      status: 'active',
+      isActive: false
     }
   ];
 
@@ -202,33 +211,74 @@ const DoctorList = () => {
     }
   ]
   
-  // Fetch data from API (commented out for demo)
+  // Fetch data from API
   useEffect(() => {
-    const loadMockData = () => {
+    const fetchData = async () => {
       setLoading(true);
-      console.log('Loading mock data...');
+      setError(null);
       
-      // Simulate API call delay
-      setTimeout(() => {
-        try {
-          console.log('Mock doctor data loaded:', mockDoctorData);
-          console.log('Mock user data loaded:', mockUserData);
-          setDoctorData(mockDoctorData);
-          setUserData(mockUserData);
-          console.log('Data loading completed successfully');
-        } catch (error) {
-          console.error('Error loading mock data:', error);
-          setError('Failed to load data. Please try again later.');
-        } finally {
-          setLoading(false);
-        }
-      }, 1000);
+      try {
+        // Fetch doctors data
+        const doctorsResponse = await apiInstance.get('/doctors/admin/all');
+        console.log('Doctors data loaded:', doctorsResponse.data);
+        
+        // Transform doctors data to match frontend expectations
+        const transformedDoctors = (doctorsResponse.data?.doctors || []).map(doctor => ({
+          id: doctor._id,
+          name: doctor.name,
+          email: doctor.email || 'N/A',
+          phone: doctor.phone,
+          specialization: doctor.specialization,
+          experience: `${doctor.experience} years`,
+          totalIncome: doctor.consultationFee ? doctor.consultationFee * (doctor.patients || 0) : 0,
+          monthlyIncome: doctor.consultationFee ? Math.floor((doctor.consultationFee * (doctor.patients || 0)) / 12) : 0,
+          totalPatients: doctor.patients || 0,
+          status: doctor.available ? 'active' : 'inactive',
+          isActive: doctor.isActive,
+          joinDate: new Date(doctor.createdAt).toISOString().split('T')[0]
+        }));
+        console.log('Transformed doctors:', transformedDoctors);
+        setDoctorData(transformedDoctors);
+        
+        // Fetch appointments/users data
+        const appointmentsResponse = await apiInstance.get('/appointment');
+        console.log('Appointments data loaded:', appointmentsResponse.data);
+        
+        // Transform appointments data to match frontend expectations
+        const transformedAppointments = (appointmentsResponse.data?.data || []).map(appointment => ({
+          id: appointment.id || appointment._id,
+          name: appointment.name,
+          email: 'N/A', // Appointments don't have email
+          number: appointment.phone,
+          location: appointment.location,
+          age: appointment.age?.toString() || 'N/A',
+          slot: appointment.time?.includes('09') ? 'morning' : 
+                appointment.time?.includes('14') ? 'afternoon' : 'evening',
+          time: appointment.time,
+          date: appointment.date,
+          status: appointment.status || 'pending'
+        }));
+        console.log('Transformed appointments:', transformedAppointments);
+        setUserData(transformedAppointments);
+        
+        console.log('Data loading completed successfully');
+      } catch (error) {
+        console.error('Error loading data:', error);
+        setError('Failed to load data. Please try again later.');
+        
+        // Fallback to mock data if API fails
+        console.log('Falling back to mock data...');
+        setDoctorData(mockDoctorData);
+        setUserData(mockUserData);
+      } finally {
+        setLoading(false);
+      }
     };
     
-    loadMockData();
+    fetchData();
   }, []);
   
-  // Filter doctors based on search term and status
+  // Filter doctors based on search term, status, and approval
   const filteredDoctors = doctorData.filter(doctor => {
     const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -236,15 +286,17 @@ const DoctorList = () => {
                          doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doctor.experience.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || doctor.status.toLowerCase() === statusFilter.toLowerCase();
+    const matchesApproval = approvalFilter === 'all' || 
+                           (approvalFilter === 'approved' && doctor.isActive) || 
+                           (approvalFilter === 'pending' && !doctor.isActive);
     
-    console.log(`Filtering doctors: search="${searchTerm}", status="${statusFilter}", matches=${matchesSearch && matchesStatus}`);
-    return matchesSearch && matchesStatus;
+    console.log(`Filtering doctors: search="${searchTerm}", status="${statusFilter}", approval="${approvalFilter}", matches=${matchesSearch && matchesStatus && matchesApproval}`);
+    return matchesSearch && matchesStatus && matchesApproval;
   });
 
   // Filter users based on search term and status
   const filteredUsers = userData.filter(user => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.number.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.location.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.age.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -262,6 +314,27 @@ const DoctorList = () => {
   const totalPages = Math.ceil(currentData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = currentData.slice(startIndex, startIndex + itemsPerPage);
+
+  // Handle doctor approval
+  const handleApproveDoctor = async (doctorId) => {
+    try {
+      const response = await apiInstance.put(`/doctors/approve/${doctorId}`);
+      if (response.data.success) {
+        // Update the local state
+        setDoctorData(prevData => 
+          prevData.map(doctor => 
+            doctor.id === doctorId 
+              ? { ...doctor, isActive: true }
+              : doctor
+          )
+        );
+        alert('Doctor approved successfully!');
+      }
+    } catch (error) {
+      console.error('Error approving doctor:', error);
+      alert('Failed to approve doctor. Please try again.');
+    }
+  };
   
   // Handle page change
   const goToPage = (page) => {
@@ -392,10 +465,7 @@ const DoctorList = () => {
       </div>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
-        <div className="flex items-center space-x-2">
-          <Mail className="w-4 h-4 text-gray-400" />
-          <span className="text-sm text-gray-600 truncate">{user.email}</span>
-        </div>
+
         <div className="flex items-center space-x-2">
           <Phone className="w-4 h-4 text-gray-400" />
           <span className="text-sm text-gray-600">{user.number}</span>
@@ -455,7 +525,6 @@ const DoctorList = () => {
     user: PropTypes.shape({
       id: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
-      email: PropTypes.string.isRequired,
       number: PropTypes.string.isRequired,
       location: PropTypes.string.isRequired,
       age: PropTypes.string.isRequired,
@@ -505,14 +574,7 @@ const DoctorList = () => {
               Users ({filteredUsers.length})
             </Button>
           </div>
-          
-          <Button 
-            variant="default" 
-            size="default"
-            className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 w-full sm:w-auto"
-          >
-            Add {activeTab === 'doctors' ? 'Doctor' : 'User'}
-          </Button>
+    
         </div>
       </div>
       
@@ -524,7 +586,7 @@ const DoctorList = () => {
           </div>
           <Input
             type="text"
-            placeholder={`Search ${activeTab === 'doctors' ? 'doctors by name, email, phone, specialization, or experience' : 'users by name, email, phone, location, age, or slot'}...`}
+            placeholder={`Search ${activeTab === 'doctors' ? 'doctors by name, email, phone, specialization, or experience' : 'users by name, phone, location, age, or slot'}...`}
             className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
             value={searchTerm}
             onChange={(e) => {
@@ -552,8 +614,89 @@ const DoctorList = () => {
               <option value="all">All Status</option>
               <option value="active">Active</option>
               <option value="inactive">Inactive</option>
+              <option value="pending">Pending</option>
             </select>
           </div>
+          
+          {activeTab === 'doctors' && (
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Filter size={18} className="text-gray-400" />
+              </div>
+              <select
+                className="pl-10 pr-4 py-2 border rounded-lg w-full appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={approvalFilter}
+                onChange={(e) => {
+                  console.log('Approval filter changed:', e.target.value);
+                  setApprovalFilter(e.target.value);
+                  setCurrentPage(1); // Reset to first page on filter change
+                }}
+              >
+                <option value="all">All Approval</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending Approval</option>
+              </select>
+            </div>
+          )}
+          
+          <Button
+            onClick={() => {
+              console.log('Refreshing data...');
+              setCurrentPage(1);
+              setSearchTerm('');
+              setStatusFilter('all');
+              setApprovalFilter('all');
+              // Trigger a re-fetch of data
+              const fetchData = async () => {
+                setLoading(true);
+                setError(null);
+                try {
+                  const doctorsResponse = await apiInstance.get('/doctors/admin/all');
+                  const transformedDoctors = (doctorsResponse.data?.doctors || []).map(doctor => ({
+                    id: doctor._id,
+                    name: doctor.name,
+                    email: doctor.email || 'N/A',
+                    phone: doctor.phone,
+                    specialization: doctor.specialization,
+                    experience: `${doctor.experience} years`,
+                    totalIncome: doctor.consultationFee ? doctor.consultationFee * (doctor.patients || 0) : 0,
+                    monthlyIncome: doctor.consultationFee ? Math.floor((doctor.consultationFee * (doctor.patients || 0)) / 12) : 0,
+                    totalPatients: doctor.patients || 0,
+                    status: doctor.available ? 'active' : 'inactive',
+                    joinDate: new Date(doctor.createdAt).toISOString().split('T')[0]
+                  }));
+                  setDoctorData(transformedDoctors);
+                  
+                  const appointmentsResponse = await apiInstance.get('/appointment');
+                  const transformedAppointments = (appointmentsResponse.data?.data || []).map(appointment => ({
+                    id: appointment.id || appointment._id,
+                    name: appointment.name,
+                    email: 'N/A',
+                    number: appointment.phone,
+                    location: appointment.location,
+                    age: appointment.age?.toString() || 'N/A',
+                    slot: appointment.time?.includes('09') ? 'morning' : 
+                          appointment.time?.includes('14') ? 'afternoon' : 'evening',
+                    time: appointment.time,
+                    date: appointment.date,
+                    status: appointment.status || 'pending'
+                  }));
+                  setUserData(transformedAppointments);
+                } catch (error) {
+                  console.error('Error refreshing data:', error);
+                  setError('Failed to refresh data. Please try again later.');
+                } finally {
+                  setLoading(false);
+                }
+              };
+              fetchData();
+            }}
+            variant="outline"
+            size="sm"
+            className="px-4 py-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+          >
+            Refresh Data
+          </Button>
           
           <div className="text-sm text-gray-500 flex items-center justify-center sm:justify-start py-2">
             Showing {currentData.length} {activeTab === 'doctors' ? 'doctors' : 'users'}
@@ -580,172 +723,206 @@ const DoctorList = () => {
       {/* Data display */}
       {!loading && !error && (
         <>
-          {/* Table View - Now scrollable on table data only */}
-          <div className="max-w-6xl">
-            <div className="max-w-7xl mx-auto">
-              <div className="overflow-x-auto">
-                {activeTab === 'doctors' ? (
-                  <table className="w-full min-w-[1000px] table-auto">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px]">ID</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Doctor Name</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[180px]">Email</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Specialization</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Experience</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Income</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Monthly Income</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Patients</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedData.length > 0 ? (
-                        paginatedData.map(doctor => (
-                          <tr key={doctor.id} className="border-t hover:bg-gray-50">
-                            <td className="p-3 text-gray-500 whitespace-nowrap">#{typeof doctor.id === 'number' ? doctor.id : doctor.id.slice(-4)}</td>
-                            <td className="p-3 font-medium whitespace-nowrap">{doctor.name}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.email}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.phone}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.specialization}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.experience}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">
-                              <span className="text-green-600 font-semibold">₹{doctor.totalIncome.toLocaleString()}</span>
-                            </td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">
-                              <span className="text-blue-600 font-semibold">₹{doctor.monthlyIncome.toLocaleString()}</span>
-                            </td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">
-                              <span className="text-blue-600 font-semibold">{doctor.totalPatients} patients</span>
-                            </td>
-                            <td className="p-3 whitespace-nowrap">
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                doctor.status === 'active' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : 'bg-red-100 text-red-800'
-                              }`}>
-                                {doctor.status}
-                              </span>
-                            </td>
-                            <td className="p-3 whitespace-nowrap">
-                              <div className="flex space-x-2">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
-                                >
-                                  Edit
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="text-red-500 hover:text-red-700 underline hover:no-underline"
-                                >
-                                  Delete
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="11" className="p-4 text-center text-gray-500">
-                            {doctorData.length > 0 
-                              ? 'No doctors found matching your criteria' 
-                              : 'No doctors available'}
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                ) : (
-                  <table className="w-full min-w-[1200px] table-auto">
-                    <thead>
-                      <tr className="bg-gray-50">
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px]">ID</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Name</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[180px]">Email</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Location</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[80px]">Age</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Slot</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Time</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Date</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
-                        <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {paginatedData.length > 0 ? (
-                        paginatedData.map(user => (
-                          <tr key={user.id} className="border-t hover:bg-gray-50">
-                            <td className="p-3 text-gray-500 whitespace-nowrap">#{typeof user.id === 'number' ? user.id : user.id.slice(-4)}</td>
-                            <td className="p-3 font-medium whitespace-nowrap">{user.name}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{user.email}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{user.number}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{user.location}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{user.age}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                user.slot === 'morning' 
-                                  ? 'bg-yellow-100 text-yellow-800' 
-                                  : user.slot === 'afternoon' 
-                                    ? 'bg-orange-100 text-orange-800' 
-                                    : 'bg-purple-100 text-purple-800'
-                              }`}>
-                                {user.slot}
-                              </span>
-                            </td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{user.time}</td>
-                            <td className="p-3 text-gray-500 whitespace-nowrap">{user.date}</td>
-                            <td className="p-3 whitespace-nowrap">
-                              <span className={`px-2 py-1 rounded-full text-xs ${
-                                user.status === 'active' 
-                                  ? 'bg-green-100 text-green-800' 
-                                  : user.status === 'pending' 
-                                    ? 'bg-yellow-100 text-yellow-800' 
-                                    : 'bg-red-100 text-red-800'
-                              }`}>
-                                {user.status}
-                              </span>
-                            </td>
-                            <td className="p-3 whitespace-nowrap">
-                              <div className="flex space-x-2">
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
-                                >
-                                  Edit
-                                </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="text-red-500 hover:text-red-700 underline hover:no-underline"
-                                >
-                                  Delete
-                                </Button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))
-                      ) : (
-                        <tr>
-                          <td colSpan="11" className="p-4 text-center text-gray-500">
-                            {userData.length > 0 
-                              ? 'No users found matching your criteria' 
-                              : 'No users available'}
-                          </td>
-                        </tr>
-                      )}
-                    </tbody>
-                  </table>
-                )}
+          {/* Show message when no data is available */}
+          {currentData.length === 0 && (
+            <div className="p-8 text-center">
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-6 max-w-md mx-auto">
+                <p className="text-gray-600 mb-2">No {activeTab} available</p>
+                <p className="text-sm text-gray-500">
+                  {activeTab === 'doctors' 
+                    ? 'No doctors have been added to the system yet.' 
+                    : 'No appointments have been scheduled yet.'}
+                </p>
               </div>
             </div>
-          </div>
+          )}
+          
+          {/* Table View - Now scrollable on table data only */}
+          {currentData.length > 0 && (
+            <div className="max-w-6xl">
+              <div className="max-w-7xl mx-auto">
+                <div className="overflow-x-auto">
+                  {activeTab === 'doctors' ? (
+                    <table className="w-full min-w-[1000px] table-auto">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px]">ID</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Doctor Name</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[180px]">Email</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Specialization</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Experience</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Income</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Monthly Income</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Patients</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Approval</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedData.length > 0 ? (
+                          paginatedData.map(doctor => (
+                            <tr key={doctor.id} className="border-t hover:bg-gray-50">
+                              <td className="p-3 text-gray-500 whitespace-nowrap">#{typeof doctor.id === 'number' ? doctor.id : doctor.id.slice(-4)}</td>
+                              <td className="p-3 font-medium whitespace-nowrap">{doctor.name}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.email}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.phone}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.specialization}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.experience}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">
+                                <span className="text-green-600 font-semibold">₹{doctor.totalIncome.toLocaleString()}</span>
+                              </td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">
+                                <span className="text-blue-600 font-semibold">₹{doctor.monthlyIncome.toLocaleString()}</span>
+                              </td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">
+                                <span className="text-blue-600 font-semibold">{doctor.totalPatients} patients</span>
+                              </td>
+                              <td className="p-3 whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  doctor.status === 'active' 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {doctor.status}
+                                </span>
+                              </td>
+                              <td className="p-3 whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  doctor.isActive 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {doctor.isActive ? 'Approved' : 'Pending'}
+                                </span>
+                              </td>
+                              <td className="p-3 whitespace-nowrap">
+                                <div className="flex space-x-2">
+                                  {!doctor.isActive && (
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => handleApproveDoctor(doctor.id)}
+                                      className="text-green-500 hover:text-green-700 underline hover:no-underline"
+                                    >
+                                      Approve
+                                    </Button>
+                                  )}
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-red-500 hover:text-red-700 underline hover:no-underline"
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="12" className="p-4 text-center text-gray-500">
+                              {doctorData.length > 0 
+                                ? 'No doctors found matching your criteria' 
+                                : 'No doctors available'}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <table className="w-full min-w-[1100px] table-auto">
+                      <thead>
+                        <tr className="bg-gray-50">
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px]">ID</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Name</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Location</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[80px]">Age</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Slot</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Time</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Date</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {paginatedData.length > 0 ? (
+                          paginatedData.map(user => (
+                            <tr key={user.id} className="border-t hover:bg-gray-50">
+                              <td className="p-3 text-gray-500 whitespace-nowrap">#{typeof user.id === 'number' ? user.id : user.id.slice(-4)}</td>
+                              <td className="p-3 font-medium whitespace-nowrap">{user.name}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.number}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.location}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.age}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  user.slot === 'morning' 
+                                    ? 'bg-yellow-100 text-yellow-800' 
+                                    : user.slot === 'afternoon' 
+                                      ? 'bg-orange-100 text-orange-800' 
+                                      : 'bg-purple-100 text-purple-800'
+                                }`}>
+                                  {user.slot}
+                                </span>
+                              </td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.time}</td>
+                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.date}</td>
+                              <td className="p-3 whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  user.status === 'active' 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : user.status === 'pending' 
+                                      ? 'bg-yellow-100 text-yellow-800' 
+                                      : 'bg-red-100 text-red-800'
+                                }`}>
+                                  {user.status}
+                                </span>
+                              </td>
+                              <td className="p-3 whitespace-nowrap">
+                                <div className="flex space-x-2">
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
+                                  >
+                                    Edit
+                                  </Button>
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="text-red-500 hover:text-red-700 underline hover:no-underline"
+                                  >
+                                    Delete
+                                  </Button>
+                                </div>
+                              </td>
+                            </tr>
+                          ))
+                        ) : (
+                          <tr>
+                            <td colSpan="10" className="p-4 text-center text-gray-500">
+                              {userData.length > 0 
+                                ? 'No users found matching your criteria' 
+                                : 'No users available'}
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
           
           {/* Pagination */}
           {totalPages > 1 && (

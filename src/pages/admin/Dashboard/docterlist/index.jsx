@@ -1,25 +1,28 @@
 import { useState, useEffect } from 'react';
-import { Search, Filter, ChevronLeft, ChevronRight, X, Phone, Users, Star, Clock } from 'lucide-react';
+import { Search, Filter, X, Phone, Users, Star, Clock } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { Button } from '../../../../components/shadcn/button/button';
 import { Input } from '../../../../components/shadcn/input/input';
 import apiInstance from '../../../../instance';
 import AddDoctorModal from '../../../../components/DashBoardcomponents/AddDoctorModal';
+import EditDoctorModal from '../../../../components/DashBoardcomponents/EditDoctorModal';
 
 const DoctorList = () => {
-  const [currentPage, setCurrentPage] = useState(1);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [initialLoading, setInitialLoading] = useState(true);
   const [doctorData, setDoctorData] = useState([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedDoctor, setSelectedDoctor] = useState(null);
 
   // API call function for fetching doctors
   const fetchDoctorsAPI = async () => {
     console.log('Making API call to fetch doctors');
     
     try {
-      const response = await apiInstance.get('/doctors');
+      const response = await apiInstance.get('/doctors/admin/all');
       console.log('API response for fetch doctors:', response.data);
       
       // Ensure we have an array of doctors
@@ -75,23 +78,52 @@ const DoctorList = () => {
   const specialties = Array.isArray(doctorData) ? 
     [...new Set(doctorData.filter(d => d && d.specialization).map(doctor => doctor.specialization))] : [];
 
-  // Pagination
-  const itemsPerPage = 8;
-  const totalPages = Math.ceil(filteredDoctors.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const paginatedDoctors = filteredDoctors.slice(startIndex, startIndex + itemsPerPage);
+  // Show all doctors without pagination
+  const allDoctors = filteredDoctors;
 
-  // Handle page change
-  const handlePageChange = (newPage) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
-    }
-  };
+  // No pagination needed - showing all doctors
 
   // Add new doctor handler
   const handleDoctorAdded = (newDoctor) => {
     console.log('New doctor added:', newDoctor);
     setDoctorData(prevDoctors => [...prevDoctors, newDoctor]);
+  };
+
+  // Edit doctor handler
+  const handleEditDoctor = (doctor) => {
+    setSelectedDoctor(doctor);
+    setIsEditModalOpen(true);
+  };
+
+  // Update doctor handler
+  const handleDoctorUpdated = (updatedDoctor) => {
+    setDoctorData(prevDoctors => 
+      prevDoctors.map(doctor => 
+        doctor._id === updatedDoctor._id ? updatedDoctor : doctor
+      )
+    );
+  };
+
+  // Delete doctor handler
+  const handleDeleteDoctor = async (doctor) => {
+    if (window.confirm(`Are you sure you want to delete Dr. ${doctor.name}?`)) {
+      try {
+        const response = await apiInstance.delete(`/doctor-delete/${doctor._id}`);
+        
+        if (response.data.success) {
+          toast.success('Doctor deleted successfully!');
+          setDoctorData(prevDoctors => 
+            prevDoctors.filter(d => d._id !== doctor._id)
+          );
+        } else {
+          toast.error(response.data.message || 'Failed to delete doctor');
+        }
+      } catch (error) {
+        console.error('Error deleting doctor:', error);
+        const errorMessage = error.response?.data?.message || 'Failed to delete doctor';
+        toast.error(errorMessage);
+      }
+    }
   };
 
   if (initialLoading) {
@@ -110,7 +142,7 @@ const DoctorList = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <Button 
             onClick={() => setIsAddModalOpen(true)}
-            className="w-full sm:w-auto"
+            className="w-full border hover:bg-gray-200 hover:text-black sm:w-auto"
           >
             Add New Doctor
           </Button>
@@ -122,6 +154,17 @@ const DoctorList = () => {
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onDoctorAdded={handleDoctorAdded}
+      />
+
+      {/* Edit Doctor Modal */}
+      <EditDoctorModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setSelectedDoctor(null);
+        }}
+        doctor={selectedDoctor}
+        onDoctorUpdated={handleDoctorUpdated}
       />
 
       {/* Filters */}
@@ -168,10 +211,10 @@ const DoctorList = () => {
         </div>
       </div>
 
-      {/* Doctor Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
-        {paginatedDoctors.map(doctor => (
-          <div key={doctor.id} className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 hover:border-blue-500 transition-colors">
+             {/* Doctor Grid */}
+       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
+         {allDoctors.map(doctor => (
+          <div key={doctor._id || doctor.id} className="bg-white p-4 sm:p-6 rounded-lg shadow-sm border border-gray-200 hover:border-blue-500 transition-colors">
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h3 className="font-semibold text-gray-900">{doctor.name}</h3>
@@ -207,7 +250,7 @@ const DoctorList = () => {
 
             <div className="mt-4 pt-4 border-t border-gray-100 flex gap-2">
               <Button
-                onClick={() => toast.info('Edit functionality coming soon')}
+                onClick={() => handleEditDoctor(doctor)}
                 variant="outline"
                 className="flex-1"
                 size="sm"
@@ -215,7 +258,7 @@ const DoctorList = () => {
                 Edit
               </Button>
               <Button
-                onClick={() => toast.info('Delete functionality coming soon')}
+                onClick={() => handleDeleteDoctor(doctor)}
                 variant="outline"
                 className="flex-1 border-red-500 text-red-500 hover:bg-red-50"
                 size="sm"
@@ -234,30 +277,7 @@ const DoctorList = () => {
         </div>
       )}
 
-      {/* Pagination */}
-      {filteredDoctors.length > 0 && (
-        <div className="flex justify-center items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
-          <Button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-            variant="outline"
-            size="sm"
-          >
-            <ChevronLeft size={16} />
-          </Button>
-          <span className="text-sm text-gray-600">
-            Page {currentPage} of {totalPages}
-          </span>
-          <Button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-            variant="outline"
-            size="sm"
-          >
-            <ChevronRight size={16} />
-          </Button>
-        </div>
-      )}
+      
     </div>
   );
 };
