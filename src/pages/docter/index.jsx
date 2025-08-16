@@ -1,188 +1,151 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
+import { useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, MapPin, Clock, Award, Star } from 'lucide-react';
+import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, MapPin, Clock, Award, Star, LogOut } from 'lucide-react';
+import apiInstance from '../../instance';
 
 const DoctorDashboard = () => {
+  const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [doctorData, setDoctorData] = useState({});
   const [incomeData, setIncomeData] = useState({});
   const [patientsList, setPatientsList] = useState([]);
   const [selectedTimeFrame, setSelectedTimeFrame] = useState('monthly');
+  const [patientRequests, setPatientRequests] = useState([]);
+  const [requestsLoading, setRequestsLoading] = useState(false);
+  const [profileRefreshing, setProfileRefreshing] = useState(false);
 
-  // Mock doctor data - replace with API call
-  const mockDoctorData = {
-    id: 1,
-    name: 'Dr. Sarah Johnson',
-    email: 'sarah.johnson@mindvista.com',
-    phone: '+1 (555) 123-4567',
-    specialization: 'Clinical Psychology',
-    experience: '8 years',
-    location: 'New York, NY',
-    rating: 4.8,
-    totalPatients: 156,
-    joinDate: '2020-01-15',
-    profileImage: '/api/placeholder/150/150',
-    bio: 'Specialized in cognitive behavioral therapy and anxiety disorders. Helping patients achieve better mental health for over 8 years.',
-    qualifications: ['PhD in Clinical Psychology', 'Licensed Clinical Psychologist', 'CBT Certified Therapist']
+  // Check authentication on component mount
+  useEffect(() => {
+    const isLoggedIn = localStorage.getItem('isDoctorLoggedIn');
+    const doctorDataFromStorage = localStorage.getItem('doctorData');
+    
+    if (!isLoggedIn || !doctorDataFromStorage) {
+      navigate('/docter/login');
+      return;
+    }
+    
+    try {
+      const parsedDoctorData = JSON.parse(doctorDataFromStorage);
+      setDoctorData(parsedDoctorData);
+    } catch (error) {
+      console.error('Error parsing doctor data:', error);
+      navigate('/docter/login');
+    }
+    
+    setLoading(false);
+  }, [navigate]);
+
+  const handleLogout = () => {
+    localStorage.removeItem('isDoctorLoggedIn');
+    localStorage.removeItem('doctorData');
+    navigate('/docter/login');
   };
 
-  // Mock income data
-  const mockIncomeData = {
-    daily: 850,
-    weekly: 5950,
-    monthly: 23800,
-    yearly: 285600,
-    dailyGrowth: 5.2,
-    weeklyGrowth: 12.3,
-    monthlyGrowth: 8.7,
-    yearlyGrowth: 15.4,
+  // Default income data structure
+  const defaultIncomeData = {
+    daily: 0,
+    weekly: 0,
+    monthly: 0,
+    yearly: 0,
+    dailyGrowth: 0,
+    weeklyGrowth: 0,
+    monthlyGrowth: 0,
+    yearlyGrowth: 0,
     monthlyChart: [
-      { name: 'Jan', income: 18000 },
-      { name: 'Feb', income: 20000 },
-      { name: 'Mar', income: 22000 },
-      { name: 'Apr', income: 19000 },
-      { name: 'May', income: 25000 },
-      { name: 'Jun', income: 23800 },
+      { name: 'Jan', income: 0 },
+      { name: 'Feb', income: 0 },
+      { name: 'Mar', income: 0 },
+      { name: 'Apr', income: 0 },
+      { name: 'May', income: 0 },
+      { name: 'Jun', income: 0 },
     ],
     weeklyChart: [
-      { name: 'Mon', income: 850 },
-      { name: 'Tue', income: 920 },
-      { name: 'Wed', income: 760 },
-      { name: 'Thu', income: 1100 },
-      { name: 'Fri', income: 980 },
-      { name: 'Sat', income: 1200 },
-      { name: 'Sun', income: 1140 },
+      { name: 'Mon', income: 0 },
+      { name: 'Tue', income: 0 },
+      { name: 'Wed', income: 0 },
+      { name: 'Thu', income: 0 },
+      { name: 'Fri', income: 0 },
+      { name: 'Sat', income: 0 },
+      { name: 'Sun', income: 0 },
     ]
   };
 
-  // Mock patients data
-  const mockPatientsList = [
-    {
-      id: 1,
-      name: 'John Smith',
-      email: 'john.smith@email.com',
-      phone: '+1 (555) 234-5678',
-      age: 34,
-      location: 'Brooklyn, NY',
-      joinDate: '2024-01-15',
-      lastAppointment: '2024-01-20',
-      totalSessions: 8,
-      status: 'active',
-      nextAppointment: '2024-01-27',
-      totalPaid: 1200
-    },
-    {
-      id: 2,
-      name: 'Emily Davis',
-      email: 'emily.davis@email.com',
-      phone: '+1 (555) 345-6789',
-      age: 28,
-      location: 'Manhattan, NY',
-      joinDate: '2024-01-10',
-      lastAppointment: '2024-01-18',
-      totalSessions: 12,
-      status: 'active',
-      nextAppointment: '2024-01-25',
-      totalPaid: 1800
-    },
-    {
-      id: 3,
-      name: 'Michael Johnson',
-      email: 'michael.johnson@email.com',
-      phone: '+1 (555) 456-7890',
-      age: 42,
-      location: 'Queens, NY',
-      joinDate: '2024-01-05',
-      lastAppointment: '2024-01-22',
-      totalSessions: 15,
-      status: 'completed',
-      nextAppointment: null,
-      totalPaid: 2250
-    },
-    {
-      id: 4,
-      name: 'Sarah Wilson',
-      email: 'sarah.wilson@email.com',
-      phone: '+1 (555) 567-8901',
-      age: 31,
-      location: 'Bronx, NY',
-      joinDate: '2024-01-12',
-      lastAppointment: '2024-01-19',
-      totalSessions: 6,
-      status: 'active',
-      nextAppointment: '2024-01-26',
-      totalPaid: 900
-    },
-    {
-      id: 5,
-      name: 'David Brown',
-      email: 'david.brown@email.com',
-      phone: '+1 (555) 678-9012',
-      age: 39,
-      location: 'Staten Island, NY',
-      joinDate: '2024-01-08',
-      lastAppointment: '2024-01-21',
-      totalSessions: 10,
-      status: 'active',
-      nextAppointment: '2024-01-28',
-      totalPaid: 1500
-    }
-  ];
+  // Default patients data structure
+  const defaultPatientsList = [];
 
-  // Mock appointments data
-  const mockAppointmentsList = [
-    {
-      id: 1,
-      name: 'John Smith',
-      phone: '+1 (555) 234-5678',
-      age: 34,
-      location: 'Brooklyn, NY',
-      date: '2024-01-27',
-      time: '09:00 AM',
-      status: 'pending'
-    },
-    {
-      id: 2,
-      name: 'Emily Davis',
-      phone: '+1 (555) 345-6789',
-      age: 28,
-      location: 'Manhattan, NY',
-      date: '2024-01-25',
-      time: '10:30 AM',
-      status: 'approved'
-    },
-    {
-      id: 3,
-      name: 'Sarah Wilson',
-      phone: '+1 (555) 567-8901',
-      age: 31,
-      location: 'Bronx, NY',
-      date: '2024-01-26',
-      time: '02:00 PM',
-      status: 'pending'
-    },
-    {
-      id: 4,
-      name: 'David Brown',
-      phone: '+1 (555) 678-9012',
-      age: 39,
-      location: 'Staten Island, NY',
-      date: '2024-01-28',
-      time: '11:15 AM',
-      status: 'approved'
-    },
-    {
-      id: 5,
-      name: 'Lisa Anderson',
-      phone: '+1 (555) 789-0123',
-      age: 26,
-      location: 'Queens, NY',
-      date: '2024-01-29',
-      time: '03:30 PM',
-      status: 'pending'
+  // Default appointments data structure
+  const defaultAppointmentsList = [];
+
+  // Function to fetch patient requests from API
+  const fetchPatientRequests = async () => {
+    setRequestsLoading(true);
+    try {
+      const response = await apiInstance.get('/request-pateint');
+      console.log('Patient requests fetched:', response.data);
+      
+      if (response.data.success) {
+        setPatientRequests(response.data.data || []);
+      } else {
+        console.error('Failed to fetch patient requests:', response.data.message);
+        setPatientRequests([]);
+      }
+    } catch (error) {
+      console.error('Error fetching patient requests:', error);
+      setPatientRequests([]);
+    } finally {
+      setRequestsLoading(false);
     }
-  ];
+  };
+
+  // Function to fetch doctor profile data from API
+  const fetchDoctorProfile = async () => {
+    setProfileRefreshing(true);
+    try {
+      const doctorId = doctorData._id;
+      if (!doctorId) {
+        console.log('No doctor ID available, using stored data');
+        return;
+      }
+
+      const response = await apiInstance.get(`/doctors/${doctorId}`);
+      console.log('Doctor profile fetched:', response.data);
+      
+      if (response.data.success) {
+        const updatedDoctorData = response.data.doctor;
+        setDoctorData(updatedDoctorData);
+        // Update localStorage with fresh data
+        localStorage.setItem('doctorData', JSON.stringify(updatedDoctorData));
+      } else {
+        console.error('Failed to fetch doctor profile:', response.data.message);
+      }
+    } catch (error) {
+      console.error('Error fetching doctor profile:', error);
+    } finally {
+      setProfileRefreshing(false);
+    }
+  };
+
+  // Function to handle appointment approval
+  const handleAppointmentAction = async (appointmentId, action) => {
+    try {
+      const endpoint = action === 'approve' ? `/appointment/${appointmentId}/approve` : `/appointment/${appointmentId}/decline`;
+      const method = 'PUT';
+      
+      const response = await apiInstance[method.toLowerCase()](endpoint);
+      
+      if (response.data.success) {
+        console.log(`Appointment ${action}d successfully:`, response.data);
+        // Refresh the patient requests after action
+        await fetchPatientRequests();
+      } else {
+        console.error(`Failed to ${action} appointment:`, response.data.message);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing appointment:`, error);
+    }
+  };
 
   useEffect(() => {
     const loadDoctorData = async () => {
@@ -190,28 +153,35 @@ const DoctorDashboard = () => {
       setLoading(true);
       
       try {
-        // Simulate API call
-        setTimeout(() => {
-          console.log('Doctor data loaded successfully:', mockDoctorData);
-          console.log('Income data loaded successfully:', mockIncomeData);
-          console.log('Patients list loaded successfully:', mockPatientsList.length, 'patients');
-          
-          setDoctorData(mockDoctorData);
-          setIncomeData(mockIncomeData);
-          setPatientsList(mockPatientsList);
-          setLoading(false);
-        }, 1000);
+        // Fetch fresh doctor profile data
+        await fetchDoctorProfile();
+        
+        // Comment out this call temporarily to prevent errors
+        // await fetchPatientRequests();
+        
+        // Set default data structures
+        setIncomeData(defaultIncomeData);
+        setPatientsList(defaultPatientsList);
+        
+        console.log('Doctor data loaded successfully:', doctorData);
+        console.log('Income data loaded successfully:', defaultIncomeData);
+        console.log('Patients list loaded successfully:', defaultPatientsList.length, 'patients');
+        
+        setLoading(false);
       } catch (error) {
         console.error('Error loading doctor data:', error);
         setLoading(false);
       }
     };
 
-    loadDoctorData();
-  }, []);
+    // Only run when component mounts, not on every doctorData change
+    if (doctorData && Object.keys(doctorData).length > 0 && loading) {
+      loadDoctorData();
+    }
+  }, []); // Empty dependency array to run only once
 
   // Income Cards Component
-  const IncomeCard = ({ title, amount, growth, icon, bgColor, timeFrame }) => (
+  const IncomeCard = ({ title, amount = 0, growth = 0, icon, bgColor, timeFrame }) => (
     <div className={`p-6 rounded-xl shadow-lg ${bgColor} text-white relative overflow-hidden`}>
       <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -mr-16 -mt-16"></div>
       <div className="relative z-10">
@@ -243,8 +213,8 @@ const DoctorDashboard = () => {
 
   IncomeCard.propTypes = {
     title: PropTypes.string.isRequired,
-    amount: PropTypes.number.isRequired,
-    growth: PropTypes.number.isRequired,
+    amount: PropTypes.number,
+    growth: PropTypes.number,
     icon: PropTypes.element.isRequired,
     bgColor: PropTypes.string.isRequired,
     timeFrame: PropTypes.string.isRequired
@@ -346,58 +316,166 @@ const DoctorDashboard = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="bg-white rounded-xl shadow-sm p-8 mb-6">
+          <div className="flex justify-between items-start mb-4">
+            <h1 className="text-2xl font-bold text-gray-900">Doctor Dashboard</h1>
+            <div className="flex items-center gap-3">
+              <button
+                onClick={fetchDoctorProfile}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-200"
+                disabled={profileRefreshing}
+              >
+                {profileRefreshing ? (
+                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                )}
+                {profileRefreshing ? 'Refreshing Profile' : 'Refresh Profile'}
+              </button>
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200"
+              >
+                <LogOut size={18} />
+                Logout
+              </button>
+            </div>
+          </div>
           <div className="flex flex-col lg:flex-row items-start lg:items-center gap-6">
             <div className="w-32 h-32 bg-blue-100 rounded-full flex items-center justify-center">
-              <span className="text-4xl font-bold text-blue-600">
-                {doctorData.name?.split(' ').map(n => n[0]).join('')}
-              </span>
+              {doctorData.profilePicture ? (
+                <img 
+                  src={doctorData.profilePicture} 
+                  alt={doctorData.name} 
+                  className="w-full h-full rounded-full object-cover"
+                />
+              ) : (
+                <span className="text-4xl font-bold text-blue-600">
+                  {doctorData.name?.split(' ').map(n => n[0]).join('') || 'D'}
+                </span>
+              )}
             </div>
             
             <div className="flex-1">
               <div className="flex items-center gap-4 mb-4">
-                <h1 className="text-3xl font-bold text-gray-900">{doctorData.name}</h1>
+                <h1 className="text-3xl font-bold text-gray-900">{doctorData.name || 'Doctor Name'}</h1>
                 <div className="flex items-center">
                   <Star className="text-yellow-400 fill-current" size={20} />
-                  <span className="ml-1 text-lg font-semibold text-gray-700">{doctorData.rating}</span>
+                  <span className="ml-1 text-lg font-semibold text-gray-700">{doctorData.rating || 0}</span>
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
                 <div className="flex items-center text-gray-600">
                   <Mail size={18} className="mr-3 text-blue-500" />
-                  <span>{doctorData.email}</span>
+                  <span>{doctorData.email || 'Email not available'}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Phone size={18} className="mr-3 text-green-500" />
-                  <span>{doctorData.phone}</span>
+                  <span>{doctorData.phone || 'Phone not available'}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <MapPin size={18} className="mr-3 text-red-500" />
-                  <span>{doctorData.location}</span>
+                  <span>{doctorData.address || 'Address not available'}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Award size={18} className="mr-3 text-purple-500" />
-                  <span>{doctorData.specialization}</span>
+                  <span>{doctorData.specialization || 'Specialization not available'}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Clock size={18} className="mr-3 text-orange-500" />
-                  <span>{doctorData.experience} experience</span>
+                  <span>{doctorData.experience ? `${doctorData.experience} years experience` : 'Experience not available'}</span>
                 </div>
                 <div className="flex items-center text-gray-600">
                   <Users size={18} className="mr-3 text-indigo-500" />
-                  <span>{doctorData.totalPatients} patients</span>
+                  <span>{doctorData.patients || 0} patients</span>
                 </div>
               </div>
               
-              <p className="text-gray-600 mb-4">{doctorData.bio}</p>
+              {/* Additional doctor information */}
+              {(doctorData.consultationFee || doctorData.availableSlots || doctorData.age || doctorData.gender) && (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  {doctorData.consultationFee && (
+                    <div className="flex items-center text-gray-600">
+                      <DollarSign size={18} className="mr-3 text-green-500" />
+                      <span>Consultation Fee: ₹{doctorData.consultationFee}</span>
+                    </div>
+                  )}
+                  {doctorData.availableSlots && doctorData.availableSlots.length > 0 && (
+                    <div className="flex items-center text-gray-600">
+                      <Calendar size={18} className="mr-3 text-blue-500" />
+                      <span>Available Slots: {doctorData.availableSlots.length} time slots</span>
+                    </div>
+                  )}
+                  {doctorData.age && (
+                    <div className="flex items-center text-gray-600">
+                      <Users size={18} className="mr-3 text-indigo-500" />
+                      <span>Age: {doctorData.age} years</span>
+                    </div>
+                  )}
+                  {doctorData.gender && (
+                    <div className="flex items-center text-gray-600">
+                      <Users size={18} className="mr-3 text-pink-500" />
+                      <span>Gender: {doctorData.gender}</span>
+                    </div>
+                  )}
+                </div>
+              )}
+              
+              <p className="text-gray-600 mb-4">{doctorData.bio || 'No bio available'}</p>
               
               <div className="flex flex-wrap gap-2">
-                {doctorData.qualifications?.map((qual, index) => (
-                  <span key={index} className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
-                    {qual}
+                {doctorData.qualification ? (
+                  <span className="px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-sm">
+                    {doctorData.qualification}
                   </span>
-                ))}
+                ) : (
+                  <span className="px-3 py-1 bg-gray-50 text-gray-700 rounded-full text-sm">
+                    Qualifications not available
+                  </span>
+                )}
+                {doctorData.designation && (
+                  <span className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-sm">
+                    {doctorData.designation}
+                  </span>
+                )}
+                {doctorData.department && (
+                  <span className="px-3 py-1 bg-purple-50 text-purple-700 rounded-full text-sm">
+                    {doctorData.department}
+                  </span>
+                )}
               </div>
+              
+              {/* Available Time Slots */}
+              {doctorData.availableSlots && doctorData.availableSlots.length > 0 && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Available Time Slots:</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {doctorData.availableSlots.map((slot, index) => (
+                      <span key={index} className="px-3 py-1 bg-yellow-50 text-yellow-700 rounded-full text-sm">
+                        {slot.day}: {slot.startTime} - {slot.endTime}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {/* Join Date */}
+              {doctorData.createdAt && (
+                <div className="mt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-2">Member Since:</h4>
+                  <span className="px-3 py-1 bg-gray-50 text-gray-700 rounded-full text-sm">
+                    {new Date(doctorData.createdAt).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -486,16 +564,142 @@ const DoctorDashboard = () => {
           </ResponsiveContainer>
         </div>
 
+        {/* Patient Requests Table */}
+        <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-gray-900">Patient Requests</h2>
+            <div className="flex items-center gap-4">
+              <span className="text-sm text-gray-600">
+                Total: {patientRequests.length} requests
+              </span>
+              <span className="text-sm text-gray-600">
+                Pending: {patientRequests.filter(r => r.status === 'pending').length}
+              </span>
+              <button 
+                onClick={fetchPatientRequests}
+                disabled={requestsLoading}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50"
+              >
+                {requestsLoading ? 'Refreshing...' : 'Load Patient Requests'}
+              </button>
+            </div>
+          </div>
+          
+          {requestsLoading ? (
+            <div className="text-center py-8">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto mb-4"></div>
+              <p className="text-gray-600">Loading patient requests...</p>
+            </div>
+          ) : patientRequests.length > 0 ? (
+            <>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead>
+                    <tr className="border-b border-gray-200">
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">PATIENT NAME</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">PHONE</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">AGE</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">LOCATION</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">SELECTED DOCTOR</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">DATE & TIME</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">STATUS</th>
+                      <th className="text-left py-3 px-4 font-medium text-gray-600">ACTIONS</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {patientRequests.map((request) => (
+                      <tr key={request.id || request._id} className="border-b border-gray-100 hover:bg-gray-50">
+                        <td className="py-4 px-4">
+                          <div className="flex items-center">
+                            <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center mr-3">
+                              <span className="text-blue-600 font-semibold text-sm">
+                                {request.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
+                              </span>
+                            </div>
+                            <span className="font-medium text-gray-900">{request.name || 'N/A'}</span>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-gray-600">{request.phone || request.number || 'N/A'}</td>
+                        <td className="py-4 px-4 text-gray-600">{request.age || 'N/A'}</td>
+                        <td className="py-4 px-4 text-gray-600">{request.location || 'N/A'}</td>
+                        <td className="py-4 px-4 text-gray-600">
+                          <div className="text-sm">
+                            <div className="font-medium text-gray-900">
+                              {request.doctorName || 'N/A'}
+                            </div>
+                            <div className="text-gray-500">
+                              {request.doctorSpecialization || 'N/A'}
+                            </div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4 text-gray-600">
+                          <div>
+                            <div className="font-medium">{request.date || 'N/A'}</div>
+                            <div className="text-sm text-gray-500">{request.time || 'N/A'}</div>
+                          </div>
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            request.status === 'approved' 
+                              ? 'bg-green-100 text-green-800' 
+                              : request.status === 'pending'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : request.status === 'declined'
+                              ? 'bg-red-100 text-red-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                            {request.status || 'pending'}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4">
+                          {request.status === 'pending' ? (
+                            <div className="flex items-center gap-2">
+                              <button 
+                                onClick={() => handleAppointmentAction(request.id || request._id, 'approve')}
+                                className="flex items-center px-3 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors text-sm"
+                              >
+                                <span className="mr-1">✓</span>
+                                Approve
+                              </button>
+                              <button 
+                                onClick={() => handleAppointmentAction(request.id || request._id, 'decline')}
+                                className="flex items-center px-3 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors text-sm"
+                              >
+                                <span className="mr-1">✗</span>
+                                Decline
+                              </button>
+                            </div>
+                          ) : (
+                            <span className="flex items-center text-green-600 text-sm">
+                              <span className="mr-1">✓</span>
+                              {request.status === 'approved' ? 'Approved' : 'Declined'}
+                            </span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </>
+          ) : (
+            <div className="text-center py-8">
+              <Calendar size={48} className="text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-600">No patient requests loaded. Click &quot;Load Patient Requests&quot; to fetch data.</p>
+            </div>
+          )}
+        </div>
+
         {/* Appointments Table */}
         <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">Appointments</h2>
+            <h2 className="text-2xl font-bold text-gray-900">All Appointments</h2>
             <div className="flex items-center gap-4">
               <span className="text-sm text-gray-600">
-                Total: {mockAppointmentsList.length} appointments
+                Total: {defaultAppointmentsList.length} appointments
               </span>
               <span className="text-sm text-gray-600">
-                Pending: {mockAppointmentsList.filter(a => a.status === 'pending').length}
+                Pending: {defaultAppointmentsList.filter(a => a.status === 'pending').length}
               </span>
             </div>
           </div>
@@ -514,7 +718,7 @@ const DoctorDashboard = () => {
                 </tr>
               </thead>
               <tbody>
-                {mockAppointmentsList.map((appointment) => (
+                {defaultAppointmentsList.map((appointment) => (
                   <tr key={appointment.id} className="border-b border-gray-100 hover:bg-gray-50">
                     <td className="py-4 px-4">
                       <div className="flex items-center">
@@ -571,7 +775,7 @@ const DoctorDashboard = () => {
             </table>
           </div>
           
-          {mockAppointmentsList.length === 0 && (
+          {defaultAppointmentsList.length === 0 && (
             <div className="text-center py-8">
               <Calendar size={48} className="text-gray-400 mx-auto mb-4" />
               <p className="text-gray-600">No appointments scheduled</p>

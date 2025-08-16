@@ -16,6 +16,7 @@ import ScannerPage from "../pages/scanner"
 import DashbaordHome from '../pages/admin/Dashboard/home'
 // ***************  docter  *************
 import Docter from '../pages/docter'
+import DoctorLogin from '../pages/docter/login'
 
 function UserRouter() {
   return (
@@ -42,6 +43,7 @@ function UserRouter() {
 <Route path="/Dashboard" element={< DashbaordHome/>} />
 {/* **************************** */}
 <Route path="/docter" element={<Docter />} />
+<Route path="/docter/login" element={<DoctorLogin />} />
         </Routes>
       </Suspense>
     </Router>

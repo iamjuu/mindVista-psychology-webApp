@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
@@ -17,8 +17,36 @@ function Form() {
     age: '5',
     slot: 'morning', // Default slot value updated
     time: '09:00-10:00', // Default time slot
-    date: ''
+    date: '',
+    doctor: '' // New field for doctor selection
   });
+
+  const [doctors, setDoctors] = useState([]);
+  const [loadingDoctors, setLoadingDoctors] = useState(false);
+
+  // Fetch all doctors when component mounts
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      setLoadingDoctors(true);
+      try {
+        const response = await apiInstance.get('/all-docters');
+        if (response.data.success) {
+          setDoctors(response.data.data || []);
+          console.log('Doctors fetched:', response.data.data);
+        } else {
+          console.error('Failed to fetch doctors:', response.data.message);
+          toast.error('Failed to load doctors. Please try again.');
+        }
+      } catch (error) {
+        console.error('Error fetching doctors:', error);
+        toast.error('Error loading doctors. Please try again.');
+      } finally {
+        setLoadingDoctors(false);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -31,8 +59,16 @@ function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate doctor selection
+    if (!formData.doctor) {
+      toast.error('Please select a doctor');
+      return;
+    }
+    
     console.log('[RegisterForm] Submitting slot:', formData.slot); // Log slot value
     console.log('[RegisterForm] Submitting time:', formData.time); // Log time value
+    console.log('[RegisterForm] Submitting doctor:', formData.doctor); // Log doctor value
+    
     try {
       const response = await apiInstance.post('/appointment', formData, {
         headers: {
@@ -99,6 +135,34 @@ function Form() {
           onChange={handleChange}
           required
         />
+      </FormGroup>
+
+      <FormGroup>
+        <Label htmlFor="doctor">Select Doctor:</Label>
+        <Select
+          id="doctor"
+          name="doctor"
+          value={formData.doctor}
+          onChange={handleChange}
+          required
+          disabled={loadingDoctors}
+        >
+          <option value="">-- Select a Doctor --</option>
+          {loadingDoctors ? (
+            <option value="" disabled>Loading doctors...</option>
+          ) : (
+            doctors.map((doctor) => (
+              <option key={doctor._id} value={doctor._id}>
+                {doctor.name} - {doctor.specialization} ({doctor.experience} years exp.)
+              </option>
+            ))
+          )}
+        </Select>
+        {loadingDoctors && (
+          <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+            Loading available doctors...
+          </div>
+        )}
       </FormGroup>
 
       <FormGroup>

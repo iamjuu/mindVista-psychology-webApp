@@ -10,6 +10,7 @@ const DoctorList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
+  const [approvalFilter, setApprovalFilter] = useState('all');
   const [doctorData, setDoctorData] = useState([]);
   const [userData, setUserData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,8 @@ const DoctorList = () => {
       monthlyIncome: 18000,
       totalPatients: 156,
       joinDate: '2020-01-15',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '2',
@@ -44,7 +46,8 @@ const DoctorList = () => {
       monthlyIncome: 15000,
       totalPatients: 134,
       joinDate: '2021-03-22',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '3',
@@ -57,7 +60,8 @@ const DoctorList = () => {
       monthlyIncome: 22000,
       totalPatients: 198,
       joinDate: '2019-07-10',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '4',
@@ -70,7 +74,8 @@ const DoctorList = () => {
       monthlyIncome: 12000,
       totalPatients: 89,
       joinDate: '2022-02-18',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '5',
@@ -83,7 +88,8 @@ const DoctorList = () => {
       monthlyIncome: 25000,
       totalPatients: 245,
       joinDate: '2018-09-05',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '6',
@@ -96,7 +102,8 @@ const DoctorList = () => {
       monthlyIncome: 16000,
       totalPatients: 142,
       joinDate: '2021-01-12',
-      status: 'inactive'
+      status: 'inactive',
+      isActive: false
     },
     {
       id: '7',
@@ -109,7 +116,8 @@ const DoctorList = () => {
       monthlyIncome: 20000,
       totalPatients: 178,
       joinDate: '2020-06-30',
-      status: 'active'
+      status: 'active',
+      isActive: true
     },
     {
       id: '8',
@@ -122,7 +130,8 @@ const DoctorList = () => {
       monthlyIncome: 11000,
       totalPatients: 76,
       joinDate: '2022-11-20',
-      status: 'active'
+      status: 'active',
+      isActive: false
     }
   ];
 
@@ -225,6 +234,7 @@ const DoctorList = () => {
           monthlyIncome: doctor.consultationFee ? Math.floor((doctor.consultationFee * (doctor.patients || 0)) / 12) : 0,
           totalPatients: doctor.patients || 0,
           status: doctor.available ? 'active' : 'inactive',
+          isActive: doctor.isActive,
           joinDate: new Date(doctor.createdAt).toISOString().split('T')[0]
         }));
         console.log('Transformed doctors:', transformedDoctors);
@@ -268,7 +278,7 @@ const DoctorList = () => {
     fetchData();
   }, []);
   
-  // Filter doctors based on search term and status
+  // Filter doctors based on search term, status, and approval
   const filteredDoctors = doctorData.filter(doctor => {
     const matchesSearch = doctor.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                          doctor.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -276,9 +286,12 @@ const DoctorList = () => {
                          doctor.specialization.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          doctor.experience.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || doctor.status.toLowerCase() === statusFilter.toLowerCase();
+    const matchesApproval = approvalFilter === 'all' || 
+                           (approvalFilter === 'approved' && doctor.isActive) || 
+                           (approvalFilter === 'pending' && !doctor.isActive);
     
-    console.log(`Filtering doctors: search="${searchTerm}", status="${statusFilter}", matches=${matchesSearch && matchesStatus}`);
-    return matchesSearch && matchesStatus;
+    console.log(`Filtering doctors: search="${searchTerm}", status="${statusFilter}", approval="${approvalFilter}", matches=${matchesSearch && matchesStatus && matchesApproval}`);
+    return matchesSearch && matchesStatus && matchesApproval;
   });
 
   // Filter users based on search term and status
@@ -301,6 +314,27 @@ const DoctorList = () => {
   const totalPages = Math.ceil(currentData.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedData = currentData.slice(startIndex, startIndex + itemsPerPage);
+
+  // Handle doctor approval
+  const handleApproveDoctor = async (doctorId) => {
+    try {
+      const response = await apiInstance.put(`/doctors/approve/${doctorId}`);
+      if (response.data.success) {
+        // Update the local state
+        setDoctorData(prevData => 
+          prevData.map(doctor => 
+            doctor.id === doctorId 
+              ? { ...doctor, isActive: true }
+              : doctor
+          )
+        );
+        alert('Doctor approved successfully!');
+      }
+    } catch (error) {
+      console.error('Error approving doctor:', error);
+      alert('Failed to approve doctor. Please try again.');
+    }
+  };
   
   // Handle page change
   const goToPage = (page) => {
@@ -584,12 +618,34 @@ const DoctorList = () => {
             </select>
           </div>
           
+          {activeTab === 'doctors' && (
+            <div className="relative flex-1">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Filter size={18} className="text-gray-400" />
+              </div>
+              <select
+                className="pl-10 pr-4 py-2 border rounded-lg w-full appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={approvalFilter}
+                onChange={(e) => {
+                  console.log('Approval filter changed:', e.target.value);
+                  setApprovalFilter(e.target.value);
+                  setCurrentPage(1); // Reset to first page on filter change
+                }}
+              >
+                <option value="all">All Approval</option>
+                <option value="approved">Approved</option>
+                <option value="pending">Pending Approval</option>
+              </select>
+            </div>
+          )}
+          
           <Button
             onClick={() => {
               console.log('Refreshing data...');
               setCurrentPage(1);
               setSearchTerm('');
               setStatusFilter('all');
+              setApprovalFilter('all');
               // Trigger a re-fetch of data
               const fetchData = async () => {
                 setLoading(true);
@@ -700,6 +756,7 @@ const DoctorList = () => {
                           <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Monthly Income</th>
                           <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Patients</th>
                           <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
+                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Approval</th>
                           <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
                         </tr>
                       </thead>
@@ -732,7 +789,26 @@ const DoctorList = () => {
                                 </span>
                               </td>
                               <td className="p-3 whitespace-nowrap">
+                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                  doctor.isActive 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                  {doctor.isActive ? 'Approved' : 'Pending'}
+                                </span>
+                              </td>
+                              <td className="p-3 whitespace-nowrap">
                                 <div className="flex space-x-2">
+                                  {!doctor.isActive && (
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      onClick={() => handleApproveDoctor(doctor.id)}
+                                      className="text-green-500 hover:text-green-700 underline hover:no-underline"
+                                    >
+                                      Approve
+                                    </Button>
+                                  )}
                                   <Button 
                                     variant="ghost" 
                                     size="sm" 
@@ -753,7 +829,7 @@ const DoctorList = () => {
                           ))
                         ) : (
                           <tr>
-                            <td colSpan="11" className="p-4 text-center text-gray-500">
+                            <td colSpan="12" className="p-4 text-center text-gray-500">
                               {doctorData.length > 0 
                                 ? 'No doctors found matching your criteria' 
                                 : 'No doctors available'}
