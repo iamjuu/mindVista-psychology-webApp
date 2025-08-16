@@ -12,6 +12,14 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
     specialization: '',
     phone: '',
     experience: '',
+    qualification: '',
+    designation: '',
+    department: '',
+    age: '',
+    gender: '',
+    address: '',
+    bio: '',
+    consultationFee: '',
     patients: '',  // Changed from '0' to empty string
     rating: '',    // Changed from '0' to empty string
     available: true
@@ -95,7 +103,8 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
       const processedData = {
         ...formData,
         patients: formData.patients || '0',  // Default to '0' if empty
-        rating: formData.rating || '0'       // Default to '0' if empty
+        rating: formData.rating || '0',      // Default to '0' if empty
+        available: formData.available ? 'true' : 'false' // Convert boolean to string
       };
 
       Object.entries(processedData).forEach(([key, value]) => {
@@ -104,8 +113,9 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
       formDataToSend.append('image', imageFile);
 
       console.log('Sending form data to server:', formDataToSend);
+      console.log('Available value:', formData.available);
 
-      const response = await apiInstance.post('/doctors', formDataToSend, {
+      const response = await apiInstance.post('/add-doctor', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -127,7 +137,7 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+      <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Add New Doctor</h2>
           <button onClick={onClose} className="text-gray-500 hover:text-gray-700">
@@ -157,6 +167,7 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
               accept="image/*"
               onChange={handleImageChange}
               className="hidden"
+              required='false'
               id="doctor-image"
             />
             <label
@@ -197,12 +208,140 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Specialization *
             </label>
-            <Input
+            <select
               name="specialization"
               value={formData.specialization}
               onChange={handleChange}
-              placeholder="Enter specialization"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               required
+            >
+              <option value="">Select specialization</option>
+              <option value="Psychology">Psychology</option>
+              <option value="Cardiology">Cardiology</option>
+              <option value="Addiction Therapy">Addiction Therapy</option>
+              <option value="Child Psychology">Child Psychology</option>
+              <option value="Marriage & Family Therapy">Marriage & Family Therapy</option>
+              <option value="Cognitive Behavioral Therapy">Cognitive Behavioral Therapy</option>
+              <option value="Clinical Psychology">Clinical Psychology</option>
+              <option value="Counseling Psychology">Counseling Psychology</option>
+              <option value="Educational Psychology">Educational Psychology</option>
+              <option value="Forensic Psychology">Forensic Psychology</option>
+              <option value="Health Psychology">Health Psychology</option>
+              <option value="Industrial-Organizational Psychology">Industrial-Organizational Psychology</option>
+              <option value="Neuropsychology">Neuropsychology</option>
+              <option value="Social Psychology">Social Psychology</option>
+              <option value="Sports Psychology">Sports Psychology</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Qualification
+            </label>
+            <Input
+              name="qualification"
+              value={formData.qualification}
+              onChange={handleChange}
+              placeholder="e.g., MBBS, MD, PhD, PsyD"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Designation
+            </label>
+            <Input
+              name="designation"
+              value={formData.designation}
+              onChange={handleChange}
+              placeholder="e.g., Senior Psychologist, Consultant"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Department
+            </label>
+            <Input
+              name="department"
+              value={formData.department}
+              onChange={handleChange}
+              placeholder="e.g., Psychology, Psychiatry"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Age
+              </label>
+              <Input
+                type="number"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                placeholder="Age"
+                min="25"
+                max="80"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Gender
+              </label>
+              <select
+                name="gender"
+                value={formData.gender}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Address
+            </label>
+            <textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Enter full address"
+              rows="3"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Bio
+            </label>
+            <textarea
+              name="bio"
+              value={formData.bio}
+              onChange={handleChange}
+              placeholder="Brief description about the doctor"
+              rows="3"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Consultation Fee (₹)
+            </label>
+            <Input
+              type="number"
+              name="consultationFee"
+              value={formData.consultationFee}
+              onChange={handleChange}
+              placeholder="Enter consultation fee"
+              min="0"
             />
           </div>
 

@@ -110,7 +110,7 @@ const DoctorList = () => {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <Button 
             onClick={() => setIsAddModalOpen(true)}
-            className="w-full sm:w-auto"
+            className="w-full border hover:bg-gray-200 hover:text-black sm:w-auto"
           >
             Add New Doctor
           </Button>
