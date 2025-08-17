@@ -4,20 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { 
-  Button, 
-  FormContainer, 
-  FormGroup, 
-  Input, 
-  Label, 
-  Select, 
-  LoadingIndicator, 
-  FormHeader, 
-  FieldGroup, 
-  FieldGroupThree,
-  RequiredNote,
-  TextArea
-} from './style';
+import { Button, FormContainer, FormGroup, Input, Label, Select } from './style';
 import apiInstance from '../../instance';
 
 function Form() {
@@ -28,13 +15,10 @@ function Form() {
     number: '',
     location: '',
     age: '5',
-    slot: 'morning',
-    time: '09:00-10:00',
+    slot: 'morning', // Default slot value updated
+    time: '09:00-10:00', // Default time slot
     date: '',
-    doctor: '',
-    emergencyContact: '',
-    preferredLanguage: 'english',
-    additionalNotes: ''
+    doctor: '' // New field for doctor selection
   });
 
   const [doctors, setDoctors] = useState([]);
@@ -81,9 +65,9 @@ function Form() {
       return;
     }
     
-    console.log('[RegisterForm] Submitting slot:', formData.slot);
-    console.log('[RegisterForm] Submitting time:', formData.time);
-    console.log('[RegisterForm] Submitting doctor:', formData.doctor);
+    console.log('[RegisterForm] Submitting slot:', formData.slot); // Log slot value
+    console.log('[RegisterForm] Submitting time:', formData.time); // Log time value
+    console.log('[RegisterForm] Submitting doctor:', formData.doctor); // Log doctor value
     
     try {
       const response = await apiInstance.post('/appointment', formData, {
@@ -116,102 +100,45 @@ function Form() {
 
   return (
     <FormContainer onSubmit={handleSubmit}>
-      <FormHeader>
-        <h2>Book Your Appointment</h2>
-        <p>Fill out the form below to schedule your consultation with our expert psychologists</p>
-      </FormHeader>
-
       <FormGroup>
-        <Label htmlFor="name">Name</Label>
+        <Label htmlFor="name">Name:</Label>
         <Input
           type="text"
           id="name"
           name="name"
           value={formData.name}
           onChange={handleChange}
-          placeholder="Enter your full name"
           required
         />
       </FormGroup>
 
       <FormGroup>
-        <Label htmlFor="email">Email</Label>
+        <Label htmlFor="email">Email:</Label>
         <Input
           type="email"
           id="email"
           name="email"
           value={formData.email}
           onChange={handleChange}
-          placeholder="Enter your email address"
           required
         />
       </FormGroup>
 
-      <FieldGroup>
-        <FormGroup>
-          <Label htmlFor="number">Phone Number</Label>
-          <Input
-            type="tel"
-            id="number"
-            name="number"
-            maxLength={10}
-            value={formData.number}
-            onChange={handleChange}
-            placeholder="Enter phone number"
-            required
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <Label htmlFor="age">Age</Label>
-          <Input
-            type="number"
-            id="age"
-            name="age"
-            value={formData.age}
-            onChange={handleChange}
-            min="1"
-            max="120"
-            required
-          />
-        </FormGroup>
-      </FieldGroup>
-
-      <FieldGroup>
-        <FormGroup>
-          <Label htmlFor="emergencyContact">Emergency Contact</Label>
-          <Input
-            type="tel"
-            id="emergencyContact"
-            name="emergencyContact"
-            maxLength={10}
-            value={formData.emergencyContact}
-            onChange={handleChange}
-            placeholder="Emergency contact number"
-            required
-          />
-        </FormGroup>
-
-        <FormGroup>
-          <Label htmlFor="preferredLanguage">Preferred Language</Label>
-          <Select
-            id="preferredLanguage"
-            name="preferredLanguage"
-            value={formData.preferredLanguage}
-            onChange={handleChange}
-            required
-          >
-            <option value="english">English</option>
-            <option value="hindi">Hindi</option>
-            <option value="gujarati">Gujarati</option>
-            <option value="marathi">Marathi</option>
-            <option value="other">Other</option>
-          </Select>
-        </FormGroup>
-      </FieldGroup>
+      <FormGroup>
+        <Label htmlFor="number">Phone Number:</Label>
+        <Input
+          type="tel"
+          id="number"
+          name="number"
+          maxLength={10}
+          value={formData.number}
+          onChange={handleChange}
+          required
+        />
+      </FormGroup>
 
       <FormGroup>
-        <Label htmlFor="doctor">Select Doctor</Label>
+        <Label htmlFor="doctor">Select Doctor:</Label>
         <Select
           id="doctor"
           name="doctor"
@@ -231,96 +158,92 @@ function Form() {
             ))
           )}
         </Select>
-        {loadingDoctors && <LoadingIndicator>Loading available doctors...</LoadingIndicator>}
+        {loadingDoctors && (
+          <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+            Loading available doctors...
+          </div>
+        )}
       </FormGroup>
 
-      <FieldGroupThree>
-        <FormGroup>
-          <Label htmlFor="slot">Preferred Time Slot</Label>
-          <Select
-            id="slot"
-            name="slot"
-            value={formData.slot}
-            onChange={handleChange}
-            required
-          >
-            <option value="morning">Morning</option>
-            <option value="afternoon">Afternoon</option>
-            <option value="evening">Evening</option>
-            <option value="night">Night</option>
-          </Select>
-        </FormGroup>
-
-        <FormGroup>
-          <Label htmlFor="time">Specific Time</Label>
-          <Select
-            id="time"
-            name="time"
-            value={formData.time}
-            onChange={handleChange}
-            required
-          >
-            <optgroup label="Morning (3 slots)">
-              <option value="09:00-10:00">9:00 AM - 10:00 AM</option>
-              <option value="10:00-11:00">10:00 AM - 11:00 AM</option>
-              <option value="11:00-12:00">11:00 AM - 12:00 PM</option>
-            </optgroup>
-            <optgroup label="Afternoon (3 slots)">
-              <option value="12:00-13:00">12:00 PM - 1:00 PM</option>
-              <option value="13:00-14:00">1:00 PM - 2:00 PM</option>
-              <option value="14:00-15:00">2:00 PM - 3:00 PM</option>
-            </optgroup>
-            <optgroup label="Evening (2 slots)">
-              <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
-              <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
-            </optgroup>
-          </Select>
-        </FormGroup>
-
-        <FormGroup>
-          <Label htmlFor="date">Preferred Date</Label>
-          <Input
-            type="date"
-            id="date"
-            name="date"
-            value={formData.date}
-            onChange={handleChange}
-            min={new Date().toISOString().split('T')[0]}
-            required
-          />
-        </FormGroup>
-      </FieldGroupThree>
+      <FormGroup>
+        <Label htmlFor="slot">Slot:</Label>
+        <Select
+          id="slot"
+          name="slot"
+          value={formData.slot}
+          onChange={handleChange}
+          required
+        >
+          <option value="morning">Morning</option>
+          <option value="afternoon">Afternoon</option>
+          <option value="evening">Evening</option>
+          <option value="night">Night</option>
+        </Select>
+      </FormGroup>
 
       <FormGroup>
-        <Label htmlFor="location">Location</Label>
+        <Label htmlFor="time">Time Slot:</Label>
+        <Select
+          id="time"
+          name="time"
+          value={formData.time}
+          onChange={handleChange}
+          required
+        >
+          <optgroup label="Morning (3 slots)">
+            <option value="09:00-10:00">9:00 AM - 10:00 AM</option>
+            <option value="10:00-11:00">10:00 AM - 11:00 AM</option>
+            <option value="11:00-12:00">11:00 AM - 12:00 PM</option>
+          </optgroup>
+          <optgroup label="Afternoon (3 slots)">
+            <option value="12:00-13:00">12:00 PM - 1:00 PM</option>
+            <option value="13:00-14:00">1:00 PM - 2:00 PM</option>
+            <option value="14:00-15:00">2:00 PM - 3:00 PM</option>
+          </optgroup>
+          <optgroup label="Evening (2 slots)">
+            <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
+            <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
+          </optgroup>
+        </Select>
+      </FormGroup>
+
+      <FormGroup>
+        <Label htmlFor="location">Location:</Label>
         <Input
           type="text"
           id="location"
           name="location"
           value={formData.location}
           onChange={handleChange}
-          placeholder="Enter your city or location"
           required
         />
       </FormGroup>
 
       <FormGroup>
-        <Label htmlFor="additionalNotes">Additional Notes (Optional)</Label>
-        <TextArea
-          id="additionalNotes"
-          name="additionalNotes"
-          value={formData.additionalNotes}
+        <Label htmlFor="age">Age:</Label>
+        <Input
+          type="number"
+          id="age"
+          name="age"
+          value={formData.age}
           onChange={handleChange}
-          placeholder="Any specific concerns, preferences, or additional information you'd like to share..."
-          rows="3"
+          required
+        />
+      </FormGroup>
+      
+      <FormGroup>
+        <Label htmlFor="date">Date:</Label>
+        <Input
+          type="date"
+          id="date"
+          name="date"
+          value={formData.date}
+          onChange={handleChange}
+          required
         />
       </FormGroup>
 
-      <RequiredNote>
-        * Required fields must be completed to book your appointment
-      </RequiredNote>
-
-      <Button type="submit">Book Appointment</Button>
+      <Button type="submit">Submit</Button>
       <ToastContainer />
     </FormContainer>
   );
