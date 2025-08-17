@@ -77,13 +77,26 @@ function Form() {
       });
   
       // Show success toast
-      toast.success('Form submitted successfully!');
+      toast.success('Appointment created successfully! Redirecting to payment...');
       
       console.log('Form submitted successfully:', response.data);
       
-      // Navigate to about page after a short delay
+      // Get doctor name for payment page
+      const selectedDoctor = doctors.find(doc => doc._id === formData.doctor);
+      const doctorName = selectedDoctor ? selectedDoctor.name : 'Selected Doctor';
+      
+      // Prepare appointment data for payment page
+      const appointmentData = {
+        ...formData,
+        doctorName,
+        appointmentId: response.data.data?._id || 'temp-id'
+      };
+      
+      // Navigate to payment page with appointment data
       setTimeout(() => {
-        Navigate('/about');
+        Navigate('/payment', { 
+          state: { appointmentData } 
+        });
       }, 1500);
       
     } catch (error) {

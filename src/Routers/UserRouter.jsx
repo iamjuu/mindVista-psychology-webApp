@@ -12,6 +12,7 @@ import {CustomSpinner}from "../common/Loader";
 import DetailsPage from "../pages/client/details page"
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 import ScannerPage from "../pages/scanner"
+import PaymentPage from "../pages/payment"
 // ***************  admin  *************
 import DashbaordHome from '../pages/admin/Dashboard/home'
 // ***************  docter  *************
@@ -38,6 +39,7 @@ function UserRouter() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/scanner" element={<ScannerPage />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/payment" element={<PaymentPage />} />
           <Route path="/details/:id" element={<DetailsPage />} />
 {/* ************************** */}
 <Route path="/Dashboard" element={< DashbaordHome/>} />
