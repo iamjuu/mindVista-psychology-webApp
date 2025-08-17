@@ -398,7 +398,7 @@ const Index = () => {
         <div className="space-y-6">
             {/* Header */}
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-                <h2 className="text-2xl font-bold text-gray-800">Appointment Management</h2>
+       
                 <p className="text-gray-600 mt-2">Manage and track all patient appointments</p>
             </div>
 
