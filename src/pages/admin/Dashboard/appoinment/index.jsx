@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Button } from '../../../../components/shadcn/button/button'
 import { Input } from '../../../../components/shadcn/input/input'
-import { Search, Filter, X } from 'lucide-react'
-// import apiInstance from '../../../../instance' // Commented out - using static data
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select'
+import { Search, Filter, X, ArrowUpDown } from 'lucide-react'
+import apiInstance from '../../../../instance'
 
 const Index = () => {
     const [appointments, setAppointments] = useState([])
@@ -14,6 +15,8 @@ const Index = () => {
     const [doctorFilter, setDoctorFilter] = useState('all')
     const [timeFilter, setTimeFilter] = useState('all')
     const [selectedDoctorCard, setSelectedDoctorCard] = useState(null)
+    const [doctors, setDoctors] = useState([])
+    const [sortBy, setSortBy] = useState('none') // none, doctor-asc, doctor-desc, date-asc, date-desc
 
     // Mock data for demonstration (keeping as fallback)
     const mockAppointments = [
@@ -107,38 +110,13 @@ const Index = () => {
         }
     ]
 
-    // Doctor data for cards
-    const doctorCards = [
-        {
-            id: 1,
-            name: 'Dr. Sarah Johnson',
-            specialty: 'Clinical Psychology',
-            totalIncome: '₹145,000',
-            color: 'bg-blue-500',
-            textColor: 'text-white'
-        },
-        {
-            id: 2,
-            name: 'Dr. Michael Brown',
-            specialty: 'Cognitive Behavioral Therapy',
-            totalIncome: '₹120,000',
-            color: 'bg-green-500',
-            textColor: 'text-white'
-        },
-        {
-            id: 3,
-            name: 'Dr. David Lee',
-            specialty: 'Marriage & Family Therapy',
-            totalIncome: '₹95,000',
-            color: 'bg-orange-500',
-            textColor: 'text-white'
-        }
-    ]
+
 
     useEffect(() => {
-        console.log('Appointment component mounted, initiating API call to fetch appointments...')
+        console.log('Appointment component mounted, initiating API calls...')
         fetchAppointments()
-    }, [])
+        fetchDoctors()
+    }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
     // Helper function to get time category
     const getTimeCategory = (timeString) => {
@@ -159,48 +137,60 @@ const Index = () => {
         return 'other'
     }
 
-    // Filter appointments when filters change
+    // Filter and sort appointments when filters or sorting changes
     useEffect(() => {
-        console.log('Filtering appointments with current filters:', {
+        console.log('Filtering and sorting appointments with current filters:', {
             statusFilter,
             nameFilter,
             doctorFilter,
-            timeFilter
+            timeFilter,
+            sortBy
         })
         
         let filtered = appointments.filter(appointment => {
             const matchesStatus = statusFilter === 'all' || appointment.status === statusFilter
             const matchesName = nameFilter === '' || 
                 appointment.name.toLowerCase().includes(nameFilter.toLowerCase())
-            const matchesDoctor = doctorFilter === 'all' || appointment.doctor === doctorFilter
+            const matchesDoctor = doctorFilter === 'all' || 
+                appointment.doctorName === doctorFilter
             const matchesTime = timeFilter === 'all' || getTimeCategory(appointment.time) === timeFilter
             
             return matchesStatus && matchesName && matchesDoctor && matchesTime
         })
         
-        console.log(`Filtered appointments: ${filtered.length} out of ${appointments.length}`)
+        // Apply sorting
+        if (sortBy !== 'none') {
+            filtered = [...filtered].sort((a, b) => {
+                switch (sortBy) {
+                    case 'doctor-asc': {
+                        const doctorA = (a.doctorName || 'Unknown Doctor').toLowerCase()
+                        const doctorB = (b.doctorName || 'Unknown Doctor').toLowerCase()
+                        return doctorA.localeCompare(doctorB)
+                    }
+                    case 'doctor-desc': {
+                        const doctorA2 = (a.doctorName || 'Unknown Doctor').toLowerCase()
+                        const doctorB2 = (b.doctorName || 'Unknown Doctor').toLowerCase()
+                        return doctorB2.localeCompare(doctorA2)
+                    }
+                    case 'date-asc':
+                        return new Date(a.date) - new Date(b.date)
+                    case 'date-desc':
+                        return new Date(b.date) - new Date(a.date)
+                    case 'name-asc':
+                        return a.name.toLowerCase().localeCompare(b.name.toLowerCase())
+                    case 'name-desc':
+                        return b.name.toLowerCase().localeCompare(a.name.toLowerCase())
+                    default:
+                        return 0
+                }
+            })
+        }
+        
+        console.log(`Filtered and sorted appointments: ${filtered.length} out of ${appointments.length}`)
         setFilteredAppointments(filtered)
-    }, [appointments, statusFilter, nameFilter, doctorFilter, timeFilter])
+    }, [appointments, statusFilter, nameFilter, doctorFilter, timeFilter, sortBy])
 
     const fetchAppointments = async () => {
-        console.log('Loading appointments from static data...')
-        setLoading(true)
-        setError(null)
-        
-        // Simulate API delay for better user experience
-        setTimeout(() => {
-            console.log('Using static appointment data')
-            console.log('Static appointments data:', mockAppointments)
-            console.log(`Total appointments loaded: ${mockAppointments.length}`)
-            
-            setAppointments(mockAppointments)
-            setFilteredAppointments(mockAppointments)
-            setLoading(false)
-            console.log('Appointment loading process completed')
-        }, 1000)
-        
-        // Commented out API call - using static data instead
-        /*
         try {
             console.log('Starting API call to fetch appointments from /appointment endpoint...')
             setLoading(true)
@@ -240,90 +230,51 @@ const Index = () => {
             console.log('Appointment fetching process completed, setting loading to false')
             setLoading(false)
         }
-        */
     }
 
-    const handleApprove = async (appointmentId) => {
-        console.log(`Starting approval process for appointment ID: ${appointmentId}`)
-        
-        // Update UI with static data
-        const updateAppointments = (prev) => 
-            prev.map(appointment => 
-                appointment.id === appointmentId 
-                    ? { ...appointment, status: 'approved' }
-                    : appointment
-            )
-        
-        setAppointments(updateAppointments)
-        setFilteredAppointments(updateAppointments)
-        console.log(`Appointment ${appointmentId} approved successfully in static data`)
-        
-        // Commented out API call - using static data instead
-        /*
+    const fetchDoctors = async () => {
         try {
-            console.log(`Starting approval process for appointment ID: ${appointmentId}`)
+            console.log('Starting API call to fetch doctors from /doctors endpoint...')
             
-            // Update UI optimistically
-            const updateAppointments = (prev) => 
-                prev.map(appointment => 
-                    appointment.id === appointmentId 
-                        ? { ...appointment, status: 'approved' }
-                        : appointment
-                )
+            const response = await apiInstance.get('/doctors')
+            console.log('Doctors API Response received:', response.status, response.statusText)
+            console.log('Doctors data from API:', response.data)
             
-            setAppointments(updateAppointments)
+            // Handle the API response structure
+            const doctorsData = Array.isArray(response.data) ? response.data : 
+                               Array.isArray(response.data.doctors) ? response.data.doctors : 
+                               Array.isArray(response.data.data) ? response.data.data : []
             
-            // Make API call to approve appointment
-            const response = await apiInstance.put(`/appointment/${appointmentId}/approve`)
-            console.log(`Appointment ${appointmentId} approved successfully via API:`, response.data)
+            console.log('Processed doctors data:', doctorsData)
+            console.log(`Total doctors fetched: ${doctorsData.length}`)
+            
+            setDoctors(doctorsData)
             
         } catch (err) {
-            console.error('Error approving appointment via API:', err)
-            console.error('Approval error details:', {
-                appointmentId,
+            console.error('Error fetching doctors from API:', err)
+            console.error('Doctors error details:', {
                 message: err.message,
                 status: err.response?.status,
+                statusText: err.response?.statusText,
                 data: err.response?.data
             })
             
-            // Revert optimistic update on error
-            fetchAppointments()
+            // Keep doctors array empty if API fails
+            console.log('Doctors API call failed, keeping empty array')
+            setDoctors([])
         }
-        */
     }
 
-    const handleDecline = async (appointmentId) => {
-        try {
-            console.log(`Starting decline process for appointment ID: ${appointmentId}`)
-            
-            // Update UI optimistically
-            const updateAppointments = (prev) => 
-                prev.map(appointment => 
-                    appointment.id === appointmentId 
-                        ? { ...appointment, status: 'declined' }
-                        : appointment
-                )
-            
-            setAppointments(updateAppointments)
-            setFilteredAppointments(updateAppointments)
-            
-            // Make API call to decline appointment
-            const response = await apiInstance.put(`/appointment/${appointmentId}/decline`)
-            console.log(`Appointment ${appointmentId} declined successfully via API:`, response.data)
-            
-        } catch (err) {
-            console.error('Error declining appointment via API:', err)
-            console.error('Decline error details:', {
-                appointmentId,
-                message: err.message,
-                status: err.response?.status,
-                data: err.response?.data
-            })
-            
-            // Revert optimistic update on error
-            fetchAppointments()
-        }
-    }
+    // Read-only page - no actions allowed (functions kept for potential future use)
+    // const handleApprove = async (appointmentId) => {
+    //     console.log(`Read-only mode: Cannot approve appointment ID: ${appointmentId}`)
+    //     // No action taken - this is a read-only view
+    // }
+
+    // const handleDecline = async (appointmentId) => {
+    //     console.log(`Read-only mode: Cannot decline appointment ID: ${appointmentId}`)
+    //     // No action taken - this is a read-only view
+    // }
 
     const handleDoctorCardClick = (doctorName) => {
         console.log(`Doctor card clicked: ${doctorName}`)
@@ -343,20 +294,23 @@ const Index = () => {
     }
 
     const clearFilters = () => {
-        console.log('Clearing all appointment filters')
+        console.log('Clearing all appointment filters and sorting')
         setStatusFilter('all')
         setNameFilter('')
         setDoctorFilter('all')
         setTimeFilter('all')
+        setSortBy('none')
         setSelectedDoctorCard(null)
     }
 
-    // Get unique doctors for filter dropdown
-    const uniqueDoctors = [...new Set(appointments.map(app => app.doctor))]
+    // Get unique doctors for filter dropdown from appointments
+    const uniqueDoctors = [...new Set(appointments.map(app => app.doctorName).filter(Boolean))]
 
     // Calculate doctor statistics
     const getDoctorStats = (doctorName) => {
-        const doctorAppointments = appointments.filter(app => app.doctor === doctorName)
+        const doctorAppointments = appointments.filter(app => 
+            app.doctorName === doctorName
+        )
         const totalAppointments = doctorAppointments.length
         const approvedAppointments = doctorAppointments.filter(app => app.status === 'approved').length
         const pendingAppointments = doctorAppointments.filter(app => app.status === 'pending').length
@@ -372,6 +326,11 @@ const Index = () => {
             approved: approvedAppointments,
             pending: pendingAppointments
         }
+    }
+
+    // Get doctor info from doctors array
+    const getDoctorInfo = (doctorName) => {
+        return doctors.find(doc => doc.name === doctorName) || null
     }
 
     if (loading) {
@@ -396,11 +355,7 @@ const Index = () => {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-       
-                <p className="text-gray-600 mt-2">Manage and track all patient appointments</p>
-            </div>
+         
 
             {/* Filters */}
             <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
@@ -418,19 +373,37 @@ const Index = () => {
                         </div>
                         <div className="flex gap-2 items-center">
                             <Filter size={20} className="text-gray-400" />
-                            <select
-                                value={statusFilter}
-                                onChange={(e) => setStatusFilter(e.target.value)}
-                                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            >
-                                <option value="all">All Status</option>
-                                <option value="pending">Pending</option>
-                                <option value="approved">Approved</option>
-                                <option value="declined">Declined</option>
-                            </select>
+                            <Select value={statusFilter} onValueChange={setStatusFilter}>
+                                <SelectTrigger className="w-[180px] bg-white border-gray-300 hover:bg-gray-50">
+                                    <SelectValue placeholder="All Status" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                                    <SelectItem value="all">All Status</SelectItem>
+                                    <SelectItem value="pending">Pending</SelectItem>
+                                    <SelectItem value="approved">Approved</SelectItem>
+                                    <SelectItem value="declined">Declined</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="flex gap-2 items-center">
+                            <ArrowUpDown size={20} className="text-gray-400" />
+                            <Select value={sortBy} onValueChange={setSortBy}>
+                                <SelectTrigger className="w-[200px] bg-white border-gray-300 hover:bg-gray-50">
+                                    <SelectValue placeholder="Sort by..." />
+                                </SelectTrigger>
+                                <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                                    <SelectItem value="none">No Sorting</SelectItem>
+                                    <SelectItem value="doctor-asc">Doctor (A-Z)</SelectItem>
+                                    <SelectItem value="doctor-desc">Doctor (Z-A)</SelectItem>
+                                    <SelectItem value="date-asc">Date (Oldest First)</SelectItem>
+                                    <SelectItem value="date-desc">Date (Newest First)</SelectItem>
+                                    <SelectItem value="name-asc">Patient Name (A-Z)</SelectItem>
+                                    <SelectItem value="name-desc">Patient Name (Z-A)</SelectItem>
+                                </SelectContent>
+                            </Select>
                         </div>
                     </div>
-                    {(nameFilter || statusFilter !== 'all' || doctorFilter !== 'all' || timeFilter !== 'all') && (
+                    {(nameFilter || statusFilter !== 'all' || doctorFilter !== 'all' || timeFilter !== 'all' || sortBy !== 'none') && (
                         <Button 
                             onClick={clearFilters}
                             variant="outline"
@@ -446,6 +419,7 @@ const Index = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     {uniqueDoctors.map(doctorName => {
                         const stats = getDoctorStats(doctorName)
+                        const doctorInfo = getDoctorInfo(doctorName)
                         return (
                             <div
                                 key={doctorName}
@@ -457,6 +431,12 @@ const Index = () => {
                                 }`}
                             >
                                 <h3 className="font-medium text-gray-900">{doctorName}</h3>
+                                {doctorInfo && (
+                                    <p className="text-sm text-gray-600 mt-1">{doctorInfo.specialization}</p>
+                                )}
+                                {!doctorInfo && (
+                                    <p className="text-sm text-gray-600 mt-1">Specialist</p>
+                                )}
                                 <div className="mt-2 grid grid-cols-3 gap-2 text-sm">
                                     <div>
                                         <p className="text-gray-500">Total</p>
@@ -471,6 +451,12 @@ const Index = () => {
                                         <p className="font-medium text-gray-900">{stats.pending}</p>
                                     </div>
                                 </div>
+                                {doctorInfo && (
+                                    <div className="mt-2 text-xs text-gray-500">
+                                        <p>Experience: {doctorInfo.experience} years</p>
+                                        <p>Rating: {doctorInfo.rating || 'N/A'}</p>
+                                    </div>
+                                )}
                             </div>
                         )
                     })}
@@ -483,9 +469,30 @@ const Index = () => {
                     <table className="w-full text-sm text-left">
                         <thead className="bg-gray-50">
                             <tr>
-                                <th className="px-4 py-3 font-medium text-gray-900">Patient</th>
-                                <th className="px-4 py-3 font-medium text-gray-900">Doctor</th>
-                                <th className="px-4 py-3 font-medium text-gray-900">Date & Time</th>
+                                <th className="px-4 py-3 font-medium text-gray-900">
+                                    <div className="flex items-center gap-1">
+                                        Patient
+                                        {(sortBy === 'name-asc' || sortBy === 'name-desc') && (
+                                            <ArrowUpDown size={14} className="text-blue-500" />
+                                        )}
+                                    </div>
+                                </th>
+                                <th className="px-4 py-3 font-medium text-gray-900">
+                                    <div className="flex items-center gap-1">
+                                        Doctor
+                                        {(sortBy === 'doctor-asc' || sortBy === 'doctor-desc') && (
+                                            <ArrowUpDown size={14} className="text-blue-500" />
+                                        )}
+                                    </div>
+                                </th>
+                                <th className="px-4 py-3 font-medium text-gray-900">
+                                    <div className="flex items-center gap-1">
+                                        Date & Time
+                                        {(sortBy === 'date-asc' || sortBy === 'date-desc') && (
+                                            <ArrowUpDown size={14} className="text-blue-500" />
+                                        )}
+                                    </div>
+                                </th>
                                 <th className="px-4 py-3 font-medium text-gray-900">Status</th>
                                 <th className="px-4 py-3 font-medium text-gray-900">Actions</th>
                             </tr>
@@ -500,7 +507,10 @@ const Index = () => {
                                         </div>
                                     </td>
                                     <td className="px-4 py-3">
-                                        <p className="font-medium text-gray-900">{appointment.doctor}</p>
+                                        <p className="font-medium text-gray-900">{appointment.doctorName || 'Unknown Doctor'}</p>
+                                        {appointment.doctorSpecialization && (
+                                            <p className="text-sm text-gray-500">{appointment.doctorSpecialization}</p>
+                                        )}
                                     </td>
                                     <td className="px-4 py-3">
                                         <p className="text-gray-900">{appointment.date}</p>
@@ -522,21 +532,26 @@ const Index = () => {
                                             {appointment.status === 'pending' && (
                                                 <>
                                                     <Button
-                                                        onClick={() => handleApprove(appointment.id)}
-                                                        className="bg-green-500 hover:bg-green-600 text-white"
+                                                        disabled={true}
+                                                        className="bg-gray-300 text-gray-500 cursor-not-allowed"
                                                         size="sm"
                                                     >
                                                         Approve
                                                     </Button>
                                                     <Button
-                                                        onClick={() => handleDecline(appointment.id)}
+                                                        disabled={true}
                                                         variant="outline"
-                                                        className="border-red-500 text-red-500 hover:bg-red-50"
+                                                        className="border-gray-300 text-gray-500 cursor-not-allowed"
                                                         size="sm"
                                                     >
                                                         Decline
                                                     </Button>
                                                 </>
+                                            )}
+                                            {appointment.status !== 'pending' && (
+                                                <span className="text-sm text-gray-500 italic">
+                                                    Read-only view
+                                                </span>
                                             )}
                                         </div>
                                     </td>

@@ -340,7 +340,7 @@ const Dashboard = () => {
         <div className="p-4 sm:p-6 pb-20 md:pb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
             <div>
-              <h1 className="text-2xl font-bold text-gray-800">
+              <h1 className="text-[28px] font-medium text-gray-800">
                 {activePage === 'dashboard' && 'Dashboard Overview'}
                 {activePage === 'users' && 'User Management'}
                 {activePage === 'doctors' && 'Doctor Management'}
@@ -349,7 +349,7 @@ const Dashboard = () => {
                 {!['dashboard', 'users', 'doctors', 'appointments', 'finance'].includes(activePage) && ''}
                 {activePage === 'settings' && 'Settings'}
               </h1>
-              <p className="text-gray-500 mt-1">Welcome back, Admin</p>
+              <p className="text-gray-500  text-[20px] mt-1">Welcome back, Admin</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="relative flex-1 sm:flex-none">

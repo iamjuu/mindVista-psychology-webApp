@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import { Users, DollarSign, TrendingUp, TrendingDown, CreditCard, PieChart, Stethoscope } from 'lucide-react';
 
 const Finance = () => {
@@ -170,11 +171,7 @@ const Finance = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-        <h2 className="text-2xl font-bold text-gray-800">Finance Overview</h2>
-        <p className="text-gray-600 mt-2">Monitor your platform's financial performance and user metrics</p>
-      </div>
+     
 
       {/* Doctor Selection Navbar */}
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
@@ -182,18 +179,19 @@ const Finance = () => {
           <h3 className="text-lg font-semibold text-gray-800">Doctor Analytics</h3>
           <div className="flex items-center gap-4">
             <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Select Doctor:</label>
-            <select
-              value={selectedDoctor}
-              onChange={(e) => setSelectedDoctor(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Doctors</option>
-              {mockDoctorData.map((doctor) => (
-                <option key={doctor.id} value={doctor.id}>
-                  {doctor.name} ({doctor.specialization})
-                </option>
-              ))}
-            </select>
+            <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+              <SelectTrigger className="w-full sm:w-auto bg-white border-gray-300 hover:bg-gray-50">
+                <SelectValue placeholder="All Doctors" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                <SelectItem value="all">All Doctors</SelectItem>
+                {mockDoctorData.map((doctor) => (
+                  <SelectItem key={doctor.id} value={doctor.id.toString()}>
+                    {doctor.name} ({doctor.specialization})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         

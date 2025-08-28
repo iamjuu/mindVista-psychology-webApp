@@ -25,6 +25,8 @@ const DoctorDashboard = () => {
   const [doctorAppointments, setDoctorAppointments] = useState([]);
   const [appointmentsLoading, setAppointmentsLoading] = useState(false);
   const [appointmentsError, setAppointmentsError] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null); // State for selected user data
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false); // State for modal visibility
 
   // Get email from URL parameters
   const email = searchParams.get('email');
@@ -305,6 +307,7 @@ useEffect(()=>{
         // Show success message
         const actionText = action === 'approve' ? 'approved' : 'declined';
         toast.success(`Appointment ${actionText} successfully!`);
+        await fetchPatientRequests();
         await fetchDoctorAppointments(); // Refresh appointments after approval/decline
       } else {
         console.error(`Failed to ${action} appointment:`, response.data.message);
@@ -314,6 +317,22 @@ useEffect(()=>{
       console.error(`Error ${action}ing appointment:`, error);
       toast.error(`Error ${action}ing appointment. Please try again.`);
     }
+  };
+
+  // Function to handle user row click and open modal
+  const handleUserRowClick = (user) => {
+    alert(`Row clicked! Opening modal for: ${user.name}`); // Debug alert
+    console.log('Row clicked! User data:', user); // Debug log
+    console.log('Setting selectedUser to:', user); // Debug log
+    setSelectedUser(user);
+    setIsUserModalOpen(true);
+    console.log('Modal should now be open. selectedUser:', user, 'isUserModalOpen:', true); // Debug log
+  };
+
+  // Function to close user modal
+  const closeUserModal = () => {
+    setIsUserModalOpen(false);
+    setSelectedUser(null);
   };
 
   useEffect(() => {
@@ -988,6 +1007,28 @@ useEffect(()=>{
                   </div>
                 </div>
                 
+                {/* Test Modal Button - Remove this after testing */}
+                <div className="mb-4">
+                  <button 
+                    onClick={() => {
+                      const testUser = {
+                        id: 'test123',
+                        name: 'Test User',
+                        phone: '+1234567890',
+                        age: 25,
+                        location: 'Test City',
+                        status: 'pending',
+                        date: '2025-01-15',
+                        time: '10:00 AM'
+                      };
+                      handleUserRowClick(testUser);
+                    }}
+                    className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+                  >
+                    🧪 Test Modal (Click to open)
+                  </button>
+                </div>
+                
                 {requestsLoading ? (
                   <div className="text-center py-12">
                     <div className="relative inline-block">
@@ -1014,7 +1055,12 @@ useEffect(()=>{
                       </thead>
                       <tbody>
                         {filteredRequests.map((request, index) => (
-                          <tr key={request.id || request._id || index} className="border-b border-gray-100 hover:bg-blue-50 transition-colors group">
+                          <tr 
+                            key={request.id || request._id || index} 
+                            className="border-b border-gray-100 hover:bg-blue-50 transition-colors group cursor-pointer hover:shadow-md"
+                            onClick={() => handleUserRowClick(request)}
+                            title="Click to view patient details"
+                          >
                             <td className="py-4 px-6">
                               <div className="flex items-center">
                                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 text-white font-bold shadow-md">
@@ -1083,14 +1129,20 @@ useEffect(()=>{
                               {request.status === 'pending' ? (
                                 <div className="flex items-center gap-2">
                                   <button 
-                                    onClick={() => handleAppointmentAction(request.id || request._id, 'approve')}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent row click when clicking button
+                                      handleAppointmentAction(request.id || request._id, 'approve');
+                                    }}
                                     className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm"
                                   >
                                     <span className="mr-1">✓</span>
                                     Approve
                                   </button>
                                   <button 
-                                    onClick={() => handleAppointmentAction(request.id || request._id, 'decline')}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent row click when clicking button
+                                      handleAppointmentAction(request.id || request._id, 'decline');
+                                    }}
                                     className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
                                   >
                                     <span className="mr-1">✗</span>
@@ -1447,6 +1499,197 @@ useEffect(()=>{
           </div>
         </div>
       </div>
+
+      {/* User Details Modal */}
+      {(() => {
+        console.log('Modal render check - isUserModalOpen:', isUserModalOpen, 'selectedUser:', selectedUser); // Debug log
+        return null;
+      })()}
+      {isUserModalOpen && selectedUser && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4" style={{zIndex: 9999}}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border-4 border-red-500">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-2xl font-bold text-gray-900">Patient Details</h2>
+              <button
+                onClick={closeUserModal}
+                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+              >
+                <X size={24} className="text-gray-500" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                {/* Left Column - Patient Info */}
+                <div className="space-y-6">
+                  {/* Patient Profile Section */}
+                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
+                    <div className="flex items-center space-x-4 mb-4">
+                      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        {selectedUser.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-gray-900">{selectedUser.name || 'N/A'}</h3>
+                        <p className="text-gray-600">Patient ID: {selectedUser.id || selectedUser._id || 'N/A'}</p>
+                      </div>
+                    </div>
+                    
+                    {/* Status Badge */}
+                    <div className="inline-block">
+                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
+                        selectedUser.status === 'approved' 
+                          ? 'bg-green-100 text-green-800 border border-green-200' 
+                          : selectedUser.status === 'pending'
+                          ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                          : selectedUser.status === 'declined'
+                          ? 'bg-red-100 text-red-800 border border-red-200'
+                          : 'bg-gray-100 text-gray-800 border border-gray-200'
+                      }`}>
+                        {selectedUser.status || 'pending'}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Personal Information */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
+                          <Phone size={16} className="text-blue-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Phone Number</p>
+                          <p className="font-medium text-gray-900">{selectedUser.phone || selectedUser.number || 'N/A'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mr-3">
+                          <MapPin size={16} className="text-green-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Location</p>
+                          <p className="font-medium text-gray-900">{selectedUser.location || 'N/A'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
+                          <Calendar size={16} className="text-purple-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Age</p>
+                          <p className="font-medium text-gray-900">{selectedUser.age ? `${selectedUser.age} years` : 'N/A'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - Appointment & Doctor Info */}
+                <div className="space-y-6">
+                  {/* Appointment Details */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Appointment Details</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center mr-3">
+                          <Calendar size={16} className="text-orange-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Appointment Date</p>
+                          <p className="font-medium text-gray-900">{selectedUser.date || 'N/A'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
+                          <Clock size={16} className="text-indigo-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Appointment Time</p>
+                          <p className="font-medium text-gray-900">{selectedUser.time || 'N/A'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center mr-3">
+                          <CheckCircle size={16} className="text-teal-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Created On</p>
+                          <p className="font-medium text-gray-900">
+                            {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : 'N/A'}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Doctor Information */}
+                  <div className="bg-white border border-gray-200 rounded-xl p-6">
+                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Doctor Information</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center mr-3">
+                          <Award size={16} className="text-red-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Doctor Name</p>
+                          <p className="font-medium text-gray-900">{selectedUser.doctorName || doctorData.name || 'N/A'}</p>
+                        </div>
+                      </div>
+                      
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center mr-3">
+                          <Star size={16} className="text-yellow-500" />
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Specialization</p>
+                          <p className="font-medium text-gray-900">{selectedUser.doctorSpecialization || doctorData.specialization || 'N/A'}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Action Buttons */}
+                  {selectedUser.status === 'pending' && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
+                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Actions</h4>
+                      <div className="flex space-x-3">
+                        <button 
+                          onClick={() => {
+                            handleAppointmentAction(selectedUser.id || selectedUser._id, 'approve');
+                            closeUserModal();
+                          }}
+                          className="flex-1 flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                        >
+                          <CheckCircle size={16} className="mr-2" />
+                          Approve
+                        </button>
+                        <button 
+                          onClick={() => {
+                            handleAppointmentAction(selectedUser.id || selectedUser._id, 'decline');
+                            closeUserModal();
+                          }}
+                          className="flex-1 flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
+                        >
+                          <X size={16} className="mr-2" />
+                          Decline
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       <ToastContainer />
     </div>
   );
