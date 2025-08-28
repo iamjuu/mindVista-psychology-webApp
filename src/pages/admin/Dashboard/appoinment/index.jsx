@@ -265,16 +265,17 @@ const Index = () => {
         }
     }
 
-    // Read-only page - no actions allowed (functions kept for potential future use)
-    // const handleApprove = async (appointmentId) => {
-    //     console.log(`Read-only mode: Cannot approve appointment ID: ${appointmentId}`)
-    //     // No action taken - this is a read-only view
-    // }
+    // Read-only page - approval/decline is handled by doctors
+    // These functions are disabled as appointments should be approved by doctors
+    const handleApprove = async (appointmentId) => {
+        console.log(`Admin page is read-only. Appointment approval should be done by doctors. Appointment ID: ${appointmentId}`)
+        alert('Appointment approval is handled by doctors. Please ask the doctor to approve this appointment from their dashboard.')
+    }
 
-    // const handleDecline = async (appointmentId) => {
-    //     console.log(`Read-only mode: Cannot decline appointment ID: ${appointmentId}`)
-    //     // No action taken - this is a read-only view
-    // }
+    const handleDecline = async (appointmentId) => {
+        console.log(`Admin page is read-only. Appointment decline should be done by doctors. Appointment ID: ${appointmentId}`)
+        alert('Appointment decline is handled by doctors. Please ask the doctor to decline this appointment from their dashboard.')
+    }
 
     const handleDoctorCardClick = (doctorName) => {
         console.log(`Doctor card clicked: ${doctorName}`)
@@ -494,6 +495,7 @@ const Index = () => {
                                     </div>
                                 </th>
                                 <th className="px-4 py-3 font-medium text-gray-900">Status</th>
+                                <th className="px-4 py-3 font-medium text-gray-900">Video Call</th>
                                 <th className="px-4 py-3 font-medium text-gray-900">Actions</th>
                             </tr>
                         </thead>
@@ -528,32 +530,70 @@ const Index = () => {
                                         </span>
                                     </td>
                                     <td className="px-4 py-3">
+                                        {appointment.videoCallGenerated && appointment.videoCallLink ? (
+                                            <div className="space-y-1">
+                                                <div className="flex items-center space-x-1">
+                                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                                    <span className="text-xs text-green-600 font-medium">Available</span>
+                                                </div>
+                                                <div className="text-xs text-gray-500 font-mono">
+                                                    ID: {appointment.videoCallId}
+                                                </div>
+                                                <Button
+                                                    onClick={() => window.open(appointment.videoCallLink, '_blank')}
+                                                    size="sm"
+                                                    className="bg-blue-600 hover:bg-blue-700 text-xs px-2 py-1"
+                                                >
+                                                    Open Call
+                                                </Button>
+                                            </div>
+                                        ) : appointment.status === 'approved' ? (
+                                            <span className="text-xs text-yellow-600">Generating...</span>
+                                        ) : (
+                                            <span className="text-xs text-gray-400">Not available</span>
+                                        )}
+                                    </td>
+                                    <td className="px-4 py-3">
                                         <div className="flex gap-2">
                                             {appointment.status === 'pending' && (
                                                 <>
                                                     <Button
+                                                        onClick={() => handleApprove(appointment.id)}
                                                         disabled={true}
                                                         className="bg-gray-300 text-gray-500 cursor-not-allowed"
                                                         size="sm"
+                                                        title="Approval is handled by doctors"
                                                     >
                                                         Approve
                                                     </Button>
                                                     <Button
+                                                        onClick={() => handleDecline(appointment.id)}
                                                         disabled={true}
                                                         variant="outline"
                                                         className="border-gray-300 text-gray-500 cursor-not-allowed"
                                                         size="sm"
+                                                        title="Decline is handled by doctors"
                                                     >
                                                         Decline
                                                     </Button>
                                                 </>
                                             )}
-                                            {appointment.status !== 'pending' && (
-                                                <span className="text-sm text-gray-500 italic">
-                                                    Read-only view
+                                            {appointment.status === 'approved' && (
+                                                <span className="text-sm text-green-600 font-medium">
+                                                    ✓ Approved by Doctor
+                                                </span>
+                                            )}
+                                            {appointment.status === 'declined' && (
+                                                <span className="text-sm text-red-600 font-medium">
+                                                    ✗ Declined by Doctor
                                                 </span>
                                             )}
                                         </div>
+                                        {appointment.status === 'pending' && (
+                                            <div className="text-xs text-gray-500 mt-1 italic">
+                                                Actions handled by doctors
+                                            </div>
+                                        )}
                                     </td>
                                 </tr>
                             ))}

@@ -7,6 +7,7 @@ import Sidebar from '../../../../components/DashBoardcomponents/slideBar';
 import UserList from '../dashboarduserlist';
 import DoctorList from '../docterlist';
 import Appoiment from '../appoinment';
+import TodayAppointments from '../TodayAppointments';
 import Finance from '../finance';
 import Settings from '../settings';
 
@@ -316,6 +317,8 @@ const Dashboard = () => {
         return <DoctorList />;
       case 'appointments':
         return <Appoiment/>;
+      case 'today-appointments':
+        return <TodayAppointments />;
       case 'finance':
         return <Finance />;
       case 'settings':
@@ -345,8 +348,9 @@ const Dashboard = () => {
                 {activePage === 'users' && 'User Management'}
                 {activePage === 'doctors' && 'Doctor Management'}
                 {activePage === 'appointments' && 'Appointment Management'}
+                {activePage === 'today-appointments' && 'Today\'s Video Sessions'}
                 {activePage === 'finance' && 'Finance Overview'}
-                {!['dashboard', 'users', 'doctors', 'appointments', 'finance'].includes(activePage) && ''}
+                {!['dashboard', 'users', 'doctors', 'appointments', 'today-appointments', 'finance'].includes(activePage) && ''}
                 {activePage === 'settings' && 'Settings'}
               </h1>
               <p className="text-gray-500  text-[20px] mt-1">Welcome back, Admin</p>

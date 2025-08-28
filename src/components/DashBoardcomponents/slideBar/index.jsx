@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Home, Users, Activity, Calendar, DollarSign, HelpCircle, Settings } from 'lucide-react';
+import { Home, Users, Activity, Calendar, DollarSign, HelpCircle, Settings, Video } from 'lucide-react';
 
 // Constants for icon sizes
 const ICON_SIZE = 20;
@@ -12,6 +12,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
     { id: 'users', label: 'Users', icon: <Users size={ICON_SIZE} /> },
     { id: 'doctors', label: 'Doctors', icon: <Activity size={ICON_SIZE} /> },
     { id: 'appointments', label: 'Appointments', icon: <Calendar size={ICON_SIZE} /> },
+    { id: 'today-appointments', label: 'Today\'s Sessions', icon: <Video size={ICON_SIZE} /> },
     { id: 'finance', label: 'Finance', icon: <DollarSign size={ICON_SIZE} /> },
     { id: 'help', label: 'Help Center', icon: <HelpCircle size={ICON_SIZE} /> },
     { id: 'settings', label: 'Settings', icon: <Settings size={ICON_SIZE} /> }
@@ -70,6 +71,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 <span className="text-[10px] font-medium text-center leading-tight whitespace-nowrap">
                   {item.label === 'Help Center' ? 'Help' : 
                    item.label === 'Appointments' ? 'Appts' : 
+                   item.label === 'Today\'s Sessions' ? 'Today' :
                    item.label}
                 </span>
               </button>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, MapPin, Award, Star, LogOut, Menu, X, Filter, Search, Download, Bell, Settings, Eye, Clock, CheckCircle } from 'lucide-react';
+import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, MapPin, Award, Star, LogOut, Menu, X, Filter, Search, Download, Bell, Settings, Eye, Clock, CheckCircle, Video, ExternalLink } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiInstance from '../../instance';
@@ -279,9 +279,21 @@ useEffect(()=>{
       
       if (response.data.success) {
         console.log(`Appointment ${action}d successfully:`, response.data);
-        // Show success message
-        const actionText = action === 'approve' ? 'approved' : 'declined';
-        toast.success(`Appointment ${actionText} successfully!`);
+        
+        // Show success message with video call info for approvals
+        if (action === 'approve') {
+          const appointmentData = response.data.data;
+          if (appointmentData.videoCallLink) {
+            toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
+              duration: 5000
+            });
+          } else {
+            toast.success(`Appointment approved successfully!`);
+          }
+        } else {
+          toast.success(`Appointment declined. Email notification sent to the patient.`);
+        }
+        
         await fetchPatientRequests();
         await fetchDoctorAppointments(); // Refresh appointments after approval/decline
       } else {
@@ -304,9 +316,21 @@ useEffect(()=>{
       
       if (response.data.success) {
         console.log(`Appointment ${action}d successfully:`, response.data);
-        // Show success message
-        const actionText = action === 'approve' ? 'approved' : 'declined';
-        toast.success(`Appointment ${actionText} successfully!`);
+        
+        // Show success message with video call info for approvals
+        if (action === 'approve') {
+          const appointmentData = response.data.data;
+          if (appointmentData.videoCallLink) {
+            toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
+              duration: 5000
+            });
+          } else {
+            toast.success(`Appointment approved successfully!`);
+          }
+        } else {
+          toast.success(`Appointment declined. Email notification sent to the patient.`);
+        }
+        
         await fetchPatientRequests();
         await fetchDoctorAppointments(); // Refresh appointments after approval/decline
       } else {
@@ -1257,6 +1281,7 @@ useEffect(()=>{
                         <th className="text-left py-4 px-6 font-semibold text-gray-700">DETAILS</th>
                         <th className="text-left py-4 px-6 font-semibold text-gray-700">APPOINTMENT</th>
                         <th className="text-left py-4 px-6 font-semibold text-gray-700">STATUS</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700">VIDEO CALL</th>
                         <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-r-xl">ACTIONS</th>
                       </tr>
                       </thead>
@@ -1314,6 +1339,31 @@ useEffect(()=>{
                               }`}>
                                 {appointment.status}
                               </span>
+                            </td>
+                            <td className="py-4 px-6">
+                              {appointment.videoCallGenerated && appointment.videoCallLink ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center space-x-1">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span className="text-xs text-green-600 font-medium">Available</span>
+                                  </div>
+                                  <div className="text-xs text-gray-500 font-mono">
+                                    {appointment.videoCallId}
+                                  </div>
+                                  <button
+                                    onClick={() => window.open(appointment.videoCallLink, '_blank')}
+                                    className="flex items-center space-x-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
+                                  >
+                                    <Video size={12} />
+                                    <span>Join</span>
+                                    <ExternalLink size={10} />
+                                  </button>
+                                </div>
+                              ) : appointment.status === 'approved' ? (
+                                <span className="text-xs text-yellow-600">Generating...</span>
+                              ) : (
+                                <span className="text-xs text-gray-400">Not available</span>
+                              )}
                             </td>
                             <td className="py-4 px-6">
                               {appointment.status === 'pending' ? (
