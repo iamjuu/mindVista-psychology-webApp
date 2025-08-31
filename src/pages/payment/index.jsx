@@ -10,9 +10,8 @@ const PaymentPage = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [appointmentData, setAppointmentData] = useState(null);
-  const [showQRCode, setShowQRCode] = useState(false);
+  const [showQRCode, setShowQRCode] = useState(true); // Auto-show QR code
   const [showUPIId, setShowUPIId] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState('qr'); // 'qr' or 'upi'
   const [receiptFile, setReceiptFile] = useState(null);
   const [receiptFileName, setReceiptFileName] = useState('');
 
@@ -41,31 +40,14 @@ const PaymentPage = () => {
     }
   }, [location, navigate]);
 
-  // Handle payment method selection
-  const handlePaymentMethodSelect = (method) => {
-    setPaymentMethod(method);
-    if (method === 'qr') {
-      setShowQRCode(true);
-      setShowUPIId(false);
-    } else if (method === 'upi') {
-      setShowUPIId(true);
-      setShowQRCode(false);
-    }
-  };
+  // Payment method selection is simplified - QR code is default, UPI ID is alternative
 
-  // Handle QR Code Payment
-  const handleQRCodePayment = () => {
-    setShowQRCode(true);
-    setShowUPIId(false);
-    setPaymentMethod('qr');
-    toast.info('Please scan the QR code to complete your payment');
-  };
+  // QR Code is now shown by default, no need for this function
 
   // Handle UPI ID Payment
   const handleUPIIdPayment = () => {
     setShowUPIId(true);
     setShowQRCode(false);
-    setPaymentMethod('upi');
     toast.info('Please use the UPI ID to complete your payment');
   };
 
@@ -73,7 +55,6 @@ const PaymentPage = () => {
   const handleBackToPaymentMethods = () => {
     setShowQRCode(false);
     setShowUPIId(false);
-    setPaymentMethod('qr');
   };
 
   // Handle payment success and create appointment
@@ -291,8 +272,14 @@ const PaymentPage = () => {
               </div>
 
               {/* Receipt Upload Section for QR Payment */}
-              <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-3">Upload Payment Receipt:</h3>
+              <div className="mb-6 p-4 border-2 border-orange-300 bg-orange-50 rounded-lg shadow-md">
+                <h3 className="text-xl font-bold text-orange-800 mb-3 flex items-center">
+                  📄 Upload Payment Receipt
+                  <span className="ml-2 text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">Required</span>
+                </h3>
+                <p className="text-sm text-orange-700 mb-4 font-medium">
+                  ⚠️ <strong>Important:</strong> After completing payment, upload your receipt to confirm your appointment.
+                </p>
                 <div className="flex items-center space-x-3">
                   <input
                     type="file"
@@ -303,25 +290,26 @@ const PaymentPage = () => {
                   />
                   <label
                     htmlFor="receipt-file-input-qr"
-                    className="w-full bg-green-500 text-white py-2 px-4 rounded-md font-medium hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                    className="w-full bg-orange-500 text-white py-3 px-6 rounded-md font-semibold hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors cursor-pointer text-center shadow-lg"
                   >
-                    {receiptFile ? `Selected File: ${receiptFileName}` : 'Choose Receipt File (PDF, JPG, PNG)'}
+                    {receiptFile ? `✅ Selected: ${receiptFileName}` : '📁 Choose Receipt File (PDF, JPG, PNG)'}
                   </label>
                   {receiptFile && (
                     <button
                       onClick={removeReceiptFile}
-                      className="bg-red-500 text-white py-2 px-4 rounded-md font-medium hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                      className="bg-red-500 text-white py-3 px-4 rounded-md font-semibold hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors shadow-lg"
                     >
-                      Remove File
+                      🗑️ Remove File
                     </button>
                   )}
                 </div>
                 {receiptFile && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    Selected file: <strong>{receiptFileName}</strong>
-                  </p>
+                  <div className="mt-3 p-3 bg-green-100 border border-green-300 rounded-lg">
+                    <p className="text-sm text-green-800 font-medium">
+                      ✅ File selected: <strong>{receiptFileName}</strong>
+                    </p>
+                  </div>
                 )}
-
               </div>
 
               {/* Payment Details */}
@@ -455,8 +443,14 @@ const PaymentPage = () => {
               </div>
 
               {/* Receipt Upload Section for UPI Payment */}
-              <div className="mb-6">
-                <h3 className="text-lg font-medium text-gray-900 mb-3">Upload Payment Receipt:</h3>
+              <div className="mb-6 p-4 border-2 border-orange-300 bg-orange-50 rounded-lg shadow-md">
+                <h3 className="text-xl font-bold text-orange-800 mb-3 flex items-center">
+                  📄 Upload Payment Receipt
+                  <span className="ml-2 text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">Required</span>
+                </h3>
+                <p className="text-sm text-orange-700 mb-4 font-medium">
+                  ⚠️ <strong>Important:</strong> After completing payment, upload your receipt to confirm your appointment.
+                </p>
                 <div className="flex items-center space-x-3">
                   <input
                     type="file"
@@ -467,25 +461,26 @@ const PaymentPage = () => {
                   />
                   <label
                     htmlFor="receipt-file-input-upi"
-                    className="w-full bg-blue-500 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                    className="w-full bg-orange-500 text-white py-3 px-6 rounded-md font-semibold hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors cursor-pointer text-center shadow-lg"
                   >
-                    {receiptFile ? `Selected File: ${receiptFileName}` : 'Choose Receipt File (PDF, JPG, PNG)'}
-                  </label>
+                    {receiptFile ? `✅ Selected: ${receiptFileName}` : '📁 Choose Receipt File (PDF, JPG, PNG)'}
+                </label>
                   {receiptFile && (
                     <button
                       onClick={removeReceiptFile}
-                      className="bg-red-500 text-white py-2 px-4 rounded-md font-medium hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                      className="bg-red-500 text-white py-3 px-4 rounded-md font-semibold hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors shadow-lg"
                     >
-                      Remove File
+                      🗑️ Remove File
                     </button>
                   )}
                 </div>
                 {receiptFile && (
-                  <p className="text-sm text-gray-600 mt-2">
-                    Selected file: <strong>{receiptFileName}</strong>
-                  </p>
+                  <div className="mt-3 p-3 bg-green-100 border border-green-300 rounded-lg">
+                    <p className="text-sm text-green-800 font-medium">
+                      ✅ File selected: <strong>{receiptFileName}</strong>
+                    </p>
+                  </div>
                 )}
-
               </div>
 
               {/* Payment Details */}
@@ -604,55 +599,17 @@ const PaymentPage = () => {
 
             {/* Payment Methods */}
             <div className="mb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Choose Payment Method:</h3>
+              <h3 className="text-lg font-medium text-gray-900 mb-3">Alternative Payment Method:</h3>
               
-              {/* QR Code Option - Recommended */}
-              <div className="mb-3">
-                <button
-                  onClick={() => handlePaymentMethodSelect('qr')}
-                  className={`w-full p-4 border-2 rounded-lg text-left transition-colors ${
-                    paymentMethod === 'qr' 
-                      ? 'border-green-500 bg-green-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
-                >
-                  <div className="flex items-center">
-                    <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
-                      paymentMethod === 'qr' 
-                        ? 'border-green-500 bg-green-500' 
-                        : 'border-gray-300'
-                    }`}>
-                      {paymentMethod === 'qr' && (
-                        <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
-                      )}
-                    </div>
-                    <div>
-                      <div className="font-medium text-gray-900">QR Code Payment</div>
-                      <div className="text-sm text-gray-500">Scan with UPI apps (Google Pay, PhonePe, Paytm) - Recommended</div>
-                    </div>
-                  </div>
-                </button>
-              </div>
-
               {/* UPI ID Option */}
               <div className="mb-3">
                 <button
-                  onClick={() => handlePaymentMethodSelect('upi')}
-                  className={`w-full p-4 border-2 rounded-lg text-left transition-colors ${
-                    paymentMethod === 'upi' 
-                      ? 'border-blue-500 bg-blue-50' 
-                      : 'border-gray-200 hover:border-gray-300'
-                  }`}
+                  onClick={() => handleUPIIdPayment()}
+                  className="w-full p-4 border-2 rounded-lg text-left transition-colors border-blue-500 bg-blue-50 hover:border-blue-600"
                 >
                   <div className="flex items-center">
-                    <div className={`w-4 h-4 rounded-full border-2 mr-3 ${
-                      paymentMethod === 'upi' 
-                        ? 'border-blue-500 bg-blue-500' 
-                        : 'border-gray-300'
-                    }`}>
-                      {paymentMethod === 'upi' && (
-                        <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
-                      )}
+                    <div className="w-4 h-4 rounded-full border-2 mr-3 border-blue-500 bg-blue-500">
+                      <div className="w-2 h-2 bg-white rounded-full m-0.5"></div>
                     </div>
                     <div>
                       <div className="font-medium text-gray-900">UPI ID Payment</div>
@@ -664,10 +621,13 @@ const PaymentPage = () => {
             </div>
 
             {/* Receipt Upload Section */}
-            <div className="mb-6">
-              <h3 className="text-lg font-medium text-gray-900 mb-3">Upload Receipt:</h3>
-              <p className="text-sm text-gray-600 mb-3">
-                After completing payment, upload your receipt to confirm your appointment. Your appointment will only be confirmed after receipt verification.
+            <div className="mb-6 p-4 border-2 border-orange-300 bg-orange-50 rounded-lg shadow-md">
+              <h3 className="text-xl font-bold text-orange-800 mb-3 flex items-center">
+                📄 Upload Payment Receipt
+                <span className="ml-2 text-sm bg-orange-200 text-orange-800 px-2 py-1 rounded-full">Required</span>
+              </h3>
+              <p className="text-sm text-orange-700 mb-4 font-medium">
+                ⚠️ <strong>Important:</strong> After completing payment, upload your receipt to confirm your appointment. Your appointment will only be confirmed after receipt verification.
               </p>
               <div className="flex items-center space-x-3">
                 <input
@@ -679,50 +639,40 @@ const PaymentPage = () => {
                 />
                 <label
                   htmlFor="receipt-file-input"
-                  className="w-full bg-blue-500 text-white py-2 px-4 rounded-md font-medium hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors cursor-pointer"
+                  className="w-full bg-orange-500 text-white py-3 px-6 rounded-md font-semibold hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 transition-colors cursor-pointer text-center shadow-lg"
                 >
-                  {receiptFile ? `Selected File: ${receiptFileName}` : 'Choose Receipt File (PDF, JPG, PNG)'}
+                  {receiptFile ? `✅ Selected: ${receiptFileName}` : '📁 Choose Receipt File (PDF, JPG, PNG)'}
                 </label>
                 {receiptFile && (
                   <button
                     onClick={removeReceiptFile}
-                    className="bg-red-500 text-white py-2 px-4 rounded-md font-medium hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                    className="bg-red-500 text-white py-3 px-4 rounded-md font-semibold hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors shadow-lg"
                   >
-                    Remove File
+                    🗑️ Remove File
                   </button>
                 )}
               </div>
               {receiptFile && (
-                <p className="text-sm text-gray-600 mt-2">
-                  Selected file: <strong>{receiptFileName}</strong>
-                </p>
+                <div className="mt-3 p-3 bg-green-100 border border-green-300 rounded-lg">
+                  <p className="text-sm text-green-800 font-medium">
+                    ✅ File selected: <strong>{receiptFileName}</strong>
+                  </p>
+                </div>
               )}
-
             </div>
 
             {/* Payment Button */}
             <div className="mb-6">
               <p className="text-sm text-gray-600 mb-3 text-center">
-                💡 <strong>Choose your preferred payment method above</strong>
+                💡 <strong>QR Code is shown above. Use UPI ID button for alternative payment method.</strong>
               </p>
               
-              {paymentMethod === 'qr' && (
-                <button
-                  onClick={handleQRCodePayment}
-                  className="w-full bg-green-600 text-white py-3 px-4 rounded-md font-medium hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-colors"
-                >
-                  📱 Show QR Code & Pay ₹{PAYMENT_AMOUNT}
-                </button>
-              )}
-              
-              {paymentMethod === 'upi' && (
-                <button
-                  onClick={handleUPIIdPayment}
-                  className="w-full bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
-                >
-                  💳 Show UPI ID & Pay ₹{PAYMENT_AMOUNT}
-                </button>
-              )}
+              <button
+                onClick={handleUPIIdPayment}
+                className="w-full bg-blue-600 text-white py-3 px-4 rounded-md font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              >
+                💳 Show UPI ID & Pay ₹{PAYMENT_AMOUNT}
+              </button>
             </div>
 
             {/* Back Button */}
@@ -739,8 +689,8 @@ const PaymentPage = () => {
                 🔒 Secure payment options available
               </p>
               <div className="flex justify-center items-center space-x-4 mt-2">
-                <div className="text-green-600 font-medium text-sm">UPI QR</div>
-                <div className="text-blue-600 text-xs">UPI ID</div>
+                <div className="text-green-600 font-medium text-sm">UPI QR (Primary)</div>
+                <div className="text-blue-600 text-xs">UPI ID (Alternative)</div>
                 <div className="text-blue-600 text-xs">SSL Secured</div>
               </div>
             </div>

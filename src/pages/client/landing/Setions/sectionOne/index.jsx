@@ -11,7 +11,7 @@ const Section1 = () => {
           <div className="first">
             <div className="left">
               <div >
-                <h2 style={{fontSize:'1.7rem',fontFamily:'cursive'}}> {SectionOne.boxOne[0].h2}</h2>
+                <h2 style={{fontSize:'1.7rem',fontFamily:'Manrope'}}> {SectionOne.boxOne[0].h2}</h2>
                 <p  >{SectionOne.boxOne[0].p}</p>
                 <h5>{SectionOne.boxOne[0].h5}</h5>
               </div>
@@ -43,7 +43,7 @@ const Section1 = () => {
             </div>
             <div className="right">
               <h5 >{SectionOne.h5}</h5>
-              <h1 style={{fontSize:'1.5rem',fontFamily:'monospace'}}>
+              <h1 style={{fontSize:'1.5rem',fontFamily:'Manrope'}}>
                 {SectionOne.h1}
 
               </h1>

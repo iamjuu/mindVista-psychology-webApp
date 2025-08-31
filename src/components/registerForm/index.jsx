@@ -317,6 +317,9 @@ function Form() {
             <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
             <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
           </optgroup>
+          <optgroup label="Night (1 slot)">
+            <option value="19:00-22:00">7:00 PM - 10:00 PM</option>
+          </optgroup>
         </Select>
       </FormGroup>
 
@@ -364,44 +367,7 @@ function Form() {
         <Button type="submit" disabled={submitting}>
           {submitting ? 'Submitting...' : 'Submit'}
         </Button>
-        <Button 
-          type="button" 
-          onClick={() => {
-            // Validate required fields first
-            if (!formData.name || !formData.email || !formData.number || !formData.location || !formData.date || !formData.doctor) {
-              toast.error('Please fill in all required fields before proceeding to payment');
-              return;
-            }
-            
-            // Get doctor name
-            const selectedDoctor = doctors.find(doc => doc._id === formData.doctor);
-            const doctorName = selectedDoctor ? selectedDoctor.name : 'Selected Doctor';
-            
-            // Proceed directly to payment
-            const appointmentData = {
-              ...formData,
-              doctorName,
-              status: 'pending',
-              paymentStatus: 'pending',
-              id: `temp_${Date.now()}`,
-              registrationId: `temp_${Date.now()}`
-            };
-            
-            Navigate('/payment', { 
-              state: { appointmentData } 
-            });
-          }}
-          style={{ 
-            backgroundColor: '#6366f1', 
-            color: 'white', 
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '4px',
-            cursor: 'pointer'
-          }}
-        >
-          Skip to Payment
-        </Button>
+  
       </div>
       <ToastContainer />
     </FormContainer>

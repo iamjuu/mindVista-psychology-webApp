@@ -287,9 +287,23 @@ useEffect(()=>{
             toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
               duration: 5000
             });
+            
+            // Show video call details
+            setTimeout(() => {
+              toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
+                duration: 6000
+              });
+            }, 1000);
           } else {
             toast.success(`Appointment approved successfully!`);
           }
+          
+          // Show additional message about viewing sessions
+          setTimeout(() => {
+            toast.info(`Check "Today's Sessions" for today's appointments or "Upcoming" for future appointments.`, {
+              duration: 8000
+            });
+          }, 2000);
         } else {
           toast.success(`Appointment declined. Email notification sent to the patient.`);
         }
@@ -324,9 +338,23 @@ useEffect(()=>{
             toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
               duration: 5000
             });
+            
+            // Show video call details
+            setTimeout(() => {
+              toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
+                duration: 6000
+              });
+            }, 1000);
           } else {
             toast.success(`Appointment approved successfully!`);
           }
+          
+          // Show additional message about viewing sessions
+          setTimeout(() => {
+            toast.info(`Check "Today's Sessions" for today's appointments or "Upcoming" for future appointments.`, {
+              duration: 8000
+            });
+          }, 2000);
         } else {
           toast.success(`Appointment declined. Email notification sent to the patient.`);
         }
@@ -712,6 +740,24 @@ useEffect(()=>{
                     </div>
                     Appointments
                   </button>
+                  <button 
+                    onClick={() => navigate(`/docter/todaySessions?email=${email}`)}
+                    className="w-full flex items-center p-3 rounded-lg transition-colors hover:bg-green-50 text-green-700"
+                  >
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center mr-3 bg-green-100">
+                      <Clock size={16} />
+                    </div>
+                    Today&apos;s Sessions
+                  </button>
+                  <button 
+                    onClick={() => navigate(`/docter/upcoming?email=${email}`)}
+                    className="w-full flex items-center p-3 rounded-lg transition-colors hover:bg-purple-50 text-purple-700"
+                  >
+                    <div className="w-8 h-8 rounded-lg flex items-center justify-center mr-3 bg-purple-100">
+                      <TrendingUp size={16} />
+                    </div>
+                    Upcoming
+                  </button>
                 </li>
                 <li>
                   <button 
@@ -774,6 +820,20 @@ useEffect(()=>{
                 <p className="text-gray-600">Here&apos;s what&apos;s happening with your practice today.</p>
               </div>
               <div className="flex items-center gap-4">
+                <button 
+                  onClick={() => navigate(`/docter/todaySessions?email=${email}`)}
+                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
+                >
+                  <Clock size={16} />
+                  Today&apos;s Sessions
+                </button>
+                <button 
+                  onClick={() => navigate(`/docter/upcoming?email=${email}`)}
+                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors font-medium"
+                >
+                  <TrendingUp size={16} />
+                  Upcoming
+                </button>
                 <button className="relative p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
                   <Bell size={20} className="text-gray-600" />
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
