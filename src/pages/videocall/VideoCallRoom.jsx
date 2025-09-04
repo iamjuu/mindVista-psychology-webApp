@@ -70,20 +70,27 @@ const VideoCallRoom = () => {
 
     const fetchAppointmentDetails = async () => {
         try {
-            console.log('Fetching appointment details for video call:', videoCallId)
+            console.log('🔍 Fetching appointment details for video call ID:', videoCallId)
+            console.log('🔍 API endpoint:', `/video-call/${videoCallId}/details`)
             setLoading(true)
             setError(null)
             
             const response = await apiInstance.get(`/video-call/${videoCallId}/details`)
-            console.log('Appointment details response:', response.data)
+            console.log('✅ Appointment details response:', response.data)
             
             if (response.data.success) {
                 setAppointmentDetails(response.data.data)
+                console.log('✅ Appointment details set successfully:', response.data.data)
             } else {
+                console.error('❌ API returned success: false:', response.data.message)
                 setError(response.data.message || 'Failed to load appointment details')
             }
         } catch (err) {
-            console.error('Error fetching appointment details:', err)
+            console.error('❌ Error fetching appointment details:', err)
+            console.error('❌ Error response:', err.response)
+            console.error('❌ Error status:', err.response?.status)
+            console.error('❌ Error data:', err.response?.data)
+            
             if (err.response?.status === 404) {
                 setError('Video call session not found or invalid')
             } else if (err.response?.status === 403) {

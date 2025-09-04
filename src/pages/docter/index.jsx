@@ -6,6 +6,7 @@ import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, Map
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiInstance from '../../instance';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../components/shadcn/select';
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -368,6 +369,35 @@ useEffect(()=>{
     } catch (error) {
       console.error(`Error ${action}ing appointment:`, error);
       toast.error(`Error ${action}ing appointment. Please try again.`);
+    }
+  };
+
+  // Function to generate video call link for confirmed appointments
+  const handleGenerateVideoCall = async (appointmentId) => {
+    try {
+      const response = await apiInstance.put(`/appointment/${appointmentId}/generate-video-call`);
+      
+      if (response.data.success) {
+        const appointmentData = response.data.data;
+        toast.success(`Video call link generated successfully! Email sent to patient.`, {
+          duration: 5000
+        });
+        
+        // Show video call details
+        setTimeout(() => {
+          toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
+            duration: 6000
+          });
+        }, 1000);
+        
+        await fetchDoctorAppointments(); // Refresh appointments
+      } else {
+        console.error('Failed to generate video call link:', response.data.message);
+        toast.error(`Failed to generate video call link: ${response.data.message}`);
+      }
+    } catch (error) {
+      console.error('Error generating video call link:', error);
+      toast.error('Error generating video call link. Please try again.');
     }
   };
 
@@ -853,20 +883,21 @@ useEffect(()=>{
                     <h2 className="text-2xl font-bold text-gray-900">Income Statistics</h2>
                     <div className="flex items-center gap-3">
                       <label className="text-sm text-gray-600 font-medium">View:</label>
-                      <select 
-                        value={selectedTimeFrame} 
-                        onChange={(e) => setSelectedTimeFrame(e.target.value)}
-                        className="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
-                      >
-                        <option value="daily">Daily</option>
-                        <option value="weekly">Weekly</option>
-                        <option value="monthly">Monthly</option>
-                        <option value="yearly">Yearly</option>
-                      </select>
+                      <Select value={selectedTimeFrame} onValueChange={setSelectedTimeFrame}>
+                        <SelectTrigger className="w-[180px] bg-white">
+                          <SelectValue placeholder="Select time frame" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="weekly">Weekly</SelectItem>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                          <SelectItem value="yearly">Yearly</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
                     <IncomeCard
                       title="Daily Income"
                       amount={incomeData.daily}
@@ -1039,6 +1070,10 @@ useEffect(()=>{
                         <span className="text-gray-600">Pending: {patientRequests.filter(r => r.status === 'pending').length}</span>
                       </div>
                       <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-600">Confirmed: {patientRequests.filter(r => r.status === 'confirmed').length}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
                         <span className="text-gray-600">Approved: {patientRequests.filter(r => r.status === 'approved').length}</span>
                       </div>
@@ -1068,6 +1103,7 @@ useEffect(()=>{
                         >
                           <option value="all">All Status</option>
                           <option value="pending">Pending</option>
+                          <option value="confirmed">Confirmed</option>
                           <option value="approved">Approved</option>
                           <option value="declined">Declined</option>
                         </select>
@@ -1134,6 +1170,7 @@ useEffect(()=>{
                         <th className="text-left py-4 px-6 font-semibold text-gray-700">DOCTOR</th>
                         <th className="text-left py-4 px-6 font-semibold text-gray-700">APPOINTMENT</th>
                         <th className="text-left py-4 px-6 font-semibold text-gray-700">STATUS</th>
+                        <th className="text-left py-4 px-6 font-semibold text-gray-700">VIDEO CALL</th>
                         <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-r-xl">ACTIONS</th>
                       </tr>
                       </thead>
@@ -1200,6 +1237,8 @@ useEffect(()=>{
                               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                                 request.status === 'approved' 
                                   ? 'bg-green-100 text-green-800 border border-green-200' 
+                                  : request.status === 'confirmed'
+                                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
                                   : request.status === 'pending'
                                   ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                                   : request.status === 'declined'
@@ -1233,6 +1272,11 @@ useEffect(()=>{
                                     Decline
                                   </button>
                                 </div>
+                              ) : request.status === 'confirmed' ? (
+                                <span className="flex items-center text-sm font-medium text-blue-600">
+                                  <span className="mr-1">✓</span>
+                                  Confirmed
+                                </span>
                               ) : (
                                 <span className={`flex items-center text-sm font-medium ${
                                   request.status === 'approved' ? 'text-green-600' : 'text-red-600'
@@ -1240,6 +1284,49 @@ useEffect(()=>{
                                   <span className="mr-1">{request.status === 'approved' ? '✓' : '✗'}</span>
                                   {request.status === 'approved' ? 'Approved' : 'Declined'}
                                 </span>
+                              )}
+                            </td>
+                            <td className="py-4 px-6">
+                              {request.videoCallGenerated && request.videoCallLink ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center space-x-1">
+                                    <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span className="text-xs text-green-600 font-medium">Available</span>
+                                  </div>
+                                  <div className="text-xs text-gray-500 font-mono">
+                                    {request.videoCallId}
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      window.open(request.videoCallLink, '_blank');
+                                    }}
+                                    className="flex items-center space-x-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
+                                  >
+                                    <Video size={12} />
+                                    <span>Join</span>
+                                    <ExternalLink size={10} />
+                                  </button>
+                                </div>
+                              ) : request.status === 'confirmed' && !request.videoCallGenerated ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center space-x-1">
+                                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <span className="text-xs text-yellow-600 font-medium">Confirmed</span>
+                                  </div>
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleGenerateVideoCall(request.id || request._id);
+                                    }}
+                                    className="flex items-center space-x-1 px-2 py-1 bg-purple-600 text-white rounded text-xs hover:bg-purple-700 transition-colors"
+                                  >
+                                    <Video size={12} />
+                                    <span>Generate Link</span>
+                                  </button>
+                                </div>
+                              ) : (
+                                <span className="text-xs text-gray-400">Not available</span>
                               )}
                             </td>
                           </tr>
@@ -1287,6 +1374,10 @@ useEffect(()=>{
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                         <span className="text-gray-600">Pending: {doctorAppointments.filter(a => a.status === 'pending').length}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                        <span className="text-gray-600">Confirmed: {doctorAppointments.filter(a => a.status === 'confirmed').length}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <div className="w-3 h-3 bg-green-500 rounded-full"></div>
@@ -1393,6 +1484,8 @@ useEffect(()=>{
                               <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
                                 appointment.status === 'approved' 
                                   ? 'bg-green-100 text-green-800 border border-green-200' 
+                                  : appointment.status === 'confirmed'
+                                  ? 'bg-blue-100 text-blue-800 border border-blue-200'
                                   : appointment.status === 'pending'
                                   ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
                                   : 'bg-red-100 text-red-800 border border-red-200'
@@ -1421,6 +1514,20 @@ useEffect(()=>{
                                 </div>
                               ) : appointment.status === 'approved' ? (
                                 <span className="text-xs text-yellow-600">Generating...</span>
+                              ) : appointment.status === 'confirmed' && !appointment.videoCallGenerated ? (
+                                <div className="space-y-2">
+                                  <div className="flex items-center space-x-1">
+                                    <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <span className="text-xs text-yellow-600 font-medium">Confirmed</span>
+                                  </div>
+                                  <button
+                                    onClick={() => handleGenerateVideoCall(appointment._id)}
+                                    className="flex items-center space-x-1 px-2 py-1 bg-purple-600 text-white rounded text-xs hover:bg-purple-700 transition-colors"
+                                  >
+                                    <Video size={12} />
+                                    <span>Generate Link</span>
+                                  </button>
+                                </div>
                               ) : (
                                 <span className="text-xs text-gray-400">Not available</span>
                               )}
@@ -1443,6 +1550,11 @@ useEffect(()=>{
                                     Decline
                                   </button>
                                 </div>
+                              ) : appointment.status === 'confirmed' ? (
+                                <span className="flex items-center text-sm font-medium text-blue-600">
+                                  <span className="mr-1">✓</span>
+                                  Confirmed
+                                </span>
                               ) : (
                                 <span className={`flex items-center text-sm font-medium ${
                                   appointment.status === 'approved' ? 'text-green-600' : 'text-red-600'

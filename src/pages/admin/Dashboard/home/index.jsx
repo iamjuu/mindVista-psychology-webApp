@@ -10,6 +10,7 @@ import Appoiment from '../appoinment';
 import TodayAppointments from '../TodayAppointments';
 import Finance from '../finance';
 import Settings from '../settings';
+import { Input } from '../../../../components/shadcn/input/input';
 
 // DoctorCard PropTypes
 const DoctorCardPropTypes = {
@@ -357,10 +358,10 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-4">
               <div className="relative flex-1 sm:flex-none">
-                <input 
+                <Input 
                   type="text" 
                   placeholder="Search..." 
-                  className="w-full sm:w-auto px-4 py-2 rounded-lg border focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full sm:w-auto"
                 />
               </div>
               <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold flex-shrink-0">
