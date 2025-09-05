@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Users, LogOut, Menu, X, Bell, Settings, Star, Clock, Download, Phone, TrendingUp, Calendar, MapPin, CheckCircle, Award } from 'lucide-react';
+import { Users, LogOut, Menu, X, Bell, Settings, Star, Clock, Download, TrendingUp, Calendar } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiInstance from '../../instance';
+import { Button } from '../../components/shadcn/button/button';
 import { 
   OverviewTab, 
   PatientsTab, 
@@ -410,7 +411,7 @@ useEffect(()=>{
 
   // Function to handle user row click and open modal
   const handleUserRowClick = (user) => {
-    alert(`Row clicked! Opening modal for: ${user.name}`); // Debug alert
+  
     console.log('Row clicked! User data:', user); // Debug log
     console.log('Setting selectedUser to:', user); // Debug log
     setSelectedUser(user);
@@ -514,24 +515,27 @@ useEffect(()=>{
       <div className="flex min-h-screen">
         {/* Mobile Header */}
         <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm p-4 flex items-center justify-between z-30">
-          <button 
+          <Button 
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            variant="ghost"
+            size="icon"
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </Button>
           <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
+            <Button variant="ghost" size="icon" className="relative">
               <Bell size={20} />
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-            </button>
-            <button 
+            </Button>
+            <Button 
               onClick={handleLogout}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-red-600"
+              variant="ghost"
+              size="icon"
+              className="text-red-600"
             >
               <LogOut size={20} />
-            </button>
+            </Button>
           </div>
         </div>
         {/* Sidebar - Enhanced */}
@@ -551,12 +555,14 @@ useEffect(()=>{
                     <p className="text-sm opacity-80">Doctor Portal</p>
                   </div>
                 </div>
-                <button 
+                <Button 
                   onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden hover:bg-white hover:bg-opacity-10"
                 >
                   <X size={20} />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -592,9 +598,10 @@ useEffect(()=>{
             <nav className="flex-1 p-4">
               <ul className="space-y-2">
                 <li>
-                  <button 
+                  <Button 
                     onClick={() => setSelectedTab('overview')}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
+                    variant="ghost"
+                    className={`w-full justify-start ${
                       selectedTab === 'overview' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
                         : 'hover:bg-gray-50 text-gray-700'
@@ -606,12 +613,13 @@ useEffect(()=>{
                       <TrendingUp size={16} />
                     </div>
                     Overview
-                  </button>
+                  </Button>
                 </li>
                 <li>
-                  <button 
+                  <Button 
                     onClick={() => setSelectedTab('patients')}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
+                    variant="ghost"
+                    className={`w-full justify-start ${
                       selectedTab === 'patients' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
                         : 'hover:bg-gray-50 text-gray-700'
@@ -623,12 +631,13 @@ useEffect(()=>{
                       <Users size={16} />
                     </div>
                     Patients
-                  </button>
+                  </Button>
                 </li>
                 <li>
-                  <button 
+                  <Button 
                     onClick={() => setSelectedTab('appointments')}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
+                    variant="ghost"
+                    className={`w-full justify-start ${
                       selectedTab === 'appointments' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
                         : 'hover:bg-gray-50 text-gray-700'
@@ -640,10 +649,11 @@ useEffect(()=>{
                       <Calendar size={16} />
                     </div>
                     Appointments
-                  </button>
-                  <button 
+                  </Button>
+                  <Button 
                     onClick={() => handleNavigate('todaySessions')}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
+                    variant="ghost"
+                    className={`w-full justify-start ${
                       selectedTab === 'todaySessions' 
                         ? 'bg-green-50 text-green-700 font-medium' 
                         : 'hover:bg-green-50 text-green-700'
@@ -655,10 +665,11 @@ useEffect(()=>{
                       <Clock size={16} />
                     </div>
                     Today&apos;s Sessions
-                  </button>
-                  <button 
+                  </Button>
+                  <Button 
                     onClick={() => handleNavigate('upcoming')}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
+                    variant="ghost"
+                    className={`w-full justify-start ${
                       selectedTab === 'upcoming' 
                         ? 'bg-purple-50 text-purple-700 font-medium' 
                         : 'hover:bg-purple-50 text-purple-700'
@@ -670,12 +681,13 @@ useEffect(()=>{
                       <TrendingUp size={16} />
                     </div>
                     Upcoming
-                  </button>
+                  </Button>
                 </li>
                 <li>
-                  <button 
+                  <Button 
                     onClick={() => setSelectedTab('settings')}
-                    className={`w-full flex items-center p-3 rounded-lg transition-colors ${
+                    variant="ghost"
+                    className={`w-full justify-start ${
                       selectedTab === 'settings' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
                         : 'hover:bg-gray-50 text-gray-700'
@@ -687,16 +699,16 @@ useEffect(()=>{
                       <Settings size={16} />
                     </div>
                     Settings
-                  </button>
+                  </Button>
                 </li>
               </ul>
             </nav>
 
             {/* Sidebar Footer */}
             <div className="p-4 border-t border-gray-200">
-              <button
+              <Button
                 onClick={fetchDoctorProfile}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium"
+                className="w-full"
                 disabled={profileRefreshing}
               >
                 {profileRefreshing ? (
@@ -709,15 +721,16 @@ useEffect(()=>{
                   </svg>
                 )}
                 {profileRefreshing ? 'Refreshing...' : 'Refresh Profile'}
-              </button>
+              </Button>
               
-              <button
+              <Button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors duration-200 font-medium"
+                variant="outline"
+                className="w-full mt-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
               >
                 <LogOut size={16} />
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -733,27 +746,31 @@ useEffect(()=>{
                 <p className="text-gray-500  text-[16px] mt-1">Here&apos;s what&apos;s happening with your practice today.</p>
               </div>
               <div className="flex items-center gap-4">
-                <button 
+                <Button 
+
+                variant='outline'
                   onClick={() => handleNavigate('todaySessions')}
-                  className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition-colors font-medium"
+                  className=""
                 >
                   <Clock size={16} />
                   Today&apos;s Sessions
-                </button>
-                <button 
+                </Button>
+                <Button 
+                
+                variant='outline'
                   onClick={() => handleNavigate('upcoming')}
-                  className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors font-medium"
+                
                 >
                   <TrendingUp size={16} />
                   Upcoming
-                </button>
-                <button className="relative p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                </Button>
+                <Button variant="outline" size="icon" className="relative">
                   <Bell size={20} className="text-gray-600" />
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-                </button>
-                <button className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                </Button>
+                <Button variant="outline" size="icon">
                   <Download size={20} className="text-gray-600" />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -830,195 +847,6 @@ useEffect(()=>{
         </div>
       </div>
 
-      {/* User Details Modal */}
-      {(() => {
-        console.log('Modal render check - isUserModalOpen:', isUserModalOpen, 'selectedUser:', selectedUser); // Debug log
-        return null;
-      })()}
-      {isUserModalOpen && selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4" style={{zIndex: 9999}}>
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto border-4 border-red-500">
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-gray-200">
-              <h2 className="text-2xl font-bold text-gray-900">Patient Details</h2>
-              <button
-                onClick={closeUserModal}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <X size={24} className="text-gray-500" />
-              </button>
-            </div>
-
-            {/* Modal Content */}
-            <div className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Left Column - Patient Info */}
-                <div className="space-y-6">
-                  {/* Patient Profile Section */}
-                  <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
-                    <div className="flex items-center space-x-4 mb-4">
-                      <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white text-2xl font-bold shadow-lg">
-                        {selectedUser.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-bold text-gray-900">{selectedUser.name || 'N/A'}</h3>
-                        <p className="text-gray-600">Patient ID: {selectedUser.id || selectedUser._id || 'N/A'}</p>
-                      </div>
-                    </div>
-                    
-                    {/* Status Badge */}
-                    <div className="inline-block">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        selectedUser.status === 'approved' 
-                          ? 'bg-green-100 text-green-800 border border-green-200' 
-                          : selectedUser.status === 'pending'
-                          ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                          : selectedUser.status === 'declined'
-                          ? 'bg-red-100 text-red-800 border border-red-200'
-                          : 'bg-gray-100 text-gray-800 border border-gray-200'
-                      }`}>
-                        {selectedUser.status || 'pending'}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Personal Information */}
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
-                          <Phone size={16} className="text-blue-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Phone Number</p>
-                          <p className="font-medium text-gray-900">{selectedUser.phone || selectedUser.number || 'N/A'}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mr-3">
-                          <MapPin size={16} className="text-green-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Location</p>
-                          <p className="font-medium text-gray-900">{selectedUser.location || 'N/A'}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
-                          <Calendar size={16} className="text-purple-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Age</p>
-                          <p className="font-medium text-gray-900">{selectedUser.age ? `${selectedUser.age} years` : 'N/A'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column - Appointment & Doctor Info */}
-                <div className="space-y-6">
-                  {/* Appointment Details */}
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Appointment Details</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-orange-50 rounded-lg flex items-center justify-center mr-3">
-                          <Calendar size={16} className="text-orange-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Appointment Date</p>
-                          <p className="font-medium text-gray-900">{selectedUser.date || 'N/A'}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
-                          <Clock size={16} className="text-indigo-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Appointment Time</p>
-                          <p className="font-medium text-gray-900">{selectedUser.time || 'N/A'}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-teal-50 rounded-lg flex items-center justify-center mr-3">
-                          <CheckCircle size={16} className="text-teal-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Created On</p>
-                          <p className="font-medium text-gray-900">
-                            {selectedUser.createdAt ? new Date(selectedUser.createdAt).toLocaleDateString() : 'N/A'}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Doctor Information */}
-                  <div className="bg-white border border-gray-200 rounded-xl p-6">
-                    <h4 className="text-lg font-semibold text-gray-900 mb-4">Doctor Information</h4>
-                    <div className="space-y-3">
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center mr-3">
-                          <Award size={16} className="text-red-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Doctor Name</p>
-                          <p className="font-medium text-gray-900">{selectedUser.doctorName || doctorData.name || 'N/A'}</p>
-                        </div>
-                      </div>
-                      
-                      <div className="flex items-center">
-                        <div className="w-8 h-8 bg-yellow-50 rounded-lg flex items-center justify-center mr-3">
-                          <Star size={16} className="text-yellow-500" />
-                        </div>
-                        <div>
-                          <p className="text-sm text-gray-500">Specialization</p>
-                          <p className="font-medium text-gray-900">{selectedUser.doctorSpecialization || doctorData.specialization || 'N/A'}</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Action Buttons */}
-                  {selectedUser.status === 'pending' && (
-                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-6">
-                      <h4 className="text-lg font-semibold text-gray-900 mb-4">Actions</h4>
-                      <div className="flex space-x-3">
-                        <button 
-                          onClick={() => {
-                            handleAppointmentAction(selectedUser.id || selectedUser._id, 'approve');
-                            closeUserModal();
-                          }}
-                          className="flex-1 flex items-center justify-center px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
-                        >
-                          <CheckCircle size={16} className="mr-2" />
-                          Approve
-                        </button>
-                        <button 
-                          onClick={() => {
-                            handleAppointmentAction(selectedUser.id || selectedUser._id, 'decline');
-                            closeUserModal();
-                          }}
-                          className="flex-1 flex items-center justify-center px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium"
-                        >
-                          <X size={16} className="mr-2" />
-                          Decline
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Patient Details Modal */}
       <PatientModal

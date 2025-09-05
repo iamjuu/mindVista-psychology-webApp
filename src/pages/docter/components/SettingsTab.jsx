@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from '../../../components/shadcn/button/button';
 
 const SettingsTab = ({ doctorData }) => {
   return (
@@ -93,9 +94,9 @@ const SettingsTab = ({ doctorData }) => {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <button className="px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium">
+          <Button>
             Save Changes
-          </button>
+          </Button>
         </div>
       </div>
     </div>

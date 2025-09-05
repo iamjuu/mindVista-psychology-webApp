@@ -1,5 +1,6 @@
 import React from 'react';
 import { Search, Filter, Eye, Phone, MapPin, Video, ExternalLink, Calendar } from 'lucide-react';
+import { Button } from '../../../components/shadcn/button/button';
 
 const PatientsTab = ({
   patientRequests,
@@ -70,10 +71,10 @@ const PatientsTab = ({
             </div>
           </div>
           
-          <button 
+          <Button 
             onClick={fetchPatientRequests}
             disabled={requestsLoading}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
+            variant='outline'
           >
             {requestsLoading ? (
               <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -83,13 +84,13 @@ const PatientsTab = ({
               <Eye size={16} />
             )}
             {requestsLoading ? 'Loading...' : 'Load Requests'}
-          </button>
+          </Button>
         </div>
       </div>
       
       {/* Test Modal Button - Remove this after testing */}
       <div className="mb-4">
-        <button 
+        <Button 
           onClick={() => {
             const testUser = {
               id: 'test123',
@@ -103,10 +104,10 @@ const PatientsTab = ({
             };
             handleUserRowClick(testUser);
           }}
-          className="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors"
+          variant='outline'
         >
           🧪 Test Modal (Click to open)
-        </button>
+        </Button>
       </div>
       
       {requestsLoading ? (
@@ -211,26 +212,28 @@ const PatientsTab = ({
                   <td className="py-4 px-6">
                     {request.status === 'pending' ? (
                       <div className="flex items-center gap-2">
-                        <button 
+                        <Button 
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent row click when clicking button
                             handleAppointmentAction(request.id || request._id, 'approve');
                           }}
-                          className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm"
+                          size="sm"
+                          variant='outline'
                         >
                           <span className="mr-1">✓</span>
                           Approve
-                        </button>
-                        <button 
+                        </Button>
+                        <Button 
                           onClick={(e) => {
                             e.stopPropagation(); // Prevent row click when clicking button
                             handleAppointmentAction(request.id || request._id, 'decline');
                           }}
-                          className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
+                          size="sm"
+                          variant='outline'
                         >
                           <span className="mr-1">✗</span>
                           Decline
-                        </button>
+                        </Button>
                       </div>
                     ) : request.status === 'confirmed' ? (
                       <span className="flex items-center text-sm font-medium text-blue-600">
@@ -256,17 +259,18 @@ const PatientsTab = ({
                         <div className="text-xs text-gray-500 font-mono">
                           {request.videoCallId}
                         </div>
-                        <button
+                        <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             window.open(request.videoCallLink, '_blank');
                           }}
-                          className="flex items-center space-x-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
+                          size="sm"
+                          variant='outline'
                         >
                           <Video size={12} />
                           <span>Join</span>
                           <ExternalLink size={10} />
-                        </button>
+                        </Button>
                       </div>
                     ) : request.status === 'confirmed' && !request.videoCallGenerated ? (
                       <div className="space-y-2">
@@ -274,16 +278,17 @@ const PatientsTab = ({
                           <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                           <span className="text-xs text-yellow-600 font-medium">Confirmed</span>
                         </div>
-                        <button
+                        <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleGenerateVideoCall(request.id || request._id);
                           }}
-                          className="flex items-center space-x-1 px-2 py-1 bg-purple-600 text-white rounded text-xs hover:bg-purple-700 transition-colors"
+                          size="sm"
+                          variant='outline'
                         >
                           <Video size={12} />
                           <span>Generate Link</span>
-                        </button>
+                        </Button>
                       </div>
                     ) : (
                       <span className="text-xs text-gray-400">Not available</span>
@@ -307,13 +312,13 @@ const PatientsTab = ({
             }
           </p>
           {!searchTerm && filterStatus === 'all' && (
-            <button 
+            <Button 
               onClick={fetchPatientRequests}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+              variant='outline'
             >
               <Eye size={16} />
               Load Patient Requests
-            </button>
+            </Button>
           )}
         </div>
       )}

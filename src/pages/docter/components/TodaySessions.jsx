@@ -3,6 +3,7 @@ import { Calendar, Clock, Video, ExternalLink, CheckCircle, X, Users, Eye, Refre
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiInstance from '../../../instance';
+import { Button } from '../../../components/shadcn/button/button';
 
 const TodaySessions = ({ doctorData, email, onNavigate }) => {
   const [loading, setLoading] = useState(true);
@@ -165,10 +166,10 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
           </div>
           
           <div className="flex items-center gap-4">
-            <button
+            <Button
               onClick={() => fetchTodaySessions(doctorData._id)}
               disabled={refreshing}
-              className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50"
+              variant='outline'
             >
               {refreshing ? (
                 <RefreshCw size={16} className="animate-spin" />
@@ -176,15 +177,15 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
                 <Eye size={16} />
               )}
               {refreshing ? 'Refreshing...' : 'Refresh'}
-            </button>
+            </Button>
             
-            <button
+            <Button
               onClick={() => onNavigate('upcoming')}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl hover:bg-purple-700 transition-colors"
+              variant='outline'
             >
               <Calendar size={16} />
               Upcoming
-            </button>
+            </Button>
           </div>
         </div>
       </div>
@@ -366,14 +367,15 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
                               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
                               <span className="text-xs text-green-600 font-medium">Available</span>
                             </div>
-                            <button
+                            <Button
                               onClick={() => window.open(session.videoCallLink, '_blank')}
-                              className="flex items-center space-x-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
+                              size="sm"
+                              variant='outline'
                             >
                               <Video size={12} />
                               <span>Join</span>
                               <ExternalLink size={10} />
-                            </button>
+                            </Button>
                           </div>
                         ) : session.status === 'approved' ? (
                           <span className="text-xs text-yellow-600">Generating...</span>
@@ -385,26 +387,28 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
                       <td className="py-4 px-6">
                         {session.status === 'pending' ? (
                           <div className="flex items-center gap-2">
-                            <button 
+                            <Button 
                               onClick={() => handleAppointmentAction(session._id, 'approve')}
-                              className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm"
+                              size="sm"
+                              variant='outline'
                             >
                               <CheckCircle size={16} className="mr-1" />
                               Approve
-                            </button>
-                            <button 
+                            </Button>
+                            <Button 
                               onClick={() => handleAppointmentAction(session._id, 'decline')}
-                              className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
+                              size="sm"
+                              variant='outline'
                             >
                               <X size={16} className="mr-1" />
                               Decline
-                            </button>
+                            </Button>
                           </div>
                         ) : session.status === 'approved' && !isPassed ? (
-                          <button className="flex items-center px-3 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm">
+                          <Button variant='outline'>
                             <Video size={16} className="mr-1" />
                             Start Session
-                          </button>
+                          </Button>
                         ) : (
                           <span className={`text-sm font-medium ${
                             session.status === 'approved' ? 'text-green-600' : 'text-red-600'
@@ -432,13 +436,13 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
               }
             </p>
             {!searchTerm && filterStatus === 'all' && (
-              <button 
+              <Button 
                 onClick={() => fetchTodaySessions(doctorData._id)}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+                variant='outline'
               >
                 <Eye size={16} />
                 Refresh Sessions
-              </button>
+              </Button>
             )}
           </div>
         )}

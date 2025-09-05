@@ -1,5 +1,6 @@
 import React from 'react';
 import { Eye, Phone, MapPin, Video, ExternalLink, Calendar } from 'lucide-react';
+import { Button } from '../../../components/shadcn/button/button';
 
 const AppointmentsTab = ({
   doctorAppointments,
@@ -34,10 +35,10 @@ const AppointmentsTab = ({
           </div>
         </div>
         
-        <button 
+        <Button 
           onClick={fetchDoctorAppointments}
           disabled={appointmentsLoading}
-          className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
+          variant='outline'
         >
           {appointmentsLoading ? (
             <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -47,7 +48,7 @@ const AppointmentsTab = ({
             <Eye size={16} />
           )}
           {appointmentsLoading ? 'Loading...' : 'Refresh Appointments'}
-        </button>
+        </Button>
       </div>
       
       {appointmentsLoading ? (
@@ -63,12 +64,12 @@ const AppointmentsTab = ({
       ) : appointmentsError ? (
         <div className="text-center py-12 text-red-600">
           <p>{appointmentsError}</p>
-          <button 
+          <Button 
             onClick={fetchDoctorAppointments}
-            className="mt-4 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
+            variant='outline'
           >
             Retry
-          </button>
+          </Button>
         </div>
       ) : doctorAppointments.length > 0 ? (
         <div className="overflow-x-auto">
@@ -151,14 +152,15 @@ const AppointmentsTab = ({
                         <div className="text-xs text-gray-500 font-mono">
                           {appointment.videoCallId}
                         </div>
-                        <button
+                        <Button
                           onClick={() => window.open(appointment.videoCallLink, '_blank')}
-                          className="flex items-center space-x-1 px-2 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700 transition-colors"
+                          size="sm"
+                          variant='outline'
                         >
                           <Video size={12} />
                           <span>Join</span>
                           <ExternalLink size={10} />
-                        </button>
+                        </Button>
                       </div>
                     ) : appointment.status === 'approved' ? (
                       <span className="text-xs text-yellow-600">Generating...</span>
@@ -168,13 +170,14 @@ const AppointmentsTab = ({
                           <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>
                           <span className="text-xs text-yellow-600 font-medium">Confirmed</span>
                         </div>
-                        <button
+                        <Button
                           onClick={() => handleGenerateVideoCall(appointment._id)}
-                          className="flex items-center space-x-1 px-2 py-1 bg-purple-600 text-white rounded text-xs hover:bg-purple-700 transition-colors"
+                          size="sm"
+                          variant='outline'
                         >
                           <Video size={12} />
                           <span>Generate Link</span>
-                        </button>
+                        </Button>
                       </div>
                     ) : (
                       <span className="text-xs text-gray-400">Not available</span>
@@ -183,20 +186,22 @@ const AppointmentsTab = ({
                   <td className="py-4 px-6">
                     {appointment.status === 'pending' ? (
                       <div className="flex items-center gap-2">
-                        <button 
+                        <Button 
                           onClick={() => handleAppointmentActionForAppointments(appointment._id, 'approve')}
-                          className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm"
+                          size="sm"
+                          variant='outline'
                         >
                           <span className="mr-1">✓</span>
                           Approve
-                        </button>
-                        <button 
+                        </Button>
+                        <Button 
                           onClick={() => handleAppointmentActionForAppointments(appointment._id, 'decline')}
-                          className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
+                          size="sm"
+                          variant='outline'
                         >
                           <span className="mr-1">✗</span>
                           Decline
-                        </button>
+                        </Button>
                       </div>
                     ) : appointment.status === 'confirmed' ? (
                       <span className="flex items-center text-sm font-medium text-blue-600">

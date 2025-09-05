@@ -2,6 +2,7 @@ import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { DollarSign, TrendingUp, Calendar, Award, Eye, Clock, CheckCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/shadcn/select';
+import { Button } from '../../../components/shadcn/button/button';
 
 // Income Card Component
 const IncomeCard = ({ title, amount, growth, icon, bgColor, timeFrame }) => (
@@ -149,10 +150,10 @@ const OverviewTab = ({
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           <h2 className="text-[22px] font-medium text-gray-800">Appointment Overview</h2>
-          <button 
+          <Button 
+            variant='outline'
             onClick={fetchDoctorAppointments}
             disabled={appointmentsLoading}
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium"
           >
             {appointmentsLoading ? (
               <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,7 +163,7 @@ const OverviewTab = ({
               <Eye size={16} />
             )}
             {appointmentsLoading ? 'Refreshing...' : 'Refresh Appointments'}
-          </button>
+          </Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
