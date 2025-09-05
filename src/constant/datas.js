@@ -294,7 +294,7 @@ Self: [
     ],
     second: [
       {
-        h1: "This program is perfect for you if...",
+        h1: "Behavioral Issues in Children...",
         h5: "Elementum class viverra orci hymenaeos curae;. Rhoncus adipiscing. Conubia condimentum quam taciti dictumst, diam proin consectetuer leo malesuada fames praesent",
         p: "Vivamus hendrerit. Quisque donec in luctus tincidunt Aptent, ipsum facilisi magna sagittis augue orci mattis tellus hendrerit id vivamus hymenaeos. Senectus sociis, hac eleifend nisl et ultrices eros. Condimentum ante egestas eget natoque. Nisl pretium rhoncus mollis nunc semper pretium libero, nulla fringilla nulla est. Tortor blandit torquent etiam, dolor euismod, vulputate senectus.",
       img:Bgimg
@@ -339,7 +339,7 @@ kids: [
     ],
     second: [
       {
-        h1: "This program is perfect for you if...",
+        h1: "Learning Disabilities",
         h5: "Elementum class viverra orci hymenaeos curae;. Rhoncus adipiscing. Conubia condimentum quam taciti dictumst, diam proin consectetuer leo malesuada fames praesent",
         p: "Vivamus hendrerit. Quisque donec in luctus tincidunt Aptent, ipsum facilisi magna sagittis augue orci mattis tellus hendrerit id vivamus hymenaeos. Senectus sociis, hac eleifend nisl et ultrices eros. Condimentum ante egestas eget natoque. Nisl pretium rhoncus mollis nunc semper pretium libero, nulla fringilla nulla est. Tortor blandit torquent etiam, dolor euismod, vulputate senectus.",
       img:Bgimg
@@ -384,7 +384,7 @@ Life: [
     ],
     second: [
       {
-        h1: "This program is perfect for you if...",
+        h1: "Career Coaching for Young Adults",
         h5: "Elementum class viverra orci hymenaeos curae;. Rhoncus adipiscing. Conubia condimentum quam taciti dictumst, diam proin consectetuer leo malesuada fames praesent",
         p: "Vivamus hendrerit. Quisque donec in luctus tincidunt Aptent, ipsum facilisi magna sagittis augue orci mattis tellus hendrerit id vivamus hymenaeos. Senectus sociis, hac eleifend nisl et ultrices eros. Condimentum ante egestas eget natoque. Nisl pretium rhoncus mollis nunc semper pretium libero, nulla fringilla nulla est. Tortor blandit torquent etiam, dolor euismod, vulputate senectus.",
       img:Bgimg
@@ -430,7 +430,7 @@ old: [
     ],
     second: [
       {
-        h1: "This program is perfect for you if...",
+        h1: "Stress Management Therapy",
         h5: "Elementum class viverra orci hymenaeos curae;. Rhoncus adipiscing. Conubia condimentum quam taciti dictumst, diam proin consectetuer leo malesuada fames praesent",
         p: "Vivamus hendrerit. Quisque donec in luctus tincidunt Aptent, ipsum facilisi magna sagittis augue orci mattis tellus hendrerit id vivamus hymenaeos. Senectus sociis, hac eleifend nisl et ultrices eros. Condimentum ante egestas eget natoque. Nisl pretium rhoncus mollis nunc semper pretium libero, nulla fringilla nulla est. Tortor blandit torquent etiam, dolor euismod, vulputate senectus.",
       img:Bgimg
@@ -464,6 +464,8 @@ points: [
     }]
   },
 ],
+
+
 };
 
 export const ProgramSectionRight = {

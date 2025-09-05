@@ -19,8 +19,6 @@ import TodayAppointments from '../pages/admin/Dashboard/TodayAppointments'
 // ***************  docter  *************
 import Docter from '../pages/docter'
 import DoctorLogin from '../pages/docter/login'
-import TodaySessions from '../pages/docter/todaySessions'
-import UpcomingAppointments from '../pages/docter/upcoming'
 // ***************  video call  *************
 import VideoCallRoom from '../pages/videocall/VideoCallRoom'
 
@@ -52,8 +50,6 @@ function UserRouter() {
 {/* **************************** */}
 <Route path="/docter" element={<Docter />} />
 <Route path="/docter/login" element={<DoctorLogin />} />
-<Route path="/docter/todaySessions" element={<TodaySessions />} />
-<Route path="/docter/upcoming" element={<UpcomingAppointments />} />
 {/* **************************** */}
 <Route path="/video-call/:videoCallId" element={<VideoCallRoom />} />
         </Routes>
