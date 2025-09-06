@@ -23,6 +23,7 @@ import Finance from "../finance";
 import Settings from "../settings";
 import { Input } from "../../../../components/shadcn/input/input";
 import { BadgeImage } from "../../../../assets";
+import { Search, Bell, Calendar, Plus, Power, SearchCheck } from "lucide-react";
 
 // DoctorCard PropTypes
 const DoctorCardPropTypes = {
@@ -42,6 +43,8 @@ const Dashboard = () => {
   const [activePage, setActivePage] = useState("dashboard");
   const [selectedDoctorId, setSelectedDoctorId] = useState(1);
   const [showAddNoteModal, setShowAddNoteModal] = useState(false);
+  const [showSearchInput, setShowSearchInput] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const [newNote, setNewNote] = useState({
     title: "",
     description: "",
@@ -1605,45 +1608,101 @@ const Dashboard = () => {
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
       
       {/* Main content */}
-      <div className="md:pl-64 min-h-screen">
-        <div className="p-4 sm:p-6 pb-20 md:pb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div>
-              <h1 className="text-[22px] font-medium text-gray-800">
-                {activePage === "dashboard" && "Dashboard Overview"}
-                {activePage === "users" && "User Management"}
-                {activePage === "doctors" && "Doctor Management"}
-                {activePage === "appointments" && "Appointment Management"}
-                {activePage === "today-appointments" &&
-                  "Today's Video Sessions"}
-                {activePage === "finance" && "Finance Overview"}
-                {![
-                  "dashboard",
-                  "users",
-                  "doctors",
-                  "appointments",
-                  "today-appointments",
-                  "finance",
-                ].includes(activePage) && ""}
-                {activePage === "settings" && "Settings"}
-              </h1>
-              <p className="text-gray-500  text-[16px] mt-1">
-                Welcome back, Admin
-              </p>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="relative flex-1 sm:flex-none">
-                <Input 
-                  type="text" 
-                  placeholder="Search..." 
-                  className="w-full sm:w-auto"
+      <div 
+      style={{
+        scrollbarWidth: "none", // For Firefox
+        msOverflowStyle: "none", // For Internet Explorer and Edge
+        overflow: "auto",
+      }}
+      className="md:pl-64  px-2 min-h-screen">
+        <div className="p-4 sm:p-6 pb-20 md:pb-6"></div>
+           <div className="flex flex-col gap-4 mb-6">
+             <div className="w-full justify-between flex">
+               <div>
+                 <h1 className="text-[22px] font-medium text-gray-800">
+                   {activePage === "dashboard" && "Dashboard Overview"}
+                   {activePage === "users" && "User Management"}
+                   {activePage === "doctors" && "Doctor Management"}
+                   {activePage === "appointments" && "Appointment Management"}
+                   {activePage === "today-appointments" &&
+                     "Today's Video Sessions"}
+                   {activePage === "finance" && "Finance Overview"}
+                   {![
+                     "dashboard",
+                     "users",
+                     "doctors",
+                     "appointments",
+                     "today-appointments",
+                     "finance",
+                   ].includes(activePage) && ""}
+                   {activePage === "settings" && "Settings"}
+                 </h1>
+                 <p className="text-gray-500 text-[16px] mt-1">
+                   Welcome back, Admin
+                 </p>
+               </div>
+
+               <div className="flex items-center gap-4">
+            {/* Search Icon with toggleable input */}
+            {showSearchInput ? (
+              <div className="flex items-center gap-2 animate-in slide-in-from-right-2 duration-300">
+                <input
+                  type="text"
+                  className="border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm animate-in fade-in-0 slide-in-from-right-2 duration-300"
+                  placeholder="Search..."
+                  autoFocus
+                  onBlur={() => setShowSearchInput(false)}
+                  value={searchValue}
+                  onChange={e => setSearchValue(e.target.value)}
+                  onKeyDown={e => {
+                    if (e.key === "Escape") setShowSearchInput(false);
+                  }}
+                  style={{ width: 160 }}
                 />
+                <button
+                  className="ml-1 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                  onClick={() => setShowSearchInput(false)}
+                  tabIndex={-1}
+                  type="button"
+                >
+                  <SearchCheck className="w-4 h-4" />
+                </button>
               </div>
-              <div className="w-10 h-10 rounded-full bg-blue-500 flex items-center justify-center text-white font-bold flex-shrink-0">
-                A
+            ) : (
+              <div
+                className="w-10 h-10 rounded-xl border flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-all duration-200 hover:scale-105"
+                onClick={() => setShowSearchInput(true)}
+                tabIndex={0}
+                onKeyDown={e => {
+                  if (e.key === "Enter" || e.key === " ") setShowSearchInput(true);
+                }}
+                title="Search"
+              >
+                <Search className="w-5 h-5 text-gray-600 transition-transform duration-200" />
               </div>
+            )}
+            
+            {/* Notification Icon */}
+            <div className="relative w-10 h-10 rounded-xl border flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
+              <Bell className="w-5 h-5 text-gray-600" />
+              {/* Notification Badge */}
+              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
             </div>
-          </div>
+            
+            {/* Schedule Button */}
+            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+              <Calendar className="w-4 h-4" />
+              Schedule
+            </button>
+            
+            {/* Create Request Button */}
+             <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+               <Power className="w-4 h-4" />
+               Logout
+             </button>
+               </div>
+             </div>
+         
           
           {/* Dynamic Content based on active page */}
           <div className="space-y-6">{renderContent()}</div>
