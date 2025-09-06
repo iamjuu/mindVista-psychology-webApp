@@ -98,11 +98,7 @@ function Form() {
     // Set loading state
     setSubmitting(true);
     
-    console.log('[RegisterForm] Submitting slot:', formData.slot); // Log slot value
-    console.log('[RegisterForm] Submitting time:', formData.time); // Log time value
-    console.log('[RegisterForm] Submitting doctor:', formData.doctor); // Log doctor value
-    console.log('[RegisterForm] API Base URL:', apiInstance.defaults.baseURL); // Log API base URL
-    
+ 
     try {
       // Get doctor name for payment page
       const selectedDoctor = doctors.find(doc => doc._id === formData.doctor);
@@ -319,6 +315,10 @@ function Form() {
           </optgroup>
           <optgroup label="Night (1 slot)">
             <option value="19:00-22:00">7:00 PM - 10:00 PM</option>
+            <option value="22:00-23:00">10:00 PM - 11:00 PM</option>
+            <option value="23:00-00:00">11:00 PM - 12:00 AM</option>
+            <option value="00:00-01:00">12:00 AM - 1:00 AM</option>
+            <option value="01:00-02:00">1:00 AM - 2:00 AM</option>
           </optgroup>
         </Select>
       </FormGroup>

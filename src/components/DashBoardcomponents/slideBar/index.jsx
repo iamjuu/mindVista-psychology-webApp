@@ -21,9 +21,9 @@ const Sidebar = ({ activePage, setActivePage }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="fixed left-0 top-0 h-screen w-64 bg-gray-800 text-white p-4 hidden md:flex flex-col transition-all duration-300 ease-in-out z-20">
+      <div className="fixed left-0 top-0 h-screen w-64 bg-white text-black p-4 hidden md:flex flex-col transition-all duration-300 ease-in-out z-20">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold">Health Dashboard</h1>
+          <h1 className="text-xl text-center font-bold">MindVista </h1>
         </div>
         <nav className="space-y-2 flex-1">
           {menuItems.map(item => (
@@ -35,8 +35,8 @@ const Sidebar = ({ activePage, setActivePage }) => {
               }} 
               className={`flex items-center space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
                 activePage === item.id 
-                  ? 'bg-blue-600 shadow-lg transform scale-[1.02]' 
-                  : 'hover:bg-gray-700 hover:shadow-md'
+                  ? 'hover:bg-gray-200 bg-gray-300 transform scale-[1.02]' 
+                  : 'hover:bg-gray-300 hover:shadow-md'
               }`}
             >
               <span className={`transition-transform duration-200 ${activePage === item.id ? 'transform scale-110' : ''}`}>
@@ -49,7 +49,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
       </div>
       
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800 text-white z-20 shadow-lg border-t border-gray-700">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white text-black z-20 shadow-lg border-t border-gray-700">
         <div className="overflow-x-auto scrollbar-hide">
           <div className="flex justify-between items-center p-2 px-4">
             {menuItems.map(item => (
