@@ -33,7 +33,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 console.log('Clicked menu item:', item.label);
                 setActivePage(item.id);
               }} 
-              className={`flex items-center space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
+              className={`flex items-center text-[12px] space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
                 activePage === item.id 
                   ? 'hover:bg-gray-200 bg-gray-300 transform scale-[1.02]' 
                   : 'hover:bg-gray-300 hover:shadow-md'
@@ -59,7 +59,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
                   console.log('Clicked mobile menu item:', item.label);
                   setActivePage(item.id);
                 }} 
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-[60px] ${
+                className={`flex flex-col text-[12px] items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-[60px] ${
                   activePage === item.id 
                     ? 'bg-blue-600 transform scale-105' 
                     : 'hover:bg-gray-700'
