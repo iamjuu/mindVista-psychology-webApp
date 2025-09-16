@@ -21,6 +21,8 @@ import Docter from '../pages/docter'
 import DoctorLogin from '../pages/docter/login'
 // ***************  video call  *************
 import VideoCallRoom from '../pages/videocall/VideoCallRoom'
+// ***************  theme context  *************
+import { ThemeProvider } from '../contexts/ThemeContext'
 
 function UserRouter() {
   return (
@@ -45,8 +47,16 @@ function UserRouter() {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/details/:id" element={<DetailsPage />} />
 {/* ************************** */}
-<Route path="/admin/dashboard" element={< DashbaordHome/>} />
-<Route path="/admin/today-appointments" element={<TodayAppointments />} />
+<Route path="/admin/dashboard" element={
+  <ThemeProvider>
+    <DashbaordHome/>
+  </ThemeProvider>
+} />
+<Route path="/admin/today-appointments" element={
+  <ThemeProvider>
+    <TodayAppointments />
+  </ThemeProvider>
+} />
 {/* **************************** */}
 <Route path="/docter" element={<Docter />} />
 <Route path="/docter/login" element={<DoctorLogin />} />

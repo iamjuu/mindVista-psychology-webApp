@@ -5,8 +5,10 @@ import { Button } from '../../../../components/shadcn/button/button';
 import { Input } from '../../../../components/shadcn/input/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import apiInstance from '../../../../instance';
+import { useTheme } from '../../../../contexts/ThemeContext';
 
 const DoctorList = () => {
+  const { themeClasses } = useTheme();
   const [activeTab, setActiveTab] = useState('doctors');
   const [currentPage, setCurrentPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
@@ -348,7 +350,7 @@ const DoctorList = () => {
   };
   
   return (
-    <div className="bg-white rounded-lg shadow min-h-screen">
+    <div className={`${themeClasses.bgCard} rounded-lg shadow min-h-screen`}>
       {/* Header with Tabs */}
       <div className="p-4 border-b">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
