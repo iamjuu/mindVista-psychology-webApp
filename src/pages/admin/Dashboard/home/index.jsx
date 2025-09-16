@@ -251,14 +251,14 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <p className="text-sm opacity-80">{doctor.name}</p>  
-          <p className="text-lg font-bold">{doctor.specialization}</p>
+          <p className="text-[14px] font-bold">{doctor.specialization}</p>
           <p className="text-xs opacity-70 mt-1">
             {doctor.totalPatients} patients
           </p>
         </div>
         <div className="text-right">
           <p className="text-xs opacity-80">Total Income</p>
-          <p className="text-xl font-bold">
+          <p className="text-[14px] font-bold">
             ₹{doctor.totalIncome.toLocaleString()}
           </p>
         </div>

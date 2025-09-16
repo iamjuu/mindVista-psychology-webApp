@@ -134,29 +134,33 @@ const Finance = () => {
 
   // Stats Card Component
   const StatsCard = ({ icon, title, value, subtext, trend, bgColor }) => (
-    <div className={`p-4 sm:p-6 rounded-lg shadow-lg ${bgColor} text-white`}>
+    <div 
+      className={`p-4 rounded-lg shadow cursor-pointer transition-all duration-200 transform hover:scale-105 ${bgColor} text-white`}
+    >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm opacity-80">{title}</p>
-          <p className="text-2xl sm:text-3xl font-bold mt-1">{value}</p>
-          {subtext && <p className="text-sm opacity-80 mt-1">{subtext}</p>}
+          <p className="text-sm opacity-80">{title}</p>  
+          <p className="text-lg font-bold">{value}</p>
+          {subtext && <p className="text-xs opacity-70 mt-1">{subtext}</p>}
         </div>
-        <div className="p-2 sm:p-3 bg-white bg-opacity-20 rounded-full">
-          {icon}
+        <div className="text-right">
+          <div className="p-2 bg-white bg-opacity-20 rounded-full">
+            {icon}
+          </div>
+          {trend && (
+            <div className="mt-2 flex items-center justify-end">
+              {trend > 0 ? (
+                <TrendingUp size={12} className="text-green-300" />
+              ) : (
+                <TrendingDown size={12} className="text-red-300" />
+              )}
+              <span className="ml-1 text-xs">
+                {trend > 0 ? '+' : ''}{trend}%
+              </span>
+            </div>
+          )}
         </div>
       </div>
-      {trend && (
-        <div className="mt-3 flex items-center">
-          {trend > 0 ? (
-            <TrendingUp size={16} className="text-green-300" />
-          ) : (
-            <TrendingDown size={16} className="text-red-300" />
-          )}
-          <span className="ml-2 text-sm">
-            {trend > 0 ? '+' : ''}{trend}% from last month
-          </span>
-        </div>
-      )}
     </div>
   );
 
