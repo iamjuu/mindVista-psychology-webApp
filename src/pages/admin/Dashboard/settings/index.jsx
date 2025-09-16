@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { 
   Camera, 
   Shield, 
@@ -7,12 +7,10 @@ import {
   Lock, 
   Bell, 
   Eye, 
-  Globe, 
   HelpCircle,
   ChevronRight,
   Check,
   X,
-  AlertCircle,
   Smartphone,
   Monitor,
   Moon,
@@ -43,6 +41,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '../../../../components/shadcn/select';
+import { CardHeader, PageHeader } from '../../../../components/core/cardHeader';
 
 const SettingsPage = () => {
   const [activeTab, setActiveTab] = useState('edit-profile');
@@ -383,24 +382,17 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Account Settings</h2>
-        <p className="text-gray-600">Manage your account information and preferences</p>
-      </div>
-
+      <PageHeader title="Account Settings" description="Manage your account information and preferences" />
+      
       <div className="space-y-6">
         {/* Email Section */}
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Mail size={20} className="text-blue-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg text-gray-900">Email Address</h3>
-                <p className="text-sm text-gray-600">Used for notifications and account recovery</p>
-              </div>
-            </div>
+            <CardHeader
+              icon={<div className="p-2 bg-blue-100 rounded-lg"><Mail size={20} className="text-blue-600" /></div>}
+              title="Email Address"
+              description="Used for notifications and account recovery"
+            />
             <Button
               onClick={() => setEditingEmail(!editingEmail)}
               variant="link"
@@ -431,15 +423,11 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
         {/* Phone Section */}
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Smartphone size={20} className="text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg text-gray-900">Phone Number</h3>
-                <p className="text-sm text-gray-600">Used for two-factor authentication</p>
-              </div>
-            </div>
+            <CardHeader
+              icon={<div className="p-2 bg-green-100 rounded-lg"><Smartphone size={20} className="text-green-600" /></div>}
+              title="Phone Number"
+              description="Used for two-factor authentication"
+            />
             <Button
               onClick={() => setEditingPhone(!editingPhone)}
               variant="link"
@@ -505,24 +493,17 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Security Settings</h2>
-        <p className="text-gray-600">Keep your account safe and secure</p>
-      </div>
+      <PageHeader title="Security Settings" description="Keep your account safe and secure" />
 
       <div className="space-y-6">
         {/* Password */}
         <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6">
           <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-indigo-100 rounded-lg">
-                <Key size={20} className="text-indigo-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg text-gray-900">Password</h3>
-                <p className="text-sm text-gray-600">Last changed 3 months ago</p>
-              </div>
-            </div>
+            <CardHeader
+              icon={<div className="p-2 bg-indigo-100 rounded-lg"><Key size={20} className="text-indigo-600" /></div>}
+              title="Password"
+              description="Last changed 3 months ago"
+            />
             <Button variant="outline" size="sm" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
               Change Password
             </Button>
@@ -532,17 +513,11 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
         {/* Two-Factor Authentication */}
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
           <div className="flex items-start justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <ShieldCheck size={20} className="text-green-600" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-lg text-gray-900">Two-Factor Authentication</h3>
-                <p className="text-sm text-gray-600">
-                  {twoFactorEnabled ? 'Your account is protected' : 'Add an extra layer of security'}
-                </p>
-              </div>
-            </div>
+            <CardHeader
+              icon={<div className="p-2 bg-green-100 rounded-lg"><ShieldCheck size={20} className="text-green-600" /></div>}
+              title="Two-Factor Authentication"
+              description={twoFactorEnabled ? 'Your account is protected' : 'Add an extra layer of security'}
+            />
             <Button
               onClick={() => setShowSetup(!showSetup)}
               variant={twoFactorEnabled ? "outline" : "default"}
@@ -694,8 +669,8 @@ const Notifications = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Notification Preferences</h2>
-        <p className="text-gray-600">Choose what you want to be notified about</p>
+        <h2 className="text-[16px] font-bold text-gray-900 ">Notification Preferences</h2>
+        <p className="text-gray-600 text-[14px] font-[400]">Choose what you want to be notified about</p>
       </div>
 
       <div className="space-y-6">
@@ -760,8 +735,8 @@ const PrivacySettings = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Privacy Settings</h2>
-        <p className="text-gray-600">Control who can see your content and interact with you</p>
+        <h2 className="text-[16px] font-bold text-gray-900 ">Privacy Settings</h2>
+        <p className="text-gray-600 text-[14px] font-[400]">Control who can see your content and interact with you</p>
       </div>
 
       <div className="space-y-6">
@@ -898,8 +873,8 @@ const AppearanceSettings = ({ theme, setTheme }) => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Appearance</h2>
-        <p className="text-gray-600">Customize how the app looks on your device</p>
+        <h2 className="text-[16px] font-bold text-gray-900 ">Appearance</h2>
+        <p className="text-gray-600 text-[14px] font-[400]">Customize how the app looks on your device</p>
       </div>
 
       <div className="space-y-8">
@@ -993,8 +968,8 @@ const ActivitySettings = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Activity Dashboard</h2>
-        <p className="text-gray-600">Monitor your account activity and engagement</p>
+        <h2 className="text-[16px] font-bold text-gray-900 ">Activity Dashboard</h2>
+        <p className="text-gray-600 text-[14px] font-[400]">Monitor your account activity and engagement</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -1086,8 +1061,8 @@ const HelpSupport = () => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Help & Support</h2>
-        <p className="text-gray-600">Get help and find answers to your questions</p>
+        <h2 className="text-[16px] font-bold text-gray-900 ">Help & Support</h2>
+        <p className="text-gray-600 text-[14px] font-[400]">Get help and find answers to your questions</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
