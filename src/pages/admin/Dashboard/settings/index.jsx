@@ -121,14 +121,14 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100">
+    <div className="min-h-screen ">
       <div className=" ">
         
 
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-6 h-screen">
           {/* Sidebar Navigation */}
-          <div className="lg:w-64">
-            <nav className="bg-white rounded-2xl shadow-sm p-2 space-y-1">
+          <div className="lg:w-64 lg:h-full">
+            <nav className="bg-white rounded-2xl shadow-sm p-2 space-y-1 h-full overflow-y-auto">
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -173,8 +173,8 @@ const SettingsPage = () => {
           </div>
 
           {/* Content Area */}
-          <div className="flex-1">
-            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8">
+          <div className="flex-1 lg:h-full">
+            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 h-full overflow-y-auto">
               {saveStatus && (
                 <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 animate-slide-down ${
                   saveStatus === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
