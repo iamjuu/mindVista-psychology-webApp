@@ -1,11 +1,24 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import { useNavigate } from 'react-router-dom';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
-import { DollarSign, Users, Calendar, TrendingUp, TrendingDown, Mail, Phone, MapPin, Clock, Award, Star, LogOut, Menu, X, Filter, Search, Download, Bell, Settings, Eye } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Users, LogOut, Menu, X, Bell, Settings, Star, Clock, Download, TrendingUp, Calendar } from 'lucide-react';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import apiInstance from '../../instance';
+import { Button } from '../../components/shadcn/button/button';
+import { 
+  OverviewTab, 
+  PatientsTab, 
+  AppointmentsTab, 
+  SettingsTab, 
+  MyPatients, 
+  PatientModal,
+  TodaySessions,
+  UpcomingAppointments
+} from './components';
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [doctorData, setDoctorData] = useState({});
   const [incomeData, setIncomeData] = useState({});
@@ -17,27 +30,36 @@ const DoctorDashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [selectedTab, setSelectedTab] = useState('overview');
+  const [doctorAppointments, setDoctorAppointments] = useState([]);
+  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
+  const [appointmentsError, setAppointmentsError] = useState(null);
+  const [selectedUser, setSelectedUser] = useState(null); // State for selected user data
+  const [isUserModalOpen, setIsUserModalOpen] = useState(false); // State for modal visibility
+
+  // Get email from URL parameters
+  const email = searchParams.get('email');
+  console.log(email,'mail ee');
 
   // Mock API instance for demo
-  const apiInstance = {
-    get: (url) => Promise.resolve({
-      data: {
-        success: true,
-        data: [],
-        doctor: {},
-        message: 'Success'
-      }
-    }),
-    put: (url) => Promise.resolve({
-      data: {
-        success: true,
-        message: 'Updated successfully'
-      }
-    })
-  };
+useEffect(()=>{
+  console.log(email,'mail ee');
 
+  const getDocter = async()=>{
+    const response = await apiInstance.get(`/doctors/email/${encodeURIComponent(email)}`);
+    console.log(response.data,'response');
+  }
+  getDocter();
+},[email])
   // Check authentication on component mount
   useEffect(() => {
+    // Check if email is provided, if not redirect to login
+    if (!email) {
+      console.log('No email provided, redirecting to login');
+      navigate('/docter/login');
+      return;
+    }
+    
     // Mock authentication check
     const mockDoctorData = {
       _id: 'doc123',
@@ -66,7 +88,7 @@ const DoctorDashboard = () => {
     
     setDoctorData(mockDoctorData);
     setLoading(false);
-  }, [navigate]);
+  }, [navigate, email]);
 
   const handleLogout = () => {
     localStorage.removeItem('isDoctorLoggedIn');
@@ -135,42 +157,89 @@ const DoctorDashboard = () => {
     }
   ];
 
-  // Mock appointments data
-  const defaultAppointmentsList = [
-    {
-      id: 1,
-      name: 'Michael Brown',
-      phone: '+1 (555) 321-9876',
-      age: 52,
-      location: 'Chicago, IL',
-      date: '2024-08-18',
-      time: '10:00 AM',
-      status: 'pending'
-    },
-    {
-      id: 2,
-      name: 'Lisa Wilson',
-      phone: '+1 (555) 654-3210',
-      age: 29,
-      location: 'Houston, TX',
-      date: '2024-08-19',
-      time: '2:30 PM',
-      status: 'approved'
+  // Function to fetch doctor appointments
+  const fetchDoctorAppointments = async () => {
+    if (!doctorData._id) {
+      console.log('No doctor ID available, cannot fetch appointments');
+      return;
     }
-  ];
+
+    console.log('Fetching appointments for doctor:', doctorData._id);
+    setAppointmentsLoading(true);
+    setAppointmentsError(null); // Clear previous errors
+    try {
+      const response = await apiInstance.get(`/doctor/${doctorData._id}/appointments`);
+      console.log('Doctor appointments fetched:', response.data);
+      
+      if (response.data.success) {
+        // Transform the data to match the expected format
+        const transformedAppointments = response.data.data.map(appointment => ({
+          ...appointment,
+          patientName: appointment.name,
+          patientAge: appointment.age,
+          patientPhone: appointment.phone || appointment.number,
+          patientLocation: appointment.location
+        }));
+        console.log('Transformed appointments:', transformedAppointments);
+        setDoctorAppointments(transformedAppointments);
+      } else {
+        console.error('Failed to fetch doctor appointments:', response.data.message);
+        setAppointmentsError(response.data.message || 'Failed to fetch appointments');
+        setDoctorAppointments([]);
+      }
+    } catch (error) {
+      console.error('Error fetching doctor appointments:', error);
+      setAppointmentsError('Failed to connect to server or fetch appointments.');
+      setDoctorAppointments([]);
+    } finally {
+      setAppointmentsLoading(false);
+    }
+  };
 
   // Function to fetch patient requests from API
   const fetchPatientRequests = async () => {
     setRequestsLoading(true);
     try {
-      const response = await apiInstance.get('/request-pateint');
-      console.log('Patient requests fetched:', response.data);
-      
-      if (response.data.success) {
-        setPatientRequests(response.data.data || []);
+      // If we have a doctor ID, fetch only appointments for this doctor
+      if (doctorData._id) {
+        const response = await apiInstance.get(`/doctor/${doctorData._id}/appointments`);
+        console.log('Patient requests fetched for doctor:', response.data);
+        
+        if (response.data.success) {
+          // Transform the data to match frontend expectations
+          const transformedRequests = response.data.data.map(request => ({
+            id: request._id,
+            _id: request._id,
+            name: request.name,
+            phone: request.phone,
+            number: request.phone, // Alternative field name
+            age: request.age,
+            location: request.location,
+            doctor: request.doctor,
+            doctorName: doctorData.name || 'N/A',
+            doctorSpecialization: doctorData.specialization || 'N/A',
+            status: request.status || 'pending',
+            time: request.time,
+            date: request.date,
+            createdAt: request.createdAt,
+            updatedAt: request.updatedAt
+          }));
+          setPatientRequests(transformedRequests);
+        } else {
+          console.error('Failed to fetch patient requests:', response.data.message);
+          setPatientRequests([]);
+        }
       } else {
-        console.error('Failed to fetch patient requests:', response.data.message);
-        setPatientRequests([]);
+        // Fallback to general patient requests if no doctor ID
+        const response = await apiInstance.get('/request-pateint');
+        console.log('Patient requests fetched:', response.data);
+        
+        if (response.data.success) {
+          setPatientRequests(response.data.data || []);
+        } else {
+          console.error('Failed to fetch patient requests:', response.data.message);
+          setPatientRequests([]);
+        }
       }
     } catch (error) {
       console.error('Error fetching patient requests:', error);
@@ -184,17 +253,19 @@ const DoctorDashboard = () => {
   const fetchDoctorProfile = async () => {
     setProfileRefreshing(true);
     try {
-      const doctorId = doctorData._id;
-      if (!doctorId) {
-        console.log('No doctor ID available, using stored data');
+      if (!email) {
+        console.log('No email available, using stored data');
         return;
       }
 
-      const response = await apiInstance.get(`/doctors/${doctorId}`);
+      console.log('Fetching doctor profile for email:', email);
+      const response = await apiInstance.get(`/doctors/email/${encodeURIComponent(email)}`);
       console.log('Doctor profile fetched:', response.data);
       
       if (response.data.success) {
         const updatedDoctorData = response.data.doctor;
+        console.log('Updated doctor data:', updatedDoctorData);
+        console.log('Doctor ID:', updatedDoctorData._id);
         setDoctorData(updatedDoctorData);
         localStorage.setItem('doctorData', JSON.stringify(updatedDoctorData));
       } else {
@@ -217,13 +288,146 @@ const DoctorDashboard = () => {
       
       if (response.data.success) {
         console.log(`Appointment ${action}d successfully:`, response.data);
+        
+        // Show success message with video call info for approvals
+        if (action === 'approve') {
+          const appointmentData = response.data.data;
+          if (appointmentData.videoCallLink) {
+            toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
+              duration: 5000
+            });
+            
+            // Show video call details
+            setTimeout(() => {
+              toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
+                duration: 6000
+              });
+            }, 1000);
+          } else {
+            toast.success(`Appointment approved successfully!`);
+          }
+          
+          // Show additional message about viewing sessions
+          setTimeout(() => {
+            toast.info(`Check "Today's Sessions" for today's appointments or "Upcoming" for future appointments.`, {
+              duration: 8000
+            });
+          }, 2000);
+        } else {
+          toast.success(`Appointment declined. Email notification sent to the patient.`);
+        }
+        
         await fetchPatientRequests();
+        await fetchDoctorAppointments(); // Refresh appointments after approval/decline
       } else {
         console.error(`Failed to ${action} appointment:`, response.data.message);
+        toast.error(`Failed to ${action} appointment: ${response.data.message}`);
       }
     } catch (error) {
       console.error(`Error ${action}ing appointment:`, error);
+      toast.error(`Error ${action}ing appointment. Please try again.`);
     }
+  };
+
+  // Function to handle appointment actions for appointments tab
+  const handleAppointmentActionForAppointments = async (appointmentId, action) => {
+    try {
+      const endpoint = action === 'approve' ? `/appointment/${appointmentId}/approve` : `/appointment/${appointmentId}/decline`;
+      const method = 'PUT';
+      
+      const response = await apiInstance[method.toLowerCase()](endpoint);
+      
+      if (response.data.success) {
+        console.log(`Appointment ${action}d successfully:`, response.data);
+        
+        // Show success message with video call info for approvals
+        if (action === 'approve') {
+          const appointmentData = response.data.data;
+          if (appointmentData.videoCallLink) {
+            toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
+              duration: 5000
+            });
+            
+            // Show video call details
+            setTimeout(() => {
+              toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
+                duration: 6000
+              });
+            }, 1000);
+          } else {
+            toast.success(`Appointment approved successfully!`);
+          }
+          
+          // Show additional message about viewing sessions
+          setTimeout(() => {
+            toast.info(`Check "Today's Sessions" for today's appointments or "Upcoming" for future appointments.`, {
+              duration: 8000
+            });
+          }, 2000);
+        } else {
+          toast.success(`Appointment declined. Email notification sent to the patient.`);
+        }
+        
+        await fetchPatientRequests();
+        await fetchDoctorAppointments(); // Refresh appointments after approval/decline
+      } else {
+        console.error(`Failed to ${action} appointment:`, response.data.message);
+        toast.error(`Failed to ${action} appointment: ${response.data.message}`);
+      }
+    } catch (error) {
+      console.error(`Error ${action}ing appointment:`, error);
+      toast.error(`Error ${action}ing appointment. Please try again.`);
+    }
+  };
+
+  // Function to generate video call link for confirmed appointments
+  const handleGenerateVideoCall = async (appointmentId) => {
+    try {
+      const response = await apiInstance.put(`/appointment/${appointmentId}/generate-video-call`);
+      
+      if (response.data.success) {
+        const appointmentData = response.data.data;
+        toast.success(`Video call link generated successfully! Email sent to patient.`, {
+          duration: 5000
+        });
+        
+        // Show video call details
+        setTimeout(() => {
+          toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
+            duration: 6000
+          });
+        }, 1000);
+        
+        await fetchDoctorAppointments(); // Refresh appointments
+      } else {
+        console.error('Failed to generate video call link:', response.data.message);
+        toast.error(`Failed to generate video call link: ${response.data.message}`);
+      }
+    } catch (error) {
+      console.error('Error generating video call link:', error);
+      toast.error('Error generating video call link. Please try again.');
+    }
+  };
+
+  // Function to handle user row click and open modal
+  const handleUserRowClick = (user) => {
+  
+    console.log('Row clicked! User data:', user); // Debug log
+    console.log('Setting selectedUser to:', user); // Debug log
+    setSelectedUser(user);
+    setIsUserModalOpen(true);
+    console.log('Modal should now be open. selectedUser:', user, 'isUserModalOpen:', true); // Debug log
+  };
+
+  // Function to close user modal
+  const closeUserModal = () => {
+    setIsUserModalOpen(false);
+    setSelectedUser(null);
+  };
+
+  // Function to handle navigation between tabs
+  const handleNavigate = (tabName) => {
+    setSelectedTab(tabName);
   };
 
   useEffect(() => {
@@ -232,7 +436,17 @@ const DoctorDashboard = () => {
       setLoading(true);
       
       try {
-        await fetchDoctorProfile();
+        if (email) {
+          await fetchDoctorProfile();
+          await fetchDoctorAppointments(); // Fetch appointments when profile loads
+        } else {
+          // Fallback to stored data if no email
+          const storedData = localStorage.getItem('doctorData');
+          if (storedData) {
+            setDoctorData(JSON.parse(storedData));
+          }
+        }
+        
         setIncomeData(defaultIncomeData);
         setPatientsList(defaultPatientsList);
         
@@ -247,10 +461,22 @@ const DoctorDashboard = () => {
       }
     };
 
-    if (doctorData && Object.keys(doctorData).length > 0 && loading) {
-      loadDoctorData();
+    loadDoctorData();
+  }, [email]);
+
+  // Load appointments when appointments tab is selected
+  useEffect(() => {
+    if (selectedTab === 'appointments' && doctorData._id && doctorAppointments.length === 0) {
+      fetchDoctorAppointments();
     }
-  }, []);
+  }, [selectedTab, doctorData._id]);
+
+  // Auto-refresh appointments when doctor data changes
+  useEffect(() => {
+    if (doctorData._id) {
+      fetchDoctorAppointments();
+    }
+  }, [doctorData._id]);
 
   // Filter functions
   const filteredRequests = patientRequests.filter(request => {
@@ -260,148 +486,7 @@ const DoctorDashboard = () => {
     return matchesSearch && matchesFilter;
   });
 
-  // Enhanced Income Card Component
-  const IncomeCard = ({ title, amount = 0, growth = 0, icon, bgColor, timeFrame }) => (
-    <div className={`group relative p-6 rounded-2xl shadow-lg ${bgColor} text-white transition-all duration-300 hover:shadow-xl hover:scale-105 overflow-hidden`}>
-      {/* Decorative Background Elements */}
-      <div className="absolute top-0 right-0 w-32 h-32 bg-white bg-opacity-10 rounded-full -mr-16 -mt-16 transition-transform duration-300 group-hover:scale-110"></div>
-      <div className="absolute bottom-0 left-0 w-24 h-24 bg-white bg-opacity-5 rounded-full -ml-12 -mb-12"></div>
-      
-      <div className="relative z-10">
-        <div className="flex items-center justify-between mb-4">
-          <div className="p-3 bg-white bg-opacity-20 rounded-xl backdrop-blur-sm">
-            {icon}
-          </div>
-          <div className="text-right">
-            <p className="text-sm opacity-80 font-medium">{title}</p>
-            <p className="text-3xl font-bold tracking-tight">₹{amount.toLocaleString()}</p>
-          </div>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <div className="flex items-center bg-white bg-opacity-10 rounded-lg px-3 py-1">
-            {growth > 0 ? (
-              <TrendingUp size={16} className="text-green-300" />
-            ) : (
-              <TrendingDown size={16} className="text-red-300" />
-            )}
-            <span className="ml-2 text-sm font-medium">
-              {growth > 0 ? '+' : ''}{growth}%
-            </span>
-          </div>
-          <span className="text-xs opacity-70">vs last {timeFrame}</span>
-        </div>
-      </div>
-    </div>
-  );
 
-  IncomeCard.propTypes = {
-    title: PropTypes.string.isRequired,
-    amount: PropTypes.number,
-    growth: PropTypes.number,
-    icon: PropTypes.element.isRequired,
-    bgColor: PropTypes.string.isRequired,
-    timeFrame: PropTypes.string.isRequired
-  };
-
-  // Enhanced Patient Card Component
-  const PatientCard = ({ patient }) => (
-    <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-300 hover:border-blue-300 group">
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <div className="flex items-center mb-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-3 text-white font-bold shadow-md">
-              {patient.name.split(' ').map(n => n[0]).join('')}
-            </div>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                {patient.name}
-              </h3>
-              <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                patient.status === 'active' 
-                  ? 'bg-green-100 text-green-800' 
-                  : 'bg-gray-100 text-gray-800'
-              }`}>
-                {patient.status}
-              </span>
-            </div>
-          </div>
-          
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-gray-600">
-                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center mr-3">
-                  <Mail size={14} className="text-blue-500" />
-                </div>
-                <span className="truncate">{patient.email}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center mr-3">
-                  <Phone size={14} className="text-green-500" />
-                </div>
-                <span>{patient.phone}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center mr-3">
-                  <MapPin size={14} className="text-red-500" />
-                </div>
-                <span className="truncate">{patient.location}</span>
-              </div>
-            </div>
-            
-            <div className="space-y-2">
-              <div className="flex items-center text-sm text-gray-600">
-                <div className="w-8 h-8 bg-purple-50 rounded-lg flex items-center justify-center mr-3">
-                  <Users size={14} className="text-purple-500" />
-                </div>
-                <span>Age: {patient.age}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <div className="w-8 h-8 bg-indigo-50 rounded-lg flex items-center justify-center mr-3">
-                  <Calendar size={14} className="text-indigo-500" />
-                </div>
-                <span>Sessions: {patient.totalSessions}</span>
-              </div>
-              <div className="flex items-center text-sm text-gray-600">
-                <div className="w-8 h-8 bg-emerald-50 rounded-lg flex items-center justify-center mr-3">
-                  <DollarSign size={14} className="text-emerald-500" />
-                </div>
-                <span>Total: ₹{patient.totalPaid.toLocaleString()}</span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between text-sm bg-gray-50 p-3 rounded-lg">
-            <div className="text-gray-600 mb-2 sm:mb-0">
-              <span className="font-medium">Last Session:</span> {patient.lastAppointment}
-            </div>
-            {patient.nextAppointment && (
-              <div className="text-blue-600 font-medium bg-blue-50 px-3 py-1 rounded-lg">
-                Next: {patient.nextAppointment}
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-
-  PatientCard.propTypes = {
-    patient: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      email: PropTypes.string.isRequired,
-      phone: PropTypes.string.isRequired,
-      age: PropTypes.number.isRequired,
-      location: PropTypes.string.isRequired,
-      joinDate: PropTypes.string.isRequired,
-      lastAppointment: PropTypes.string.isRequired,
-      totalSessions: PropTypes.number.isRequired,
-      status: PropTypes.string.isRequired,
-      nextAppointment: PropTypes.string,
-      totalPaid: PropTypes.number.isRequired
-    }).isRequired
-  };
 
   if (loading) {
     return (
@@ -430,24 +515,27 @@ const DoctorDashboard = () => {
       <div className="flex min-h-screen">
         {/* Mobile Header */}
         <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm p-4 flex items-center justify-between z-30">
-          <button 
+          <Button 
             onClick={() => setSidebarOpen(!sidebarOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            variant="ghost"
+            size="icon"
           >
             {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          </Button>
           <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
           <div className="flex items-center gap-2">
-            <button className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative">
+            <Button variant="ghost" size="icon" className="relative">
               <Bell size={20} />
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-            </button>
-            <button 
+            </Button>
+            <Button 
               onClick={handleLogout}
-              className="p-2 rounded-lg hover:bg-gray-100 transition-colors text-red-600"
+              variant="ghost"
+              size="icon"
+              className="text-red-600"
             >
               <LogOut size={20} />
-            </button>
+            </Button>
           </div>
         </div>
         {/* Sidebar - Enhanced */}
@@ -467,12 +555,14 @@ const DoctorDashboard = () => {
                     <p className="text-sm opacity-80">Doctor Portal</p>
                   </div>
                 </div>
-                <button 
+                <Button 
                   onClick={() => setSidebarOpen(false)}
-                  className="lg:hidden p-2 rounded-lg hover:bg-white hover:bg-opacity-10 transition-colors"
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden hover:bg-white hover:bg-opacity-10"
                 >
                   <X size={20} />
-                </button>
+                </Button>
               </div>
             </div>
 
@@ -490,7 +580,7 @@ const DoctorDashboard = () => {
                     <span className="ml-1 text-sm font-medium text-gray-700">{doctorData.rating || 0}</span>
                   </div>
                 </div>
-              </div>
+              </div>  
               
               <div className="grid grid-cols-2 gap-4">
                 <div className="bg-blue-50 p-3 rounded-lg text-center">
@@ -508,45 +598,117 @@ const DoctorDashboard = () => {
             <nav className="flex-1 p-4">
               <ul className="space-y-2">
                 <li>
-                  <a href="#overview" className="flex items-center p-3 rounded-lg bg-blue-50 text-blue-700 font-medium">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                  <Button 
+                    onClick={() => setSelectedTab('overview')}
+                    variant="ghost"
+                    className={`w-full justify-start ${
+                      selectedTab === 'overview' 
+                        ? 'bg-blue-50 text-blue-700 font-medium' 
+                        : 'hover:bg-gray-50 text-gray-700'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      selectedTab === 'overview' ? 'bg-blue-100' : 'bg-gray-100'
+                    }`}>
                       <TrendingUp size={16} />
                     </div>
                     Overview
-                  </a>
+                  </Button>
                 </li>
                 <li>
-                  <a href="#patients" className="flex items-center p-3 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
-                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                  <Button 
+                    onClick={() => setSelectedTab('patients')}
+                    variant="ghost"
+                    className={`w-full justify-start ${
+                      selectedTab === 'patients' 
+                        ? 'bg-blue-50 text-blue-700 font-medium' 
+                        : 'hover:bg-gray-50 text-gray-700'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      selectedTab === 'patients' ? 'bg-blue-100' : 'bg-gray-100'
+                    }`}>
                       <Users size={16} />
                     </div>
                     Patients
-                  </a>
+                  </Button>
                 </li>
                 <li>
-                  <a href="#appointments" className="flex items-center p-3 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
-                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                  <Button 
+                    onClick={() => setSelectedTab('appointments')}
+                    variant="ghost"
+                    className={`w-full justify-start ${
+                      selectedTab === 'appointments' 
+                        ? 'bg-blue-50 text-blue-700 font-medium' 
+                        : 'hover:bg-gray-50 text-gray-700'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      selectedTab === 'appointments' ? 'bg-blue-100' : 'bg-gray-100'
+                    }`}>
                       <Calendar size={16} />
                     </div>
                     Appointments
-                  </a>
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigate('todaySessions')}
+                    variant="ghost"
+                    className={`w-full justify-start ${
+                      selectedTab === 'todaySessions' 
+                        ? 'bg-green-50 text-green-700 font-medium' 
+                        : 'hover:bg-green-50 text-green-700'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      selectedTab === 'todaySessions' ? 'bg-green-100' : 'bg-green-100'
+                    }`}>
+                      <Clock size={16} />
+                    </div>
+                    Today&apos;s Sessions
+                  </Button>
+                  <Button 
+                    onClick={() => handleNavigate('upcoming')}
+                    variant="ghost"
+                    className={`w-full justify-start ${
+                      selectedTab === 'upcoming' 
+                        ? 'bg-purple-50 text-purple-700 font-medium' 
+                        : 'hover:bg-purple-50 text-purple-700'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      selectedTab === 'upcoming' ? 'bg-purple-100' : 'bg-purple-100'
+                    }`}>
+                      <TrendingUp size={16} />
+                    </div>
+                    Upcoming
+                  </Button>
                 </li>
                 <li>
-                  <a href="#settings" className="flex items-center p-3 rounded-lg hover:bg-gray-50 text-gray-700 transition-colors">
-                    <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mr-3">
+                  <Button 
+                    onClick={() => setSelectedTab('settings')}
+                    variant="ghost"
+                    className={`w-full justify-start ${
+                      selectedTab === 'settings' 
+                        ? 'bg-blue-50 text-blue-700 font-medium' 
+                        : 'hover:bg-gray-50 text-gray-700'
+                    }`}
+                  >
+                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                      selectedTab === 'settings' ? 'bg-blue-100' : 'bg-gray-100'
+                    }`}>
                       <Settings size={16} />
                     </div>
                     Settings
-                  </a>
+                  </Button>
                 </li>
               </ul>
             </nav>
 
             {/* Sidebar Footer */}
             <div className="p-4 border-t border-gray-200">
-              <button
+              <Button
                 onClick={fetchDoctorProfile}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors duration-200 font-medium"
+                className="w-full"
                 disabled={profileRefreshing}
               >
                 {profileRefreshing ? (
@@ -559,15 +721,16 @@ const DoctorDashboard = () => {
                   </svg>
                 )}
                 {profileRefreshing ? 'Refreshing...' : 'Refresh Profile'}
-              </button>
+              </Button>
               
-              <button
+              <Button
                 onClick={handleLogout}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 mt-2 bg-red-50 text-red-600 rounded-xl hover:bg-red-100 transition-colors duration-200 font-medium"
+                variant="outline"
+                className="w-full mt-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
               >
                 <LogOut size={16} />
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -578,512 +741,123 @@ const DoctorDashboard = () => {
           <div className="pt-20 lg:pt-0 p-4 lg:p-8 max-w-7xl mx-auto">
             {/* Main Header - Desktop Only */}
             <div className="hidden lg:flex items-center justify-between mb-8">
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome back, Dr. {doctorData.name?.split(' ')[1] || 'Doctor'}!</h1>
-                <p className="text-gray-600">Here's what's happening with your practice today.</p>
+              <div className="flex py-2 flex-col">
+                <h1 className="text-[22px] font-medium text-gray-800">Welcome back, Dr. {doctorData.name?.split(' ')[1] || 'Doctor'}!</h1>
+                <p className="text-gray-500  text-[16px] mt-1">Here&apos;s what&apos;s happening with your practice today.</p>
               </div>
               <div className="flex items-center gap-4">
-                <button className="relative p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                <Button 
+
+                variant='outline'
+                  onClick={() => handleNavigate('todaySessions')}
+                  className=""
+                >
+                  <Clock size={16} />
+                  Today&apos;s Sessions
+                </Button>
+                <Button 
+                
+                variant='outline'
+                  onClick={() => handleNavigate('upcoming')}
+                
+                >
+                  <TrendingUp size={16} />
+                  Upcoming
+                </Button>
+                <Button variant="outline" size="icon" className="relative">
                   <Bell size={20} className="text-gray-600" />
                   <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-                </button>
-                <button className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow">
+                </Button>
+                <Button variant="outline" size="icon">
                   <Download size={20} className="text-gray-600" />
-                </button>
+                </Button>
               </div>
             </div>
 
-            {/* Income Statistics Cards */}
-            <div className="mb-8">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-                <h2 className="text-2xl font-bold text-gray-900">Income Statistics</h2>
-                <div className="flex items-center gap-3">
-                  <label className="text-sm text-gray-600 font-medium">View:</label>
-                  <select 
-                    value={selectedTimeFrame} 
-                    onChange={(e) => setSelectedTimeFrame(e.target.value)}
-                    className="px-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white shadow-sm"
-                  >
-                    <option value="daily">Daily</option>
-                    <option value="weekly">Weekly</option>
-                    <option value="monthly">Monthly</option>
-                    <option value="yearly">Yearly</option>
-                  </select>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <IncomeCard
-                  title="Daily Income"
-                  amount={incomeData.daily}
-                  growth={incomeData.dailyGrowth}
-                  icon={<DollarSign size={24} />}
-                  bgColor="bg-gradient-to-br from-blue-500 to-blue-600"
-                  timeFrame="day"
-                />
-                <IncomeCard
-                  title="Weekly Income"
-                  amount={incomeData.weekly}
-                  growth={incomeData.weeklyGrowth}
-                  icon={<TrendingUp size={24} />}
-                  bgColor="bg-gradient-to-br from-emerald-500 to-emerald-600"
-                  timeFrame="week"
-                />
-                <IncomeCard
-                  title="Monthly Income"
-                  amount={incomeData.monthly}
-                  growth={incomeData.monthlyGrowth}
-                  icon={<Calendar size={24} />}
-                  bgColor="bg-gradient-to-br from-purple-500 to-purple-600"
-                  timeFrame="month"
-                />
-                <IncomeCard
-                  title="Yearly Income"
-                  amount={incomeData.yearly}
-                  growth={incomeData.yearlyGrowth}
-                  icon={<Award size={24} />}
-                  bgColor="bg-gradient-to-br from-orange-500 to-orange-600"
-                  timeFrame="year"
-                />
-              </div>
-            </div>
+            {/* Overview Tab Content */}
+            {selectedTab === 'overview' && (
+              <OverviewTab
+                selectedTimeFrame={selectedTimeFrame}
+                setSelectedTimeFrame={setSelectedTimeFrame}
+                incomeData={incomeData}
+                doctorAppointments={doctorAppointments}
+                appointmentsLoading={appointmentsLoading}
+                fetchDoctorAppointments={fetchDoctorAppointments}
+              />
+            )}
 
-            {/* Income Chart */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-                <h3 className="text-xl font-semibold text-gray-900 mb-2 sm:mb-0">
-                  {selectedTimeFrame === 'daily' ? 'Daily' : 
-                   selectedTimeFrame === 'weekly' ? 'Weekly' : 
-                   selectedTimeFrame === 'monthly' ? 'Monthly' : 'Yearly'} Income Trend
-                </h3>
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center gap-2 text-sm text-gray-600">
-                    <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                    Income
-                  </div>
-                </div>
-              </div>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={selectedTimeFrame === 'weekly' ? incomeData.weeklyChart : incomeData.monthlyChart}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                    <XAxis 
-                      dataKey="name" 
-                      stroke="#6b7280"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
-                    <YAxis 
-                      stroke="#6b7280"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      tickFormatter={(value) => `₹${value.toLocaleString()}`}
-                    />
-                    <Tooltip 
-                      formatter={(value) => [`₹${value.toLocaleString()}`, 'Income']}
-                      labelFormatter={(label) => `${selectedTimeFrame === 'weekly' ? 'Day' : 'Month'}: ${label}`}
-                      contentStyle={{
-                        backgroundColor: 'white',
-                        border: '1px solid #e5e7eb',
-                        borderRadius: '12px',
-                        boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                      }}
-                    />
-                    <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="income" 
-                      stroke="#3B82F6" 
-                      strokeWidth={3}
-                      dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
-                      activeDot={{ r: 8, fill: '#1D4ED8' }}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+            {/* Patients Tab Content */}
+            {selectedTab === 'patients' && (
+              <PatientsTab
+                patientRequests={patientRequests}
+                requestsLoading={requestsLoading}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                filterStatus={filterStatus}
+                setFilterStatus={setFilterStatus}
+                fetchPatientRequests={fetchPatientRequests}
+                handleUserRowClick={handleUserRowClick}
+                handleAppointmentAction={handleAppointmentAction}
+                handleGenerateVideoCall={handleGenerateVideoCall}
+                doctorData={doctorData}
+                filteredRequests={filteredRequests}
+              />
+            )}
 
-            {/* Patient Requests Section */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-              <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Patient Requests</h2>
-                  <div className="flex flex-wrap items-center gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-gray-600">Total: {patientRequests.length}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-gray-600">Pending: {patientRequests.filter(r => r.status === 'pending').length}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-600">Approved: {patientRequests.filter(r => r.status === 'approved').length}</span>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto">
-                  {/* Search and Filter */}
-                  <div className="flex flex-col sm:flex-row gap-3">
-                    <div className="relative">
-                      <Search size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <input
-                        type="text"
-                        placeholder="Search patients..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="pl-10 pr-4 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 w-full sm:w-64"
-                      />
-                    </div>
-                    
-                    <div className="relative">
-                      <Filter size={16} className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                      <select
-                        value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
-                        className="pl-10 pr-8 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 bg-gray-50 appearance-none w-full sm:w-auto"
-                      >
-                        <option value="all">All Status</option>
-                        <option value="pending">Pending</option>
-                        <option value="approved">Approved</option>
-                        <option value="declined">Declined</option>
-                      </select>
-                    </div>
-                  </div>
-                  
-                  <button 
-                    onClick={fetchPatientRequests}
-                    disabled={requestsLoading}
-                    className="flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors disabled:opacity-50 font-medium whitespace-nowrap"
-                  >
-                    {requestsLoading ? (
-                      <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                      </svg>
-                    ) : (
-                      <Eye size={16} />
-                    )}
-                    {requestsLoading ? 'Loading...' : 'Load Requests'}
-                  </button>
-                </div>
-              </div>
-              
-              {requestsLoading ? (
-                <div className="text-center py-12">
-                  <div className="relative inline-block">
-                    <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-200 border-t-blue-600 mb-4"></div>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="w-4 h-4 bg-blue-600 rounded-full animate-pulse"></div>
-                    </div>
-                  </div>
-                  <p className="text-gray-600 font-medium">Loading patient requests...</p>
-                </div>
-              ) : filteredRequests.length > 0 ? (
-                <div className="overflow-x-auto">
-                  <table className="w-full">
-                    <thead>
-                      <tr className="border-b border-gray-200 bg-gray-50">
-                        <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-l-xl">PATIENT</th>
-                        <th className="text-left py-4 px-6 font-semibold text-gray-700">CONTACT</th>
-                        <th className="text-left py-4 px-6 font-semibold text-gray-700">DETAILS</th>
-                        <th className="text-left py-4 px-6 font-semibold text-gray-700">DOCTOR</th>
-                        <th className="text-left py-4 px-6 font-semibold text-gray-700">APPOINTMENT</th>
-                        <th className="text-left py-4 px-6 font-semibold text-gray-700">STATUS</th>
-                        <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-r-xl">ACTIONS</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredRequests.map((request, index) => (
-                        <tr key={request.id || request._id || index} className="border-b border-gray-100 hover:bg-blue-50 transition-colors group">
-                          <td className="py-4 px-6">
-                            <div className="flex items-center">
-                              <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center mr-4 text-white font-bold shadow-md">
-                                {request.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
-                              </div>
-                              <div>
-                                <div className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                  {request.name || 'N/A'}
-                                </div>
-                                <div className="text-sm text-gray-500">
-                                  {request.age ? `${request.age} years` : 'Age not specified'}
-                                </div>
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="space-y-1">
-                              <div className="flex items-center text-sm text-gray-600">
-                                <Phone size={12} className="mr-2 text-green-500" />
-                                {request.phone || request.number || 'N/A'}
-                              </div>
-                              <div className="flex items-center text-sm text-gray-600">
-                                <MapPin size={12} className="mr-2 text-red-500" />
-                                {request.location || 'N/A'}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6 text-gray-600">
-                            <div className="text-sm">
-                              <div>Age: {request.age || 'N/A'}</div>
-                              <div className="text-gray-500 truncate max-w-32">
-                                {request.location || 'Location not specified'}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="text-sm">
-                              <div className="font-medium text-gray-900">
-                                {request.doctorName || doctorData.name || 'N/A'}
-                              </div>
-                              <div className="text-gray-500">
-                                {request.doctorSpecialization || doctorData.specialization || 'N/A'}
-                              </div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="text-sm">
-                              <div className="font-medium text-gray-900">{request.date || 'N/A'}</div>
-                              <div className="text-gray-500">{request.time || 'N/A'}</div>
-                            </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                              request.status === 'approved' 
-                                ? 'bg-green-100 text-green-800 border border-green-200' 
-                                : request.status === 'pending'
-                                ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                                : request.status === 'declined'
-                                ? 'bg-red-100 text-red-800 border border-red-200'
-                                : 'bg-gray-100 text-gray-800 border border-gray-200'
-                            }`}>
-                              {request.status || 'pending'}
-                            </span>
-                          </td>
-                          <td className="py-4 px-6">
-                            {request.status === 'pending' ? (
-                              <div className="flex items-center gap-2">
-                                <button 
-                                  onClick={() => handleAppointmentAction(request.id || request._id, 'approve')}
-                                  className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm"
-                                >
-                                  <span className="mr-1">✓</span>
-                                  Approve
-                                </button>
-                                <button 
-                                  onClick={() => handleAppointmentAction(request.id || request._id, 'decline')}
-                                  className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm"
-                                >
-                                  <span className="mr-1">✗</span>
-                                  Decline
-                                </button>
-                              </div>
-                            ) : (
-                              <span className={`flex items-center text-sm font-medium ${
-                                request.status === 'approved' ? 'text-green-600' : 'text-red-600'
-                              }`}>
-                                <span className="mr-1">{request.status === 'approved' ? '✓' : '✗'}</span>
-                                {request.status === 'approved' ? 'Approved' : 'Declined'}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Calendar size={24} className="text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No requests found</h3>
-                  <p className="text-gray-600 mb-6">
-                    {searchTerm || filterStatus !== 'all' 
-                      ? 'Try adjusting your search or filter criteria.' 
-                      : 'Click "Load Requests" to fetch patient requests from the server.'
-                    }
-                  </p>
-                  {!searchTerm && filterStatus === 'all' && (
-                    <button 
-                      onClick={fetchPatientRequests}
-                      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-colors font-medium"
-                    >
-                      <Eye size={16} />
-                      Load Patient Requests
-                    </button>
-                  )}
-                </div>
-              )}
-            </div>
+            {/* Appointments Tab Content */}
+            {selectedTab === 'appointments' && (
+              <AppointmentsTab
+                doctorAppointments={doctorAppointments}
+                appointmentsLoading={appointmentsLoading}
+                appointmentsError={appointmentsError}
+                fetchDoctorAppointments={fetchDoctorAppointments}
+                handleAppointmentActionForAppointments={handleAppointmentActionForAppointments}
+                handleGenerateVideoCall={handleGenerateVideoCall}
+              />
+            )}
 
-            {/* All Appointments Section */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">All Appointments</h2>
-                  <div className="flex flex-wrap items-center gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-gray-600">Total: {defaultAppointmentsList.length}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                      <span className="text-gray-600">Pending: {defaultAppointmentsList.filter(a => a.status === 'pending').length}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-600">Approved: {defaultAppointmentsList.filter(a => a.status === 'approved').length}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200 bg-gray-50">
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-l-xl">PATIENT</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700">CONTACT</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700">DETAILS</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700">APPOINTMENT</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700">STATUS</th>
-                      <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-r-xl">ACTIONS</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {defaultAppointmentsList.map((appointment) => (
-                      <tr key={appointment.id} className="border-b border-gray-100 hover:bg-blue-50 transition-colors group">
-                        <td className="py-4 px-6">
-                          <div className="flex items-center">
-                            <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center mr-4 text-white font-bold shadow-md">
-                              {appointment.name.split(' ').map(n => n[0]).join('')}
-                            </div>
-                            <div>
-                              <div className="font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                                {appointment.name}
-                              </div>
-                              <div className="text-sm text-gray-500">
-                                {appointment.age} years
-                              </div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <div className="space-y-1">
-                            <div className="flex items-center text-sm text-gray-600">
-                              <Phone size={12} className="mr-2 text-green-500" />
-                              {appointment.phone}
-                            </div>
-                            <div className="flex items-center text-sm text-gray-600">
-                              <MapPin size={12} className="mr-2 text-red-500" />
-                              {appointment.location}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6 text-gray-600">
-                          <div className="text-sm">
-                            <div>Age: {appointment.age}</div>
-                            <div className="text-gray-500 truncate max-w-32">
-                              {appointment.location}
-                            </div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <div className="text-sm">
-                            <div className="font-medium text-gray-900">{appointment.date}</div>
-                            <div className="text-gray-500">{appointment.time}</div>
-                          </div>
-                        </td>
-                        <td className="py-4 px-6">
-                          <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                            appointment.status === 'approved' 
-                              ? 'bg-green-100 text-green-800 border border-green-200' 
-                              : appointment.status === 'pending'
-                              ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                              : 'bg-red-100 text-red-800 border border-red-200'
-                          }`}>
-                            {appointment.status}
-                          </span>
-                        </td>
-                        <td className="py-4 px-6">
-                          {appointment.status === 'pending' ? (
-                            <div className="flex items-center gap-2">
-                              <button className="flex items-center px-3 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium shadow-sm">
-                                <span className="mr-1">✓</span>
-                                Approve
-                              </button>
-                              <button className="flex items-center px-3 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm font-medium shadow-sm">
-                                <span className="mr-1">✗</span>
-                                Decline
-                              </button>
-                            </div>
-                          ) : (
-                            <span className={`flex items-center text-sm font-medium ${
-                              appointment.status === 'approved' ? 'text-green-600' : 'text-red-600'
-                            }`}>
-                              <span className="mr-1">{appointment.status === 'approved' ? '✓' : '✗'}</span>
-                              {appointment.status === 'approved' ? 'Approved' : 'Declined'}
-                            </span>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-              
-              {defaultAppointmentsList.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Calendar size={24} className="text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No appointments scheduled</h3>
-                  <p className="text-gray-600">Appointments will appear here once patients book sessions with you.</p>
-                </div>
-              )}
-            </div>
+            {/* My Patients Section - Show in both Overview and Patients tabs */}
+            {(selectedTab === 'overview' || selectedTab === 'patients') && (
+              <MyPatients patientsList={patientsList} />
+            )}
 
-            {/* My Patients Section */}
-            <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-                <div>
-                  <h2 className="text-2xl font-bold text-gray-900 mb-2">My Patients</h2>
-                  <div className="flex flex-wrap items-center gap-4 text-sm">
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-                      <span className="text-gray-600">Total: {patientsList.length}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div className="w-3 h-3 bg-green-500 rounded-full"></div>
-                      <span className="text-gray-600">Active: {patientsList.filter(p => p.status === 'active').length}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                {patientsList.map((patient) => (
-                  <PatientCard key={patient.id} patient={patient} />
-                ))}
-              </div>
-              
-              {patientsList.length === 0 && (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <Users size={24} className="text-gray-400" />
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No patients yet</h3>
-                  <p className="text-gray-600">Your patient list will appear here as you start treating patients.</p>
-                </div>
-              )}
-            </div>
+            {/* Today's Sessions Tab Content */}
+            {selectedTab === 'todaySessions' && (
+              <TodaySessions 
+                doctorData={doctorData} 
+                email={email} 
+                onNavigate={handleNavigate}
+              />
+            )}
+
+            {/* Upcoming Appointments Tab Content */}
+            {selectedTab === 'upcoming' && (
+              <UpcomingAppointments 
+                doctorData={doctorData} 
+                email={email} 
+                onNavigate={handleNavigate}
+              />
+            )}
+
+            {/* Settings Tab Content */}
+            {selectedTab === 'settings' && (
+              <SettingsTab doctorData={doctorData} />
+            )}
           </div>
         </div>
       </div>
+
+
+      {/* Patient Details Modal */}
+      <PatientModal
+        isUserModalOpen={isUserModalOpen}
+        closeUserModal={closeUserModal}
+        selectedUser={selectedUser}
+        doctorData={doctorData}
+        handleAppointmentAction={handleAppointmentAction}
+      />
+
+      <ToastContainer />
     </div>
   );
 };

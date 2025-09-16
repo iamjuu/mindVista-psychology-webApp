@@ -12,11 +12,15 @@ import {CustomSpinner}from "../common/Loader";
 import DetailsPage from "../pages/client/details page"
 import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 import ScannerPage from "../pages/scanner"
+import PaymentPage from "../pages/payment"
 // ***************  admin  *************
 import DashbaordHome from '../pages/admin/Dashboard/home'
+import TodayAppointments from '../pages/admin/Dashboard/TodayAppointments'
 // ***************  docter  *************
 import Docter from '../pages/docter'
 import DoctorLogin from '../pages/docter/login'
+// ***************  video call  *************
+import VideoCallRoom from '../pages/videocall/VideoCallRoom'
 
 function UserRouter() {
   return (
@@ -38,12 +42,16 @@ function UserRouter() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/scanner" element={<ScannerPage />} />
           <Route path="/register" element={<RegisterForm />} />
+          <Route path="/payment" element={<PaymentPage />} />
           <Route path="/details/:id" element={<DetailsPage />} />
 {/* ************************** */}
-<Route path="/Dashboard" element={< DashbaordHome/>} />
+<Route path="/admin/dashboard" element={< DashbaordHome/>} />
+<Route path="/admin/today-appointments" element={<TodayAppointments />} />
 {/* **************************** */}
 <Route path="/docter" element={<Docter />} />
 <Route path="/docter/login" element={<DoctorLogin />} />
+{/* **************************** */}
+<Route path="/video-call/:videoCallId" element={<VideoCallRoom />} />
         </Routes>
       </Suspense>
     </Router>

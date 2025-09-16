@@ -1,0 +1,860 @@
+[33mcommit ecb2be737fd1a2bf3add15723dbd1b16edd9170d[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32majmal[m[33m)[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Aug 17 13:16:36 2025 +0530
+
+     mail set
+
+[33mcommit 981406f5294842853a4975b3d6e2d41319ace9d7[m[33m ([m[1;31morigin/ajmal[m[33m)[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Aug 16 16:38:56 2025 +0530
+
+     build err solved
+
+[33mcommit 746c5aafafd66cdb24c0fbc6f1fa967c4e98e47e[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Aug 16 16:33:26 2025 +0530
+
+     docter page set
+
+[33mcommit 308b09a0ce77bdfb948ed4c6e684e524b5e9fdd0[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Aug 16 16:17:59 2025 +0530
+
+     login functionlity set
+
+[33mcommit c6fe6d821836b495a4b1db6809cc8d843b51f933[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Aug 16 13:13:38 2025 +0530
+
+     user listed
+
+[33mcommit dd606d30892641cb4a9f889b55e4a3cadec340aa[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Aug 16 12:43:28 2025 +0530
+
+     delete functionlity added
+
+[33mcommit 6edfab30be43c6ba58492448418c95a920819f69[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Aug 16 12:34:08 2025 +0530
+
+     docter added
+
+[33mcommit 67079eee4daadc9a82a49488ffcfb9bfd5ff84de[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Fri Aug 15 10:52:24 2025 +0530
+
+     route set
+
+[33mcommit e69505b396b9cab8246bbd00cfae8fe8abaf5b17[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Aug 14 23:50:40 2025 +0530
+
+     updated
+
+[33mcommit e97b9b09bc107bad69201b5049f1b88f17b0193f[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Jul 21 09:20:14 2025 +0530
+
+     dshboard responsviing
+
+[33mcommit cedb0cd8b8b36b43dccb4a907bbdbb399ef0dc27[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Jul 14 23:56:41 2025 +0530
+
+     working on dashboard
+
+[33mcommit 42c1c911d49836ed279c7f28df3e63c521659936[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Jul 14 22:01:17 2025 +0530
+
+     docter page ready
+
+[33mcommit a8143527579eb813732cc5b3c9952bd4ea465331[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Jul 14 20:03:51 2025 +0530
+
+     admin side setup
+
+[33mcommit 2271238faa735b450ff57f616200db0ddcd26d9e[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Jul 12 02:12:57 2025 +0530
+
+     u[datig
+
+[33mcommit b7bce43ca64076566146a4349a69faf6e7b8dcb1[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Fri Jul 11 22:43:00 2025 +0530
+
+     update the ui
+
+[33mcommit 317a6249c821df03c805479d6446cdf8d9784c49[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Jul 6 14:47:40 2025 +0530
+
+     appiment page ready
+
+[33mcommit 330727b1a55b11fdb630da5cdfbe259cc4895db3[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Jun 24 20:03:49 2025 +0530
+
+     working on profile pge
+
+[33mcommit b75331da335c4e753ceabc5c53a97166eb319ba4[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Jun 21 23:55:06 2025 +0530
+
+     profil e page "
+
+[33mcommit 8fc52c556e5ad57b432b1418b72127364c06f5f7[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Jun 21 23:39:19 2025 +0530
+
+    admin pages
+
+[33mcommit 27491fd5abfb38f28ced4ce53e65d98ce36f33eb[m
+Merge: 2eb2dd2 e356be9
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sat Jun 21 23:03:15 2025 +0530
+
+    Merge pull request #41 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit e356be915f4c6df5317f6c3a157b12ca3e6a19f7[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Mar 3 23:41:56 2025 +0530
+
+     dashboard
+
+[33mcommit 36694ca35227cff77db2d9a9c9cd2fa4b5b238cb[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Mar 3 22:47:35 2025 +0530
+
+     nav changed
+
+[33mcommit 2eb2dd2eff33d7c7d404246ed8bb1196ded1c54c[m[33m ([m[1;32mmain[m[33m)[m
+Merge: 8835bee 941f327
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 23 13:29:18 2024 +0530
+
+    Merge pull request #40 from iamjuu/ajmal
+    
+     change some design
+
+[33mcommit 941f327c43000536d8fc95429378d7b2e05605fd[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 23 13:28:20 2024 +0530
+
+     change some design
+
+[33mcommit 8835bee688549e459ad02772a88ef4c74f3cb70f[m
+Merge: d029669 b2c5f64
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Dec 19 13:59:48 2024 +0530
+
+    Merge pull request #39 from iamjuu/ajmal
+    
+     add some chages
+
+[33mcommit b2c5f648b04d0e108678609fffd6c83e7bbae256[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Dec 19 10:19:15 2024 +0530
+
+     add some chages
+
+[33mcommit d029669295e5b23e099168baecfad8ea8e28435a[m
+Merge: a54a7ee 58f5c34
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 16 22:13:50 2024 -0800
+
+    Merge pull request #38 from iamjuu/ajmal
+    
+     form almost completed
+
+[33mcommit 58f5c34543d25bc13a1c2dbdb6b637aecfb35dc7[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Dec 17 11:42:03 2024 +0530
+
+     form almost completed
+
+[33mcommit a54a7ee57736782e1608747bd4a82ca5f7588689[m
+Merge: 28cec5b b2ea588
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 16 21:58:43 2024 -0800
+
+    Merge pull request #37 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit b2ea588206e2850155a2d4de9c0b891efebe0615[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Dec 17 11:26:11 2024 +0530
+
+     details page added
+
+[33mcommit 5506d461d479648393e439d31a0067972c984e3d[m
+Author: Muhammed Ajmal CC <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 16 16:52:15 2024 +0530
+
+     data gotted
+
+[33mcommit 28cec5b54312d09e7a4fea07c9dea1b22753d48b[m
+Merge: 0a6d9de 0ee4fc5
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Fri Dec 13 16:48:30 2024 +0530
+
+    Merge pull request #36 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 0ee4fc5a0fd9944df3bf33eca63e067d9f3883dd[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Fri Dec 13 16:47:54 2024 +0530
+
+     details
+
+[33mcommit 844ede2328140eefdb9303ae83233b1d7737a2c8[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Fri Dec 13 11:15:40 2024 +0530
+
+     create a token
+
+[33mcommit 0a6d9def0e755c324bda29089e8e86708d0f4aed[m
+Merge: 17d5eed 2261a73
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Wed Dec 11 16:48:26 2024 +0530
+
+    Merge pull request #35 from iamjuu/ajmal
+    
+     login page
+
+[33mcommit 2261a73d74739363c547bc567e1776bb82dd40cc[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Wed Dec 11 16:47:49 2024 +0530
+
+     login page
+
+[33mcommit 17d5eeda12c9102f72c64e31cf44efaa303e7317[m
+Merge: eb0a90e 7e73b22
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Wed Dec 11 12:48:42 2024 +0530
+
+    Merge pull request #34 from iamjuu/ajmal
+    
+     payment page added
+
+[33mcommit 7e73b2274eff0ae00a5c7f3ae2d9a3c1879e0940[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Wed Dec 11 12:46:56 2024 +0530
+
+     payment page added
+
+[33mcommit eb0a90e4c9d8594740a7e698134567766413c9dd[m
+Merge: 15eeeb4 1bf12ba
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Wed Dec 11 12:42:39 2024 +0530
+
+    Merge pull request #33 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 1bf12ba7e5df0b72a65c2f6a879166077ebdde0e[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Wed Dec 11 10:41:48 2024 +0530
+
+     clear some sbugs
+
+[33mcommit 40aea6265adc5b89fc37cca906126027a7bc0f44[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Wed Dec 11 09:50:35 2024 +0530
+
+     clear some bugs
+
+[33mcommit 15eeeb4b435417df2781a71826c344ad1e86633d[m
+Merge: 5776634 c9cc922
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Tue Dec 10 16:44:49 2024 +0530
+
+    Merge pull request #32 from iamjuu/ajmal
+    
+     login page
+
+[33mcommit c9cc922a3e6540ebac2d4ccd22f64a9ba81c0f50[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Dec 10 16:42:42 2024 +0530
+
+     login page
+
+[33mcommit 5776634a88ab3f814a3e24cde5b3fb15b974ab37[m
+Merge: 38e284f 5b66718
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Tue Dec 10 11:50:44 2024 +0530
+
+    Merge pull request #31 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 5b66718e5ff507db751c307a5884f1ed3cd6f5f8[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Dec 10 11:49:30 2024 +0530
+
+     profile page added
+
+[33mcommit e5c73ee550ba623d1e2b448a18ded9467732e8e1[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Dec 10 10:21:22 2024 +0530
+
+     programme pages router set
+
+[33mcommit ec017d327c2dfb2cc75496422efe17e7999c3940[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Dec 10 10:19:00 2024 +0530
+
+     contect page added
+
+[33mcommit 52b74f3ae028c7f0c28bb464595a3655a5091653[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Dec 10 10:15:40 2024 +0530
+
+     landing and about pages user route added
+
+[33mcommit 38e284fb677b5eee0d4990c82be1455a7fe944c3[m
+Merge: 2365caf c9cfc73
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 9 16:31:23 2024 +0530
+
+    Merge pull request #30 from iamjuu/ajmal
+    
+     clear some bugs
+
+[33mcommit c9cfc739a609962802cec04de838aa50d9af2856[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 9 16:30:38 2024 +0530
+
+     clear some bugs
+
+[33mcommit 2365cafe3c468dd3615f290a241c1fe3f7834e98[m
+Merge: ccc671c 35976f7
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 9 13:48:31 2024 +0530
+
+    Merge pull request #29 from iamjuu/ajmal
+    
+     nav heading added
+
+[33mcommit 35976f755094765c342aaffb39ad1496680974a8[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 9 13:47:44 2024 +0530
+
+     nav heading added
+
+[33mcommit ccc671c9d53b902cbb8059a7bae4149889a030f5[m
+Merge: 3e059ab 9c262d7
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 9 13:11:55 2024 +0530
+
+    Merge pull request #28 from iamjuu/ajmal
+    
+     clear some bugs
+
+[33mcommit 9c262d7420b9651300e9fe800ecbafc5f085a294[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 9 13:11:00 2024 +0530
+
+     clear some bugs
+
+[33mcommit 3e059abe167d098a12df1fb01d97e8ed311dd6dd[m
+Merge: e6f573b 80795a9
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 9 12:37:18 2024 +0530
+
+    Merge pull request #27 from iamjuu/ajmal
+    
+     clear slow bug
+
+[33mcommit 80795a97862297df2e0b7070f35cbf39c8dfd40f[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 9 12:36:09 2024 +0530
+
+     clear slow bug
+
+[33mcommit e6f573b7e7c6f2c93b90d74615d8344e1b8eb79c[m
+Merge: c8c2fff 6ee6ae5
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Fri Dec 6 14:14:49 2024 +0530
+
+    Merge pull request #26 from iamjuu/ajmal
+    
+     add some changes
+
+[33mcommit 6ee6ae5f0f44040ec1be0ce9d70a705126f5f171[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Fri Dec 6 14:06:41 2024 +0530
+
+     add some changes
+
+[33mcommit c8c2fffea6403b2cfd0ad11df4267863b6e8c5fc[m
+Merge: 905a6ac 6062c1d
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Fri Dec 6 09:58:20 2024 +0530
+
+    Merge pull request #25 from iamjuu/ajmal
+    
+     loader changed
+
+[33mcommit 6062c1dd5d3605c8180653c8380cde8c03f0fb13[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Fri Dec 6 09:57:33 2024 +0530
+
+     loader changed
+
+[33mcommit 905a6ac2ee22714db7046eab6bad5fa1cd1a6cfb[m
+Merge: 5287360 945931f
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Dec 5 16:51:28 2024 +0530
+
+    Merge pull request #24 from iamjuu/ajmal
+    
+     clear some bugs
+
+[33mcommit 945931fd0dee94a2f5f385b8344dce9d77e9cdc5[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Dec 5 16:50:47 2024 +0530
+
+     clear some bugs
+
+[33mcommit 5287360690e478c22452cf2ff2799f23ebded88b[m
+Merge: ef7328d ee0777b
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Dec 5 16:45:12 2024 +0530
+
+    Merge pull request #23 from iamjuu/ajmal
+    
+     cleared
+
+[33mcommit ee0777b16584c3292c74beb3386afb68c562c3e3[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Dec 5 16:44:33 2024 +0530
+
+     cleared
+
+[33mcommit ef7328d4fcf13dde727a317f1a76b8f28dd11b84[m
+Merge: fb82472 b3936be
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Dec 5 16:39:09 2024 +0530
+
+    Merge pull request #22 from iamjuu/ajmal
+    
+     clear some bugs
+
+[33mcommit b3936befad07ef51667c1979e0769ed9a4cc9b4e[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Dec 5 16:38:24 2024 +0530
+
+     clear some bugs
+
+[33mcommit fb8247206e02994cc6ee13e08f84ee98504c71c1[m
+Merge: d671430 54c843c
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Dec 5 16:20:31 2024 +0530
+
+    Merge pull request #21 from iamjuu/ajmal
+    
+     changed
+
+[33mcommit 54c843cbc639299e0795846bd8ed8eb330a35cf7[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Dec 5 16:17:55 2024 +0530
+
+     changed
+
+[33mcommit d67143057ca111aa7f4793c427d33e10cb3645f7[m
+Merge: bb60c7e 6617333
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Dec 5 16:11:51 2024 +0530
+
+    Merge pull request #20 from iamjuu/ajmal
+    
+     clear some bugs
+
+[33mcommit 6617333c49241c52fc6221f70ac5d893ce05f48d[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Dec 5 16:11:11 2024 +0530
+
+     clear some bugs
+
+[33mcommit bb60c7e2c7202cf88b768c4460d0daaacefad40e[m
+Merge: 12c9eb1 b4b832d
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Dec 2 12:28:39 2024 +0530
+
+    Merge pull request #19 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit b4b832d934e4863b819b8b0345532d08f4648894[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 2 12:27:44 2024 +0530
+
+     almost complete
+
+[33mcommit e501f35fdede7991bbd9e34eab25767348ff1f5b[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Dec 2 11:07:17 2024 +0530
+
+     optimaze the webpages
+
+[33mcommit 12c9eb190b972bb488f3fa01422959ce407f3175[m
+Merge: e6e9fa1 64e8964
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Tue Nov 19 16:31:37 2024 +0530
+
+    Merge pull request #18 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 64e8964d2215f2658fd651c9935caf151d21b435[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 19 16:30:50 2024 +0530
+
+     dashboard ongoing
+
+[33mcommit 4fd0ffb1d4cda0c335ff5c5eb204696c039a1e0f[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 19 11:38:10 2024 +0530
+
+     add clicking div
+
+[33mcommit e6e9fa1cc03ced637562cc2510a2430a739291c4[m
+Merge: 33947df 51d5fb2
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sat Nov 16 16:40:17 2024 +0530
+
+    Merge pull request #17 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 954bfb8687034e8a644fe552a61bde13e15969ad[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Nov 16 16:35:21 2024 +0530
+
+      program page completed
+
+[33mcommit 51d5fb2cbea9a443edff2e2107641cc12dce9057[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Nov 16 15:51:04 2024 +0530
+
+     program page almost finished
+
+[33mcommit fb88ca36be6e659b90157c9eac51dabdc1d71727[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Nov 16 13:39:37 2024 +0530
+
+      program page left completed
+
+[33mcommit 657a1693f38782b3fa3f8799524d4ad38f978146[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Nov 16 12:51:54 2024 +0530
+
+      about page almost completed
+
+[33mcommit 33947df718498ac5b06e9cfadb38b05cce659d65[m
+Merge: 42e44e9 05f7713
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Nov 14 15:44:43 2024 +0530
+
+    Merge pull request #16 from iamjuu/ajmal
+    
+      about page section two completed
+
+[33mcommit 05f7713d34c1f3b646d62d105a43ae3665e0b8c9[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Nov 14 15:16:25 2024 +0530
+
+      about page section two completed
+
+[33mcommit 42e44e92bf02e2fa793badeb714ca5a26b26a114[m
+Merge: b746c22 3f51979
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Tue Nov 12 15:02:37 2024 +0530
+
+    Merge pull request #15 from iamjuu/ajmal
+    
+    add some alignments
+
+[33mcommit 3f519797aa7179a41117f59d62a2e8ebae2ac867[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 12 15:01:46 2024 +0530
+
+    add some alignments
+
+[33mcommit b746c22e03925ddf0dc1d2bda2d56509a179f102[m
+Merge: 482989e d06d4dd
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Tue Nov 12 14:12:08 2024 +0530
+
+    Merge pull request #14 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit d06d4dd7045176d08f2e62d0610e8bfb79db55e9[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 12 14:11:14 2024 +0530
+
+     about page ongoing
+
+[33mcommit ee5aa0a552bb04feac1a53db361d495c775d0460[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 12 13:45:53 2024 +0530
+
+     data path changed to constant
+
+[33mcommit 482989ee626ddd1abc9d895235996d6771b3d5cf[m
+Merge: 687ae06 86df152
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Tue Nov 12 13:20:53 2024 +0530
+
+    Merge pull request #13 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 86df152c2f975a48094a7c1e5277681058a13395[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 12 13:19:26 2024 +0530
+
+    footer added
+
+[33mcommit ce455738d4e7e757294bd19c4f8c52ad0534253a[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 12 12:33:16 2024 +0530
+
+    about pages design starting
+
+[33mcommit 687ae068664f51dae90868829a8446b6c42d1cf1[m
+Merge: 2c5eacd 498124b
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Tue Nov 12 12:26:28 2024 +0530
+
+    Merge pull request #12 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 498124bd98f9c63064d660a50906cbaac060f244[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 12 12:25:49 2024 +0530
+
+    footer completed
+
+[33mcommit c2bb2a7b7dd6af9b40deec4691e14875d2cf985e[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Tue Nov 12 11:54:55 2024 +0530
+
+     navbar responsived
+
+[33mcommit 1f327bb59b7b6a5ea5a2e21af87c5caf42bd994c[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Nov 11 14:45:45 2024 +0530
+
+    clear some bugs
+
+[33mcommit d35edaa3b250b47d1095adb2ebba5db1ffcdffb4[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Nov 11 11:21:32 2024 +0530
+
+     SECTION five completed
+
+[33mcommit 2c5eacd307fb6f12f97f127839b04a82efccb4ab[m
+Merge: e2b25fe d3f5d50
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sun Nov 10 17:28:13 2024 +0530
+
+    Merge pull request #11 from iamjuu/ajmal
+    
+     remove unwanted animation to responsive
+
+[33mcommit d3f5d50e18a9a08a311ca37bedb0074e9f9e46d2[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 10 17:27:28 2024 +0530
+
+     remove unwanted animation to responsive
+
+[33mcommit e2b25fee51cce6eff83847e4433775432f69bc6f[m
+Merge: f641815 f24faa6
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sun Nov 10 17:14:13 2024 +0530
+
+    Merge pull request #10 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit f24faa6caa0d4e5ce78d204a9a9ad2714d36708d[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 10 17:10:17 2024 +0530
+
+     responsive almost ready
+
+[33mcommit c06ae8aaf4e0b286b3256b92506393e04c17f67a[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 10 13:43:03 2024 +0530
+
+     section flour on going
+
+[33mcommit 27a712da0b446e2cc8c4d9a74b0f44d5bc781c61[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 10 13:34:57 2024 +0530
+
+     section three completed
+
+[33mcommit f64181572fc31ec62f82789ae2fef9ed385a95e6[m
+Merge: 3b5c865 b3b31c7
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sat Nov 9 11:30:37 2024 +0530
+
+    Merge pull request #9 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit b3b31c765380841b4e3331d1f6f30bf47b437558[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sat Nov 9 11:29:51 2024 +0530
+
+      section four starting
+
+[33mcommit 99256c65e09592b5dfb5dd0a3a6ed9ef842fe9c1[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Fri Nov 8 12:13:22 2024 +0530
+
+     section three was added
+
+[33mcommit 3b5c865ea3ecab1cb0b29b734dc011962d79b58c[m
+Merge: a82a921 3f7a2c5
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Thu Nov 7 17:04:35 2024 +0530
+
+    Merge pull request #8 from iamjuu/ajmal
+    
+    Ajmal
+
+[33mcommit 3f7a2c558c258eb0f5524faaeda660830fabaf30[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Nov 7 17:03:40 2024 +0530
+
+      section three is on working
+
+[33mcommit e7c824a6598bac28abdfec9dabfa548076c8717a[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Thu Nov 7 16:13:24 2024 +0530
+
+     section three completed
+
+[33mcommit a82a9216bf875e12c9e70902547aaf1952b5d26e[m
+Merge: 6d28f69 f4c47c3
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Nov 4 16:57:21 2024 +0530
+
+    Merge pull request #7 from iamjuu/ajmal
+    
+     add some animation
+
+[33mcommit f4c47c3639a4a893ae6908d5110b1cf6dd7a2765[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Nov 4 16:56:15 2024 +0530
+
+     add some animation
+
+[33mcommit 6d28f690e512102aecfea3d693f7e0f67b2797c7[m
+Merge: 2a81dc3 45f8836
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Nov 4 16:48:55 2024 +0530
+
+    Merge pull request #6 from iamjuu/ajmal
+    
+     datas comes from datas file
+
+[33mcommit 45f88368954229488a58a49e0c374abc9e72630e[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Nov 4 16:47:51 2024 +0530
+
+     datas comes from datas file
+
+[33mcommit 2a81dc38da29d21f628b0cb4a3370ab4273e717d[m
+Merge: f959039 ec94134
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Nov 4 16:31:04 2024 +0530
+
+    Merge pull request #5 from iamjuu/ajmal
+    
+    section one complete
+
+[33mcommit ec94134f7e7785b6455d9d9243e872303fbebae4[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Nov 4 16:30:18 2024 +0530
+
+    section one complete
+
+[33mcommit f95903920da0c0555de5fe71cfc59efe1a049a31[m
+Merge: 9404fa0 ecf765f
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Mon Nov 4 13:21:11 2024 +0530
+
+    Merge pull request #4 from iamjuu/ajmal
+    
+     section on work
+
+[33mcommit ecf765f7c46cc1382abe5a4f56525b385d438d2d[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Mon Nov 4 13:20:19 2024 +0530
+
+     section on work
+
+[33mcommit 9404fa0aa1aa9195368ab851b417b68ac9cf1340[m
+Merge: 310b239 58fe3fc
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sun Nov 3 22:10:19 2024 +0530
+
+    Merge pull request #3 from iamjuu/ajmal
+    
+     pages ready
+
+[33mcommit 58fe3fc44d84274b373e88a4c0abbfe384e69999[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 3 22:09:05 2024 +0530
+
+     pages ready
+
+[33mcommit 310b2390ad07b477f252b5fcabdc72f36694d575[m
+Merge: 5da3dce f6f1515
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sun Nov 3 20:10:49 2024 +0530
+
+    Merge pull request #2 from iamjuu/ajmal
+    
+     landing page styled is ready
+
+[33mcommit f6f15154cd50561ea86b1b2ece8b82315eddca20[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 3 20:09:37 2024 +0530
+
+     landing page styled is ready
+
+[33mcommit 5da3dce1fa84d518891209892fa830b72e6030da[m
+Merge: ab8d119 8eb562f
+Author: Muhammed Ajmal cc <85844601+iamjuu@users.noreply.github.com>
+Date:   Sun Nov 3 11:54:12 2024 +0530
+
+    Merge pull request #1 from iamjuu/ajmal
+    
+     project started
+
+[33mcommit 8eb562f1cfc0c0dd97e0201fbaff2457a8ae9c3e[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 3 11:53:07 2024 +0530
+
+     project started
+
+[33mcommit ab8d119d69d9860c4caa82a92ac74adfe313a19e[m
+Author: muhammed ajmal <muhammedajmalcc6424094@gmail.com>
+Date:   Sun Nov 3 11:42:45 2024 +0530
+
+    first commit

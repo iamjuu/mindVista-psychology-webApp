@@ -16,7 +16,7 @@ const Index = () => {
             </div> */}
             <div className="right">
               <h5 >{SectionFour.h5}</h5>
-              <h1 style={{fontSize:'1.5rem',fontFamily:'monospace'}}>
+              <h1 style={{fontSize:'1.5rem',fontFamily:'Manrope'}}>
                 {SectionFour.h1}
 
               </h1>

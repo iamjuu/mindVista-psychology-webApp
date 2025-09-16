@@ -23,6 +23,7 @@ function Form() {
 
   const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [submitting, setSubmitting] = useState(false); // Add loading state for form submission
 
   // Fetch all doctors when component mounts
   useEffect(() => {
@@ -59,42 +60,150 @@ function Form() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
+    // Validate required fields
+    if (!formData.name || !formData.email || !formData.number || !formData.location || !formData.date || !formData.doctor) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
     // Validate doctor selection
     if (!formData.doctor) {
       toast.error('Please select a doctor');
       return;
     }
     
-    console.log('[RegisterForm] Submitting slot:', formData.slot); // Log slot value
-    console.log('[RegisterForm] Submitting time:', formData.time); // Log time value
-    console.log('[RegisterForm] Submitting doctor:', formData.doctor); // Log doctor value
+    // Validate date is not in the past
+    const selectedDate = new Date(formData.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Reset time to start of day
     
+    if (selectedDate < today) {
+      toast.error('Please select a future date for your appointment');
+      return;
+    }
+    
+    // Validate phone number (basic validation)
+    if (formData.number.length !== 10 || !/^\d+$/.test(formData.number)) {
+      toast.error('Please enter a valid 10-digit phone number');
+      return;
+    }
+    
+    // Validate age
+    const age = parseInt(formData.age);
+    if (age < 1 || age > 120) {
+      toast.error('Please enter a valid age between 1 and 120');
+      return;
+    }
+    
+    // Set loading state
+    setSubmitting(true);
+    
+ 
     try {
-      const response = await apiInstance.post('/appointment', formData, {
+      // Get doctor name for payment page
+      const selectedDoctor = doctors.find(doc => doc._id === formData.doctor);
+      const doctorName = selectedDoctor ? selectedDoctor.name : 'Selected Doctor';
+      
+      // Prepare registration data for saving
+      const registrationData = {
+        ...formData,
+        doctorName,
+        status: 'pending', // Set initial status as pending
+        createdAt: new Date().toISOString(), // Add timestamp
+        paymentStatus: 'pending' // Add payment status
+      };
+      
+      // Save registration data to backend immediately using the correct appointment endpoint
+      console.log('[RegisterForm] Saving registration data:', registrationData);
+      
+      const saveResponse = await apiInstance.post('/appointment', registrationData, {
         headers: {
           'Content-Type': 'application/json',
         },
       });
-  
-      // Show success toast
-      toast.success('Form submitted successfully!');
       
-      console.log('Form submitted successfully:', response.data);
-      
-      // Navigate to about page after a short delay
-      setTimeout(() => {
-        Navigate('/about');
-      }, 1500);
+      if (saveResponse.data.success) {
+        console.log('[RegisterForm] Registration saved successfully:', saveResponse.data);
+        
+        // Prepare appointment data for payment page with saved data
+        const appointmentData = {
+          ...registrationData,
+          id: saveResponse.data.data._id || saveResponse.data.data.id, // Use the saved ID
+          registrationId: saveResponse.data.data._id || saveResponse.data.data.id // Store registration ID
+        };
+        
+        // Show success toast and navigate to payment page
+        toast.success('Registration saved successfully! Redirecting to payment...');
+        
+        // Navigate to payment page with saved appointment data
+        setTimeout(() => {
+          Navigate('/payment', { 
+            state: { appointmentData } 
+          });
+        }, 1500);
+        
+      } else {
+        throw new Error(saveResponse.data.message || 'Failed to save registration');
+      }
       
     } catch (error) {
-      // Handle error responses
-      if (error.response && error.response.status === 403) {
-        toast.error(error.response.data.message || 'Please use a registered email!');
+      console.error('Error saving registration:', error);
+      
+      // Handle different types of errors
+      if (error.response) {
+        const status = error.response.status;
+        const message = error.response.data?.message || error.message;
+        
+        switch (status) {
+          case 400:
+            toast.error(message || 'Invalid form data. Please check all fields.');
+            break;
+          case 403:
+            toast.error(message || 'Access denied. Please use a registered email!');
+            break;
+          case 404:
+            toast.error('Service not available. Proceeding to payment...');
+            // Still redirect to payment page even if backend is not available
+            setTimeout(() => {
+              const appointmentData = {
+                ...registrationData,
+                id: `temp_${Date.now()}`, // Temporary ID
+                registrationId: `temp_${Date.now()}` // Temporary registration ID
+              };
+              Navigate('/payment', { 
+                state: { appointmentData } 
+              });
+            }, 2000);
+            break;
+          case 409:
+            toast.error('An appointment already exists for this time slot. Please choose another time.');
+            break;
+          case 500:
+            toast.error('Server error. Please try again later.');
+            break;
+          default:
+            toast.error(message || 'Failed to save registration. Please try again!');
+        }
+      } else if (error.request) {
+        // Network error - still allow user to proceed to payment
+        toast.error('Network error. Proceeding to payment page...');
+        setTimeout(() => {
+          const appointmentData = {
+            ...registrationData,
+            id: `temp_${Date.now()}`, // Temporary ID
+            registrationId: `temp_${Date.now()}` // Temporary registration ID
+          };
+          Navigate('/payment', { 
+            state: { appointmentData } 
+          });
+        }, 2000);
       } else {
-        toast.error('Something went wrong. Please try again!');
+        // Other error
+        toast.error('An unexpected error occurred. Please try again.');
       }
-  
-      console.error('Error during form submission:', error);
+    } finally {
+      // Reset loading state
+      setSubmitting(false);
     }
   };
 
@@ -204,6 +313,13 @@ function Form() {
             <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
             <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
           </optgroup>
+          <optgroup label="Night (1 slot)">
+            <option value="19:00-22:00">7:00 PM - 10:00 PM</option>
+            <option value="22:00-23:00">10:00 PM - 11:00 PM</option>
+            <option value="23:00-00:00">11:00 PM - 12:00 AM</option>
+            <option value="00:00-01:00">12:00 AM - 1:00 AM</option>
+            <option value="01:00-02:00">1:00 AM - 2:00 AM</option>
+          </optgroup>
         </Select>
       </FormGroup>
 
@@ -239,11 +355,20 @@ function Form() {
           name="date"
           value={formData.date}
           onChange={handleChange}
+          min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
           required
         />
+        <small style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
+          Please select a future date for your appointment
+        </small>
       </FormGroup>
 
-      <Button type="submit">Submit</Button>
+      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
+        <Button type="submit" disabled={submitting}>
+          {submitting ? 'Submitting...' : 'Submit'}
+        </Button>
+  
+      </div>
       <ToastContainer />
     </FormContainer>
   );

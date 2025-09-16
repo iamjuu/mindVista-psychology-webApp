@@ -3,6 +3,7 @@ import { Search, Filter, X, Phone, Users, Star, Clock } from 'lucide-react';
 import { toast } from 'react-toastify';
 import { Button } from '../../../../components/shadcn/button/button';
 import { Input } from '../../../../components/shadcn/input/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import apiInstance from '../../../../instance';
 import AddDoctorModal from '../../../../components/DashBoardcomponents/AddDoctorModal';
 import EditDoctorModal from '../../../../components/DashBoardcomponents/EditDoctorModal';
@@ -136,7 +137,7 @@ const DoctorList = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 bg-gray-50 min-h-screen p-4">
       {/* Header */}
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -183,16 +184,19 @@ const DoctorList = () => {
             </div>
             <div className="flex gap-2 items-center">
               <Filter size={20} className="text-gray-400" />
-              <select
-                value={specialtyFilter}
-                onChange={(e) => setSpecialtyFilter(e.target.value)}
-                className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="all">All Specialties</option>
-                {specialties.map(specialty => (
-                  <option key={specialty} value={specialty}>{specialty}</option>
-                ))}
-              </select>
+                             <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
+                 <SelectTrigger className="w-[180px] bg-white border-gray-300 hover:bg-gray-50">
+                   <SelectValue placeholder="All Specialties" />
+                 </SelectTrigger>
+                <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                  <SelectItem value="all">All Specialties</SelectItem>
+                  {specialties.map(specialty => (
+                    <SelectItem key={specialty} value={specialty}>
+                      {specialty}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
           {(searchTerm || specialtyFilter !== 'all') && (

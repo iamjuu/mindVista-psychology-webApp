@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Home, Users, Activity, Calendar, DollarSign, HelpCircle, Settings } from 'lucide-react';
+import { Home, Users, Activity, Calendar, DollarSign, HelpCircle, Settings, Video } from 'lucide-react';
 
 // Constants for icon sizes
 const ICON_SIZE = 20;
@@ -12,6 +12,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
     { id: 'users', label: 'Users', icon: <Users size={ICON_SIZE} /> },
     { id: 'doctors', label: 'Doctors', icon: <Activity size={ICON_SIZE} /> },
     { id: 'appointments', label: 'Appointments', icon: <Calendar size={ICON_SIZE} /> },
+    { id: 'today-appointments', label: 'Today\'s Sessions', icon: <Video size={ICON_SIZE} /> },
     { id: 'finance', label: 'Finance', icon: <DollarSign size={ICON_SIZE} /> },
     { id: 'help', label: 'Help Center', icon: <HelpCircle size={ICON_SIZE} /> },
     { id: 'settings', label: 'Settings', icon: <Settings size={ICON_SIZE} /> }
@@ -20,9 +21,9 @@ const Sidebar = ({ activePage, setActivePage }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className="fixed left-0 top-0 h-screen w-64 bg-gray-800 text-white p-4 hidden md:flex flex-col transition-all duration-300 ease-in-out z-20">
+      <div className="fixed left-0 top-0 h-screen w-64 bg-white text-black p-4 hidden md:flex flex-col transition-all duration-300 ease-in-out z-20">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold">Health Dashboard</h1>
+          <h1 className="text-xl text-center font-bold">MindVista </h1>
         </div>
         <nav className="space-y-2 flex-1">
           {menuItems.map(item => (
@@ -32,10 +33,10 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 console.log('Clicked menu item:', item.label);
                 setActivePage(item.id);
               }} 
-              className={`flex items-center space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
+              className={`flex items-center text-[12px] space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
                 activePage === item.id 
-                  ? 'bg-blue-600 shadow-lg transform scale-[1.02]' 
-                  : 'hover:bg-gray-700 hover:shadow-md'
+                  ? 'hover:bg-gray-200 bg-gray-300 transform scale-[1.02]' 
+                  : 'hover:bg-gray-300 hover:shadow-md'
               }`}
             >
               <span className={`transition-transform duration-200 ${activePage === item.id ? 'transform scale-110' : ''}`}>
@@ -48,7 +49,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
       </div>
       
       {/* Mobile Bottom Navigation */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-800 text-white z-20 shadow-lg border-t border-gray-700">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white text-black z-20 shadow-lg border-t border-gray-700">
         <div className="overflow-x-auto scrollbar-hide">
           <div className="flex justify-between items-center p-2 px-4">
             {menuItems.map(item => (
@@ -58,7 +59,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
                   console.log('Clicked mobile menu item:', item.label);
                   setActivePage(item.id);
                 }} 
-                className={`flex flex-col items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-[60px] ${
+                className={`flex flex-col text-[12px] items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-[60px] ${
                   activePage === item.id 
                     ? 'bg-blue-600 transform scale-105' 
                     : 'hover:bg-gray-700'
@@ -70,6 +71,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 <span className="text-[10px] font-medium text-center leading-tight whitespace-nowrap">
                   {item.label === 'Help Center' ? 'Help' : 
                    item.label === 'Appointments' ? 'Appts' : 
+                   item.label === 'Today\'s Sessions' ? 'Today' :
                    item.label}
                 </span>
               </button>

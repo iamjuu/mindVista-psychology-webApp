@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { Search, Filter, ChevronLeft, ChevronRight, User, Mail, Phone, MapPin, Clock, Calendar, DollarSign, Users, Award } from 'lucide-react';
 import { Button } from '../../../../components/shadcn/button/button';
 import { Input } from '../../../../components/shadcn/input/input';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import apiInstance from '../../../../instance';
 
 const DoctorList = () => {
@@ -19,198 +20,9 @@ const DoctorList = () => {
   // Items per page
   const itemsPerPage = 5;
 
-  // Mock doctor data array - replace this with actual API call
-  const mockDoctorData = [
-    {
-      id: '1',
-      name: 'Dr. Rajesh Kumar',
-      email: 'rajesh.kumar@mindvista.com',
-      phone: '9876543210',
-      specialization: 'Clinical Psychology',
-      experience: '8 years',
-      totalIncome: 145000,
-      monthlyIncome: 18000,
-      totalPatients: 156,
-      joinDate: '2020-01-15',
-      status: 'active',
-      isActive: true
-    },
-    {
-      id: '2',
-      name: 'Dr. Priya Sharma',
-      email: 'priya.sharma@mindvista.com',
-      phone: '9876543211',
-      specialization: 'Cognitive Behavioral Therapy',
-      experience: '6 years',
-      totalIncome: 120000,
-      monthlyIncome: 15000,
-      totalPatients: 134,
-      joinDate: '2021-03-22',
-      status: 'active',
-      isActive: true
-    },
-    {
-      id: '3',
-      name: 'Dr. Amit Verma',
-      email: 'amit.verma@mindvista.com',
-      phone: '9876543212',
-      specialization: 'Child Psychology',
-      experience: '10 years',
-      totalIncome: 180000,
-      monthlyIncome: 22000,
-      totalPatients: 198,
-      joinDate: '2019-07-10',
-      status: 'active',
-      isActive: true
-    },
-    {
-      id: '4',
-      name: 'Dr. Neha Patel',
-      email: 'neha.patel@mindvista.com',
-      phone: '9876543213',
-      specialization: 'Marriage & Family Therapy',
-      experience: '5 years',
-      totalIncome: 95000,
-      monthlyIncome: 12000,
-      totalPatients: 89,
-      joinDate: '2022-02-18',
-      status: 'active',
-      isActive: true
-    },
-    {
-      id: '5',
-      name: 'Dr. Arjun Singh',
-      email: 'arjun.singh@mindvista.com',
-      phone: '9876543214',
-      specialization: 'Addiction Therapy',
-      experience: '12 years',
-      totalIncome: 210000,
-      monthlyIncome: 25000,
-      totalPatients: 245,
-      joinDate: '2018-09-05',
-      status: 'active',
-      isActive: true
-    },
-    {
-      id: '6',
-      name: 'Dr. Kavitha Reddy',
-      email: 'kavitha.reddy@mindvista.com',
-      phone: '9876543215',
-      specialization: 'Trauma Therapy',
-      experience: '7 years',
-      totalIncome: 132000,
-      monthlyIncome: 16000,
-      totalPatients: 142,
-      joinDate: '2021-01-12',
-      status: 'inactive',
-      isActive: false
-    },
-    {
-      id: '7',
-      name: 'Dr. Sanjay Gupta',
-      email: 'sanjay.gupta@mindvista.com',
-      phone: '9876543216',
-      specialization: 'Anxiety & Depression',
-      experience: '9 years',
-      totalIncome: 165000,
-      monthlyIncome: 20000,
-      totalPatients: 178,
-      joinDate: '2020-06-30',
-      status: 'active',
-      isActive: true
-    },
-    {
-      id: '8',
-      name: 'Dr. Meera Joshi',
-      email: 'meera.joshi@mindvista.com',
-      phone: '9876543217',
-      specialization: 'Stress Management',
-      experience: '4 years',
-      totalIncome: 85000,
-      monthlyIncome: 11000,
-      totalPatients: 76,
-      joinDate: '2022-11-20',
-      status: 'active',
-      isActive: false
-    }
-  ];
 
-  // Mock user data array based on registration form
-  const mockUserData = [
-    {
-      id: '1',
-      name: 'John Smith',
-      email: 'john.smith@gmail.com',
-      number: '9876543210',
-      location: 'Mumbai',
-      age: '32',
-      slot: 'morning',
-      time: '09:00-10:00',
-      date: '2024-01-15',
-      status: 'active'
-    },
-    {
-      id: '2',
-      name: 'Sarah Johnson',
-      email: 'sarah.johnson@gmail.com',
-      number: '9876543211',
-      location: 'Delhi',
-      age: '28',
-      slot: 'afternoon',
-      time: '14:00-15:00',
-      date: '2024-01-16',
-      status: 'active'
-    },
-    {
-      id: '3',
-      name: 'Mike Davis',
-      email: 'mike.davis@gmail.com',
-      number: '9876543212',
-      location: 'Bangalore',
-      age: '35',
-      slot: 'evening',
-      time: '18:00-19:00',
-      date: '2024-01-17',
-      status: 'active'
-    },
-    {
-      id: '4',
-      name: 'Emma Wilson',
-      email: 'emma.wilson@gmail.com',
-      number: '9876543213',
-      location: 'Chennai',
-      age: '29',
-      slot: 'morning',
-      time: '10:00-11:00',
-      date: '2024-01-18',
-      status: 'inactive'
-    },
-    {
-      id: '5',
-      name: 'David Brown',
-      email: 'david.brown@gmail.com',
-      number: '9876543214',
-      location: 'Hyderabad',
-      age: '42',
-      slot: 'afternoon',
-      time: '15:00-16:00',
-      date: '2024-01-19',
-      status: 'active'
-    },
-    {
-      id: '6',
-      name: 'Lisa Anderson',
-      email: 'lisa.anderson@gmail.com',
-      number: '9876543215',
-      location: 'Pune',
-      age: '31',
-      slot: 'evening',
-      time: '19:00-20:00',
-      date: '2024-01-20',
-      status: 'active'
-    }
-  ]
-  
+
+ 
   // Fetch data from API
   useEffect(() => {
     const fetchData = async () => {
@@ -579,7 +391,7 @@ const DoctorList = () => {
       </div>
       
       {/* Filters and search */}
-      <div className="p-4 space-y-4">
+      <div className="flex items-center p-4 justify-between">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={18} className="text-gray-400" />
@@ -599,43 +411,45 @@ const DoctorList = () => {
         
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
               <Filter size={18} className="text-gray-400" />
             </div>
-            <select
-              className="pl-10 pr-4 py-2 border rounded-lg w-full appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-              value={statusFilter}
-              onChange={(e) => {
-                console.log('Status filter changed:', e.target.value);
-                setStatusFilter(e.target.value);
-                setCurrentPage(1); // Reset to first page on filter change
-              }}
-            >
-              <option value="all">All Status</option>
-              <option value="active">Active</option>
-              <option value="inactive">Inactive</option>
-              <option value="pending">Pending</option>
-            </select>
+                         <Select value={statusFilter} onValueChange={(value) => {
+               console.log('Status filter changed:', value);
+               setStatusFilter(value);
+               setCurrentPage(1); // Reset to first page on filter change
+             }}>
+               <SelectTrigger className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                 <SelectValue placeholder="All Status" />
+               </SelectTrigger>
+                             <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                 <SelectItem value="all">All Status</SelectItem>
+                 <SelectItem value="active">Active</SelectItem>
+                 <SelectItem value="inactive">Inactive</SelectItem>
+                 <SelectItem value="pending">Pending</SelectItem>
+               </SelectContent>
+            </Select>
           </div>
           
           {activeTab === 'doctors' && (
             <div className="relative flex-1">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                 <Filter size={18} className="text-gray-400" />
               </div>
-              <select
-                className="pl-10 pr-4 py-2 border rounded-lg w-full appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-                value={approvalFilter}
-                onChange={(e) => {
-                  console.log('Approval filter changed:', e.target.value);
-                  setApprovalFilter(e.target.value);
-                  setCurrentPage(1); // Reset to first page on filter change
-                }}
-              >
-                <option value="all">All Approval</option>
-                <option value="approved">Approved</option>
-                <option value="pending">Pending Approval</option>
-              </select>
+                             <Select value={approvalFilter} onValueChange={(value) => {
+                 console.log('Approval filter changed:', value);
+                 setApprovalFilter(value);
+                 setCurrentPage(1); // Reset to first page on filter change
+               }}>
+                 <SelectTrigger className="pl-10 pr-4 py-2 border rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+                   <SelectValue placeholder="All Approval" />
+                 </SelectTrigger>
+                                 <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                   <SelectItem value="all">All Approval</SelectItem>
+                   <SelectItem value="approved">Approved</SelectItem>
+                   <SelectItem value="pending">Pending Approval</SelectItem>
+                 </SelectContent>
+              </Select>
             </div>
           )}
           
@@ -698,9 +512,7 @@ const DoctorList = () => {
             Refresh Data
           </Button>
           
-          <div className="text-sm text-gray-500 flex items-center justify-center sm:justify-start py-2">
-            Showing {currentData.length} {activeTab === 'doctors' ? 'doctors' : 'users'}
-          </div>
+       
         </div>
       </div>
       
@@ -737,187 +549,191 @@ const DoctorList = () => {
             </div>
           )}
           
-          {/* Table View - Now scrollable on table data only */}
+          {/* Table View - Fixed first columns with scrollable data */}
           {currentData.length > 0 && (
-            <div className="max-w-6xl">
-              <div className="max-w-7xl mx-auto">
-                <div className="overflow-x-auto">
+            <div className="w-full ">
+              <div className="w-full mx-auto">
+                <div className="relative">
                   {activeTab === 'doctors' ? (
-                    <table className="w-full min-w-[1000px] table-auto">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px]">ID</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Doctor Name</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[180px]">Email</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Specialization</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Experience</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Income</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Monthly Income</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Patients</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Approval</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {paginatedData.length > 0 ? (
-                          paginatedData.map(doctor => (
-                            <tr key={doctor.id} className="border-t hover:bg-gray-50">
-                              <td className="p-3 text-gray-500 whitespace-nowrap">#{typeof doctor.id === 'number' ? doctor.id : doctor.id.slice(-4)}</td>
-                              <td className="p-3 font-medium whitespace-nowrap">{doctor.name}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.email}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.phone}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.specialization}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.experience}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">
-                                <span className="text-green-600 font-semibold">₹{doctor.totalIncome.toLocaleString()}</span>
-                              </td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">
-                                <span className="text-blue-600 font-semibold">₹{doctor.monthlyIncome.toLocaleString()}</span>
-                              </td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">
-                                <span className="text-blue-600 font-semibold">{doctor.totalPatients} patients</span>
-                              </td>
-                              <td className="p-3 whitespace-nowrap">
-                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                  doctor.status === 'active' 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-red-100 text-red-800'
-                                }`}>
-                                  {doctor.status}
-                                </span>
-                              </td>
-                              <td className="p-3 whitespace-nowrap">
-                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                  doctor.isActive 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : 'bg-yellow-100 text-yellow-800'
-                                }`}>
-                                  {doctor.isActive ? 'Approved' : 'Pending'}
-                                </span>
-                              </td>
-                              <td className="p-3 whitespace-nowrap">
-                                <div className="flex space-x-2">
-                                  {!doctor.isActive && (
+                    <div className="overflow-x-auto px-4">
+                      <table className="w-full px-4 table-auto">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px] sticky left-0 bg-gray-50 z-10">ID</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px] sticky left-[60px] bg-gray-50 z-10">Doctor Name</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[180px]">Email</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Specialization</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Experience</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Income</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Monthly Income</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Total Patients</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Approval</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                                                     {paginatedData.length > 0 ? (
+                             paginatedData.map(doctor => (
+                               <tr key={doctor.id} className="border-t hover:bg-gray-50 hover:transform hover:translate-x-2 transition-all duration-200">
+                                <td className="p-3 text-gray-500 whitespace-nowrap sticky left-0 bg-white z-10 border-r">#{typeof doctor.id === 'number' ? doctor.id : doctor.id.slice(-4)}</td>
+                                <td className="p-3 font-medium whitespace-nowrap sticky left-[60px] bg-white z-10 border-r">{doctor.name}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.email}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.phone}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.specialization}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{doctor.experience}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">
+                                  <span className="text-green-600 font-semibold">₹{doctor.totalIncome.toLocaleString()}</span>
+                                </td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">
+                                  <span className="text-blue-600 font-semibold">₹{doctor.monthlyIncome.toLocaleString()}</span>
+                                </td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">
+                                  <span className="text-blue-600 font-semibold">{doctor.totalPatients} patients</span>
+                                </td>
+                                <td className="p-3 whitespace-nowrap">
+                                  <span className={`px-2 py-1 rounded-full text-xs ${
+                                    doctor.status === 'active' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {doctor.status}
+                                  </span>
+                                </td>
+                                <td className="p-3 whitespace-nowrap">
+                                  <span className={`px-2 py-1 rounded-full text-xs ${
+                                    doctor.isActive 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : 'bg-yellow-100 text-yellow-800'
+                                  }`}>
+                                    {doctor.isActive ? 'Approved' : 'Pending'}
+                                  </span>
+                                </td>
+                                <td className="p-3 whitespace-nowrap">
+                                  <div className="flex space-x-2">
+                                    {!doctor.isActive && (
+                                      <Button 
+                                        variant="ghost" 
+                                        size="sm" 
+                                        onClick={() => handleApproveDoctor(doctor.id)}
+                                        className="text-green-500 hover:text-green-700 underline hover:no-underline"
+                                      >
+                                        Approve
+                                      </Button>
+                                    )}
                                     <Button 
                                       variant="ghost" 
                                       size="sm" 
-                                      onClick={() => handleApproveDoctor(doctor.id)}
-                                      className="text-green-500 hover:text-green-700 underline hover:no-underline"
+                                      className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
                                     >
-                                      Approve
+                                      Edit
                                     </Button>
-                                  )}
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="text-red-500 hover:text-red-700 underline hover:no-underline"
-                                  >
-                                    Delete
-                                  </Button>
-                                </div>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="text-red-500 hover:text-red-700 underline hover:no-underline"
+                                    >
+                                      Delete
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="12" className="p-4 text-center text-gray-500">
+                                {doctorData.length > 0 
+                                  ? 'No doctors found matching your criteria' 
+                                  : 'No doctors available'}
                               </td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="12" className="p-4 text-center text-gray-500">
-                              {doctorData.length > 0 
-                                ? 'No doctors found matching your criteria' 
-                                : 'No doctors available'}
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   ) : (
-                    <table className="w-full min-w-[1100px] table-auto">
-                      <thead>
-                        <tr className="bg-gray-50">
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px]">ID</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px]">Name</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Location</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[80px]">Age</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Slot</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Time</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Date</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
-                          <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {paginatedData.length > 0 ? (
-                          paginatedData.map(user => (
-                            <tr key={user.id} className="border-t hover:bg-gray-50">
-                              <td className="p-3 text-gray-500 whitespace-nowrap">#{typeof user.id === 'number' ? user.id : user.id.slice(-4)}</td>
-                              <td className="p-3 font-medium whitespace-nowrap">{user.name}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.number}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.location}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.age}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">
-                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                  user.slot === 'morning' 
-                                    ? 'bg-yellow-100 text-yellow-800' 
-                                    : user.slot === 'afternoon' 
-                                      ? 'bg-orange-100 text-orange-800' 
-                                      : 'bg-purple-100 text-purple-800'
-                                }`}>
-                                  {user.slot}
-                                </span>
-                              </td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.time}</td>
-                              <td className="p-3 text-gray-500 whitespace-nowrap">{user.date}</td>
-                              <td className="p-3 whitespace-nowrap">
-                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                  user.status === 'active' 
-                                    ? 'bg-green-100 text-green-800' 
-                                    : user.status === 'pending' 
+                    <div className="overflow-x-auto w-full ">
+                      <table className="w-full  table-auto">
+                        <thead>
+                          <tr className="bg-gray-50">
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px] sticky left-0 bg-gray-50 z-10">ID</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[150px] sticky left-[60px] bg-gray-50 z-10">Name</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Phone</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Location</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[80px]">Age</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Slot</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Time</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Date</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[100px]">Status</th>
+                            <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[120px]">Actions</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                                                     {paginatedData.length > 0 ? (
+                             paginatedData.map(user => (
+                               <tr key={user.id} className="border-t hover:bg-gray-50 hover:transform hover:translate-x-2 transition-all duration-200">
+                                <td className="p-3 text-gray-500 whitespace-nowrap sticky left-0 bg-white z-10 border-r">#{typeof user.id === 'number' ? user.id : user.id.slice(-4)}</td>
+                                <td className="p-3 font-medium whitespace-nowrap sticky left-[60px] bg-white z-10 border-r">{user.name}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{user.number}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{user.location}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{user.age}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">
+                                  <span className={`px-2 py-1 rounded-full text-xs ${
+                                    user.slot === 'morning' 
                                       ? 'bg-yellow-100 text-yellow-800' 
-                                      : 'bg-red-100 text-red-800'
-                                }`}>
-                                  {user.status}
-                                </span>
-                              </td>
-                              <td className="p-3 whitespace-nowrap">
-                                <div className="flex space-x-2">
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
-                                  >
-                                    Edit
-                                  </Button>
-                                  <Button 
-                                    variant="ghost" 
-                                    size="sm" 
-                                    className="text-red-500 hover:text-red-700 underline hover:no-underline"
-                                  >
-                                    Delete
-                                  </Button>
-                                </div>
+                                      : user.slot === 'afternoon' 
+                                        ? 'bg-orange-100 text-orange-800' 
+                                        : 'bg-purple-100 text-purple-800'
+                                  }`}>
+                                    {user.slot}
+                                  </span>
+                                </td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{user.time}</td>
+                                <td className="p-3 text-gray-500 whitespace-nowrap">{user.date}</td>
+                                <td className="p-3 whitespace-nowrap">
+                                  <span className={`px-2 py-1 rounded-full text-xs ${
+                                    user.status === 'active' 
+                                      ? 'bg-green-100 text-green-800' 
+                                      : user.status === 'pending' 
+                                        ? 'bg-yellow-100 text-yellow-800' 
+                                        : 'bg-red-100 text-red-800'
+                                  }`}>
+                                    {user.status}
+                                  </span>
+                                </td>
+                                <td className="p-3 whitespace-nowrap">
+                                  <div className="flex space-x-2">
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="text-blue-500 hover:text-blue-700 underline hover:no-underline"
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button 
+                                      variant="ghost" 
+                                      size="sm" 
+                                      className="text-red-500 hover:text-red-700 underline hover:no-underline"
+                                    >
+                                      Delete
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="10" className="p-4 text-center text-gray-500">
+                                {userData.length > 0 
+                                  ? 'No users found matching your criteria' 
+                                  : 'No users available'}
                               </td>
                             </tr>
-                          ))
-                        ) : (
-                          <tr>
-                            <td colSpan="10" className="p-4 text-center text-gray-500">
-                              {userData.length > 0 
-                                ? 'No users found matching your criteria' 
-                                : 'No users available'}
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                    </table>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
                   )}
                 </div>
               </div>

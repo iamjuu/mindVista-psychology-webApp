@@ -4,6 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Eye, EyeOff, Lock, Mail, Brain } from 'lucide-react';
 import apiInstance from '../../instance';
+import { Button } from '../../components/shadcn/button/button';
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
@@ -60,7 +61,7 @@ const DoctorLogin = () => {
         
         // Navigate to doctor dashboard
         setTimeout(() => {
-          navigate('/docter');
+          navigate(`/docter?email=${encodeURIComponent(formData.email)}`);
         }, 1500);
       }
     } catch (error) {
@@ -146,25 +147,27 @@ const DoctorLogin = () => {
                   pattern="[0-9]{10}"
                   maxLength={10}
                 />
-                <button
+                <Button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  variant="ghost"
+                  size="icon"
+                  className="absolute inset-y-0 right-0 pr-3"
                 >
                   {showPassword ? (
                     <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                   ) : (
                     <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
                   )}
-                </button>
+                </Button>
               </div>
             </div>
 
             {/* Submit Button */}
-            <button
+            <Button
               type="submit"
               disabled={loading}
-              className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+              className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
             >
               {loading ? (
                 <div className="flex items-center">
@@ -174,7 +177,7 @@ const DoctorLogin = () => {
               ) : (
                 'Sign In'
               )}
-            </button>
+            </Button>
           </form>
 
           {/* Additional Links */}

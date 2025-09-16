@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import { Users, DollarSign, TrendingUp, TrendingDown, CreditCard, PieChart, Stethoscope } from 'lucide-react';
 
 const Finance = () => {
@@ -133,29 +134,33 @@ const Finance = () => {
 
   // Stats Card Component
   const StatsCard = ({ icon, title, value, subtext, trend, bgColor }) => (
-    <div className={`p-4 sm:p-6 rounded-lg shadow-lg ${bgColor} text-white`}>
+    <div 
+      className={`p-4 rounded-lg shadow cursor-pointer transition-all duration-200 transform hover:scale-105 ${bgColor} text-white`}
+    >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm opacity-80">{title}</p>
-          <p className="text-2xl sm:text-3xl font-bold mt-1">{value}</p>
-          {subtext && <p className="text-sm opacity-80 mt-1">{subtext}</p>}
+          <p className="text-sm opacity-80">{title}</p>  
+          <p className="text-lg font-bold">{value}</p>
+          {subtext && <p className="text-xs opacity-70 mt-1">{subtext}</p>}
         </div>
-        <div className="p-2 sm:p-3 bg-white bg-opacity-20 rounded-full">
-          {icon}
+        <div className="text-right">
+          <div className="p-2 bg-white bg-opacity-20 rounded-full">
+            {icon}
+          </div>
+          {trend && (
+            <div className="mt-2 flex items-center justify-end">
+              {trend > 0 ? (
+                <TrendingUp size={12} className="text-green-300" />
+              ) : (
+                <TrendingDown size={12} className="text-red-300" />
+              )}
+              <span className="ml-1 text-xs">
+                {trend > 0 ? '+' : ''}{trend}%
+              </span>
+            </div>
+          )}
         </div>
       </div>
-      {trend && (
-        <div className="mt-3 flex items-center">
-          {trend > 0 ? (
-            <TrendingUp size={16} className="text-green-300" />
-          ) : (
-            <TrendingDown size={16} className="text-red-300" />
-          )}
-          <span className="ml-2 text-sm">
-            {trend > 0 ? '+' : ''}{trend}% from last month
-          </span>
-        </div>
-      )}
     </div>
   );
 
@@ -170,11 +175,7 @@ const Finance = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-        <h2 className="text-2xl font-bold text-gray-800">Finance Overview</h2>
-        <p className="text-gray-600 mt-2">Monitor your platform's financial performance and user metrics</p>
-      </div>
+     
 
       {/* Doctor Selection Navbar */}
       <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
@@ -182,18 +183,19 @@ const Finance = () => {
           <h3 className="text-lg font-semibold text-gray-800">Doctor Analytics</h3>
           <div className="flex items-center gap-4">
             <label className="text-sm font-medium text-gray-700 whitespace-nowrap">Select Doctor:</label>
-            <select
-              value={selectedDoctor}
-              onChange={(e) => setSelectedDoctor(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="all">All Doctors</option>
-              {mockDoctorData.map((doctor) => (
-                <option key={doctor.id} value={doctor.id}>
-                  {doctor.name} ({doctor.specialization})
-                </option>
-              ))}
-            </select>
+            <Select value={selectedDoctor} onValueChange={setSelectedDoctor}>
+              <SelectTrigger className="w-full sm:w-auto bg-white border-gray-300 hover:bg-gray-50">
+                <SelectValue placeholder="All Doctors" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                <SelectItem value="all">All Doctors</SelectItem>
+                {mockDoctorData.map((doctor) => (
+                  <SelectItem key={doctor.id} value={doctor.id.toString()}>
+                    {doctor.name} ({doctor.specialization})
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
         

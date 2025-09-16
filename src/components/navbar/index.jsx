@@ -34,7 +34,7 @@ const Navbar = () => {
   };
 
   const dasboardfunction = ()=> {
-navigate('/dashboard')
+navigate('admin/dashboard')
   }
   return (
     <Nav>
@@ -67,7 +67,7 @@ navigate('/dashboard')
                 <li onClick={() => navigatePage("future-planning")}>Career Coaching for Young Adults</li>
                 <li onClick={() => navigatePage("stress-management")}>Stress Management Therapy</li>
                 <li onClick={() => navigatePage("old-age")}>Parenting Counseling</li>
-                <li onClick={() => navigatePage("old-age")}>Financial Stress Counseling</li>
+                {/* <li onClick={() => navigatePage("old-age")}>Financial Stress Counseling</li> */}
                 <li onClick={() => navigatePage("eco-therapy")}>Eco Therapy</li>
                 <li onClick={() => navigatePage("art-music-therapy")}>Art or Music Therapy</li>
               </SubMenu>
