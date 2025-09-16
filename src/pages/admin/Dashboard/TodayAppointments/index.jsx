@@ -3,8 +3,10 @@ import { Button } from '../../../../components/shadcn/button/button'
 import { Input } from '../../../../components/shadcn/input/input'
 import { Search, Calendar, Clock, Video, User, Phone, MapPin, ExternalLink } from 'lucide-react'
 import apiInstance from '../../../../instance'
+import { useTheme } from '../../../../contexts/ThemeContext'
 
 const TodayAppointments = () => {
+    const { themeClasses } = useTheme();
     const [appointments, setAppointments] = useState([])
     const [filteredAppointments, setFilteredAppointments] = useState([])
     const [loading, setLoading] = useState(true)

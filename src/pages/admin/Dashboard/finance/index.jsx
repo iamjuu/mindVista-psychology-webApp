@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import { Users, DollarSign, TrendingUp, TrendingDown, CreditCard, PieChart, Stethoscope } from 'lucide-react';
+import { useTheme } from '../../../../contexts/ThemeContext';
 
 const Finance = () => {
+  const { themeClasses } = useTheme();
   const [financeData, setFinanceData] = useState({
     totalUsers: 0,
     totalIncome: 0,

@@ -24,6 +24,7 @@ import Settings from "../settings";
 import { Input } from "../../../../components/shadcn/input/input";
 import { BadgeImage } from "../../../../assets";
 import { Search, Bell, Calendar, Plus, Power, SearchCheck } from "lucide-react";
+import { useTheme } from "../../../../contexts/ThemeContext";
 
 // DoctorCard PropTypes
 const DoctorCardPropTypes = {
@@ -40,6 +41,7 @@ const DoctorCardPropTypes = {
 };
 
 const Dashboard = () => {
+  const { themeClasses } = useTheme();
   const [activePage, setActivePage] = useState("dashboard");
   const [selectedDoctorId, setSelectedDoctorId] = useState(1);
   const [showAddNoteModal, setShowAddNoteModal] = useState(false);
@@ -1603,7 +1605,7 @@ const Dashboard = () => {
   };
   
   return (
-    <div className="min-h-screen bg-white">
+    <div className={`min-h-screen ${themeClasses.bg}`}>
       {/* Sidebar Component */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
       
@@ -1614,12 +1616,12 @@ const Dashboard = () => {
         msOverflowStyle: "none", // For Internet Explorer and Edge
         overflow: "auto",
       }}
-      className="md:pl-64  px-2 min-h-screen">
+      className={`md:pl-64 px-2 min-h-screen ${themeClasses.bg}`}>
         <div className="p-4 sm:p-6 pb-20 md:pb-6"></div>
            <div className="flex flex-col gap-4 mb-6">
              <div className="w-full justify-between flex">
                <div>
-                 <h1 className="text-[22px] font-medium text-gray-800">
+                 <h1 className={`text-[22px] font-medium ${themeClasses.text}`}>
                    {activePage === "dashboard" && "Dashboard Overview"}
                    {activePage === "users" && "User Management"}
                    {activePage === "doctors" && "Doctor Management"}
@@ -1637,7 +1639,7 @@ const Dashboard = () => {
                    ].includes(activePage) && ""}
                    {activePage === "settings" && "Settings"}
                  </h1>
-                 <p className="text-gray-500 text-[16px] mt-1">
+                 <p className={`${themeClasses.textSecondary} text-[16px] mt-1`}>
                    Welcome back, Admin
                  </p>
                </div>
@@ -1648,7 +1650,7 @@ const Dashboard = () => {
               <div className="flex items-center gap-2 animate-in slide-in-from-right-2 duration-300">
                 <input
                   type="text"
-                  className="border border-gray-300 rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm animate-in fade-in-0 slide-in-from-right-2 duration-300"
+                  className={`${themeClasses.input} rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm animate-in fade-in-0 slide-in-from-right-2 duration-300`}
                   placeholder="Search..."
                   autoFocus
                   onBlur={() => setShowSearchInput(false)}
@@ -1660,7 +1662,7 @@ const Dashboard = () => {
                   style={{ width: 160 }}
                 />
                 <button
-                  className="ml-1 text-gray-500 hover:text-gray-700 transition-colors duration-200"
+                  className={`ml-1 ${themeClasses.textMuted} hover:${themeClasses.textSecondary} transition-colors duration-200`}
                   onClick={() => setShowSearchInput(false)}
                   tabIndex={-1}
                   type="button"
@@ -1670,7 +1672,7 @@ const Dashboard = () => {
               </div>
             ) : (
               <div
-                className="w-10 h-10 rounded-xl border flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-all duration-200 hover:scale-105"
+                className={`w-10 h-10 rounded-xl border ${themeClasses.border} flex items-center justify-center cursor-pointer ${themeClasses.bgHover} transition-all duration-200 hover:scale-105`}
                 onClick={() => setShowSearchInput(true)}
                 tabIndex={0}
                 onKeyDown={e => {
@@ -1678,19 +1680,19 @@ const Dashboard = () => {
                 }}
                 title="Search"
               >
-                <Search className="w-5 h-5 text-gray-600 transition-transform duration-200" />
+                <Search className={`w-5 h-5 ${themeClasses.textSecondary} transition-transform duration-200`} />
               </div>
             )}
             
             {/* Notification Icon */}
-            <div className="relative w-10 h-10 rounded-xl border flex items-center justify-center cursor-pointer hover:bg-gray-200 transition-colors">
-              <Bell className="w-5 h-5 text-gray-600" />
+            <div className={`relative w-10 h-10 rounded-xl border ${themeClasses.border} flex items-center justify-center cursor-pointer ${themeClasses.bgHover} transition-colors`}>
+              <Bell className={`w-5 h-5 ${themeClasses.textSecondary}`} />
               {/* Notification Badge */}
               <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
             </div>
             
             {/* Schedule Button */}
-            <button className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            <button className={`flex items-center gap-2 px-4 py-2 ${themeClasses.bgCard} border ${themeClasses.border} rounded-lg text-sm font-medium ${themeClasses.text} ${themeClasses.bgHover} transition-colors`}>
               <Calendar className="w-4 h-4" />
               Schedule
             </button>

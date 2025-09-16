@@ -42,8 +42,10 @@ import {
   SelectValue,
 } from '../../../../components/shadcn/select';
 import { CardHeader, PageHeader } from '../../../../components/core/cardHeader';
+import { useTheme } from '../../../../contexts/ThemeContext';
 
 const SettingsPage = () => {
+  const { theme, setThemeMode, themeClasses } = useTheme();
   const [activeTab, setActiveTab] = useState('edit-profile');
   const [profileData, setProfileData] = useState({
     username: 'johndoe',
@@ -57,7 +59,6 @@ const SettingsPage = () => {
     location: 'San Francisco, CA'
   });
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
-  const [theme, setTheme] = useState('light');
   const [saveStatus, setSaveStatus] = useState(null);
 
   const handleInputChange = (e) => {
@@ -109,7 +110,7 @@ const SettingsPage = () => {
       case 'privacy':
         return <PrivacySettings />;
       case 'appearance':
-        return <AppearanceSettings theme={theme} setTheme={setTheme} />;
+        return <AppearanceSettings theme={theme} setTheme={setThemeMode} />;
       case 'activity':
         return <ActivitySettings />;
       case 'help':
@@ -120,14 +121,14 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="min-h-screen ">
+    <div className={`min-h-screen ${themeClasses.bg}`}>
       <div className=" ">
         
 
         <div className="flex flex-col lg:flex-row gap-6 h-screen">
           {/* Sidebar Navigation */}
           <div className="lg:w-64 lg:h-full">
-            <nav className="bg-white rounded-2xl shadow-sm p-2 space-y-1 h-full overflow-y-auto">
+            <nav className={`${themeClasses.bgCard} rounded-2xl shadow-sm p-2 space-y-1 h-full overflow-y-auto`}>
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -173,7 +174,7 @@ const SettingsPage = () => {
 
           {/* Content Area */}
           <div className="flex-1 lg:h-full">
-            <div className="bg-white rounded-2xl shadow-sm p-6 sm:p-8 h-full overflow-y-auto">
+            <div className={`${themeClasses.bgCard} rounded-2xl shadow-sm p-6 sm:p-8 h-full overflow-y-auto`}>
               {saveStatus && (
                 <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 animate-slide-down ${
                   saveStatus === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
@@ -851,7 +852,9 @@ const PrivacySettings = () => {
 };
 
 // Appearance Settings Component
+
 const AppearanceSettings = ({ theme, setTheme }) => {
+  const { themeClasses } = useTheme();
   const [accentColor, setAccentColor] = useState('blue');
   const [fontSize, setFontSize] = useState('medium');
 
@@ -873,14 +876,14 @@ const AppearanceSettings = ({ theme, setTheme }) => {
   return (
     <div>
       <div className="mb-8">
-        <h2 className="text-[16px] font-bold text-gray-900 ">Appearance</h2>
-        <p className="text-gray-600 text-[14px] font-[400]">Customize how the app looks on your device</p>
+        <h2 className={`text-[16px] font-bold ${themeClasses.text}`}>Appearance</h2>
+        <p className={`${themeClasses.textSecondary} text-[14px] font-[400]`}>Customize how the app looks on your device</p>
       </div>
 
       <div className="space-y-8">
         {/* Theme Selection */}
         <div>
-          <h3 className="font-semibold text-lg text-gray-900 mb-4">Theme</h3>
+          <h3 className={`font-semibold text-lg ${themeClasses.text} mb-4`}>Theme</h3>
           <div className="grid grid-cols-3 gap-4">
             {themes.map((t) => {
               const Icon = t.icon;
@@ -912,8 +915,8 @@ const AppearanceSettings = ({ theme, setTheme }) => {
 
         {/* Accent Color */}
         <div>
-          <h3 className="font-semibold text-lg text-gray-900 mb-4">Accent Color</h3>
-          <div className="flex space-x-3">
+          <h3 className="font-semibold text-[14px] text-gray-900 mb-4">Accent Color</h3>
+          <div className="flex gap-4">
             {colors.map((c) => (
               <Button
                 key={c.id}
