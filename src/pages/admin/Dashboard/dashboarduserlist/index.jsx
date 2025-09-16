@@ -391,7 +391,7 @@ const DoctorList = () => {
       </div>
       
       {/* Filters and search */}
-      <div className="p-4 space-y-4">
+      <div className="flex items-center p-4 justify-between">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
             <Search size={18} className="text-gray-400" />
@@ -512,9 +512,7 @@ const DoctorList = () => {
             Refresh Data
           </Button>
           
-          <div className="text-sm text-gray-500 flex items-center justify-center sm:justify-start py-2">
-            Showing {currentData.length} {activeTab === 'doctors' ? 'doctors' : 'users'}
-          </div>
+       
         </div>
       </div>
       
@@ -553,12 +551,12 @@ const DoctorList = () => {
           
           {/* Table View - Fixed first columns with scrollable data */}
           {currentData.length > 0 && (
-            <div className="max-w-6xl">
-              <div className="max-w-7xl mx-auto">
+            <div className="w-full ">
+              <div className="w-full mx-auto">
                 <div className="relative">
                   {activeTab === 'doctors' ? (
-                    <div className="overflow-x-auto">
-                      <table className="w-full min-w-[1000px] table-auto">
+                    <div className="overflow-x-auto px-4">
+                      <table className="w-full px-4 table-auto">
                         <thead>
                           <tr className="bg-gray-50">
                             <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px] sticky left-0 bg-gray-50 z-10">ID</th>
@@ -655,8 +653,8 @@ const DoctorList = () => {
                       </table>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full min-w-[1100px] table-auto">
+                    <div className="overflow-x-auto w-full ">
+                      <table className="w-full  table-auto">
                         <thead>
                           <tr className="bg-gray-50">
                             <th className="p-3 text-left font-semibold text-gray-600 whitespace-nowrap min-w-[60px] sticky left-0 bg-gray-50 z-10">ID</th>

@@ -122,7 +122,7 @@ const TodayAppointments = () => {
         return (
             <div className="flex justify-center items-center min-h-[400px]">
                 <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <span className="ml-3 text-gray-600">Loading today's appointments...</span>
+                <span className="ml-3 text-black">Loading today&apos;s appointments...</span>
             </div>
         )
     }
@@ -130,7 +130,7 @@ const TodayAppointments = () => {
     if (error) {
         return (
             <div className="text-center py-8">
-                <p className="text-red-500 mb-4">{error}</p>
+                <p className="text-black mb-4">{error}</p>
                 <Button onClick={fetchTodayAppointments} className="bg-blue-600 hover:bg-blue-700">
                     Try Again
                 </Button>
@@ -139,13 +139,13 @@ const TodayAppointments = () => {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 ">
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-600 to-blue-800 text-white p-6 rounded-lg shadow-lg">
+            <div className="bg-[#d1d5db] text-black p-6 rounded-lg shadow-lg">
                 <div className="flex items-center justify-between">
                     <div>
-                        <h1 className="text-2xl font-bold mb-2">Today's Appointments</h1>
-                        <div className="flex items-center space-x-4 text-blue-100">
+                        <h1 className="text-[16px] font-bold mb-2">Today&apos;s Appointments</h1>
+                        <div className="flex items-center text-[14px] space-x-4 text-black">
                             <div className="flex items-center space-x-2">
                                 <Calendar size={16} />
                                 <span>{getCurrentDate()}</span>
@@ -156,9 +156,9 @@ const TodayAppointments = () => {
                             </div>
                         </div>
                     </div>
-                    <div className="text-right">
-                        <div className="text-3xl font-bold">{filteredAppointments.length}</div>
-                        <div className="text-blue-100">Appointments</div>
+                    <div className="text-right text-[14px]">
+                        <div className="">{filteredAppointments.length}</div>
+                        <div className="text-black">Appointments</div>
                     </div>
                 </div>
             </div>
@@ -173,7 +173,7 @@ const TodayAppointments = () => {
                         onChange={(e) => setSearchFilter(e.target.value)}
                         className="pl-10"
                     />
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-black" size={20} />
                 </div>
             </div>
 
@@ -212,25 +212,25 @@ const TodayAppointments = () => {
                                 {/* Patient Info */}
                                 <div className="space-y-2">
                                     <div className="flex items-center space-x-2">
-                                        <User size={16} className="text-gray-500" />
-                                        <span className="font-semibold text-gray-900">{appointment.name}</span>
-                                        <span className="text-sm text-gray-500">({appointment.age} years)</span>
+                                        <User size={16} className="text-black" />
+                                        <span className="font-semibold text-black">{appointment.name}</span>
+                                        <span className="text-sm text-black">({appointment.age} years)</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Phone size={16} className="text-gray-500" />
-                                        <span className="text-gray-700">{appointment.phone}</span>
+                                        <Phone size={16} className="text-black" />
+                                        <span className="text-black">{appointment.phone}</span>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <MapPin size={16} className="text-gray-500" />
-                                        <span className="text-gray-700">{appointment.location}</span>
+                                        <MapPin size={16} className="text-black" />
+                                        <span className="text-black">{appointment.location}</span>
                                     </div>
                                 </div>
 
                                 {/* Doctor Info */}
                                 <div className="border-t pt-4">
-                                    <div className="text-sm text-gray-600 mb-1">Doctor</div>
-                                    <div className="font-medium text-gray-900">{appointment.doctorName}</div>
-                                    <div className="text-sm text-gray-600">{appointment.doctorSpecialization}</div>
+                                    <div className="text-sm text-black mb-1">Doctor</div>
+                                    <div className="font-medium text-black">{appointment.doctorName}</div>
+                                    <div className="text-sm text-black">{appointment.doctorSpecialization}</div>
                                 </div>
 
                                 {/* Video Call Section */}
@@ -238,7 +238,7 @@ const TodayAppointments = () => {
                                     <div className="flex items-center justify-between">
                                         <div className="flex items-center space-x-2">
                                             <Video size={16} className="text-green-500" />
-                                            <span className="text-sm font-medium text-gray-700">Video Call Ready</span>
+                                            <span className="text-sm font-medium text-black">Video Call Ready</span>
                                         </div>
                                         <Button
                                             onClick={() => handleVideoCall(appointment.videoCallLink)}
@@ -257,7 +257,7 @@ const TodayAppointments = () => {
                                     
                                     {appointment.videoCallId && (
                                         <div className="mt-2">
-                                            <div className="text-xs text-gray-500 mb-1">Call ID</div>
+                                            <div className="text-xs text-black mb-1">Call ID</div>
                                             <div className="font-mono text-xs bg-gray-100 px-2 py-1 rounded">
                                                 {appointment.videoCallId}
                                             </div>
@@ -274,10 +274,10 @@ const TodayAppointments = () => {
             {filteredAppointments.length === 0 && !loading && (
                 <div className="text-center py-12">
                     <div className="w-24 h-24 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                        <Calendar size={32} className="text-gray-400" />
+                        <Calendar size={32} className="text-black" />
                     </div>
-                    <h3 className="text-xl font-medium text-gray-900 mb-2">No Appointments Today</h3>
-                    <p className="text-gray-500 mb-4">
+                    <h3 className="text-xl font-medium text-black mb-2">No Appointments Today</h3>
+                    <p className="text-black mb-4">
                         {searchFilter 
                             ? 'No appointments match your search criteria.' 
                             : 'There are no scheduled appointments for today.'
