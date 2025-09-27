@@ -98,9 +98,10 @@ const OverviewTab = ({
       </div>
 
       {/* Income Chart */}
+      <div className='grid grid-cols-2'>
       <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-2 sm:mb-0">
+          <h3 className="text-[18px] font-semibold text-gray-900 mb-2 sm:mb-0">
             {selectedTimeFrame === 'daily' ? 'Daily' : 
              selectedTimeFrame === 'weekly' ? 'Weekly' : 
              selectedTimeFrame === 'monthly' ? 'Monthly' : 'Yearly'} Income Trend
@@ -112,7 +113,7 @@ const OverviewTab = ({
             </div>
           </div>
         </div>
-        <div className="h-80">
+        <div className="h-56">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={selectedTimeFrame === 'weekly' ? incomeData.weeklyChart : incomeData.monthlyChart}>
               <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -152,6 +153,10 @@ const OverviewTab = ({
             </LineChart>
           </ResponsiveContainer>
         </div>
+      </div>
+      <div>
+        
+      </div>
       </div>
 
       {/* Appointment Statistics Cards */}
