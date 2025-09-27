@@ -1667,7 +1667,7 @@ const Dashboard = () => {
                   tabIndex={-1}
                   type="button"
                 >
-                  <SearchCheck className="w-4 h-4" />
+                  <SearchCheck className="w-   " />
                 </button>
               </div>
             ) : (

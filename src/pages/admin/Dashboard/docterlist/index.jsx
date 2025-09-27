@@ -139,7 +139,7 @@ const DoctorList = () => {
   return (
     <div className="space-y-6 bg-gray-50 min-h-screen p-4">
       {/* Header */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
+      {/* <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <Button 
             onClick={() => setIsAddModalOpen(true)}
@@ -148,7 +148,7 @@ const DoctorList = () => {
             Add New Doctor
           </Button>
         </div>
-      </div>
+      </div> */}
 
       {/* Add Doctor Modal */}
       <AddDoctorModal
@@ -169,10 +169,16 @@ const DoctorList = () => {
       />
 
       {/* Filters */}
-      <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center flex-1">
-            <div className="relative flex-1">
+      <div className=" p-4 sm:p-6 justify-between  flex w-full  rounded-lg shadow-sm">
+            
+            <div className='flex gap-5'>
+            <Button 
+            onClick={() => setIsAddModalOpen(true)}
+            className="w-full border hover:bg-gray-200 hover:text-black sm:w-auto"
+          >
+            Add New Doctor
+          </Button>
+          <div className=" flex">
               <Input
                 type="text"
                 placeholder="Search doctors..."
@@ -182,6 +188,8 @@ const DoctorList = () => {
               />
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
             </div>
+            </div>
+          
             <div className="flex gap-2 items-center">
               <Filter size={20} className="text-gray-400" />
                              <Select value={specialtyFilter} onValueChange={setSpecialtyFilter}>
@@ -198,7 +206,7 @@ const DoctorList = () => {
                 </SelectContent>
               </Select>
             </div>
-          </div>
+ 
           {(searchTerm || specialtyFilter !== 'all') && (
             <Button 
               onClick={() => {
@@ -212,7 +220,7 @@ const DoctorList = () => {
               Clear Filters
             </Button>
           )}
-        </div>
+ 
       </div>
 
              {/* Doctor Grid */}

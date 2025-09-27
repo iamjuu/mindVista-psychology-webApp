@@ -143,11 +143,11 @@ const TodayAppointments = () => {
     return (
         <div className="space-y-6 ">
             {/* Header */}
-            <div className="bg-[#d1d5db] text-black p-6 rounded-lg shadow-lg">
+            <div className="bg-[#1d4ed8] text-white p-6 rounded-lg shadow-lg">
                 <div className="flex items-center justify-between">
                     <div>
                         <h1 className="text-[16px] font-bold mb-2">Today&apos;s Appointments</h1>
-                        <div className="flex items-center text-[14px] space-x-4 text-black">
+                        <div className="flex items-center text-[14px] space-x-4 text-white">
                             <div className="flex items-center space-x-2">
                                 <Calendar size={16} />
                                 <span>{getCurrentDate()}</span>
@@ -160,7 +160,7 @@ const TodayAppointments = () => {
                     </div>
                     <div className="text-right text-[14px]">
                         <div className="">{filteredAppointments.length}</div>
-                        <div className="text-black">Appointments</div>
+                        <div className="text-white">Appointments</div>
                     </div>
                 </div>
             </div>

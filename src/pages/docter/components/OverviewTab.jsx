@@ -3,14 +3,22 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 import { DollarSign, TrendingUp, Calendar, Award, Eye, Clock, CheckCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/shadcn/select';
 import { Button } from '../../../components/shadcn/button/button';
+import { PageHeader } from '../../../components/core/cardHeader';
 
 // Income Card Component
 const IncomeCard = ({ title, amount, growth, icon, bgColor, timeFrame }) => (
   <div className={`${bgColor} p-6 rounded-2xl text-white shadow-lg`}>
     <div className="flex items-center justify-between">
       <div>
-        <p className="text-sm font-medium opacity-90">{title}</p>
-        <p className="text-3xl font-bold">₹{amount.toLocaleString()}</p>
+      <PageHeader 
+     titleclassName={'text-white'}
+     desclassName={'text-white'}
+  title={title} 
+  description={`₹${amount.toLocaleString()}`} 
+/>
+
+        {/* <p className="text-sm font-medium opacity-90">{title}</p>
+        <p className="text-3xl font-bold">₹{amount.toLocaleString()}</p> */}
         <div className="flex items-center mt-2">
           <TrendingUp size={16} className="mr-1" />
           <span className="text-sm font-medium">+{growth}%</span>

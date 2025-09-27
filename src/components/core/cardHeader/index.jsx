@@ -22,11 +22,11 @@ CardHeader.propTypes = {
   description: PropTypes.string.isRequired,
 };
 
-export const PageHeader = ({ title, description }) => {
+export const PageHeader = ({ title, description,titleclassName,desclassName }) => {
     return (
-        <div className="mb-8">
-        <h2 className="text-[16px] font-bold text-gray-900 ">{title}</h2>
-        <p className="text-gray-600 text-[14px] font-[400]">{description}</p>
+        <div className=" mb-8 ">
+        <h2 className={` ${titleclassName} text-[16px] font-bold text-gray-900`}>{title}</h2>
+        <p className={`${desclassName}text-gray-600 text-[14px] font-[400]`} >{description}</p>
       </div>
     )
 }

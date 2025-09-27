@@ -85,3 +85,4 @@ The ThemeProvider is wrapped around admin routes in `src/Routers/UserRouter.jsx`
 - More theme customization options
 - Theme-specific color schemes
 - Animation transitions between themes
+
