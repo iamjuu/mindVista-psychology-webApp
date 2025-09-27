@@ -1,5 +1,6 @@
 import React from 'react';
 import { Users, Calendar, MapPin, Phone, Mail } from 'lucide-react';
+import { PageHeader } from '../../../components/core/cardHeader';
 
 // Patient Card Component
 const PatientCard = ({ patient }) => (
@@ -66,9 +67,12 @@ const PatientCard = ({ patient }) => (
 const MyPatients = ({ patientsList }) => {
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6  gap-4">
         <div>
-          <h1 className="text-[22px] font-medium text-gray-800">My Patients</h1>
+          {/* <h1 className="text-[22px] font-medium text-gray-800">My Patients</h1> */}
+          <PageHeader
+          title='My patients'
+          />
           <div className="flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>

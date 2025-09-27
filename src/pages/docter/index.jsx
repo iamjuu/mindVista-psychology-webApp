@@ -544,7 +544,7 @@ useEffect(()=>{
         }`}>
           <div className="flex flex-col h-full">
             {/* Sidebar Header */}
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <div className="p-6 border-b border-gray-200 bg-[#1d4ed8] text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mr-3">
