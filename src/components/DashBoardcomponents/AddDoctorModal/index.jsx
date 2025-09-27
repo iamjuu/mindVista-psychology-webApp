@@ -115,11 +115,7 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
       console.log('Sending form data to server:', formDataToSend);
       console.log('Available value:', formData.available);
 
-      const response = await apiInstance.post('/add-doctor', formDataToSend, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await apiInstance.post('/add-doctor', formDataToSend);
       
       console.log('Doctor created successfully:', response.data);
       toast.success('Doctor added successfully!');
