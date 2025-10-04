@@ -7,7 +7,6 @@ import {
     Mic, 
     MicOff, 
     PhoneOff, 
-    Settings, 
     Users, 
     MessageCircle,
     ScreenShare,
@@ -45,6 +44,18 @@ const VideoCallRoom = () => {
     const localStreamRef = useRef(null)
     const chatInputRef = useRef(null)
 
+    // Role detection: prefer URL ?role=doctor|patient, else fallback to localStorage
+    const isDoctor = (() => {
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search)
+            const roleParam = params.get('role')
+            if (roleParam === 'doctor') return true
+            if (roleParam === 'patient') return false
+            return localStorage.getItem('isDoctorLoggedIn') === 'true'
+        }
+        return false
+    })()
+
     useEffect(() => {
         console.log('VideoCallRoom mounted with ID:', videoCallId)
         fetchAppointmentDetails()
@@ -75,7 +86,9 @@ const VideoCallRoom = () => {
             setLoading(true)
             setError(null)
             
-            const response = await apiInstance.get(`/video-call/${videoCallId}/details`)
+            // For doctors, inform backend to relax certain restrictions
+            const roleQuery = isDoctor ? '?role=doctor' : ''
+            const response = await apiInstance.get(`/video-call/${videoCallId}/details${roleQuery}`)
             console.log('✅ Appointment details response:', response.data)
             
             if (response.data.success) {
@@ -192,7 +205,12 @@ const VideoCallRoom = () => {
             localStreamRef.current.getTracks().forEach(track => track.stop())
         }
         console.log('Video call ended')
-        navigate('/admin/dashboard') // Redirect back to admin dashboard
+        // Redirect based on role
+        if (isDoctor) {
+            navigate('/admin/today-appointments')
+        } else {
+            navigate('/profile')
+        }
     }
 
     const sendMessage = () => {
@@ -260,6 +278,9 @@ const VideoCallRoom = () => {
                         <p className="text-sm text-gray-300">
                             {appointmentDetails?.date} at {appointmentDetails?.time}
                         </p>
+                    </div>
+                    <div className={`px-2 py-1 rounded text-xs font-medium ${isDoctor ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}>
+                        {isDoctor ? 'Doctor' : 'Patient'}
                     </div>
                     {callStarted && (
                         <div className="bg-green-600 px-3 py-1 rounded-full">
@@ -336,7 +357,7 @@ const VideoCallRoom = () => {
                     {/* Controls */}
                     <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
                         <div className="bg-gray-800/90 backdrop-blur-sm rounded-full px-6 py-4 flex items-center space-x-4">
-                            {!callStarted && (
+                            {!callStarted && isDoctor && (
                                 <Button
                                     onClick={startCall}
                                     className="bg-green-600 hover:bg-green-700 px-6"
@@ -374,18 +395,20 @@ const VideoCallRoom = () => {
                                         {isVideoOn ? <Video size={20} /> : <VideoOff size={20} />}
                                     </Button>
                                     
-                                    <Button
-                                        onClick={toggleScreenShare}
-                                        variant="outline"
-                                        size="sm"
-                                        className={`rounded-full w-12 h-12 ${
-                                            isScreenSharing 
-                                                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                                : 'bg-gray-600 hover:bg-gray-700 text-white'
-                                        }`}
-                                    >
-                                        {isScreenSharing ? <ScreenShareOff size={20} /> : <ScreenShare size={20} />}
-                                    </Button>
+                                    {isDoctor && (
+                                        <Button
+                                            onClick={toggleScreenShare}
+                                            variant="outline"
+                                            size="sm"
+                                            className={`rounded-full w-12 h-12 ${
+                                                isScreenSharing 
+                                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                                                    : 'bg-gray-600 hover:bg-gray-700 text-white'
+                                            }`}
+                                        >
+                                            {isScreenSharing ? <ScreenShareOff size={20} /> : <ScreenShare size={20} />}
+                                        </Button>
+                                    )}
                                     
                                     <Button
                                         onClick={() => setIsSpeakerOn(!isSpeakerOn)}

@@ -56,7 +56,7 @@ useEffect(()=>{
     // Check if email is provided, if not redirect to login
     if (!email) {
       console.log('No email provided, redirecting to login');
-      navigate('/docter/login');
+      navigate('/doctor/login');
       return;
     }
     
@@ -93,7 +93,7 @@ useEffect(()=>{
   const handleLogout = () => {
     localStorage.removeItem('isDoctorLoggedIn');
     localStorage.removeItem('doctorData');
-    navigate('/docter/login');
+    navigate('/doctor/login');
   };
 
   // Default income data structure

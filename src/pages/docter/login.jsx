@@ -61,7 +61,7 @@ const DoctorLogin = () => {
         
         // Navigate to doctor dashboard
         setTimeout(() => {
-          navigate(`/docter?email=${encodeURIComponent(formData.email)}`);
+          navigate(`/doctor?email=${encodeURIComponent(formData.email)}`);
         }, 1500);
       }
     } catch (error) {

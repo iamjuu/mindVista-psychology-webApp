@@ -33,7 +33,7 @@ function Form() {
         } else {
           toast.error('Failed to load doctors. Please try again.');
         }
-      } catch (error) {
+      } catch (err) {
         toast.error('Error loading doctors. Please try again.');
       } finally {
         setLoadingDoctors(false);
@@ -86,6 +86,17 @@ function Form() {
         paymentStatus: 'pending'
       };
 
+      // Debug logging
+      console.log('=== REGISTRATION FORM DEBUG ===');
+      console.log('Form data:', formData);
+      console.log('Selected doctor:', selectedDoctor);
+      console.log('Registration data:', registrationData);
+      console.log('Doctor field check:', {
+        doctor: formData.doctor,
+        doctorExists: !!formData.doctor,
+        doctorType: typeof formData.doctor
+      });
+
       const saveResponse = await apiInstance.post('/appointment', registrationData, {
         headers: { 'Content-Type': 'application/json' },
       });
@@ -103,7 +114,7 @@ function Form() {
       } else {
         throw new Error(saveResponse.data.message || 'Failed to save registration');
       }
-    } catch (error) {
+    } catch (err) {
       toast.error('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);

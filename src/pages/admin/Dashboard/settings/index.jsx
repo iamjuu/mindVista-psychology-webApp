@@ -165,18 +165,18 @@ const SettingsPage = () => {
                   <Button
                     key={item.id}
                     onClick={() => handleTabChange(item.id)}
-                    variant={isActive ? "default" : "ghost"}
+                    variant={isActive ? "default" : "secondary"}
                     className={`w-full justify-start h-auto p-3 ${
                       isActive
-                        ? `bg-${item.color}-50 text-${item.color}-600 shadow-sm`
-                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                        ? `bg-blue-600 text-white shadow-sm hover:bg-blue-500  `
+                        : "hover:bg-blue-300"
                     }`}
                   >
                     <div
                       className={`p-2 rounded-lg ${
                         isActive
-                          ? `bg-${item.color}-100`
-                          : "bg-gray-100 group-hover:bg-gray-200"
+                          ? `bg-gray-100 text-gray-600`
+                          : "bg-gray-100"
                       } transition-colors`}
                     >
                       <Icon size={18} />
@@ -189,7 +189,7 @@ const SettingsPage = () => {
 
               <div className="border-t pt-2 mt-2">
                 <Button
-                  variant="ghost"
+                  variant="secondary"
                   className="w-full justify-start h-auto p-3 text-red-600 hover:bg-red-50"
                 >
                   <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-colors">

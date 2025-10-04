@@ -153,7 +153,12 @@ const AppointmentsTab = ({
                           {appointment.videoCallId}
                         </div>
                         <Button
-                          onClick={() => window.open(appointment.videoCallLink, '_blank')}
+                          onClick={() => {
+                            const link = appointment.videoCallLink?.includes('?') 
+                              ? `${appointment.videoCallLink}&role=doctor` 
+                              : `${appointment.videoCallLink}?role=doctor`;
+                            window.open(link, '_blank')
+                          }}
                           size="sm"
                           variant='outline'
                         >
