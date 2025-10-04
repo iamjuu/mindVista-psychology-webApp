@@ -4,6 +4,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiInstance from '../../../instance';
 import { Button } from '../../../components/shadcn/button/button';
+import { PageHeader } from '../../../components/core/cardHeader';
 
 const TodaySessions = ({ doctorData, email, onNavigate }) => {
   const [loading, setLoading] = useState(true);
@@ -161,8 +162,10 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
       <div className="mb-6">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Today's Sessions</h2>
-            <p className="text-gray-600">Manage your appointments for {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <PageHeader
+            title="Today's Sessions"
+            description={`Manage your appointments for ${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}`}
+            />
           </div>
           
           <div className="flex items-center gap-4">
@@ -192,63 +195,63 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Total Sessions</p>
-              <p className="text-3xl font-bold text-gray-900">{todaySessions.length}</p>
+              <p className="text-xl font-bold text-gray-900">{todaySessions.length}</p>
             </div>
             <div className="p-3 bg-blue-100 rounded-xl">
-              <Calendar size={24} className="text-blue-600" />
+              <Calendar size={20} className="text-blue-600" />
             </div>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl  border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-3xl font-bold text-yellow-600">
+              <p className="text-xl font-bold text-yellow-600">
                 {todaySessions.filter(s => s.status === 'pending').length}
               </p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-xl">
-              <Clock size={24} className="text-yellow-600" />
+              <Clock size={20} className="text-yellow-600" />
             </div>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl  border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Approved</p>
-              <p className="text-3xl font-bold text-green-600">
+              <p className="text-xl font-bold text-green-600">
                 {todaySessions.filter(s => s.status === 'approved').length}
               </p>
             </div>
             <div className="p-3 bg-green-100 rounded-xl">
-              <CheckCircle size={24} className="text-green-600" />
+              <CheckCircle size={20} className="text-green-600" />
             </div>
           </div>
         </div>
         
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl  border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Completed</p>
-              <p className="text-3xl font-bold text-gray-600">
+              <p className="text-xl font-bold text-gray-600">
                 {todaySessions.filter(s => s.status === 'completed').length}
               </p>
             </div>
             <div className="p-3 bg-gray-100 rounded-xl">
-              <Users size={24} className="text-gray-600" />
+              <Users size={20} className="text-gray-600" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Sessions Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+      <div className="bg-white rounded-sm  border border-gray-100">
         <div className="p-6 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>

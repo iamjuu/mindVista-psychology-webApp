@@ -102,7 +102,9 @@ const deleteNote = (noteId) => {
       {/* Income Statistics Cards */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-          <h1 className="text-[14px] font-bold text-gray-900">Income Statistics</h1>
+          {/* <h1 className="text-[14px] font-bold text-gray-900">Income Statistics</h1> */}
+          <PageHeader
+          title='Income Statistics'/>
           <div className="flex items-center gap-3">
             <label className="text-sm text-gray-600 font-medium">View:</label>
             <Select value={selectedTimeFrame} onValueChange={setSelectedTimeFrame}>

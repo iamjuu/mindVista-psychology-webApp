@@ -263,27 +263,27 @@ const UpcomingAppointments = ({ doctorData, email, onNavigate }) => {
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">
                 Total Upcoming
               </p>
-              <p className="text-3xl font-bold text-gray-900">
+              <p className="text-xl font-bold text-gray-900">
                 {upcomingAppointments.length}
               </p>
             </div>
             <div className="p-3 bg-blue-100 rounded-xl">
-              <Calendar size={24} className="text-blue-600" />
+              <Calendar size={20} className="text-blue-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl  border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">This Week</p>
-              <p className="text-3xl font-bold text-purple-600">
+              <p className="text-xl font-bold text-purple-600">
                 {
                   upcomingAppointments.filter((apt) => {
                     const aptDate = new Date(apt.date);
@@ -297,16 +297,16 @@ const UpcomingAppointments = ({ doctorData, email, onNavigate }) => {
               </p>
             </div>
             <div className="p-3 bg-purple-100 rounded-xl">
-              <CalendarDays size={24} className="text-purple-600" />
+              <CalendarDays size={20} className="text-purple-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl  border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Pending</p>
-              <p className="text-3xl font-bold text-yellow-600">
+              <p className="text-xl font-bold text-yellow-600">
                 {
                   upcomingAppointments.filter((apt) => apt.status === "pending")
                     .length
@@ -314,16 +314,16 @@ const UpcomingAppointments = ({ doctorData, email, onNavigate }) => {
               </p>
             </div>
             <div className="p-3 bg-yellow-100 rounded-xl">
-              <Clock size={24} className="text-yellow-600" />
+              <Clock size={20} className="text-yellow-600" />
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+        <div className="bg-white p-6 rounded-2xl  border border-gray-100">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm font-medium text-gray-600">Approved</p>
-              <p className="text-3xl font-bold text-green-600">
+              <p className="text-xl font-bold text-green-600">
                 {
                   upcomingAppointments.filter(
                     (apt) => apt.status === "approved"
@@ -332,14 +332,14 @@ const UpcomingAppointments = ({ doctorData, email, onNavigate }) => {
               </p>
             </div>
             <div className="p-3 bg-green-100 rounded-xl">
-              <CheckCircle size={24} className="text-green-600" />
+              <CheckCircle size={20} className="text-green-600" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Appointments Table */}
-      <div className="bg-white rounded-2xl shadow-lg border border-gray-100">
+      <div className="bg-white rounded-xl border border-gray-100">
         <div className="p-6 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
