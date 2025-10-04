@@ -3,6 +3,7 @@ import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, L
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import { Users, DollarSign, TrendingUp, TrendingDown, CreditCard, PieChart, Stethoscope } from 'lucide-react';
 import { useTheme } from '../../../../contexts/ThemeContext';
+import { PageHeader } from '../../../../components/core/cardHeader';
 
 const Finance = () => {
   const { themeClasses } = useTheme();
@@ -395,7 +396,11 @@ const Finance = () => {
       {/* Doctor Overview */}
       {selectedDoctor === 'all' && (
         <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-          <h3 className="text-lg font-semibold mb-4 text-gray-800">Doctor Overview</h3>
+
+          <PageHeader
+          title='Doctor Overview'
+          />
+          {/* <h3 className="text-lg font-semibold mb-4 text-gray-800">Doctor Overview</h3> */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Doctor List */}
             <div>

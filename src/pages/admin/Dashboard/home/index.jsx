@@ -56,26 +56,26 @@ const Dashboard = () => {
       day: "2-digit",
     }),
   });
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: "Text Inputs for Design System",
-      description: "Search for inspiration to provide a rich content of te...",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Meeting with Arthur Taylor",
-      description: "Discuss the MVP version of Apex Mobile and Deskt...",
-      completed: false,
-    },
-    {
-      id: 3,
-      title: "Check neutral and state colors",
-      description: "Button components will be revised and designed ag...",
-      completed: false,
-    },
-  ]);
+    const [notes, setNotes] = useState([
+      {
+        id: 1,
+        title: "Text Inputs for Design System",
+        description: "Search for inspiration to provide a rich content of te...",
+        completed: false,
+      },
+      {
+        id: 2,
+        title: "Meeting with Arthur Taylor",
+        description: "Discuss the MVP version of Apex Mobile and Deskt...",
+        completed: false,
+      },
+      {
+        id: 3,
+        title: "Check neutral and state colors",
+        description: "Button components will be revised and designed ag...",
+        completed: false,
+      },
+    ]);
 
   // Functions for note management
   const handleAddNote = () => {
@@ -112,7 +112,6 @@ const Dashboard = () => {
     setNotes(notes.filter((note) => note.id !== noteId));
   };
 
-  
   // Doctor data with individual information
   const doctorsData = [
     {
@@ -236,15 +235,15 @@ const Dashboard = () => {
       ],
     },
   ];
-  
+
   // Get selected doctor data
   const selectedDoctor =
     doctorsData.find((doctor) => doctor.id === selectedDoctorId) ||
     doctorsData[0];
-  
+
   // Doctor Card Component
   const DoctorCard = ({ doctor, isSelected, onClick }) => (
-    <div 
+    <div
       className={`p-4 rounded-lg shadow cursor-pointer transition-all duration-200 transform hover:scale-105 ${
         doctor.bgColor
       } ${isSelected ? "ring-4 ring-white ring-opacity-50" : ""} text-white`}
@@ -252,7 +251,7 @@ const Dashboard = () => {
     >
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm opacity-80">{doctor.name}</p>  
+          <p className="text-sm opacity-80">{doctor.name}</p>
           <p className="text-[14px] font-bold">{doctor.specialization}</p>
           <p className="text-xs opacity-70 mt-1">
             {doctor.totalPatients} patients
@@ -267,10 +266,10 @@ const Dashboard = () => {
       </div>
     </div>
   );
-  
+
   // Add PropTypes to DoctorCard
   DoctorCard.propTypes = DoctorCardPropTypes;
-  
+
   // Dashboard Overview Content
   const renderDashboardContent = () => (
     <div className="flex flex-col gap-2">
@@ -289,7 +288,7 @@ const Dashboard = () => {
           ))}
         </div>
       </div>
-      
+
       {/* Selected Doctor Info */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Daily Work Hours Card */}
@@ -490,7 +489,7 @@ const Dashboard = () => {
           </div>
 
           {/* Notes List */}
-          <div className="flex flex-col gap-2 px-3 py-2 max-h-60 overflow-y-auto">
+          <div className="flex  flex-col gap-2 px-3 py-2 max-h-60 overflow-y-auto">
             {notes.map((note) => (
               <div key={note.id} className="flex gap-4 items-start">
                 <input
@@ -552,7 +551,7 @@ const Dashboard = () => {
               <h3 className="text-lg font-semibold mb-4">Add New Note</h3>
 
               <div className="space-y-4">
-<div>
+                <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
                     Title
                   </label>
@@ -581,7 +580,7 @@ const Dashboard = () => {
                     placeholder="Enter note description..."
                   />
                 </div>
-</div>
+              </div>
 
               <div className="flex gap-3 mt-6">
                 <button
@@ -677,27 +676,27 @@ const Dashboard = () => {
       <div className=" flex gap-2 flex-col">
         <div className=" flex flex-col  rounded-lg ">
           <h3 className="text-[14px] py-2 font-bold ">
-          {selectedDoctor.name} - Analytics Dashboard
-        </h3>
+            {selectedDoctor.name} - Analytics Dashboard
+          </h3>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">Specialization</p>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Specialization</p>
               <p className="text-lg font-semibold">
                 {selectedDoctor.specialization}
               </p>
-          </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">Total Patients</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Total Patients</p>
               <p className="text-lg font-semibold text-blue-600">
                 {selectedDoctor.totalPatients}
               </p>
-          </div>
-          <div className="text-center p-3 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-600">Total Income</p>
+            </div>
+            <div className="text-center p-3 bg-gray-50 rounded-lg">
+              <p className="text-sm text-gray-600">Total Income</p>
               <p className="text-lg font-semibold text-green-600">
                 ₹{selectedDoctor.totalIncome.toLocaleString()}
               </p>
-          </div>
+            </div>
             {/* Doctor Reviews */}
             <div className="text-center p-3 bg-gray-50 rounded-lg">
               <p className="text-sm text-gray-600 mb-2">Patient Reviews</p>
@@ -712,7 +711,7 @@ const Dashboard = () => {
                     <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                   </svg>
                 ))}
-        </div>
+              </div>
               <p className="text-lg font-semibold text-gray-800">4.8</p>
               <p className="text-xs text-gray-500">Based on 156 reviews</p>
             </div>
@@ -1267,314 +1266,456 @@ const Dashboard = () => {
           </div>
         </div>
 
-{/* Analytical Dashboard Cards */}
+        {/* Analytical Dashboard Cards */}
 
-
-      {/* Summary Statistics */}
-      <div className="bg-white p-4 rounded-lg border">
-        <h3 className="text-[14px] font-semibold mb-4">Performance Summary</h3>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="text-center p-4 bg-blue-50 rounded-lg">
-            <p className="text-2xl font-bold text-blue-600">
+        {/* Summary Statistics */}
+        <div className="bg-white p-4 rounded-lg border">
+          <h3 className="text-[14px] font-semibold mb-4">
+            Performance Summary
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <p className="text-2xl font-bold text-blue-600">
                 ₹
                 {selectedDoctor.monthlyIncome[
                   selectedDoctor.monthlyIncome.length - 1
                 ].income.toLocaleString()}
-            </p>
-            <p className="text-sm text-gray-600">Latest Monthly Income</p>
-          </div>
-          <div className="text-center p-4 bg-green-50 rounded-lg">
-            <p className="text-2xl font-bold text-green-600">
+              </p>
+              <p className="text-sm text-gray-600">Latest Monthly Income</p>
+            </div>
+            <div className="text-center p-4 bg-green-50 rounded-lg">
+              <p className="text-2xl font-bold text-green-600">
                 {
                   selectedDoctor.patientGrowth[
                     selectedDoctor.patientGrowth.length - 1
                   ].patients
                 }
-            </p>
-            <p className="text-sm text-gray-600">Monthly New Patients</p>
-          </div>
-          <div className="text-center p-4 bg-purple-50 rounded-lg">
-            <p className="text-2xl font-bold text-purple-600">
+              </p>
+              <p className="text-sm text-gray-600">Monthly New Patients</p>
+            </div>
+            <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <p className="text-2xl font-bold text-purple-600">
                 ₹
                 {Math.round(
                   selectedDoctor.totalIncome / selectedDoctor.totalPatients
                 ).toLocaleString()}
-            </p>
+              </p>
               <p className="text-sm text-gray-600">
                 Average Income per Patient
               </p>
-          </div>
-          <div className="text-center p-4 bg-orange-50 rounded-lg">
-            <p className="text-2xl font-bold text-orange-600">
+            </div>
+            <div className="text-center p-4 bg-orange-50 rounded-lg">
+              <p className="text-2xl font-bold text-orange-600">
                 {Math.round(
                   selectedDoctor.monthlyIncome.reduce(
                     (acc, curr) => acc + curr.income,
                     0
                   ) / selectedDoctor.monthlyIncome.length
                 ).toLocaleString()}
-            </p>
-            <p className="text-sm text-gray-600">Avg Monthly Income</p>
+              </p>
+              <p className="text-sm text-gray-600">Avg Monthly Income</p>
             </div>
           </div>
         </div>
 
-<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-  {/* Employee Rating Card */}
-  <div className="flex flex-col gap-2">
-  <div className=" p-4 rounded-lg border">
-    <div className="flex items-center justify-between mb-4">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
-          <svg className="w-5 h-5 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-          </svg>
-        </div>
-        <h3 className="text-[14px] font-semibold text-gray-800">Employee Rating</h3>
-      </div>
-      <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
-        Details
-      </button>
-    </div>
-    
-    <div className=" flex  flex-col w-full ">
-      <p className="text-xs text-gray-500 mb-2">TOTAL RATING</p>
-<div className="w-full  flex">
-      <div className="flex w-[25%]  items-center gap-2">
-        <svg className="w-26 h-6 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-        </svg>
-        <span className="text-lg font-bold text-gray-800">3.6/5</span>
-        <span className="text-sm text-gray-500">(Overall 4.5)</span>
-      </div>
-         {/* Purple Line Graph */}
-    <div className="h-20 w-full">
-      <svg className="w-full h-full" viewBox="0 0 100% 100%" preserveAspectRatio="none">
-        <defs>
-          <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#afb0b2" strokeWidth="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid)" />
-        <path
-          d="M10,60 Q30,40 50,50 T90,30 T130,45 T170,25"
-          stroke="#8b5cf6"
-          strokeWidth="1.4"
-          fill="none"
-        />
-      </svg>
-    </div>
-    </div>
-    </div>
-    
- 
-    
-    <div className="flex items-center gap-1 text-xs text-gray-500">
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span>Total work hours include extra hours.</span>
-    </div>
-  </div>
-  <div className=" p-4 rounded-lg border">
-    <div className="flex items-center justify-between ">
-      <div className="flex items-center gap-3">
-        <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-          <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        </div>
-        <h3 className="text-[14px] font-semibold text-gray-800">Training Analysis</h3>
-      </div>
-      <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
-        Details
-      </button>
-    </div>
-    
-    <div className="mb-4">
-      <p className="text-lg font-bold text-gray-800 mb-1">12 courses</p>
-      <p className="text-xs text-gray-500">Completed in this quarter</p>
-    </div>
-    
-    {/* Attendees */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Employee Rating Card */}
+          <div className="flex flex-col gap-2">
+            <div className=" p-4 rounded-lg border">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-yellow-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      />
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-[14px] font-semibold text-gray-800">
+                    Employee Rating
+                  </h3>
+                </div>
+                <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+                  Details
+                </button>
+              </div>
 
-    <div className="flex  w-full  gap-5">
-    <div className="flex items-center  gap-2 ">
-      <div className="flex -space-x-2">
-        <div className="w-6 h-6 bg-blue-200 rounded-full border-2 border-white flex items-center justify-center">
-          <span className="text-xs font-medium text-blue-800">A</span>
-        </div>
-        <div className="w-6 h-6 bg-green-200 rounded-full border-2 border-white flex items-center justify-center">
-          <span className="text-xs font-medium text-green-800">B</span>
-        </div>
-        <div className="w-6 h-6 bg-purple-200 rounded-full border-2 border-white flex items-center justify-center">
-          <span className="text-xs font-medium text-purple-800">C</span>
-        </div>
-      </div>
-      <span className="text-xs text-gray-500">26 Attended</span>
-    </div>
-    
-    {/* Purple Bar Chart */}
-    <div className="h-20 w-full">
-      <svg className="w-full h-full" viewBox="0 0 100% 100%" preserveAspectRatio="none">
-        <defs>
-          <pattern id="grid3" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#a4a5a8" strokeWidth="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid3)" />
-        {/* Bar 1 */}
-        <rect x="20" y="40" width="15" height="40" fill="#8b5cf6" />
-        {/* Bar 2 */}
-        <rect x="45" y="30" width="15" height="50" fill="#8b5cf6" />
-        {/* Bar 3 */}
-        <rect x="70" y="20" width="15" height="60" fill="#8b5cf6" />
-        {/* Bar 4 */}
-        <rect x="95" y="35" width="15" height="45" fill="#8b5cf6" />
-        {/* Bar 5 */}
-        <rect x="120" y="25" width="15" height="55" fill="#8b5cf6" />
-        {/* Bar 6 */}
-        <rect x="145" y="15" width="15" height="65" fill="#8b5cf6" />
-        {/* Bar 7 */}
-        <rect x="170" y="30" width="15" height="50" fill="#8b5cf6" />
-      </svg>
-    </div>
-    </div>
-  </div>
-  </div>
-  {/* Work Hour Analysis Card */}
-  <div className="bg-white flex flex-col justify-between p-4 rounded-lg border">
-    <div className="flex items-center py-3 border-b justify-between mb-4">
-      <div className="flex  items-center gap-3">
-        <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
-          <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-          </svg>
-        </div>
-        <h3 className="text-[14px] font-semibold text-gray-800">Work Hour Analysis</h3>
-      </div>
-      <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
-        See All
-      </button>
-    </div>
-    
-    <div className="mb-4 flex flex-col gap-2">
-      <p className="text-xs text-gray-500 ">TOTAL WORK</p>
-      <div className="flex items-center gap-2">
-        <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        <span className="text-[14px] font-bold text-gray-800">38 hours · 12 mins</span>
-      </div>
-    </div>
-    
-    {/* Time Range Selectors */}
-    <div className="w-full">
-    <div className="flex gap-2 justify-around mb-4">
-      {['5D', '2W', '1M', '6M', '1Y'].map((period, index) => (
-        <button
-          key={period}
-          className={`px-10 py-1.5 flex items-center justify-center text-xs font-medium rounded-md transition-colors ${
-            index === 0 
-              ? 'bg-white border border-gray-300 text-gray-800 shadow-sm' 
-              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
-          }`}
-        >
-          {period}
-        </button>
-      ))}
-    </div>
-    </div>
-    
-    {/* Purple Step Line Graph */}
+              <div className=" flex  flex-col w-full ">
+                <p className="text-xs text-gray-500 mb-2">TOTAL RATING</p>
+                <div className="w-full  flex">
+                  <div className="flex w-[25%]  items-center gap-2">
+                    <svg
+                      className="w-26 h-6 text-yellow-400"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                    </svg>
+                    <span className="text-lg font-bold text-gray-800">
+                      3.6/5
+                    </span>
+                    <span className="text-sm text-gray-500">(Overall 4.5)</span>
+                  </div>
+                  {/* Purple Line Graph */}
+                  <div className="h-20 w-full">
+                    <svg
+                      className="w-full h-full"
+                      viewBox="0 0 100% 100%"
+                      preserveAspectRatio="none"
+                    >
+                      <defs>
+                        <pattern
+                          id="grid"
+                          width="20"
+                          height="20"
+                          patternUnits="userSpaceOnUse"
+                        >
+                          <path
+                            d="M 20 0 L 0 0 0 20"
+                            fill="none"
+                            stroke="#afb0b2"
+                            strokeWidth="0.5"
+                          />
+                        </pattern>
+                      </defs>
+                      <rect width="100%" height="100%" fill="url(#grid)" />
+                      <path
+                        d="M10,60 Q30,40 50,50 T90,30 T130,45 T170,25"
+                        stroke="#8b5cf6"
+                        strokeWidth="1.4"
+                        fill="none"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              </div>
 
-    <div className="h-50 mb-2">
-      <svg className="w-full h-full" viewBox="0 0 100% 100%" preserveAspectRatio="none">
-        <defs>
-          <pattern id="grid2" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#a8a9ac" strokeWidth="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="url(#grid2)" />
-        <path
-          d="M10,50 L40,50 L40,30 L70,30 L70,40 L100,40 L100,25 L130,25 L130,35 L160,35 L160,20 L190,20"
-          stroke="#8b5cf6"
-          strokeWidth="2"
-          fill="none"
-        />
-      </svg>
-    </div>
-    <div className="flex items-center gap-1 text-xs text-gray-500">
-      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-      </svg>
-      <span>Total work hours include extra hours.</span>
-    </div>
- 
-  </div>
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span>Total work hours include extra hours.</span>
+              </div>
+            </div>
+            <div className=" p-4 rounded-lg border">
+              <div className="flex items-center justify-between ">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg
+                      className="w-5 h-5 text-green-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                      />
+                    </svg>
+                  </div>
+                  <h3 className="text-[14px] font-semibold text-gray-800">
+                    Training Analysis
+                  </h3>
+                </div>
+                <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+                  Details
+                </button>
+              </div>
 
-  {/* Training Analysis Card */}
+              <div className="mb-4">
+                <p className="text-lg font-bold text-gray-800 mb-1">
+                  12 courses
+                </p>
+                <p className="text-xs text-gray-500">
+                  Completed in this quarter
+                </p>
+              </div>
 
+              {/* Attendees */}
 
- 
-      </div>
-      
-      {/* Charts for Selected Doctor */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">
-            Monthly Income - {selectedDoctor.name}
-          </h3>
+              <div className="flex  w-full  gap-5">
+                <div className="flex items-center  gap-2 ">
+                  <div className="flex -space-x-2">
+                    <div className="w-6 h-6 bg-blue-200 rounded-full border-2 border-white flex items-center justify-center">
+                      <span className="text-xs font-medium text-blue-800">
+                        A
+                      </span>
+                    </div>
+                    <div className="w-6 h-6 bg-green-200 rounded-full border-2 border-white flex items-center justify-center">
+                      <span className="text-xs font-medium text-green-800">
+                        B
+                      </span>
+                    </div>
+                    <div className="w-6 h-6 bg-purple-200 rounded-full border-2 border-white flex items-center justify-center">
+                      <span className="text-xs font-medium text-purple-800">
+                        C
+                      </span>
+                    </div>
+                  </div>
+                  <span className="text-xs text-gray-500">26 Attended</span>
+                </div>
+
+                {/* Purple Bar Chart */}
+                <div className="h-20 w-full">
+                  <svg
+                    className="w-full h-full"
+                    viewBox="0 0 100% 100%"
+                    preserveAspectRatio="none"
+                  >
+                    <defs>
+                      <pattern
+                        id="grid3"
+                        width="20"
+                        height="20"
+                        patternUnits="userSpaceOnUse"
+                      >
+                        <path
+                          d="M 20 0 L 0 0 0 20"
+                          fill="none"
+                          stroke="#a4a5a8"
+                          strokeWidth="0.5"
+                        />
+                      </pattern>
+                    </defs>
+                    <rect width="100%" height="100%" fill="url(#grid3)" />
+                    {/* Bar 1 */}
+                    <rect x="20" y="40" width="15" height="40" fill="#8b5cf6" />
+                    {/* Bar 2 */}
+                    <rect x="45" y="30" width="15" height="50" fill="#8b5cf6" />
+                    {/* Bar 3 */}
+                    <rect x="70" y="20" width="15" height="60" fill="#8b5cf6" />
+                    {/* Bar 4 */}
+                    <rect x="95" y="35" width="15" height="45" fill="#8b5cf6" />
+                    {/* Bar 5 */}
+                    <rect
+                      x="120"
+                      y="25"
+                      width="15"
+                      height="55"
+                      fill="#8b5cf6"
+                    />
+                    {/* Bar 6 */}
+                    <rect
+                      x="145"
+                      y="15"
+                      width="15"
+                      height="65"
+                      fill="#8b5cf6"
+                    />
+                    {/* Bar 7 */}
+                    <rect
+                      x="170"
+                      y="30"
+                      width="15"
+                      height="50"
+                      fill="#8b5cf6"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+          {/* Work Hour Analysis Card */}
+          <div className="bg-white flex flex-col justify-between p-4 rounded-lg border">
+            <div className="flex items-center py-3 border-b justify-between mb-4">
+              <div className="flex  items-center gap-3">
+                <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <svg
+                    className="w-5 h-5 text-blue-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="text-[14px] font-semibold text-gray-800">
+                  Work Hour Analysis
+                </h3>
+              </div>
+              <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+                See All
+              </button>
+            </div>
+
+            <div className="mb-4 flex flex-col gap-2">
+              <p className="text-xs text-gray-500 ">TOTAL WORK</p>
+              <div className="flex items-center gap-2">
+                <svg
+                  className="w-5 h-5 text-purple-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <span className="text-[14px] font-bold text-gray-800">
+                  38 hours · 12 mins
+                </span>
+              </div>
+            </div>
+
+            {/* Time Range Selectors */}
+            <div className="w-full">
+              <div className="flex gap-2 justify-around mb-4">
+                {["5D", "2W", "1M", "6M", "1Y"].map((period, index) => (
+                  <button
+                    key={period}
+                    className={`px-10 py-1.5 flex items-center justify-center text-xs font-medium rounded-md transition-colors ${
+                      index === 0
+                        ? "bg-white border border-gray-300 text-gray-800 shadow-sm"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                    }`}
+                  >
+                    {period}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Purple Step Line Graph */}
+
+            <div className="h-50 mb-2">
+              <svg
+                className="w-full h-full"
+                viewBox="0 0 100% 100%"
+                preserveAspectRatio="none"
+              >
+                <defs>
+                  <pattern
+                    id="grid2"
+                    width="20"
+                    height="20"
+                    patternUnits="userSpaceOnUse"
+                  >
+                    <path
+                      d="M 20 0 L 0 0 0 20"
+                      fill="none"
+                      stroke="#a8a9ac"
+                      strokeWidth="0.5"
+                    />
+                  </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#grid2)" />
+                <path
+                  d="M10,50 L40,50 L40,30 L70,30 L70,40 L100,40 L100,25 L130,25 L130,35 L160,35 L160,20 L190,20"
+                  stroke="#8b5cf6"
+                  strokeWidth="2"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <div className="flex items-center gap-1 text-xs text-gray-500">
+              <svg
+                className="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span>Total work hours include extra hours.</span>
+            </div>
+          </div>
+
+          {/* Training Analysis Card */}
+        </div>
+
+        {/* Charts for Selected Doctor */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4">
+              Monthly Income - {selectedDoctor.name}
+            </h3>
             <ResponsiveContainer width="100%" height={200}>
-            <LineChart data={selectedDoctor.monthlyIncome}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip 
+              <LineChart data={selectedDoctor.monthlyIncome}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip
                   formatter={(value) => [
                     `₹${value.toLocaleString()}`,
                     "Income",
                   ]}
-                labelFormatter={(label) => `Month: ${label}`}
-              />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="income" 
-                stroke="#10B981" 
-                strokeWidth={3}
+                  labelFormatter={(label) => `Month: ${label}`}
+                />
+                <Legend />
+                <Line
+                  type="monotone"
+                  dataKey="income"
+                  stroke="#10B981"
+                  strokeWidth={3}
                   dot={{ fill: "#10B981", strokeWidth: 2, r: 6 }}
-                activeDot={{ r: 8 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-        
-        <div className="bg-white p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4">
-            Patient Growth - {selectedDoctor.name}
-          </h3>
-            <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={selectedDoctor.patientGrowth}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip 
-                  formatter={(value) => [value, "Patients"]}
-                labelFormatter={(label) => `Month: ${label}`}
-              />
-              <Legend />
-                <Bar dataKey="patients" fill="#3B82F6" radius={[4, 4, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-      
+                  activeDot={{ r: 8 }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
 
+          <div className="bg-white p-4 rounded-lg shadow">
+            <h3 className="text-lg font-semibold mb-4">
+              Patient Growth - {selectedDoctor.name}
+            </h3>
+            <ResponsiveContainer width="100%" height={200}>
+              <BarChart data={selectedDoctor.patientGrowth}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip
+                  formatter={(value) => [value, "Patients"]}
+                  labelFormatter={(label) => `Month: ${label}`}
+                />
+                <Legend />
+                <Bar dataKey="patients" fill="#3B82F6" radius={[4, 4, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
       </div>
     </div>
   );
-  
+
   // Render different content based on active page
   const renderContent = () => {
     switch (activePage) {
@@ -1603,109 +1744,116 @@ const Dashboard = () => {
         );
     }
   };
-  
+
   return (
     <div className={`min-h-screen ${themeClasses.bg}`}>
       {/* Sidebar Component */}
       <Sidebar activePage={activePage} setActivePage={setActivePage} />
-      
-      {/* Main content */}
-      <div 
-      style={{
-        scrollbarWidth: "none", // For Firefox
-        msOverflowStyle: "none", // For Internet Explorer and Edge
-        overflow: "auto",
-      }}
-      className={`md:pl-64 px-2 min-h-screen ${themeClasses.bg}`}>
-        <div className="p-4 sm:p-6 pb-20 md:pb-6"></div>
-           <div className="flex flex-col gap-4 mb-6">
-             <div className="w-full justify-between flex">
-               <div>
-                 <h1 className={`text-[22px] font-medium ${themeClasses.text}`}>
-                   {activePage === "dashboard" && "Dashboard Overview"}
-                   {activePage === "users" && "User Management"}
-                   {activePage === "doctors" && "Doctor Management"}
-                   {activePage === "appointments" && "Appointment Management"}
-                   {activePage === "today-appointments" &&
-                     "Today's Video Sessions"}
-                   {activePage === "finance" && "Finance Overview"}
-                   {![
-                     "dashboard",
-                     "users",
-                     "doctors",
-                     "appointments",
-                     "today-appointments",
-                     "finance",
-                   ].includes(activePage) && ""}
-                   {activePage === "settings" && "Settings"}
-                 </h1>
-                 <p className={`${themeClasses.textSecondary} text-[16px] mt-1`}>
-                   Welcome back, Admin
-                 </p>
-               </div>
 
-               <div className="flex items-center gap-4">
-            {/* Search Icon with toggleable input */}
-            {showSearchInput ? (
-              <div className="flex items-center gap-2 animate-in slide-in-from-right-2 duration-300">
-                <input
-                  type="text"
-                  className={`${themeClasses.input} rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm animate-in fade-in-0 slide-in-from-right-2 duration-300`}
-                  placeholder="Search..."
-                  autoFocus
-                  onBlur={() => setShowSearchInput(false)}
-                  value={searchValue}
-                  onChange={e => setSearchValue(e.target.value)}
-                  onKeyDown={e => {
-                    if (e.key === "Escape") setShowSearchInput(false);
-                  }}
-                  style={{ width: 160 }}
-                />
-                <button
-                  className={`ml-1 ${themeClasses.textMuted} hover:${themeClasses.textSecondary} transition-colors duration-200`}
-                  onClick={() => setShowSearchInput(false)}
-                  tabIndex={-1}
-                  type="button"
-                >
-                  <SearchCheck className="w-4 h-4" />
-                </button>
-              </div>
-            ) : (
-              <div
-                className={`w-10 h-10 rounded-xl border ${themeClasses.border} flex items-center justify-center cursor-pointer ${themeClasses.bgHover} transition-all duration-200 hover:scale-105`}
-                onClick={() => setShowSearchInput(true)}
-                tabIndex={0}
-                onKeyDown={e => {
-                  if (e.key === "Enter" || e.key === " ") setShowSearchInput(true);
-                }}
-                title="Search"
-              >
-                <Search className={`w-5 h-5 ${themeClasses.textSecondary} transition-transform duration-200`} />
-              </div>
-            )}
-            
-            {/* Notification Icon */}
-            <div className={`relative w-10 h-10 rounded-xl border ${themeClasses.border} flex items-center justify-center cursor-pointer ${themeClasses.bgHover} transition-colors`}>
-              <Bell className={`w-5 h-5 ${themeClasses.textSecondary}`} />
-              {/* Notification Badge */}
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+      {/* Main content */}
+      <div
+        style={{
+          scrollbarWidth: "none", // For Firefox
+          msOverflowStyle: "none", // For Internet Explorer and Edge
+          overflow: "auto",
+        }}
+        className={`md:pl-64 px-2 min-h-screen ${themeClasses.bg}`}
+      >
+        <div className="p-4 sm:p-6 pb-20 md:pb-6"></div>
+        <div className="flex flex-col gap-4 mb-6">
+          <div className="w-full justify-between flex">
+            <div>
+              <h1 className={`text-[22px] font-medium ${themeClasses.text}`}>
+                {activePage === "dashboard" && "Dashboard Overview"}
+                {activePage === "users" && "User Management"}
+                {activePage === "doctors" && "Doctor Management"}
+                {activePage === "appointments" && "Appointment Management"}
+                {activePage === "today-appointments" &&
+                  "Today's Video Sessions"}
+                {activePage === "finance" && "Finance Overview"}
+                {![
+                  "dashboard",
+                  "users",
+                  "doctors",
+                  "appointments",
+                  "today-appointments",
+                  "finance",
+                ].includes(activePage) && ""}
+                {activePage === "settings" && "Settings"}
+              </h1>
+              <p className={`${themeClasses.textSecondary} text-[16px] mt-1`}>
+                Welcome back, Admin
+              </p>
             </div>
-            
-            {/* Schedule Button */}
-            <button className={`flex items-center gap-2 px-4 py-2 ${themeClasses.bgCard} border ${themeClasses.border} rounded-lg text-sm font-medium ${themeClasses.text} ${themeClasses.bgHover} transition-colors`}>
-              <Calendar className="w-4 h-4" />
-              Schedule
-            </button>
-            
-            {/* Create Request Button */}
-             <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
-               <Power className="w-4 h-4" />
-               Logout
-             </button>
-               </div>
-             </div>
-         
-          
+
+            <div className="flex items-center gap-4">
+              {/* Search Icon with toggleable input */}
+              {showSearchInput ? (
+                <div className="flex items-center gap-2 animate-in slide-in-from-right-2 duration-300">
+                  <input
+                    type="text"
+                    className={`${themeClasses.input} rounded-lg px-3 py-1 focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm animate-in fade-in-0 slide-in-from-right-2 duration-300`}
+                    placeholder="Search..."
+                    autoFocus
+                    onBlur={() => setShowSearchInput(false)}
+                    value={searchValue}
+                    onChange={(e) => setSearchValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Escape") setShowSearchInput(false);
+                    }}
+                    style={{ width: 160 }}
+                  />
+                  <button
+                    className={`ml-1 ${themeClasses.textMuted} hover:${themeClasses.textSecondary} transition-colors duration-200`}
+                    onClick={() => setShowSearchInput(false)}
+                    tabIndex={-1}
+                    type="button"
+                  >
+                    <SearchCheck className="w-   " />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className={`w-10 h-10 rounded-xl border ${themeClasses.border} flex items-center justify-center cursor-pointer ${themeClasses.bgHover} transition-all duration-200 hover:scale-105`}
+                  onClick={() => setShowSearchInput(true)}
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ")
+                      setShowSearchInput(true);
+                  }}
+                  title="Search"
+                >
+                  <Search
+                    className={`w-5 h-5 ${themeClasses.textSecondary} transition-transform duration-200`}
+                  />
+                </div>
+              )}
+
+              {/* Notification Icon */}
+              <div
+                className={`relative w-10 h-10 rounded-xl border ${themeClasses.border} flex items-center justify-center cursor-pointer ${themeClasses.bgHover} transition-colors`}
+              >
+                <Bell className={`w-5 h-5 ${themeClasses.textSecondary}`} />
+                {/* Notification Badge */}
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></div>
+              </div>
+
+              {/* Schedule Button */}
+              <button
+                className={`flex items-center gap-2 px-4 py-2 ${themeClasses.bgCard} border ${themeClasses.border} rounded-lg text-sm font-medium ${themeClasses.text} ${themeClasses.bgHover} transition-colors`}
+              >
+                <Calendar className="w-4 h-4" />
+                Schedule
+              </button>
+
+              {/* Create Request Button */}
+              <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+                <Power className="w-4 h-4" />
+                Logout
+              </button>
+            </div>
+          </div>
+
           {/* Dynamic Content based on active page */}
           <div className="space-y-6">{renderContent()}</div>
         </div>

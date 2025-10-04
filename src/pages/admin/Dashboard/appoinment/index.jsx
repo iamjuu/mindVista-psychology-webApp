@@ -18,98 +18,6 @@ const Index = () => {
     const [doctors, setDoctors] = useState([])
     const [sortBy, setSortBy] = useState('none') // none, doctor-asc, doctor-desc, date-asc, date-desc
 
-    // Mock data for demonstration (keeping as fallback)
-    const mockAppointments = [
-        {
-            id: 1,
-            name: 'John Smith',
-            phone: '+1-555-0123',
-            age: 35,
-            location: 'New York, NY',
-            doctor: 'Dr. Sarah Johnson',
-            status: 'pending',
-            time: '09:00 AM',
-            date: '2024-01-15'
-        },
-        {
-            id: 2,
-            name: 'Emily Davis',
-            phone: '+1-555-0456',
-            age: 28,
-            location: 'Los Angeles, CA',
-            doctor: 'Dr. Michael Brown',
-            status: 'approved',
-            time: '10:30 AM',
-            date: '2024-01-15'
-        },
-        {
-            id: 3,
-            name: 'Robert Wilson',
-            phone: '+1-555-0789',
-            age: 42,
-            location: 'Chicago, IL',
-            doctor: 'Dr. Sarah Johnson',
-            status: 'declined',
-            time: '02:00 PM',
-            date: '2024-01-16'
-        },
-        {
-            id: 4,
-            name: 'Maria Garcia',
-            phone: '+1-555-0321',
-            age: 31,
-            location: 'Houston, TX',
-            doctor: 'Dr. David Lee',
-            status: 'pending',
-            time: '11:15 AM',
-            date: '2024-01-16'
-        },
-        {
-            id: 5,
-            name: 'James Anderson',
-            phone: '+1-555-0654',
-            age: 39,
-            location: 'Phoenix, AZ',
-            doctor: 'Dr. Michael Brown',
-            status: 'approved',
-            time: '03:45 PM',
-            date: '2024-01-17'
-        },
-        {
-            id: 6,
-            name: 'Lisa Thompson',
-            phone: '+1-555-0987',
-            age: 26,
-            location: 'Miami, FL',
-            doctor: 'Dr. Sarah Johnson',
-            status: 'approved',
-            time: '01:30 PM',
-            date: '2024-01-17'
-        },
-        {
-            id: 7,
-            name: 'Michael Davis',
-            phone: '+1-555-0234',
-            age: 33,
-            location: 'Seattle, WA',
-            doctor: 'Dr. David Lee',
-            status: 'pending',
-            time: '10:00 AM',
-            date: '2024-01-18'
-        },
-        {
-            id: 8,
-            name: 'Jennifer Wilson',
-            phone: '+1-555-0567',
-            age: 29,
-            location: 'Boston, MA',
-            doctor: 'Dr. Michael Brown',
-            status: 'approved',
-            time: '04:15 PM',
-            date: '2024-01-18'
-        }
-    ]
-
 
 
     useEffect(() => {
@@ -223,8 +131,7 @@ const Index = () => {
             // Fallback to mock data if API fails
             console.log('API call failed, falling back to mock data...')
             setError('Failed to fetch appointments from server. Using demo data.')
-            setAppointments(mockAppointments)
-            setFilteredAppointments(mockAppointments)
+     
             
         } finally {
             console.log('Appointment fetching process completed, setting loading to false')

@@ -1,10 +1,8 @@
 import { useState, useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
-import { Button, FormContainer, FormGroup, Input, Label, Select } from './style';
+import { Bannar } from "../../../src/assets";
 import apiInstance from '../../instance';
 
 function Form() {
@@ -15,17 +13,16 @@ function Form() {
     number: '',
     location: '',
     age: '5',
-    slot: 'morning', // Default slot value updated
-    time: '09:00-10:00', // Default time slot
+    slot: 'morning',
+    time: '09:00-10:00',
     date: '',
-    doctor: '' // New field for doctor selection
+    doctor: ''
   });
 
   const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
-  const [submitting, setSubmitting] = useState(false); // Add loading state for form submission
+  const [submitting, setSubmitting] = useState(false);
 
-  // Fetch all doctors when component mounts
   useEffect(() => {
     const fetchDoctors = async () => {
       setLoadingDoctors(true);
@@ -33,344 +30,310 @@ function Form() {
         const response = await apiInstance.get('/all-docters');
         if (response.data.success) {
           setDoctors(response.data.data || []);
-          console.log('Doctors fetched:', response.data.data);
         } else {
-          console.error('Failed to fetch doctors:', response.data.message);
           toast.error('Failed to load doctors. Please try again.');
         }
-      } catch (error) {
-        console.error('Error fetching doctors:', error);
+      } catch (err) {
         toast.error('Error loading doctors. Please try again.');
       } finally {
         setLoadingDoctors(false);
       }
     };
-
     fetchDoctors();
   }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    // Validate required fields
+
+    // Basic validation
     if (!formData.name || !formData.email || !formData.number || !formData.location || !formData.date || !formData.doctor) {
       toast.error('Please fill in all required fields');
       return;
     }
-    
-    // Validate doctor selection
-    if (!formData.doctor) {
-      toast.error('Please select a doctor');
-      return;
-    }
-    
-    // Validate date is not in the past
-    const selectedDate = new Date(formData.date);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Reset time to start of day
-    
-    if (selectedDate < today) {
-      toast.error('Please select a future date for your appointment');
-      return;
-    }
-    
-    // Validate phone number (basic validation)
     if (formData.number.length !== 10 || !/^\d+$/.test(formData.number)) {
       toast.error('Please enter a valid 10-digit phone number');
       return;
     }
-    
-    // Validate age
     const age = parseInt(formData.age);
     if (age < 1 || age > 120) {
       toast.error('Please enter a valid age between 1 and 120');
       return;
     }
-    
-    // Set loading state
+    const selectedDate = new Date(formData.date);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (selectedDate < today) {
+      toast.error('Please select a future date');
+      return;
+    }
+
     setSubmitting(true);
-    
- 
+
     try {
-      // Get doctor name for payment page
       const selectedDoctor = doctors.find(doc => doc._id === formData.doctor);
       const doctorName = selectedDoctor ? selectedDoctor.name : 'Selected Doctor';
-      
-      // Prepare registration data for saving
+
       const registrationData = {
         ...formData,
         doctorName,
-        status: 'pending', // Set initial status as pending
-        createdAt: new Date().toISOString(), // Add timestamp
-        paymentStatus: 'pending' // Add payment status
+        status: 'pending',
+        createdAt: new Date().toISOString(),
+        paymentStatus: 'pending'
       };
-      
-      // Save registration data to backend immediately using the correct appointment endpoint
-      console.log('[RegisterForm] Saving registration data:', registrationData);
-      
+
+      // Debug logging
+   
       const saveResponse = await apiInstance.post('/appointment', registrationData, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
       });
-      
+
       if (saveResponse.data.success) {
-        console.log('[RegisterForm] Registration saved successfully:', saveResponse.data);
-        
-        // Prepare appointment data for payment page with saved data
         const appointmentData = {
           ...registrationData,
-          id: saveResponse.data.data._id || saveResponse.data.data.id, // Use the saved ID
-          registrationId: saveResponse.data.data._id || saveResponse.data.data.id // Store registration ID
+          id: saveResponse.data.data._id || saveResponse.data.data.id,
+          registrationId: saveResponse.data.data._id || saveResponse.data.data.id
         };
-        
-        // Show success toast and navigate to payment page
-        toast.success('Registration saved successfully! Redirecting to payment...');
-        
-        // Navigate to payment page with saved appointment data
+        toast.success('Registration saved successfully! Redirecting...');
         setTimeout(() => {
-          Navigate('/payment', { 
-            state: { appointmentData } 
-          });
+          Navigate('/payment', { state: { appointmentData } });
         }, 1500);
-        
       } else {
         throw new Error(saveResponse.data.message || 'Failed to save registration');
       }
-      
-    } catch (error) {
-      console.error('Error saving registration:', error);
-      
-      // Handle different types of errors
-      if (error.response) {
-        const status = error.response.status;
-        const message = error.response.data?.message || error.message;
-        
-        switch (status) {
-          case 400:
-            toast.error(message || 'Invalid form data. Please check all fields.');
-            break;
-          case 403:
-            toast.error(message || 'Access denied. Please use a registered email!');
-            break;
-          case 404:
-            toast.error('Service not available. Proceeding to payment...');
-            // Still redirect to payment page even if backend is not available
-            setTimeout(() => {
-              const appointmentData = {
-                ...registrationData,
-                id: `temp_${Date.now()}`, // Temporary ID
-                registrationId: `temp_${Date.now()}` // Temporary registration ID
-              };
-              Navigate('/payment', { 
-                state: { appointmentData } 
-              });
-            }, 2000);
-            break;
-          case 409:
-            toast.error('An appointment already exists for this time slot. Please choose another time.');
-            break;
-          case 500:
-            toast.error('Server error. Please try again later.');
-            break;
-          default:
-            toast.error(message || 'Failed to save registration. Please try again!');
-        }
-      } else if (error.request) {
-        // Network error - still allow user to proceed to payment
-        toast.error('Network error. Proceeding to payment page...');
-        setTimeout(() => {
-          const appointmentData = {
-            ...registrationData,
-            id: `temp_${Date.now()}`, // Temporary ID
-            registrationId: `temp_${Date.now()}` // Temporary registration ID
-          };
-          Navigate('/payment', { 
-            state: { appointmentData } 
-          });
-        }, 2000);
-      } else {
-        // Other error
-        toast.error('An unexpected error occurred. Please try again.');
-      }
+    } catch (err) {
+      toast.error('Something went wrong. Please try again.');
     } finally {
-      // Reset loading state
       setSubmitting(false);
     }
   };
 
   return (
-    <FormContainer onSubmit={handleSubmit}>
-      <FormGroup>
-        <Label htmlFor="name">Name:</Label>
-        <Input
-          type="text"
-          id="name"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          required
-        />
-      </FormGroup>
+    <div className="relative min-h-screen">
+      {/* Blurred Background */}
+      <div
+        className="absolute inset-0 bg-cover bg-center filter blur-sm"
+        style={{ backgroundImage: `url(${Bannar})` }}
+      ></div>
 
-      <FormGroup>
-        <Label htmlFor="email">Email:</Label>
-        <Input
-          type="email"
-          id="email"
-          name="email"
-          value={formData.email}
-          onChange={handleChange}
-          required
-        />
-      </FormGroup>
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-black/60"></div>
 
-      <FormGroup>
-        <Label htmlFor="number">Phone Number:</Label>
-        <Input
-          type="tel"
-          id="number"
-          name="number"
-          maxLength={10}
-          value={formData.number}
-          onChange={handleChange}
-          required
-        />
-      </FormGroup>
-
-      <FormGroup>
-        <Label htmlFor="doctor">Select Doctor:</Label>
-        <Select
-          id="doctor"
-          name="doctor"
-          value={formData.doctor}
-          onChange={handleChange}
-          required
-          disabled={loadingDoctors}
+      {/* Form */}
+      <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <form
+          onSubmit={handleSubmit}
+          className="max-w-2xl w-full p-6 rounded-2xl space-y-6 bg-white/30 backdrop-blur-md shadow-lg"
         >
-          <option value="">-- Select a Doctor --</option>
-          {loadingDoctors ? (
-            <option value="" disabled>Loading doctors...</option>
-          ) : (
-            doctors.map((doctor) => (
-              <option key={doctor._id} value={doctor._id}>
-                {doctor.name} - {doctor.specialization} ({doctor.experience} years exp.)
-              </option>
-            ))
-          )}
-        </Select>
-        {loadingDoctors && (
-          <div style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-            Loading available doctors...
+          <h2 className="text-2xl font-semibold text-gray-100 text-center">
+            Book an Appointment
+          </h2>
+
+          {/* Name, Email, Phone */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 rounded-xl">
+            <div className="flex flex-col">
+              <label htmlFor="name" className="text-gray-400 font-medium mb-1">
+                Name
+              </label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                required
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label htmlFor="email" className="text-gray-400 font-medium mb-1">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label htmlFor="number" className="text-gray-400 font-medium mb-1">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                id="number"
+                name="number"
+                maxLength={10}
+                value={formData.number}
+                onChange={handleChange}
+                required
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
           </div>
-        )}
-      </FormGroup>
 
-      <FormGroup>
-        <Label htmlFor="slot">Slot:</Label>
-        <Select
-          id="slot"
-          name="slot"
-          value={formData.slot}
-          onChange={handleChange}
-          required
-        >
-          <option value="morning">Morning</option>
-          <option value="afternoon">Afternoon</option>
-          <option value="evening">Evening</option>
-          <option value="night">Night</option>
-        </Select>
-      </FormGroup>
+          {/* Doctor & Slot */}
+          <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 rounded-xl">
+            <div className="flex flex-col">
+              <label htmlFor="doctor" className="text-gray-400 font-medium mb-1">
+                Select Doctor
+              </label>
+              <select
+                id="doctor"
+                name="doctor"
+                value={formData.doctor}
+                onChange={handleChange}
+                required
+                disabled={loadingDoctors}
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              >
+                <option value="">-- Select a Doctor --</option>
+                {loadingDoctors ? (
+                  <option value="" disabled>Loading doctors...</option>
+                ) : (
+                  doctors.map((doctor) => (
+                    <option key={doctor._id} value={doctor._id}>
+                      {doctor.name} - {doctor.specialization} ({doctor.experience} yrs)
+                    </option>
+                  ))
+                )}
+              </select>
+            </div>
 
-      <FormGroup>
-        <Label htmlFor="time">Time Slot:</Label>
-        <Select
-          id="time"
-          name="time"
-          value={formData.time}
-          onChange={handleChange}
-          required
-        >
-          <optgroup label="Morning (3 slots)">
-            <option value="09:00-10:00">9:00 AM - 10:00 AM</option>
-            <option value="10:00-11:00">10:00 AM - 11:00 AM</option>
-            <option value="11:00-12:00">11:00 AM - 12:00 PM</option>
-          </optgroup>
-          <optgroup label="Afternoon (3 slots)">
-            <option value="12:00-13:00">12:00 PM - 1:00 PM</option>
-            <option value="13:00-14:00">1:00 PM - 2:00 PM</option>
-            <option value="14:00-15:00">2:00 PM - 3:00 PM</option>
-          </optgroup>
-          <optgroup label="Evening (2 slots)">
-            <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
-            <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
-          </optgroup>
-          <optgroup label="Night (1 slot)">
-            <option value="19:00-22:00">7:00 PM - 10:00 PM</option>
-            <option value="22:00-23:00">10:00 PM - 11:00 PM</option>
-            <option value="23:00-00:00">11:00 PM - 12:00 AM</option>
-            <option value="00:00-01:00">12:00 AM - 1:00 AM</option>
-            <option value="01:00-02:00">1:00 AM - 2:00 AM</option>
-          </optgroup>
-        </Select>
-      </FormGroup>
+            <div className="flex flex-col">
+              <label htmlFor="slot" className="text-gray-400 font-medium mb-1">
+                Slot
+              </label>
+              <select
+                id="slot"
+                name="slot"
+                value={formData.slot}
+                onChange={handleChange}
+                required
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              >
+                <option value="morning">Morning</option>
+                <option value="afternoon">Afternoon</option>
+                <option value="evening">Evening</option>
+                <option value="night">Night</option>
+              </select>
+            </div>
+          </div>
 
-      <FormGroup>
-        <Label htmlFor="location">Location:</Label>
-        <Input
-          type="text"
-          id="location"
-          name="location"
-          value={formData.location}
-          onChange={handleChange}
-          required
-        />
-      </FormGroup>
+          {/* Time Slot */}
+          <div className="flex flex-col">
+            <label htmlFor="time" className="text-gray-400 font-medium mb-1">
+              Time Slot
+            </label>
+            <select
+              id="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              required
+              className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+            >
+              <optgroup label="Morning">
+                <option value="09:00-10:00">9:00 AM - 10:00 AM</option>
+                <option value="10:00-11:00">10:00 AM - 11:00 AM</option>
+                <option value="11:00-12:00">11:00 AM - 12:00 PM</option>
+              </optgroup>
+              <optgroup label="Afternoon">
+                <option value="12:00-13:00">12:00 PM - 1:00 PM</option>
+                <option value="13:00-14:00">1:00 PM - 2:00 PM</option>
+                <option value="14:00-15:00">2:00 PM - 3:00 PM</option>
+              </optgroup>
+              <optgroup label="Evening">
+                <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
+                <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
+              </optgroup>
+              <optgroup label="Night">
+                <option value="19:00-22:00">7:00 PM - 10:00 PM</option>
+                <option value="22:00-23:00">10:00 PM - 11:00 PM</option>
+                <option value="23:00-00:00">11:00 PM - 12:00 AM</option>
+                <option value="00:00-01:00">12:00 AM - 1:00 AM</option>
+                <option value="01:00-02:00">1:00 AM - 2:00 AM</option>
+              </optgroup>
+            </select>
+          </div>
 
-      <FormGroup>
-        <Label htmlFor="age">Age:</Label>
-        <Input
-          type="number"
-          id="age"
-          name="age"
-          value={formData.age}
-          onChange={handleChange}
-          required
-        />
-      </FormGroup>
-      
-      <FormGroup>
-        <Label htmlFor="date">Date:</Label>
-        <Input
-          type="date"
-          id="date"
-          name="date"
-          value={formData.date}
-          onChange={handleChange}
-          min={new Date().toISOString().split('T')[0]} // Prevent selecting past dates
-          required
-        />
-        <small style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>
-          Please select a future date for your appointment
-        </small>
-      </FormGroup>
+          {/* Location, Age, Date */}
+          <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-6 rounded-xl'>
+            <div className="flex flex-col">
+              <label htmlFor="location" className="text-gray-400 font-medium mb-1">
+                Location
+              </label>
+              <input
+                type="text"
+                id="location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
 
-      <div style={{ display: 'flex', gap: '10px', flexWrap: 'wrap' }}>
-        <Button type="submit" disabled={submitting}>
-          {submitting ? 'Submitting...' : 'Submit'}
-        </Button>
-  
+            <div className="flex flex-col">
+              <label htmlFor="age" className="text-gray-400 font-medium mb-1">
+                Age
+              </label>
+              <input
+                type="number"
+                id="age"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                required
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label htmlFor="date" className="text-gray-400 font-medium mb-1">
+                Date
+              </label>
+              <input
+                type="date"
+                id="date"
+                name="date"
+                value={formData.date}
+                onChange={handleChange}
+                min={new Date().toISOString().split('T')[0]}
+                required
+                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+              />
+              <p className="text-xs text-white mt-1">
+                Please select a future date for your appointment
+              </p>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex justify-center">
+            <button
+              type="submit"
+              disabled={submitting}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg shadow-md transition disabled:opacity-50"
+            >
+              {submitting ? 'Submitting...' : 'Submit'}
+            </button>
+          </div>
+
+          <ToastContainer />
+        </form>
       </div>
-      <ToastContainer />
-    </FormContainer>
+    </div>
   );
 }
 

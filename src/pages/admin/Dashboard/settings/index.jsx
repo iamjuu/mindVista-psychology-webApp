@@ -1,12 +1,12 @@
-import { useState } from 'react';
-import { 
-  Camera, 
-  Shield, 
-  Mail, 
-  User, 
-  Lock, 
-  Bell, 
-  Eye, 
+import { useState } from "react";
+import {
+  Camera,
+  Shield,
+  Mail,
+  User,
+  Lock,
+  Bell,
+  Eye,
   HelpCircle,
   ChevronRight,
   Check,
@@ -30,33 +30,33 @@ import {
   Trash2,
   Key,
   ShieldCheck,
-  Zap
-} from 'lucide-react';
-import { Button } from '../../../../components/shadcn/button/button';
-import { Input } from '../../../../components/shadcn/input/input';
-import { 
+  Zap,
+} from "lucide-react";
+import { Button } from "../../../../components/shadcn/button/button";
+import { Input } from "../../../../components/shadcn/input/input";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '../../../../components/shadcn/select';
-import { CardHeader, PageHeader } from '../../../../components/core/cardHeader';
-import { useTheme } from '../../../../contexts/ThemeContext';
+} from "../../../../components/shadcn/select";
+import { CardHeader, PageHeader } from "../../../../components/core/cardHeader";
+import { useTheme } from "../../../../contexts/ThemeContext";
 
 const SettingsPage = () => {
   const { theme, setThemeMode, themeClasses } = useTheme();
-  const [activeTab, setActiveTab] = useState('edit-profile');
+  const [activeTab, setActiveTab] = useState("edit-profile");
   const [profileData, setProfileData] = useState({
-    username: 'johndoe',
-    name: 'John Doe',
-    bio: 'Digital creator | Photography enthusiast',
-    email: 'john.doe@example.com',
-    phone: '+1 234 567 8900',
-    gender: 'male',
+    username: "johndoe",
+    name: "John Doe",
+    bio: "Digital creator | Photography enthusiast",
+    email: "john.doe@example.com",
+    phone: "+1 234 567 8900",
+    gender: "male",
     avatar: null,
-    website: 'johndoe.com',
-    location: 'San Francisco, CA'
+    website: "johndoe.com",
+    location: "San Francisco, CA",
   });
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
@@ -64,7 +64,7 @@ const SettingsPage = () => {
   const handleInputChange = (e) => {
     setProfileData({
       ...profileData,
-      [e.target.name]: e.target.value
+      [e.target.name]: e.target.value,
     });
   };
 
@@ -75,7 +75,7 @@ const SettingsPage = () => {
       reader.onloadend = () => {
         setProfileData({
           ...profileData,
-          avatar: reader.result
+          avatar: reader.result,
         });
       };
       reader.readAsDataURL(file);
@@ -87,48 +87,77 @@ const SettingsPage = () => {
   };
 
   const menuItems = [
-    { id: 'edit-profile', label: 'Edit Profile', icon: User, color: 'blue' },
-    { id: 'account', label: 'Account', icon: Settings, color: 'indigo' },
-    { id: 'security', label: 'Security', icon: Shield, color: 'green' },
-    { id: 'notifications', label: 'Notifications', icon: Bell, color: 'yellow' },
-    { id: 'privacy', label: 'Privacy', icon: Eye, color: 'purple' },
-    { id: 'appearance', label: 'Appearance', icon: Palette, color: 'pink' },
-    { id: 'activity', label: 'Activity', icon: Activity, color: 'orange' },
-    { id: 'help', label: 'Help & Support', icon: HelpCircle, color: 'gray' },
+    { id: "edit-profile", label: "Edit Profile", icon: User, color: "blue" },
+    { id: "account", label: "Account", icon: Settings, color: "indigo" },
+    { id: "security", label: "Security", icon: Shield, color: "green" },
+    {
+      id: "notifications",
+      label: "Notifications",
+      icon: Bell,
+      color: "yellow",
+    },
+    { id: "privacy", label: "Privacy", icon: Eye, color: "purple" },
+    { id: "appearance", label: "Appearance", icon: Palette, color: "pink" },
+    { id: "activity", label: "Activity", icon: Activity, color: "orange" },
+    { id: "help", label: "Help & Support", icon: HelpCircle, color: "gray" },
   ];
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'edit-profile':
-        return <EditProfile profileData={profileData} handleInputChange={handleInputChange} handleAvatarChange={handleAvatarChange} setSaveStatus={setSaveStatus} />;
-      case 'account':
-        return <AccountSettings profileData={profileData} handleInputChange={handleInputChange} />;
-      case 'security':
-        return <SecuritySettings twoFactorEnabled={twoFactorEnabled} setTwoFactorEnabled={setTwoFactorEnabled} />;
-      case 'notifications':
+      case "edit-profile":
+        return (
+          <EditProfile
+            profileData={profileData}
+            handleInputChange={handleInputChange}
+            handleAvatarChange={handleAvatarChange}
+            setSaveStatus={setSaveStatus}
+          />
+        );
+      case "account":
+        return (
+          <AccountSettings
+            profileData={profileData}
+            handleInputChange={handleInputChange}
+          />
+        );
+      case "security":
+        return (
+          <SecuritySettings
+            twoFactorEnabled={twoFactorEnabled}
+            setTwoFactorEnabled={setTwoFactorEnabled}
+          />
+        );
+      case "notifications":
         return <Notifications />;
-      case 'privacy':
+      case "privacy":
         return <PrivacySettings />;
-      case 'appearance':
+      case "appearance":
         return <AppearanceSettings theme={theme} setTheme={setThemeMode} />;
-      case 'activity':
+      case "activity":
         return <ActivitySettings />;
-      case 'help':
+      case "help":
         return <HelpSupport />;
       default:
-        return <EditProfile profileData={profileData} handleInputChange={handleInputChange} handleAvatarChange={handleAvatarChange} setSaveStatus={setSaveStatus} />;
+        return (
+          <EditProfile
+            profileData={profileData}
+            handleInputChange={handleInputChange}
+            handleAvatarChange={handleAvatarChange}
+            setSaveStatus={setSaveStatus}
+          />
+        );
     }
   };
 
   return (
     <div className={`min-h-screen ${themeClasses.bg}`}>
       <div className=" ">
-        
-
         <div className="flex flex-col lg:flex-row gap-6 h-screen">
           {/* Sidebar Navigation */}
           <div className="lg:w-64 lg:h-full">
-            <nav className={`${themeClasses.bgCard} rounded-2xl shadow-sm p-2 space-y-1 h-full overflow-y-auto`}>
+            <nav
+              className={`${themeClasses.bgCard} rounded-2xl shadow-sm p-2 space-y-1 h-full overflow-y-auto`}
+            >
               {menuItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = activeTab === item.id;
@@ -136,31 +165,31 @@ const SettingsPage = () => {
                   <Button
                     key={item.id}
                     onClick={() => handleTabChange(item.id)}
-                    variant={isActive ? "default" : "ghost"}
+                    variant={isActive ? "default" : "secondary"}
                     className={`w-full justify-start h-auto p-3 ${
                       isActive
-                        ? `bg-${item.color}-50 text-${item.color}-600 shadow-sm`
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                        ? `bg-blue-600 text-white shadow-sm hover:bg-blue-500  `
+                        : "hover:bg-blue-300"
                     }`}
                   >
-                    <div className={`p-2 rounded-lg ${
-                      isActive 
-                        ? `bg-${item.color}-100` 
-                        : 'bg-gray-100 group-hover:bg-gray-200'
-                    } transition-colors`}>
+                    <div
+                      className={`p-2 rounded-lg ${
+                        isActive
+                          ? `bg-gray-100 text-gray-600`
+                          : "bg-gray-100"
+                      } transition-colors`}
+                    >
                       <Icon size={18} />
                     </div>
                     <span className="font-medium text-sm">{item.label}</span>
-                    {isActive && (
-                      <ChevronRight size={16} className="ml-auto" />
-                    )}
+                    {isActive && <ChevronRight size={16} className="ml-auto" />}
                   </Button>
                 );
               })}
-              
+
               <div className="border-t pt-2 mt-2">
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="secondary"
                   className="w-full justify-start h-auto p-3 text-red-600 hover:bg-red-50"
                 >
                   <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-colors">
@@ -174,14 +203,26 @@ const SettingsPage = () => {
 
           {/* Content Area */}
           <div className="flex-1 lg:h-full">
-            <div className={`${themeClasses.bgCard} rounded-2xl shadow-sm p-6 sm:p-8 h-full overflow-y-auto`}>
+            <div
+              className={`${themeClasses.bgCard} rounded-2xl shadow-sm p-6 sm:p-8 h-full overflow-y-auto`}
+            >
               {saveStatus && (
-                <div className={`mb-6 p-4 rounded-xl flex items-center space-x-3 animate-slide-down ${
-                  saveStatus === 'success' ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
-                }`}>
-                  {saveStatus === 'success' ? <Check size={20} /> : <X size={20} />}
+                <div
+                  className={`mb-6 p-4 rounded-xl flex items-center space-x-3 animate-slide-down ${
+                    saveStatus === "success"
+                      ? "bg-green-50 text-green-800"
+                      : "bg-red-50 text-red-800"
+                  }`}
+                >
+                  {saveStatus === "success" ? (
+                    <Check size={20} />
+                  ) : (
+                    <X size={20} />
+                  )}
                   <span className="font-medium">
-                    {saveStatus === 'success' ? 'Changes saved successfully!' : 'Error saving changes'}
+                    {saveStatus === "success"
+                      ? "Changes saved successfully!"
+                      : "Error saving changes"}
                   </span>
                 </div>
               )}
@@ -195,7 +236,12 @@ const SettingsPage = () => {
 };
 
 // Edit Profile Component
-const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSaveStatus }) => {
+const EditProfile = ({
+  profileData,
+  handleInputChange,
+  handleAvatarChange,
+  setSaveStatus,
+}) => {
   const [loading, setLoading] = useState(false);
 
   const handleFormSubmit = async (e) => {
@@ -203,7 +249,7 @@ const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSa
     setLoading(true);
     // Simulate API call
     setTimeout(() => {
-      setSaveStatus('success');
+      setSaveStatus("success");
       setLoading(false);
       setTimeout(() => setSaveStatus(null), 3000);
     }, 1000);
@@ -211,16 +257,18 @@ const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSa
 
   return (
     <div>
-   
-      
       {/* Avatar Section */}
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-8">
         <div className="flex items-center space-x-6">
           <div className="relative group">
-            <div className="w-28 h-28 rounded-2xl bg-gradient-to-br from-blue-400 to-purple-400 p-1">
-              <div className="w-full h-full rounded-2xl bg-white overflow-hidden">
+            <div className="w-28 h-28  rounded-full bg-gradient-to-br from-blue-400 to-purple-400 p-1">
+              <div className="w-full h-full rounded-full bg-white overflow-hidden">
                 {profileData.avatar ? (
-                  <img src={profileData.avatar} alt="Profile" className="w-full h-full object-cover" />
+                  <img
+                    src={profileData.avatar}
+                    alt="Profile"
+                    className="w-full rounded-full h-full object-fit"
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
                     <User size={40} className="text-gray-400" />
@@ -230,17 +278,32 @@ const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSa
             </div>
             <label className="absolute bottom-0 right-0 bg-white border-2 border-white shadow-lg p-2 rounded-xl cursor-pointer hover:shadow-xl transition-shadow transform group-hover:scale-110">
               <Camera size={18} className="text-gray-700" />
-              <input type="file" className="hidden" onChange={handleAvatarChange} accept="image/*" />
+              <input
+                type="file"
+                className="hidden"
+                onChange={handleAvatarChange}
+                accept="image/*"
+              />
             </label>
           </div>
           <div>
-            <h3 className="font-bold text-xl text-gray-900 mb-1">@{profileData.username}</h3>
+            <h3 className="font-bold text-xl text-gray-900 mb-1">
+              {profileData.username}
+            </h3>
             <p className="text-gray-600 mb-3">{profileData.name}</p>
             <div className="flex space-x-2">
-              <Button variant="outline" size="sm" className="text-blue-600 border-blue-200 hover:bg-blue-50">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+              >
                 Change Photo
               </Button>
-              <Button variant="outline" size="sm" className="text-red-600 border-red-200 hover:bg-red-50">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-red-600 border-red-200 hover:bg-red-50"
+              >
                 Remove
               </Button>
             </div>
@@ -250,7 +313,7 @@ const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSa
 
       {/* Form Fields */}
       <form onSubmit={handleFormSubmit} className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Full Name
@@ -270,7 +333,9 @@ const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSa
               Username
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">@</span>
+              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+                @
+              </span>
               <Input
                 type="text"
                 name="username"
@@ -295,10 +360,12 @@ const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSa
             className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
             placeholder="Tell us about yourself..."
           />
-          <p className="mt-2 text-sm text-gray-500">{150 - profileData.bio.length} characters remaining</p>
+          <p className="mt-2 text-sm text-gray-500">
+            {150 - profileData.bio.length} characters remaining
+          </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1  md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
               Website
@@ -326,23 +393,28 @@ const EditProfile = ({ profileData, handleInputChange, handleAvatarChange, setSa
               placeholder="City, Country"
             />
           </div>
-        </div>
 
-        <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
-            Gender
-          </label>
-                                <Select name="gender" value={profileData.gender} onValueChange={(value) => handleInputChange({ target: { name: 'gender', value } })}>
-             <SelectTrigger className="w-full px-4 py-3 border bg-white border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
-               <SelectValue placeholder="Select gender" />
-             </SelectTrigger>
-             <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg">
-               <SelectItem value="male">Male</SelectItem>
-               <SelectItem value="female">Female</SelectItem>
-               <SelectItem value="other">Other</SelectItem>
-
-             </SelectContent>
-           </Select>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 mb-2">
+              Gender
+            </label>
+            <Select
+              name="gender"
+              value={profileData.gender}
+              onValueChange={(value) =>
+                handleInputChange({ target: { name: "gender", value } })
+              }
+            >
+              <SelectTrigger className="w-full px-4 py-3 border bg-white border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+                <SelectValue placeholder="Select gender" />
+              </SelectTrigger>
+              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg">
+                <SelectItem value="male">Male</SelectItem>
+                <SelectItem value="female">Female</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <div className="flex justify-end space-x-3 pt-6">
@@ -383,14 +455,21 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
 
   return (
     <div>
-      <PageHeader title="Account Settings" description="Manage your account information and preferences" />
-      
+      <PageHeader
+        title="Account Settings"
+        description="Manage your account information and preferences"
+      />
+
       <div className="space-y-6">
         {/* Email Section */}
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-start justify-between mb-4">
             <CardHeader
-              icon={<div className="p-2 bg-blue-100 rounded-lg"><Mail size={20} className="text-blue-600" /></div>}
+              icon={
+                <div className="p-2 bg-blue-100 rounded-lg">
+                  <Mail size={20} className="text-blue-600" />
+                </div>
+              }
               title="Email Address"
               description="Used for notifications and account recovery"
             />
@@ -399,10 +478,10 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
               variant="link"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm p-0 h-auto"
             >
-              {editingEmail ? 'Cancel' : 'Change'}
+              {editingEmail ? "Cancel" : "Change"}
             </Button>
           </div>
-          
+
           {editingEmail ? (
             <div className="space-y-4">
               <Input
@@ -417,7 +496,9 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
               </Button>
             </div>
           ) : (
-            <p className="text-gray-700 font-medium pl-11">{profileData.email}</p>
+            <p className="text-gray-700 font-medium pl-11">
+              {profileData.email}
+            </p>
           )}
         </div>
 
@@ -425,7 +506,11 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-start justify-between mb-4">
             <CardHeader
-              icon={<div className="p-2 bg-green-100 rounded-lg"><Smartphone size={20} className="text-green-600" /></div>}
+              icon={
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <Smartphone size={20} className="text-green-600" />
+                </div>
+              }
               title="Phone Number"
               description="Used for two-factor authentication"
             />
@@ -434,10 +519,10 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
               variant="link"
               className="text-blue-600 hover:text-blue-700 font-medium text-sm p-0 h-auto"
             >
-              {editingPhone ? 'Cancel' : 'Change'}
+              {editingPhone ? "Cancel" : "Change"}
             </Button>
           </div>
-          
+
           {editingPhone ? (
             <div className="space-y-4">
               <Input
@@ -452,26 +537,42 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
               </Button>
             </div>
           ) : (
-            <p className="text-gray-700 font-medium pl-11">{profileData.phone}</p>
+            <p className="text-gray-700 font-medium pl-11">
+              {profileData.phone}
+            </p>
           )}
         </div>
 
         {/* Account Actions */}
         <div className="border-t pt-6 space-y-4">
-          <Button variant="ghost" className="w-full flex items-center justify-between p-4 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition-colors group h-auto">
+          <Button
+            variant="ghost"
+            className="w-full flex items-center justify-between p-4 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition-colors group h-auto"
+          >
             <div className="flex items-center space-x-3">
               <Download size={20} className="text-yellow-600" />
-              <span className="font-medium text-gray-900">Download Your Data</span>
+              <span className="font-medium text-gray-900">
+                Download Your Data
+              </span>
             </div>
-            <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight
+              size={18}
+              className="text-gray-400 group-hover:translate-x-1 transition-transform"
+            />
           </Button>
-          
-          <Button variant="ghost" className="w-full flex items-center justify-between p-4 bg-red-50 rounded-xl hover:bg-red-100 transition-colors group h-auto">
+
+          <Button
+            variant="ghost"
+            className="w-full flex items-center justify-between p-4 bg-red-50 rounded-xl hover:bg-red-100 transition-colors group h-auto"
+          >
             <div className="flex items-center space-x-3">
               <Trash2 size={20} className="text-red-600" />
               <span className="font-medium text-gray-900">Delete Account</span>
             </div>
-            <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-1 transition-transform" />
+            <ChevronRight
+              size={18}
+              className="text-gray-400 group-hover:translate-x-1 transition-transform"
+            />
           </Button>
         </div>
       </div>
@@ -482,30 +583,41 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
 // Security Settings Component
 const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
   const [showSetup, setShowSetup] = useState(false);
-  const [verificationCode, setVerificationCode] = useState('');
+  const [verificationCode, setVerificationCode] = useState("");
 
   const handleSetupComplete = () => {
     if (verificationCode.length === 6) {
       setTwoFactorEnabled(true);
       setShowSetup(false);
-      setVerificationCode('');
+      setVerificationCode("");
     }
   };
 
   return (
     <div>
-      <PageHeader title="Security Settings" description="Keep your account safe and secure" />
+      <PageHeader
+        title="Security Settings"
+        description="Keep your account safe and secure"
+      />
 
       <div className="space-y-6">
         {/* Password */}
         <div className="bg-gradient-to-r from-indigo-50 to-blue-50 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <CardHeader
-              icon={<div className="p-2 bg-indigo-100 rounded-lg"><Key size={20} className="text-indigo-600" /></div>}
+              icon={
+                <div className="p-2 bg-indigo-100 rounded-lg">
+                  <Key size={20} className="text-indigo-600" />
+                </div>
+              }
               title="Password"
               description="Last changed 3 months ago"
             />
-            <Button variant="outline" size="sm" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50">
+            <Button
+              variant="outline"
+              size="sm"
+              className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
+            >
               Change Password
             </Button>
           </div>
@@ -515,9 +627,17 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
         <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
           <div className="flex items-start justify-between">
             <CardHeader
-              icon={<div className="p-2 bg-green-100 rounded-lg"><ShieldCheck size={20} className="text-green-600" /></div>}
+              icon={
+                <div className="p-2 bg-green-100 rounded-lg">
+                  <ShieldCheck size={20} className="text-green-600" />
+                </div>
+              }
               title="Two-Factor Authentication"
-              description={twoFactorEnabled ? 'Your account is protected' : 'Add an extra layer of security'}
+              description={
+                twoFactorEnabled
+                  ? "Your account is protected"
+                  : "Add an extra layer of security"
+              }
             />
             <Button
               onClick={() => setShowSetup(!showSetup)}
@@ -525,30 +645,38 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
               size="sm"
               className={`${
                 twoFactorEnabled
-                  ? 'bg-red-100 text-red-600 hover:bg-red-200 border-red-200'
-                  : 'bg-green-600 text-white hover:bg-green-700'
+                  ? "bg-red-100 text-red-600 hover:bg-red-200 border-red-200"
+                  : "bg-green-600 text-white hover:bg-green-700"
               }`}
             >
-              {twoFactorEnabled ? 'Disable' : 'Enable'}
+              {twoFactorEnabled ? "Disable" : "Enable"}
             </Button>
           </div>
 
           {showSetup && !twoFactorEnabled && (
             <div className="mt-6 space-y-4 border-t pt-6">
               <div className="bg-white rounded-lg p-4">
-                <p className="text-sm font-medium text-gray-700 mb-2">1. Install an authenticator app</p>
-                <p className="text-xs text-gray-500">Google Authenticator, Microsoft Authenticator, or Authy</p>
+                <p className="text-sm font-medium text-gray-700 mb-2">
+                  1. Install an authenticator app
+                </p>
+                <p className="text-xs text-gray-500">
+                  Google Authenticator, Microsoft Authenticator, or Authy
+                </p>
               </div>
-              
+
               <div className="bg-white rounded-lg p-4">
-                <p className="text-sm font-medium text-gray-700 mb-4">2. Scan this QR code</p>
+                <p className="text-sm font-medium text-gray-700 mb-4">
+                  2. Scan this QR code
+                </p>
                 <div className="w-48 h-48 bg-gray-100 rounded-lg mx-auto flex items-center justify-center">
                   <div className="text-gray-400">QR Code</div>
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-lg p-4">
-                <p className="text-sm font-medium text-gray-700 mb-3">3. Enter verification code</p>
+                <p className="text-sm font-medium text-gray-700 mb-3">
+                  3. Enter verification code
+                </p>
                 <div className="flex space-x-2">
                   {[...Array(6)].map((_, i) => (
                     <input
@@ -556,11 +684,11 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
                       type="text"
                       maxLength="1"
                       className="w-12 h-12 text-center border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg font-bold"
-                      value={verificationCode[i] || ''}
+                      value={verificationCode[i] || ""}
                       onChange={(e) => {
-                        const newCode = verificationCode.split('');
+                        const newCode = verificationCode.split("");
                         newCode[i] = e.target.value;
-                        setVerificationCode(newCode.join(''));
+                        setVerificationCode(newCode.join(""));
                         if (e.target.value && i < 5) {
                           e.target.nextSibling?.focus();
                         }
@@ -569,7 +697,7 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
                   ))}
                 </div>
               </div>
-              
+
               <Button
                 onClick={handleSetupComplete}
                 className="w-full bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
@@ -582,27 +710,40 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
 
         {/* Active Sessions */}
         <div className="bg-gray-50 rounded-xl p-6">
-          <h3 className="font-semibold text-lg text-gray-900 mb-4">Active Sessions</h3>
+          <h3 className="font-semibold text-lg text-gray-900 mb-4">
+            Active Sessions
+          </h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between p-3 bg-white rounded-lg">
               <div className="flex items-center space-x-3">
                 <Monitor size={20} className="text-gray-600" />
                 <div>
-                  <p className="font-medium text-gray-900">Chrome on MacBook Pro</p>
-                  <p className="text-sm text-gray-500">San Francisco, CA • Current session</p>
+                  <p className="font-medium text-gray-900">
+                    Chrome on MacBook Pro
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    San Francisco, CA • Current session
+                  </p>
                 </div>
               </div>
-              <span className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded">Active</span>
+              <span className="text-xs text-green-600 font-medium bg-green-100 px-2 py-1 rounded">
+                Active
+              </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-white rounded-lg">
               <div className="flex items-center space-x-3">
                 <Smartphone size={20} className="text-gray-600" />
                 <div>
                   <p className="font-medium text-gray-900">Safari on iPhone</p>
-                  <p className="text-sm text-gray-500">San Francisco, CA • 2 hours ago</p>
+                  <p className="text-sm text-gray-500">
+                    San Francisco, CA • 2 hours ago
+                  </p>
                 </div>
               </div>
-              <Button variant="link" className="text-red-600 hover:text-red-700 text-sm font-medium p-0 h-auto">
+              <Button
+                variant="link"
+                className="text-red-600 hover:text-red-700 text-sm font-medium p-0 h-auto"
+              >
                 End
               </Button>
             </div>
@@ -624,56 +765,91 @@ const Notifications = () => {
     stories: false,
     live: true,
     email: false,
-    push: true
+    push: true,
   });
 
   const handleToggle = (key) => {
     setNotifications({
       ...notifications,
-      [key]: !notifications[key]
+      [key]: !notifications[key],
     });
   };
 
   const notificationGroups = [
     {
-      title: 'Activity',
+      title: "Activity",
       icon: Heart,
-      color: 'red',
+      color: "red",
       items: [
-        { key: 'likes', label: 'Likes', description: 'When someone likes your posts' },
-        { key: 'comments', label: 'Comments', description: 'When someone comments on your posts' },
-        { key: 'follows', label: 'New Followers', description: 'When someone follows you' },
-        { key: 'mentions', label: 'Mentions', description: 'When someone mentions you' }
-      ]
+        {
+          key: "likes",
+          label: "Likes",
+          description: "When someone likes your posts",
+        },
+        {
+          key: "comments",
+          label: "Comments",
+          description: "When someone comments on your posts",
+        },
+        {
+          key: "follows",
+          label: "New Followers",
+          description: "When someone follows you",
+        },
+        {
+          key: "mentions",
+          label: "Mentions",
+          description: "When someone mentions you",
+        },
+      ],
     },
     {
-      title: 'Messages',
+      title: "Messages",
       icon: MessageSquare,
-      color: 'blue',
+      color: "blue",
       items: [
-        { key: 'messages', label: 'Direct Messages', description: 'New message notifications' },
-        { key: 'stories', label: 'Story Replies', description: 'When someone replies to your story' }
-      ]
+        {
+          key: "messages",
+          label: "Direct Messages",
+          description: "New message notifications",
+        },
+        {
+          key: "stories",
+          label: "Story Replies",
+          description: "When someone replies to your story",
+        },
+      ],
     },
     {
-      title: 'Other',
+      title: "Other",
       icon: Bell,
-      color: 'purple',
+      color: "purple",
       items: [
-        { key: 'live', label: 'Live Videos', description: 'When someone you follow goes live' },
-        { key: 'email', label: 'Email Notifications', description: 'Receive updates via email' },
-        { key: 'push', label: 'Push Notifications', description: 'Receive push notifications on your device' }
-      ]
-    }
+        {
+          key: "live",
+          label: "Live Videos",
+          description: "When someone you follow goes live",
+        },
+        {
+          key: "email",
+          label: "Email Notifications",
+          description: "Receive updates via email",
+        },
+        {
+          key: "push",
+          label: "Push Notifications",
+          description: "Receive push notifications on your device",
+        },
+      ],
+    },
   ];
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-[16px] font-bold text-gray-900 ">Notification Preferences</h2>
-        <p className="text-gray-600 text-[14px] font-[400]">Choose what you want to be notified about</p>
-      </div>
 
+      <PageHeader
+      title="Notification Preferances"
+      description="Choose what you want to be notified about"/>
       <div className="space-y-6">
         {notificationGroups.map((group) => {
           const Icon = group.icon;
@@ -683,24 +859,33 @@ const Notifications = () => {
                 <div className={`p-2 bg-${group.color}-100 rounded-lg`}>
                   <Icon size={20} className={`text-${group.color}-600`} />
                 </div>
-                <h3 className="font-semibold text-lg text-gray-900">{group.title}</h3>
+                <h3 className="font-semibold text-lg text-gray-900">
+                  {group.title}
+                </h3>
               </div>
               <div className="space-y-3">
                 {group.items.map((item) => (
-                  <div key={item.key} className="flex items-center justify-between py-3">
+                  <div
+                    key={item.key}
+                    className="flex items-center justify-between py-3"
+                  >
                     <div className="flex-1">
                       <p className="font-medium text-gray-900">{item.label}</p>
-                      <p className="text-sm text-gray-500">{item.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {item.description}
+                      </p>
                     </div>
                     <button
                       onClick={() => handleToggle(item.key)}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                        notifications[item.key] ? 'bg-blue-600' : 'bg-gray-300'
+                        notifications[item.key] ? "bg-blue-600" : "bg-gray-300"
                       }`}
                     >
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                          notifications[item.key] ? 'translate-x-6' : 'translate-x-1'
+                          notifications[item.key]
+                            ? "translate-x-6"
+                            : "translate-x-1"
                         }`}
                       />
                     </button>
@@ -723,22 +908,31 @@ const PrivacySettings = () => {
     allowTagging: true,
     showProfile: true,
     allowMessages: true,
-    dataSharing: false
+    dataSharing: false,
   });
 
   const handleToggle = (key) => {
     setPrivacySettings({
       ...privacySettings,
-      [key]: !privacySettings[key]
+      [key]: !privacySettings[key],
     });
   };
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-[16px] font-bold text-gray-900 ">Privacy Settings</h2>
-        <p className="text-gray-600 text-[14px] font-[400]">Control who can see your content and interact with you</p>
-      </div>
+
+      <PageHeader
+      title="Privacy Settings"
+      description="Control who can see your content and interact with you"
+      />
+      {/* <div className="mb-8">
+        <h2 className="text-[16px] font-bold text-gray-900 ">
+          Privacy Settings
+        </h2>
+        <p className="text-gray-600 text-[14px] font-[400]">
+          Control who can see your content and interact with you
+        </p>
+      </div> */}
 
       <div className="space-y-6">
         {/* Account Privacy */}
@@ -751,17 +945,23 @@ const PrivacySettings = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">Private Account</p>
-                <p className="text-sm text-gray-500">Only approved followers can see your content</p>
+                <p className="text-sm text-gray-500">
+                  Only approved followers can see your content
+                </p>
               </div>
               <button
-                onClick={() => handleToggle('privateAccount')}
+                onClick={() => handleToggle("privateAccount")}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  privacySettings.privateAccount ? 'bg-purple-600' : 'bg-gray-300'
+                  privacySettings.privateAccount
+                    ? "bg-purple-600"
+                    : "bg-gray-300"
                 }`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    privacySettings.privateAccount ? 'translate-x-6' : 'translate-x-1'
+                    privacySettings.privateAccount
+                      ? "translate-x-6"
+                      : "translate-x-1"
                   }`}
                 />
               </button>
@@ -779,17 +979,21 @@ const PrivacySettings = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">Activity Status</p>
-                <p className="text-sm text-gray-500">Show when you were last active</p>
+                <p className="text-sm text-gray-500">
+                  Show when you were last active
+                </p>
               </div>
               <button
-                onClick={() => handleToggle('showActivity')}
+                onClick={() => handleToggle("showActivity")}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  privacySettings.showActivity ? 'bg-blue-600' : 'bg-gray-300'
+                  privacySettings.showActivity ? "bg-blue-600" : "bg-gray-300"
                 }`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    privacySettings.showActivity ? 'translate-x-6' : 'translate-x-1'
+                    privacySettings.showActivity
+                      ? "translate-x-6"
+                      : "translate-x-1"
                   }`}
                 />
               </button>
@@ -798,17 +1002,21 @@ const PrivacySettings = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">Allow Tagging</p>
-                <p className="text-sm text-gray-500">Let others tag you in posts and stories</p>
+                <p className="text-sm text-gray-500">
+                  Let others tag you in posts and stories
+                </p>
               </div>
               <button
-                onClick={() => handleToggle('allowTagging')}
+                onClick={() => handleToggle("allowTagging")}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  privacySettings.allowTagging ? 'bg-blue-600' : 'bg-gray-300'
+                  privacySettings.allowTagging ? "bg-blue-600" : "bg-gray-300"
                 }`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    privacySettings.allowTagging ? 'translate-x-6' : 'translate-x-1'
+                    privacySettings.allowTagging
+                      ? "translate-x-6"
+                      : "translate-x-1"
                   }`}
                 />
               </button>
@@ -817,17 +1025,21 @@ const PrivacySettings = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="font-medium text-gray-900">Message Requests</p>
-                <p className="text-sm text-gray-500">Allow messages from everyone</p>
+                <p className="text-sm text-gray-500">
+                  Allow messages from everyone
+                </p>
               </div>
               <button
-                onClick={() => handleToggle('allowMessages')}
+                onClick={() => handleToggle("allowMessages")}
                 className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                  privacySettings.allowMessages ? 'bg-blue-600' : 'bg-gray-300'
+                  privacySettings.allowMessages ? "bg-blue-600" : "bg-gray-300"
                 }`}
               >
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    privacySettings.allowMessages ? 'translate-x-6' : 'translate-x-1'
+                    privacySettings.allowMessages
+                      ? "translate-x-6"
+                      : "translate-x-1"
                   }`}
                 />
               </button>
@@ -838,13 +1050,23 @@ const PrivacySettings = () => {
         {/* Blocked Accounts */}
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-lg text-gray-900">Blocked Accounts</h3>
+            <h3 className="font-semibold text-lg text-gray-900">
+              Blocked Accounts
+            </h3>
             <span className="text-sm text-gray-500">3 accounts</span>
           </div>
-                        <Button variant="ghost" className="w-full flex items-center justify-between p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors group h-auto">
-                <span className="font-medium text-gray-700">Manage blocked accounts</span>
-                <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-1 transition-transform" />
-              </Button>
+          <Button
+            variant="ghost"
+            className="w-full flex items-center justify-between p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors group h-auto"
+          >
+            <span className="font-medium text-gray-700">
+              Manage blocked accounts
+            </span>
+            <ChevronRight
+              size={18}
+              className="text-gray-400 group-hover:translate-x-1 transition-transform"
+            />
+          </Button>
         </div>
       </div>
     </div>
@@ -855,35 +1077,58 @@ const PrivacySettings = () => {
 
 const AppearanceSettings = ({ theme, setTheme }) => {
   const { themeClasses } = useTheme();
-  const [accentColor, setAccentColor] = useState('blue');
-  const [fontSize, setFontSize] = useState('medium');
+  const [accentColor, setAccentColor] = useState("blue");
+  const [fontSize, setFontSize] = useState("medium");
 
   const themes = [
-    { id: 'light', label: 'Light', icon: Sun, bg: 'bg-white', text: 'text-gray-900' },
-    { id: 'dark', label: 'Dark', icon: Moon, bg: 'bg-gray-900', text: 'text-white' },
-    { id: 'auto', label: 'Auto', icon: Monitor, bg: 'bg-gradient-to-r from-white to-gray-900', text: 'text-gray-600' }
+    {
+      id: "light",
+      label: "Light",
+      icon: Sun,
+      bg: "bg-white",
+      text: "text-gray-900",
+    },
+    {
+      id: "dark",
+      label: "Dark",
+      icon: Moon,
+      bg: "bg-gray-900",
+      text: "text-white",
+    },
+    {
+      id: "auto",
+      label: "Auto",
+      icon: Monitor,
+      bg: "bg-gradient-to-r from-white to-gray-900",
+      text: "text-gray-600",
+    },
   ];
 
   const colors = [
-    { id: 'blue', color: 'bg-blue-500' },
-    { id: 'purple', color: 'bg-purple-500' },
-    { id: 'pink', color: 'bg-pink-500' },
-    { id: 'green', color: 'bg-green-500' },
-    { id: 'yellow', color: 'bg-yellow-500' },
-    { id: 'red', color: 'bg-red-500' }
+    { id: "blue", color: "bg-blue-500" },
+    { id: "purple", color: "bg-purple-500" },
+    { id: "pink", color: "bg-pink-500" },
+    { id: "green", color: "bg-green-500" },
+    { id: "yellow", color: "bg-yellow-500" },
+    { id: "red", color: "bg-red-500" },
   ];
 
   return (
     <div>
-      <div className="mb-8">
-        <h2 className={`text-[16px] font-bold ${themeClasses.text}`}>Appearance</h2>
-        <p className={`${themeClasses.textSecondary} text-[14px] font-[400]`}>Customize how the app looks on your device</p>
-      </div>
+
+<PageHeader
+title="Appearance"
+description="Customize hoe the app looks on your device"
+/>
+
+    
 
       <div className="space-y-8">
         {/* Theme Selection */}
         <div>
-          <h3 className={`font-semibold text-lg ${themeClasses.text} mb-4`}>Theme</h3>
+          <h3 className={`font-semibold text-lg ${themeClasses.text} mb-4`}>
+            Theme
+          </h3>
           <div className="grid grid-cols-3 gap-4">
             {themes.map((t) => {
               const Icon = t.icon;
@@ -894,11 +1139,13 @@ const AppearanceSettings = ({ theme, setTheme }) => {
                   variant="outline"
                   className={`relative p-6 rounded-xl border-2 transition-all h-auto ${
                     theme === t.id
-                      ? 'border-blue-500 shadow-lg'
-                      : 'border-gray-200 hover:border-gray-300'
+                      ? "border-blue-500 shadow-lg"
+                      : "border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  <div className={`w-full h-20 rounded-lg ${t.bg} mb-3 flex items-center justify-center`}>
+                  <div
+                    className={`w-full h-20 rounded-lg ${t.bg} mb-3 flex items-center justify-center`}
+                  >
                     <Icon size={24} className={t.text} />
                   </div>
                   <p className="font-medium text-gray-900">{t.label}</p>
@@ -915,7 +1162,9 @@ const AppearanceSettings = ({ theme, setTheme }) => {
 
         {/* Accent Color */}
         <div>
-          <h3 className="font-semibold text-[14px] text-gray-900 mb-4">Accent Color</h3>
+          <h3 className="font-semibold text-[14px] text-gray-900 mb-4">
+            Accent Color
+          </h3>
           <div className="flex gap-4">
             {colors.map((c) => (
               <Button
@@ -937,7 +1186,9 @@ const AppearanceSettings = ({ theme, setTheme }) => {
 
         {/* Font Size */}
         <div>
-          <h3 className="font-semibold text-lg text-gray-900 mb-4">Font Size</h3>
+          <h3 className="font-semibold text-lg text-gray-900 mb-4">
+            Font Size
+          </h3>
           <div className="bg-gray-50 rounded-xl p-4">
             <div className="flex items-center justify-between mb-4">
               <span className="text-sm">Aa</span>
@@ -947,10 +1198,12 @@ const AppearanceSettings = ({ theme, setTheme }) => {
               type="range"
               min="1"
               max="3"
-              value={fontSize === 'small' ? 1 : fontSize === 'medium' ? 2 : 3}
+              value={fontSize === "small" ? 1 : fontSize === "medium" ? 2 : 3}
               onChange={(e) => {
                 const size = parseInt(e.target.value);
-                setFontSize(size === 1 ? 'small' : size === 2 ? 'medium' : 'large');
+                setFontSize(
+                  size === 1 ? "small" : size === 2 ? "medium" : "large"
+                );
               }}
               className="w-full"
             />
@@ -970,10 +1223,18 @@ const AppearanceSettings = ({ theme, setTheme }) => {
 const ActivitySettings = () => {
   return (
     <div>
-      <div className="mb-8">
-        <h2 className="text-[16px] font-bold text-gray-900 ">Activity Dashboard</h2>
-        <p className="text-gray-600 text-[14px] font-[400]">Monitor your account activity and engagement</p>
-      </div>
+      <PageHeader
+      title="Activity Dashboard"
+      description="Monitor your account activity and engagement"
+      />
+      {/* <div className="mb-8">
+        <h2 className="text-[16px] font-bold text-gray-900 ">
+          Activity Dashboard
+        </h2>
+        <p className="text-gray-600 text-[14px] font-[400]">
+          Monitor your account activity and engagement
+        </p>
+      </div> */}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
@@ -1014,14 +1275,18 @@ const ActivitySettings = () => {
       </div>
 
       <div className="bg-gray-50 rounded-xl p-6">
-        <h3 className="font-semibold text-lg text-gray-900 mb-4">Recent Activity</h3>
+        <h3 className="font-semibold text-lg text-gray-900 mb-4">
+          Recent Activity
+        </h3>
         <div className="space-y-3">
           <div className="flex items-center space-x-3 p-3 bg-white rounded-lg">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Heart size={16} className="text-blue-600" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-gray-900">New likes on your post</p>
+              <p className="font-medium text-gray-900">
+                New likes on your post
+              </p>
               <p className="text-sm text-gray-500">2 minutes ago</p>
             </div>
             <span className="text-sm font-medium text-gray-600">+24</span>
@@ -1055,17 +1320,35 @@ const ActivitySettings = () => {
 // Help & Support Component
 const HelpSupport = () => {
   const helpTopics = [
-    { icon: FileText, label: 'Help Center', description: 'Browse help articles' },
-    { icon: MessageSquare, label: 'Contact Support', description: 'Get help from our team' },
-    { icon: Shield, label: 'Safety Center', description: 'Learn about safety tools' },
-    { icon: CreditCard, label: 'Billing', description: 'Manage your subscription' }
+    {
+      icon: FileText,
+      label: "Help Center",
+      description: "Browse help articles",
+    },
+    {
+      icon: MessageSquare,
+      label: "Contact Support",
+      description: "Get help from our team",
+    },
+    {
+      icon: Shield,
+      label: "Safety Center",
+      description: "Learn about safety tools",
+    },
+    {
+      icon: CreditCard,
+      label: "Billing",
+      description: "Manage your subscription",
+    },
   ];
 
   return (
     <div>
       <div className="mb-8">
         <h2 className="text-[16px] font-bold text-gray-900 ">Help & Support</h2>
-        <p className="text-gray-600 text-[14px] font-[400]">Get help and find answers to your questions</p>
+        <p className="text-gray-600 text-[14px] font-[400]">
+          Get help and find answers to your questions
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
@@ -1084,15 +1367,22 @@ const HelpSupport = () => {
                 <h3 className="font-semibold text-gray-900">{topic.label}</h3>
                 <p className="text-sm text-gray-500">{topic.description}</p>
               </div>
-              <ChevronRight size={18} className="text-gray-400 group-hover:translate-x-1 transition-transform" />
+              <ChevronRight
+                size={18}
+                className="text-gray-400 group-hover:translate-x-1 transition-transform"
+              />
             </Button>
           );
         })}
       </div>
 
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
-        <h3 className="font-semibold text-lg text-gray-900 mb-2">Need more help?</h3>
-        <p className="text-gray-600 mb-4">Our support team is here to assist you 24/7</p>
+        <h3 className="font-semibold text-lg text-gray-900 mb-2">
+          Need more help?
+        </h3>
+        <p className="text-gray-600 mb-4">
+          Our support team is here to assist you 24/7
+        </p>
         <Button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
           Start Live Chat
         </Button>

@@ -56,7 +56,7 @@ useEffect(()=>{
     // Check if email is provided, if not redirect to login
     if (!email) {
       console.log('No email provided, redirecting to login');
-      navigate('/docter/login');
+      navigate('/doctor/login');
       return;
     }
     
@@ -93,7 +93,7 @@ useEffect(()=>{
   const handleLogout = () => {
     localStorage.removeItem('isDoctorLoggedIn');
     localStorage.removeItem('doctorData');
-    navigate('/docter/login');
+    navigate('/doctor/login');
   };
 
   // Default income data structure
@@ -544,7 +544,7 @@ useEffect(()=>{
         }`}>
           <div className="flex flex-col h-full">
             {/* Sidebar Header */}
-            <div className="p-6 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+            <div className="p-6 border-b border-gray-200 bg-[#1d4ed8] text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
                   <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mr-3">
@@ -595,12 +595,12 @@ useEffect(()=>{
             </div>
 
             {/* Navigation Menu */}
-            <nav className="flex-1 p-4">
-              <ul className="space-y-2">
+            <nav className="flex">
+              <ul className="flex flex-col gap-2 w-full px-2 py-2">
                 <li>
                   <Button 
                     onClick={() => setSelectedTab('overview')}
-                    variant="ghost"
+                    variant="secondary"
                     className={`w-full justify-start ${
                       selectedTab === 'overview' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
@@ -618,7 +618,7 @@ useEffect(()=>{
                 <li>
                   <Button 
                     onClick={() => setSelectedTab('patients')}
-                    variant="ghost"
+                    variant="secondary"
                     className={`w-full justify-start ${
                       selectedTab === 'patients' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
@@ -636,7 +636,7 @@ useEffect(()=>{
                 <li>
                   <Button 
                     onClick={() => setSelectedTab('appointments')}
-                    variant="ghost"
+                    variant="secondary"
                     className={`w-full justify-start ${
                       selectedTab === 'appointments' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
@@ -650,9 +650,11 @@ useEffect(()=>{
                     </div>
                     Appointments
                   </Button>
+                  </li>
+                  <li>
                   <Button 
                     onClick={() => handleNavigate('todaySessions')}
-                    variant="ghost"
+                    variant="secondary"
                     className={`w-full justify-start ${
                       selectedTab === 'todaySessions' 
                         ? 'bg-green-50 text-green-700 font-medium' 
@@ -666,9 +668,11 @@ useEffect(()=>{
                     </div>
                     Today&apos;s Sessions
                   </Button>
+                  </li>
+                  <li>
                   <Button 
                     onClick={() => handleNavigate('upcoming')}
-                    variant="ghost"
+                    variant="secondary"
                     className={`w-full justify-start ${
                       selectedTab === 'upcoming' 
                         ? 'bg-purple-50 text-purple-700 font-medium' 
@@ -682,11 +686,12 @@ useEffect(()=>{
                     </div>
                     Upcoming
                   </Button>
-                </li>
+                  </li>
+               
                 <li>
                   <Button 
                     onClick={() => setSelectedTab('settings')}
-                    variant="ghost"
+                    variant="secondary"
                     className={`w-full justify-start ${
                       selectedTab === 'settings' 
                         ? 'bg-blue-50 text-blue-700 font-medium' 
