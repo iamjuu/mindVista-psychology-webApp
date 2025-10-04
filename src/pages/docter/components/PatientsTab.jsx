@@ -1,6 +1,7 @@
 import React from 'react';
 import { Search, Filter, Eye, Phone, MapPin, Video, ExternalLink, Calendar } from 'lucide-react';
 import { Button } from '../../../components/shadcn/button/button';
+import { PageHeader } from '../../../components/core/cardHeader';
 
 const PatientsTab = ({
   patientRequests,
@@ -20,7 +21,11 @@ const PatientsTab = ({
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Patient Requests</h2>
+
+<PageHeader
+title='Patient Requests'
+/>
+          {/* <h2 className="text-2xl font-bold text-gray-900 mb-2">Patient Requests</h2> */}
           <div className="flex flex-wrap items-center gap-4 text-sm">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
