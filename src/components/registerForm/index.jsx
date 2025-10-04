@@ -87,16 +87,7 @@ function Form() {
       };
 
       // Debug logging
-      console.log('=== REGISTRATION FORM DEBUG ===');
-      console.log('Form data:', formData);
-      console.log('Selected doctor:', selectedDoctor);
-      console.log('Registration data:', registrationData);
-      console.log('Doctor field check:', {
-        doctor: formData.doctor,
-        doctorExists: !!formData.doctor,
-        doctorType: typeof formData.doctor
-      });
-
+   
       const saveResponse = await apiInstance.post('/appointment', registrationData, {
         headers: { 'Content-Type': 'application/json' },
       });

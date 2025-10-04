@@ -1,13 +1,26 @@
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import apiInstance from "../../instance"; // your axios instance
-import PropTypes from "prop-types";
 
-const PaymentPage = ({ appointmentData }) => {
+const PaymentPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
+  
+  // Get appointment data from navigation state
+  const appointmentData = location.state?.appointmentData;
+  
+  console.log('Location state:', location.state);
+  console.log('Appointment data:', appointmentData);
+  
+  // If no appointment data, redirect back to registration
+  if (!appointmentData) {
+    console.log('No appointment data found, redirecting to registration');
+    navigate('/register');
+    return null;
+  }
 
   // Load Razorpay script dynamically (safe way)
   const loadRazorpayScript = () => {
@@ -35,17 +48,18 @@ const PaymentPage = ({ appointmentData }) => {
       const { data: order } = await apiInstance.post("/create-order", {
         amount: 50000, // ₹500 in paise (500 * 100)
         currency: "INR",
-        receipt: `receipt_${Date.now()}`
+        receipt: `receipt_${Date.now()}`,
+        appointmentData: appointmentData
       });
 
       // Step 2: Open Razorpay Checkout
       const options = {
         key: "rzp_test_RMhvZDD0dxSGn0", // Razorpay test key
-        amount: order.amount,
-        currency: order.currency,
+        amount: order.order.amount,
+        currency: order.order.currency,
         name: "MindVista Psychology",
         description: "Appointment Payment",
-        order_id: order.id,
+        order_id: order.order.id,
         handler: async function (response) {
           try {
             // Step 3: Verify payment
@@ -65,7 +79,7 @@ const PaymentPage = ({ appointmentData }) => {
         prefill: {
           name: appointmentData?.name || "Guest",
           email: appointmentData?.email || "guest@example.com",
-          contact: appointmentData?.phone || "9999999999",
+          contact: appointmentData?.number || "9999999999",
         },
         theme: {
           color: "#3399cc",
@@ -83,32 +97,69 @@ const PaymentPage = ({ appointmentData }) => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-6">
-      <div className="bg-white shadow-md rounded-lg p-8 w-full max-w-md">
-        <h1 className="text-2xl font-bold mb-4 text-center">Confirm Your Appointment</h1>
-        <p className="text-gray-700 mb-2">Name: {appointmentData?.name}</p>
-        <p className="text-gray-700 mb-2">Email: {appointmentData?.email}</p>
-        <p className="text-gray-700 mb-2">Phone: {appointmentData?.phone}</p>
-        <p className="text-gray-700 mb-4">Fee: ₹500</p>
-
-        <button
-          onClick={handlePayment}
-          disabled={loading}
-          className="w-full py-2 px-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-        >
-          {loading ? "Processing..." : "Pay with Razorpay"}
-        </button>
+    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
+      {/* Title */}
+      <h1 className="text-2xl font-extrabold mb-6 text-center text-gray-800">
+        Confirm Your Appointment
+      </h1>
+  
+      {/* Details */}
+      <div className="space-y-3 text-gray-700">
+        <div className="flex justify-between">
+          <span className="font-medium">Name:</span>
+          <span>{appointmentData?.name}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Email:</span>
+          <span>{appointmentData?.email}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Phone:</span>
+          <span>{appointmentData?.number}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Location:</span>
+          <span>{appointmentData?.location}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Age:</span>
+          <span>{appointmentData?.age}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Doctor:</span>
+          <span>{appointmentData?.doctorName}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Date:</span>
+          <span>{appointmentData?.date ? new Date(appointmentData.date).toLocaleDateString() : 'N/A'}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Time Slot:</span>
+          <span>{appointmentData?.time}</span>
+        </div>
+        <div className="flex justify-between">
+          <span className="font-medium">Slot:</span>
+          <span className="capitalize">{appointmentData?.slot}</span>
+        </div>
+        <div className="flex justify-between text-lg font-semibold text-gray-900 pt-2 border-t">
+          <span>Fee:</span>
+          <span>₹500</span>
+        </div>
       </div>
+  
+      {/* Button */}
+      <button
+        onClick={handlePayment}
+        disabled={loading}
+        className="mt-6 w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        {loading ? "Processing..." : "Pay with Razorpay"}
+      </button>
     </div>
+  </div>
+  
   );
-};
-
-PaymentPage.propTypes = {
-  appointmentData: PropTypes.shape({
-    name: PropTypes.string,
-    email: PropTypes.string,
-    phone: PropTypes.string,
-  }),
 };
 
 export default PaymentPage;
