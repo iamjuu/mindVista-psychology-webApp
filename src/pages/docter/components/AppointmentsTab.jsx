@@ -166,9 +166,10 @@ const AppointmentsTab = ({
                           }}
                           size="sm"
                           variant='outline'
+                          className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
                         >
                           <Video size={12} />
-                          <span>Join</span>
+                          <span>Join as Admin</span>
                           <ExternalLink size={10} />
                         </Button>
                       </div>
