@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import { Bannar } from "../../../src/assets";
+import { Bannar,MainBackgroundImage } from "../../../src/assets";
 import apiInstance from '../../instance';
 
 function Form() {
@@ -117,11 +117,11 @@ function Form() {
       {/* Blurred Background */}
       <div
         className="absolute inset-0 bg-cover bg-center filter blur-sm"
-        style={{ backgroundImage: `url(${Bannar})` }}
+        style={{ backgroundImage: `url(${MainBackgroundImage})` }}
       ></div>
 
       {/* Dark overlay */}
-      <div className="absolute inset-0 bg-black/60"></div>
+      <div className="absolute inset-0 bg-black/10"></div>
 
       {/* Form */}
       <div className="relative z-10 flex items-center justify-center min-h-screen p-4">
@@ -129,14 +129,14 @@ function Form() {
           onSubmit={handleSubmit}
           className="max-w-2xl w-full p-6 rounded-2xl space-y-6 bg-white/30 backdrop-blur-md shadow-lg"
         >
-          <h2 className="text-2xl font-semibold text-gray-100 text-center">
+          <h2 className="text-2xl font-semibold text-gray-800 text-center">
             Book an Appointment
           </h2>
 
           {/* Name, Email, Phone */}
-          <div className="w-full grid grid-cols-1 md:grid-cols-3 gap-6 rounded-xl">
+          <div className="w-full grid !text-gray-800  grid-cols-1 md:grid-cols-3 gap-6 rounded-xl">
             <div className="flex flex-col">
-              <label htmlFor="name" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="name" className="font-medium mb-1">
                 Name
               </label>
               <input
@@ -151,7 +151,7 @@ function Form() {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="email" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="email" className=" font-medium mb-1">
                 Email
               </label>
               <input
@@ -166,7 +166,7 @@ function Form() {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="number" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="number" className=" font-medium mb-1">
                 Phone Number
               </label>
               <input
@@ -185,7 +185,7 @@ function Form() {
           {/* Doctor & Slot */}
           <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-6 rounded-xl">
             <div className="flex flex-col">
-              <label htmlFor="doctor" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="doctor" className=" font-medium mb-1">
                 Select Doctor
               </label>
               <select
@@ -211,7 +211,7 @@ function Form() {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="slot" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="slot" className=" font-medium mb-1">
                 Slot
               </label>
               <select
@@ -232,7 +232,7 @@ function Form() {
 
           {/* Time Slot */}
           <div className="flex flex-col">
-            <label htmlFor="time" className="text-gray-400 font-medium mb-1">
+            <label htmlFor="time" className=" font-medium mb-1">
               Time Slot
             </label>
             <select
@@ -270,7 +270,7 @@ function Form() {
           {/* Location, Age, Date */}
           <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-6 rounded-xl'>
             <div className="flex flex-col">
-              <label htmlFor="location" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="location" className="font-medium mb-1">
                 Location
               </label>
               <input
@@ -285,7 +285,7 @@ function Form() {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="age" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="age" className=" font-medium mb-1">
                 Age
               </label>
               <input
@@ -300,7 +300,7 @@ function Form() {
             </div>
 
             <div className="flex flex-col">
-              <label htmlFor="date" className="text-gray-400 font-medium mb-1">
+              <label htmlFor="date" className="font-medium mb-1">
                 Date
               </label>
               <input
@@ -313,7 +313,7 @@ function Form() {
                 required
                 className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
               />
-              <p className="text-xs text-white mt-1">
+              <p className="text-xs  mt-1">
                 Please select a future date for your appointment
               </p>
             </div>

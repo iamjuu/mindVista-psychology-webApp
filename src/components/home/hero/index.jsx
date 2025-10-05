@@ -1,8 +1,9 @@
 
-import React, { useState, useRef } from "react";
-import { Medition } from "../../../assets";
+import { useState, useRef } from "react";
+import { BrainImage } from "../../../assets";
 import AnimationText from "../../../animation/text";
 import Button from "../button";
+import { Link } from "react-router-dom";
 
 const Index = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
@@ -53,7 +54,9 @@ const Index = () => {
           </div>
 
           <div className="w-full gap-5 flex">
-            <Button className="bg-[#FFCB05] text-white">Get Quote</Button>
+            <Link to="/register">
+              <Button className="bg-[#FFCB05] text-white">Register</Button>
+            </Link>
             <Button className=" border border-[#FFCB05]">Contect us</Button>
           </div>
         </div>
@@ -69,7 +72,7 @@ const Index = () => {
             <div className="absolute inset-0 m-0 rounded-lg bg-gray-200 animate-pulse" />
           )}
           <img
-            src={Medition}
+            src={BrainImage}
             alt="Background"
             onLoad={() => setImageLoaded(true)}
             className={`object-cover w-full h-auto max-h-[400px] md:max-h-full transition-opacity duration-300 ${
