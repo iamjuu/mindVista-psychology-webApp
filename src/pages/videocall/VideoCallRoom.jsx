@@ -395,7 +395,7 @@ const VideoCallRoom = () => {
 
   const handleCallEnd = () => {
     cleanup()
-    navigate(isDoctor ? '/admin/today-appointments' : '/profile')
+    navigate(isDoctor ? '/doctor' : '/profile')
   }
 
   if (loading) {
