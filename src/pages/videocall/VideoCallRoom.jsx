@@ -1,4 +1,5 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef, useCallback } from 'react'
+import PropTypes from 'prop-types'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../../components/shadcn/button/button'
 import { Video, VideoOff, Mic, MicOff, PhoneOff, MessageCircle } from 'lucide-react'
@@ -22,6 +23,9 @@ const VideoCallRoom = () => {
   const localVideoRef = useRef(null)
   const localStreamRef = useRef(null)
   const wsRef = useRef(null)
+  const heartbeatRef = useRef(null)
+  const shouldReconnectRef = useRef(true)
+  const pendingMessagesRef = useRef([])
   const peerConnectionsRef = useRef({})
   const remoteStreamsRef = useRef({})
 
@@ -36,12 +40,7 @@ const VideoCallRoom = () => {
   const localUserId = useRef(`${userRole}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`).current
   const username = isDoctor ? 'Dr. Smith' : 'Patient'
 
-  useEffect(() => {
-    fetchAppointmentDetails()
-    return () => cleanup()
-  }, [videoCallId])
-
-  const fetchAppointmentDetails = async () => {
+  const fetchAppointmentDetails = useCallback(async () => {
     try {
       setLoading(true)
       const roleQuery = isDoctor ? '?role=doctor' : ''
@@ -59,7 +58,13 @@ const VideoCallRoom = () => {
     } finally {
       setLoading(false)
     }
-  }
+  }, [isDoctor, videoCallId])
+
+  // Run after fetchAppointmentDetails is defined
+  useEffect(() => {
+    fetchAppointmentDetails()
+    return () => cleanup()
+  }, [videoCallId, fetchAppointmentDetails])
 
   const initializeWebRTC = async () => {
     try {
@@ -91,6 +96,20 @@ const VideoCallRoom = () => {
     ws.onopen = () => {
       console.log('✅ Connected to signaling server')
       setConnectionStatus('Connected')
+
+      // Flush any pending messages queued while disconnected
+      while (pendingMessagesRef.current.length > 0 && wsRef.current?.readyState === WebSocket.OPEN) {
+        const msg = pendingMessagesRef.current.shift()
+        wsRef.current.send(JSON.stringify(msg))
+      }
+
+      // Heartbeat to keep the connection alive
+      if (heartbeatRef.current) clearInterval(heartbeatRef.current)
+      heartbeatRef.current = setInterval(() => {
+        if (wsRef.current?.readyState === WebSocket.OPEN) {
+          wsRef.current.send(JSON.stringify({ type: 'ping', t: Date.now() }))
+        }
+      }, 20000)
     }
 
     ws.onmessage = async (event) => {
@@ -108,7 +127,9 @@ const VideoCallRoom = () => {
         case 'user-joined':
           console.log('New user joined:', data.userId, data.username)
           if (data.userId !== localUserId) {
-            await createPeerConnection(data.userId, true)
+            // Existing participants should NOT create an offer to avoid glare.
+            // The joining user (who received 'room-joined') will create the offer.
+            await createPeerConnection(data.userId, false)
           }
           break
 
@@ -146,6 +167,19 @@ const VideoCallRoom = () => {
     ws.onclose = () => {
       console.log('❌ Disconnected from signaling server')
       setConnectionStatus('Disconnected')
+      if (heartbeatRef.current) {
+        clearInterval(heartbeatRef.current)
+        heartbeatRef.current = null
+      }
+      // Auto-reconnect if user is still on the page
+      if (shouldReconnectRef.current) {
+        setTimeout(() => {
+          if (shouldReconnectRef.current && !wsRef.current) {
+            console.log('🔄 Attempting to reconnect to signaling server...')
+            connectToSignalingServer()
+          }
+        }, 2000)
+      }
     }
 
     ws.onerror = (err) => {
@@ -313,11 +347,19 @@ const VideoCallRoom = () => {
 
   const sendMessage = () => {
     if (!newMessage.trim() || !wsRef.current) return
-    
-    wsRef.current.send(JSON.stringify({
-      type: 'chat',
-      message: newMessage
-    }))
+    const payload = { type: 'chat', message: newMessage }
+    if (wsRef.current.readyState === WebSocket.OPEN) {
+      wsRef.current.send(JSON.stringify(payload))
+    } else {
+      // Queue message to be sent once reconnected
+      pendingMessagesRef.current.push(payload)
+      setConnectionStatus('Reconnecting...')
+      // Trigger reconnect if not already connected
+      if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
+        wsRef.current = null
+        connectToSignalingServer()
+      }
+    }
     
     setMessages(prev => [...prev, {
       id: Date.now(),
@@ -331,6 +373,7 @@ const VideoCallRoom = () => {
 
   const cleanup = () => {
     console.log('Cleaning up...')
+    shouldReconnectRef.current = false
     
     Object.values(peerConnectionsRef.current).forEach(pc => pc.close())
     peerConnectionsRef.current = {}
@@ -338,6 +381,10 @@ const VideoCallRoom = () => {
     if (wsRef.current) {
       wsRef.current.close()
       wsRef.current = null
+    }
+    if (heartbeatRef.current) {
+      clearInterval(heartbeatRef.current)
+      heartbeatRef.current = null
     }
     
     if (localStreamRef.current) {
@@ -348,7 +395,7 @@ const VideoCallRoom = () => {
 
   const handleCallEnd = () => {
     cleanup()
-    navigate(isDoctor ? '/admin/today-appointments' : '/profile')
+    navigate(isDoctor ? '/doctor' : '/profile')
   }
 
   if (loading) {
@@ -388,46 +435,43 @@ const VideoCallRoom = () => {
           )}
         </div>
 
-        {/* Remote videos container */}
+        {/* Combined videos grid (local + remotes) */}
         <div className="w-full h-full flex items-center justify-center p-4">
-          {remoteUsers.length === 0 ? (
-            <div className="text-center text-white">
-              <div className="mb-4">
-                <div className="animate-pulse text-6xl mb-4">⏳</div>
-                <p className="text-xl">Waiting for other participant...</p>
-                <p className="text-sm text-gray-400 mt-2">
-                  Share this link with {isDoctor ? 'the patient' : 'your doctor'}:
-                </p>
-                <div className="mt-3 p-3 bg-gray-800 rounded-lg">
-                  <p className="text-xs text-blue-400 break-all">
-                    {window.location.origin}/video-call/{videoCallId}?role={isDoctor ? 'patient' : 'doctor'}
+          <div
+            className="w-full h-full grid gap-4"
+            style={{
+              gridTemplateColumns:
+                (remoteUsers.length + 1) === 1
+                  ? '1fr'
+                  : 'repeat(auto-fit, minmax(400px, 1fr))'
+            }}
+          >
+            {/* Local video as a tile */}
+            <LocalVideoTile
+              videoRef={localVideoRef}
+              userId={localUserId}
+            />
+
+            {remoteUsers.length === 0 ? (
+              <div className="col-span-full text-center text-white self-center">
+                <div className="mb-4">
+                  <div className="animate-pulse text-6xl mb-4">⏳</div>
+                  <p className="text-xl">Waiting for other participant...</p>
+                  <p className="text-sm text-gray-400 mt-2">
+                    Share this link with {isDoctor ? 'the patient' : 'your doctor'}:
                   </p>
+                  <div className="mt-3 p-3 bg-gray-800 rounded-lg">
+                    <p className="text-xs text-blue-400 break-all">
+                      {window.location.origin}/video-call/{videoCallId}?role={isDoctor ? 'patient' : 'doctor'}
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-          ) : (
-            <div className="w-full h-full grid gap-4" style={{
-              gridTemplateColumns: remoteUsers.length === 1 ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))'
-            }}>
-              {remoteUsers.map((user) => (
+            ) : (
+              remoteUsers.map((user) => (
                 <RemoteVideo key={user.userId} stream={user.stream} userId={user.userId} />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Local video */}
-        <div className="absolute top-4 right-4 w-48 h-36 bg-black rounded-lg overflow-hidden shadow-lg z-10 border-2 border-blue-500">
-          <video 
-            ref={localVideoRef} 
-            autoPlay 
-            muted 
-            playsInline
-            className="w-full h-full object-cover"
-            style={{ transform: 'scaleX(-1)' }}
-          />
-          <div className="absolute bottom-2 left-2 text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
-            You ({username})
+              ))
+            )}
           </div>
         </div>
 
@@ -517,6 +561,40 @@ const RemoteVideo = ({ stream, userId }) => {
       </div>
     </div>
   )
+}
+
+// Component to display local video as grid tile
+const LocalVideoTile = ({ videoRef, userId }) => {
+  const displayName = userId.startsWith('doctor') ? 'Doctor (You)' : 'Patient (You)'
+
+  return (
+    <div className="relative bg-black rounded-lg overflow-hidden border-4 border-blue-500 w-full h-full">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className="w-full h-full object-cover"
+        style={{ transform: 'scaleX(-1)' }}
+      />
+      <div className="absolute top-4 left-4 text-white text-lg font-bold bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg shadow-lg">
+        {displayName}
+      </div>
+      <div className="absolute bottom-4 right-4 text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
+        {userId}
+      </div>
+    </div>
+  )
+}
+
+RemoteVideo.propTypes = {
+  stream: PropTypes.object,
+  userId: PropTypes.string.isRequired,
+}
+
+LocalVideoTile.propTypes = {
+  videoRef: PropTypes.object.isRequired,
+  userId: PropTypes.string.isRequired,
 }
 
 export default VideoCallRoom
