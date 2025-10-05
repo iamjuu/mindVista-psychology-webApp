@@ -22,6 +22,8 @@ import DoctorLogin from '../pages/docter/login'
 // ***************  video call  *************
 import VideoCallRoom from '../pages/videocall/VideoCallRoom'
 // ***************  theme context  *************
+import HomePage from "../pages/client/home"
+
 import { ThemeProvider } from '../contexts/ThemeContext'
 
 function UserRouter() {
@@ -29,6 +31,8 @@ function UserRouter() {
     <Router>
       <Suspense fallback={<CustomSpinner />}>
         <Routes>
+
+        <Route path="/home" element={<HomePage />} />
           <Route path="/" element={<Landing />} />
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />

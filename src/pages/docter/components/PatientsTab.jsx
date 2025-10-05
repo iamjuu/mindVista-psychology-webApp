@@ -1,4 +1,5 @@
-import React from 'react';
+import { useState, useMemo, useCallback } from 'react';
+import PropTypes from 'prop-types';
 import { Search, Filter, Eye, Phone, MapPin, Video, ExternalLink, Calendar } from 'lucide-react';
 import { Button } from '../../../components/shadcn/button/button';
 import { PageHeader } from '../../../components/core/cardHeader';
@@ -17,6 +18,66 @@ const PatientsTab = ({
   doctorData,
   filteredRequests
 }) => {
+  const [showEndedTodayOnly, setShowEndedTodayOnly] = useState(false);
+
+  const getTodayIsoDate = () => new Date().toISOString().split('T')[0];
+
+  const parseTimeToMinutes = (timeStr) => {
+    if (!timeStr || typeof timeStr !== 'string') return null;
+    const trimmed = timeStr.trim();
+    // Handle 24h format: HH:MM
+    const m24 = trimmed.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
+    if (m24) {
+      const hours = parseInt(m24[1], 10);
+      const minutes = parseInt(m24[2], 10);
+      return hours * 60 + minutes;
+    }
+    // Handle 12h format: HH:MM AM/PM
+    const m12 = trimmed.match(/^(0?[1-9]|1[0-2]):([0-5]\d)\s*([AaPp][Mm])$/);
+    if (m12) {
+      let hours = parseInt(m12[1], 10);
+      const minutes = parseInt(m12[2], 10);
+      const meridiem = m12[3].toUpperCase();
+      if (meridiem === 'PM' && hours !== 12) hours += 12;
+      if (meridiem === 'AM' && hours === 12) hours = 0;
+      return hours * 60 + minutes;
+    }
+    return null;
+  };
+
+  const getCurrentMinutes = () => {
+    const now = new Date();
+    return now.getHours() * 60 + now.getMinutes();
+  };
+
+  const isSessionTimePassed = useCallback((timeStr) => {
+    const sessionMinutes = parseTimeToMinutes(timeStr);
+    if (sessionMinutes === null) return false;
+    return sessionMinutes < getCurrentMinutes();
+  }, []);
+
+  const endedTodayRequests = useMemo(() => {
+    const today = getTodayIsoDate();
+    return (filteredRequests || []).filter((req) => {
+      const isToday = req?.date === today;
+      if (!isToday) return false;
+      const status = (req?.status || '').toLowerCase();
+      if (status === 'completed' || status === 'declined') return true;
+      // Treat sessions as ended if their scheduled time is in the past
+      if (status === 'approved' || status === 'confirmed' || status === 'pending') {
+        return isSessionTimePassed(req?.time);
+      }
+      return false;
+    });
+  }, [filteredRequests, isSessionTimePassed]);
+  
+  // Exclude today's active sessions (they appear on the appointments page)
+  const nonTodayRequests = useMemo(() => {
+    const today = getTodayIsoDate();
+    return (filteredRequests || []).filter((req) => req?.date !== today);
+  }, [filteredRequests]);
+
+  const displayedRequests = showEndedTodayOnly ? endedTodayRequests : nonTodayRequests;
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
       <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between mb-6 gap-4">
@@ -74,6 +135,16 @@ title='Patient Requests'
                 <option value="declined">Declined</option>
               </select>
             </div>
+            {/* Ended today toggle */}
+            <label className="flex items-center gap-2 px-3 py-2 border border-gray-300 rounded-xl bg-gray-50 cursor-pointer select-none">
+              <input
+                type="checkbox"
+                checked={showEndedTodayOnly}
+                onChange={(e) => setShowEndedTodayOnly(e.target.checked)}
+                className="accent-blue-600"
+              />
+              <span className="text-sm text-gray-700">Show Ended Today</span>
+            </label>
           </div>
           
           <Button 
@@ -125,7 +196,7 @@ title='Patient Requests'
           </div>
           <p className="text-gray-600 font-medium">Loading patient requests...</p>
         </div>
-      ) : filteredRequests.length > 0 ? (
+      ) : (displayedRequests && displayedRequests.length > 0) ? (
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
@@ -141,7 +212,7 @@ title='Patient Requests'
             </tr>
             </thead>
             <tbody>
-              {filteredRequests.map((request, index) => (
+              {displayedRequests.map((request, index) => (
                 <tr 
                   key={request.id || request._id || index} 
                   className="border-b border-gray-100 hover:bg-blue-50 transition-colors group cursor-pointer hover:shadow-md"
@@ -311,8 +382,8 @@ title='Patient Requests'
           </div>
           <h3 className="text-lg font-medium text-gray-900 mb-2">No requests found</h3>
           <p className="text-gray-600 mb-6">
-            {searchTerm || filterStatus !== 'all' 
-              ? 'Try adjusting your search or filter criteria.' 
+            {searchTerm || filterStatus !== 'all' || showEndedTodayOnly
+              ? 'Try adjusting your search or filter criteria.'
               : 'Click "Load Requests" to fetch patient requests from the server.'
             }
           </p>
@@ -333,3 +404,21 @@ title='Patient Requests'
 
 export default PatientsTab;
 
+
+PatientsTab.propTypes = {
+  patientRequests: PropTypes.array.isRequired,
+  requestsLoading: PropTypes.bool,
+  searchTerm: PropTypes.string,
+  setSearchTerm: PropTypes.func,
+  filterStatus: PropTypes.string,
+  setFilterStatus: PropTypes.func,
+  fetchPatientRequests: PropTypes.func,
+  handleUserRowClick: PropTypes.func,
+  handleAppointmentAction: PropTypes.func,
+  handleGenerateVideoCall: PropTypes.func,
+  doctorData: PropTypes.shape({
+    name: PropTypes.string,
+    specialization: PropTypes.string,
+  }),
+  filteredRequests: PropTypes.array.isRequired,
+};
