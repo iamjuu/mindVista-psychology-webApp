@@ -183,3 +183,4 @@ const VideoCallAdminPanel = ({ videoCallId, participants = [], onManageParticipa
 }
 
 export default VideoCallAdminPanel
+
