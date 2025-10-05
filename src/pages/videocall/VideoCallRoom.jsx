@@ -1,838 +1,522 @@
 import { useEffect, useState, useRef } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../../components/shadcn/button/button'
-import { 
-    Video, 
-    VideoOff, 
-    Mic, 
-    MicOff, 
-    PhoneOff, 
-    Users, 
-    MessageCircle,
-    ScreenShare,
-    ScreenShareOff,
-    Volume2,
-    VolumeX,
-    Copy,
-    Check
-} from 'lucide-react'
+import { Video, VideoOff, Mic, MicOff, PhoneOff, MessageCircle } from 'lucide-react'
 import apiInstance from '../../instance'
 
 const VideoCallRoom = () => {
-    const { videoCallId } = useParams()
-    const navigate = useNavigate()
-    
-    // Video call state
-    const [isVideoOn, setIsVideoOn] = useState(true)
-    const [isAudioOn, setIsAudioOn] = useState(true)
-    const [isScreenSharing, setIsScreenSharing] = useState(false)
-    const [isSpeakerOn, setIsSpeakerOn] = useState(true)
-    const [callStarted, setCallStarted] = useState(false)
-    const [callDuration, setCallDuration] = useState(0)
-    const [isConnected, setIsConnected] = useState(false)
-    const [connectionStatus, setConnectionStatus] = useState('Connecting...')
-    
-    // Appointment details
-    const [appointmentDetails, setAppointmentDetails] = useState(null)
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState(null)
-    
-    // Chat state
-    const [showChat, setShowChat] = useState(false)
-    const [messages, setMessages] = useState([])
-    const [newMessage, setNewMessage] = useState('')
-    
-    // WebRTC state
-    const [peerConnection, setPeerConnection] = useState(null)
-    const [wsConnection, setWsConnection] = useState(null)
-    const [remoteUser, setRemoteUser] = useState(null)
-    const [linkCopied, setLinkCopied] = useState(false)
-    
-    // Refs for video elements
-    const localVideoRef = useRef(null)
-    const remoteVideoRef = useRef(null)
-    const localStreamRef = useRef(null)
-    const chatInputRef = useRef(null)
-    const peerConnectionRef = useRef(null)
-    const wsConnectionRef = useRef(null)
+  const { videoCallId } = useParams()
+  const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
 
-    // Role detection: prefer URL ?role=doctor|patient, else fallback to localStorage
-    const isDoctor = (() => {
-        if (typeof window !== 'undefined') {
-            const params = new URLSearchParams(window.location.search)
-            const roleParam = params.get('role')
-            if (roleParam === 'doctor') return true
-            if (roleParam === 'patient') return false
-            return localStorage.getItem('isDoctorLoggedIn') === 'true'
-        }
-        return false
-    })()
+  const [isVideoOn, setIsVideoOn] = useState(true)
+  const [isAudioOn, setIsAudioOn] = useState(true)
+  const [appointmentDetails, setAppointmentDetails] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [messages, setMessages] = useState([])
+  const [newMessage, setNewMessage] = useState('')
+  const [connectionStatus, setConnectionStatus] = useState('Connecting...')
+  const [remoteUsers, setRemoteUsers] = useState([])
 
-    // Admin permissions - only doctors can control the call
-    const isAdmin = isDoctor
-    const canControlCall = isDoctor
-    const canStartCall = isDoctor
-    const canEndCall = isDoctor
-    const canScreenShare = isDoctor
+  const localVideoRef = useRef(null)
+  const localStreamRef = useRef(null)
+  const wsRef = useRef(null)
+  const peerConnectionsRef = useRef({})
+  const remoteStreamsRef = useRef({})
 
-    useEffect(() => {
-        console.log('VideoCallRoom mounted with ID:', videoCallId)
-        fetchAppointmentDetails()
+  // FIX: Determine role from URL query parameter OR localStorage
+  // URL: /video-call/:videoCallId?role=doctor
+  const roleFromUrl = searchParams.get('role')
+  const roleFromStorage = localStorage.getItem('isDoctorLoggedIn') === 'true' ? 'doctor' : 'patient'
+  const userRole = roleFromUrl || roleFromStorage
+  const isDoctor = userRole === 'doctor'
+  
+  // Generate unique userId with role prefix
+  const localUserId = useRef(`${userRole}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`).current
+  const username = isDoctor ? 'Dr. Smith' : 'Patient'
+
+  useEffect(() => {
+    fetchAppointmentDetails()
+    return () => cleanup()
+  }, [videoCallId])
+
+  const fetchAppointmentDetails = async () => {
+    try {
+      setLoading(true)
+      const roleQuery = isDoctor ? '?role=doctor' : ''
+      const response = await apiInstance.get(`/video-call/${videoCallId}/details${roleQuery}`)
+      
+      if (response.data.success) {
+        setAppointmentDetails(response.data.data)
+        await initializeWebRTC()
+      } else {
+        setError(response.data.message || 'Failed to load appointment details')
+      }
+    } catch (err) {
+      console.error('Error fetching details:', err)
+      setError('Unable to load video call')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const initializeWebRTC = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: true, 
+        audio: true 
+      })
+      localStreamRef.current = stream
+      
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream
+      }
+      
+      connectToSignalingServer()
+    } catch (err) {
+      console.error('Media error:', err)
+      setError('Cannot access camera/microphone. Please grant permissions.')
+    }
+  }
+
+  const connectToSignalingServer = () => {
+    const wsUrl = `ws://localhost:3000?videoCallId=${videoCallId}&userId=${localUserId}&username=${username}`
+    console.log('Connecting to:', wsUrl)
+    console.log('Role:', userRole, '| UserId:', localUserId)
+    
+    const ws = new WebSocket(wsUrl)
+    wsRef.current = ws
+
+    ws.onopen = () => {
+      console.log('✅ Connected to signaling server')
+      setConnectionStatus('Connected')
+    }
+
+    ws.onmessage = async (event) => {
+      const data = JSON.parse(event.data)
+      console.log('📨 Received:', data.type, data)
+
+      switch (data.type) {
+        case 'room-joined':
+          console.log('Room joined. Existing participants:', data.participants)
+          for (const participant of data.participants) {
+            await createPeerConnection(participant.userId, true)
+          }
+          break
+
+        case 'user-joined':
+          console.log('New user joined:', data.userId, data.username)
+          if (data.userId !== localUserId) {
+            await createPeerConnection(data.userId, true)
+          }
+          break
+
+        case 'offer':
+          console.log('Received offer from:', data.userId)
+          await handleOffer(data.userId, data.offer)
+          break
+
+        case 'answer':
+          console.log('Received answer from:', data.userId)
+          await handleAnswer(data.userId, data.answer)
+          break
+
+        case 'ice-candidate':
+          console.log('Received ICE candidate from:', data.userId)
+          await handleIceCandidate(data.userId, data.candidate)
+          break
+
+        case 'chat':
+          setMessages(prev => [...prev, {
+            id: data.timestamp,
+            text: data.message,
+            sender: data.username,
+            isMe: data.userId === localUserId
+          }])
+          break
+
+        case 'user-left':
+          console.log('User left:', data.userId)
+          handleUserLeft(data.userId)
+          break
+      }
+    }
+
+    ws.onclose = () => {
+      console.log('❌ Disconnected from signaling server')
+      setConnectionStatus('Disconnected')
+    }
+
+    ws.onerror = (err) => {
+      console.error('WebSocket error:', err)
+      setConnectionStatus('Connection error')
+    }
+  }
+
+  const createPeerConnection = async (remoteUserId, isOfferer) => {
+    if (peerConnectionsRef.current[remoteUserId]) {
+      console.log('Peer connection already exists for:', remoteUserId)
+      return
+    }
+
+    console.log(`Creating peer connection with ${remoteUserId} (offerer: ${isOfferer})`)
+
+    const pc = new RTCPeerConnection({
+      iceServers: [
+        { urls: 'stun:stun.l.google.com:19302' },
+        { urls: 'stun:stun1.l.google.com:19302' }
+      ]
+    })
+
+    peerConnectionsRef.current[remoteUserId] = pc
+
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(track => {
+        pc.addTrack(track, localStreamRef.current)
+        console.log('Added local track:', track.kind)
+      })
+    }
+
+    pc.ontrack = (event) => {
+      console.log('🎥 Received remote track from:', remoteUserId, event.track.kind)
+      console.log('🎥 Stream:', event.streams[0])
+      console.log('🎥 Track state:', event.track.readyState)
+      
+      if (!remoteStreamsRef.current[remoteUserId]) {
+        remoteStreamsRef.current[remoteUserId] = event.streams[0]
         
-        return () => {
-            // Cleanup
-            cleanup()
-        }
-    }, [videoCallId])
-
-    useEffect(() => {
-        let interval
-        if (callStarted) {
-            interval = setInterval(() => {
-                setCallDuration(prev => prev + 1)
-            }, 1000)
-        }
-        return () => clearInterval(interval)
-    }, [callStarted])
-
-    const fetchAppointmentDetails = async () => {
-        try {
-            console.log('🔍 Fetching appointment details for video call ID:', videoCallId)
-            console.log('🔍 API endpoint:', `/video-call/${videoCallId}/details`)
-            setLoading(true)
-            setError(null)
-            
-            // For doctors, inform backend to relax certain restrictions
-            const roleQuery = isDoctor ? '?role=doctor' : ''
-            const response = await apiInstance.get(`/video-call/${videoCallId}/details${roleQuery}`)
-            console.log('✅ Appointment details response:', response.data)
-            
-            if (response.data.success) {
-                setAppointmentDetails(response.data.data)
-                console.log('✅ Appointment details set successfully:', response.data.data)
-                // Initialize WebRTC after getting appointment details
-                initializeWebRTC()
-            } else {
-                console.error('❌ API returned success: false:', response.data.message)
-                setError(response.data.message || 'Failed to load appointment details')
-            }
-        } catch (err) {
-            console.error('❌ Error fetching appointment details:', err)
-            console.error('❌ Error response:', err.response)
-            console.error('❌ Error status:', err.response?.status)
-            console.error('❌ Error data:', err.response?.data)
-            
-            if (err.response?.status === 404) {
-                setError('Video call session not found or invalid')
-            } else if (err.response?.status === 403) {
-                setError('Video call is only available on the appointment date')
-            } else {
-                setError('Failed to load video call details. Please check your connection.')
-            }
-        } finally {
-            setLoading(false)
-        }
+        setRemoteUsers(prev => {
+          console.log('👥 Current remote users:', prev)
+          if (prev.find(u => u.userId === remoteUserId)) {
+            console.log('⚠️ User already exists, skipping')
+            return prev
+          }
+          console.log('✅ Adding new remote user:', remoteUserId)
+          return [...prev, { userId: remoteUserId, stream: event.streams[0] }]
+        })
+      } else {
+        console.log('⚠️ Stream already exists for:', remoteUserId)
+      }
     }
 
-    // Initialize WebRTC connection
-    const initializeWebRTC = async () => {
-        try {
-            console.log('🚀 Initializing WebRTC connection...')
-            setConnectionStatus('Initializing...')
-            
-            // Get user media
-            const stream = await navigator.mediaDevices.getUserMedia({
-                video: true,
-                audio: true
-            })
-            
-            localStreamRef.current = stream
-            if (localVideoRef.current) {
-                localVideoRef.current.srcObject = stream
-            }
-            
-            // Create peer connection
-            const peerConnection = new RTCPeerConnection({
-                iceServers: [
-                    { urls: 'stun:stun.l.google.com:19302' },
-                    { urls: 'stun:stun1.l.google.com:19302' }
-                ]
-            })
-            
-            peerConnectionRef.current = peerConnection
-            
-            // Add local stream to peer connection
-            stream.getTracks().forEach(track => {
-                peerConnection.addTrack(track, stream)
-            })
-            
-            // Handle remote stream
-            peerConnection.ontrack = (event) => {
-                console.log('📹 Remote stream received')
-                const remoteStream = event.streams[0]
-                if (remoteVideoRef.current) {
-                    remoteVideoRef.current.srcObject = remoteStream
-                }
-                setIsConnected(true)
-                setConnectionStatus('Connected')
-            }
-            
-            // Handle ICE candidates
-            peerConnection.onicecandidate = (event) => {
-                if (event.candidate && wsConnectionRef.current) {
-                    wsConnectionRef.current.send(JSON.stringify({
-                        type: 'ice-candidate',
-                        candidate: event.candidate
-                    }))
-                }
-            }
-            
-            // Handle connection state changes
-            peerConnection.onconnectionstatechange = () => {
-                console.log('🔗 Connection state:', peerConnection.connectionState)
-                setConnectionStatus(peerConnection.connectionState)
-                if (peerConnection.connectionState === 'connected') {
-                    setIsConnected(true)
-                } else if (peerConnection.connectionState === 'disconnected' || 
-                          peerConnection.connectionState === 'failed') {
-                    setIsConnected(false)
-                }
-            }
-            
-            // Connect to signaling server
-            connectToSignalingServer()
-            
-        } catch (error) {
-            console.error('❌ Error initializing WebRTC:', error)
-            setError('Unable to access camera or microphone. Please check your permissions.')
-        }
+    pc.onicecandidate = (event) => {
+      if (event.candidate && wsRef.current?.readyState === WebSocket.OPEN) {
+        wsRef.current.send(JSON.stringify({
+          type: 'ice-candidate',
+          target: remoteUserId,
+          candidate: event.candidate
+        }))
+        console.log('Sent ICE candidate to:', remoteUserId)
+      }
     }
 
-    // Connect to WebSocket signaling server
-    const connectToSignalingServer = () => {
-        try {
-            const signalingUrl = process.env.NODE_ENV === 'production' 
-                ? 'wss://your-domain.com/signaling'
-                : 'ws://localhost:8080/signaling'
-            
-            const ws = new WebSocket(`${signalingUrl}?roomId=${videoCallId}&userId=${isDoctor ? 'doctor' : 'patient'}&role=${isDoctor ? 'doctor' : 'patient'}`)
-            wsConnectionRef.current = ws
-            
-            ws.onopen = () => {
-                console.log('🔌 Connected to signaling server')
-                setConnectionStatus('Connected to server')
-            }
-            
-            ws.onmessage = async (event) => {
-                const data = JSON.parse(event.data)
-                console.log('📨 Signaling message:', data.type)
-                
-                switch (data.type) {
-                    case 'room-joined':
-                        console.log('✅ Joined room:', data.roomId)
-                        break
-                    case 'user-joined':
-                        console.log('👤 User joined:', data.userId)
-                        setRemoteUser(data.userId)
-                        if (isDoctor) {
-                            // Doctor initiates the call
-                            await createOffer()
-                        }
-                        break
-                    case 'offer':
-                        await handleOffer(data.offer)
-                        break
-                    case 'answer':
-                        await handleAnswer(data.answer)
-                        break
-                    case 'ice-candidate':
-                        await handleIceCandidate(data.candidate)
-                        break
-                    case 'call-started':
-                        setCallStarted(true)
-                        break
-                    case 'call-ended':
-                        handleCallEnd()
-                        break
-                    case 'video-toggled':
-                        // Handle remote video toggle
-                        break
-                    case 'audio-toggled':
-                        // Handle remote audio toggle
-                        break
-                    case 'chat-message':
-                        setMessages(prev => [...prev, data.message])
-                        break
-                }
-            }
-            
-            ws.onclose = () => {
-                console.log('🔌 Disconnected from signaling server')
-                setConnectionStatus('Disconnected')
-            }
-            
-            ws.onerror = (error) => {
-                console.error('❌ WebSocket error:', error)
-                setConnectionStatus('Connection error')
-            }
-            
-        } catch (error) {
-            console.error('❌ Error connecting to signaling server:', error)
-            setError('Failed to connect to video call server')
-        }
+    pc.onconnectionstatechange = () => {
+      console.log(`Connection state with ${remoteUserId}:`, pc.connectionState)
     }
 
-    // Create WebRTC offer
-    const createOffer = async () => {
-        try {
-            const offer = await peerConnectionRef.current.createOffer()
-            await peerConnectionRef.current.setLocalDescription(offer)
-            
-            wsConnectionRef.current.send(JSON.stringify({
-                type: 'offer',
-                offer: offer
-            }))
-            
-            console.log('📤 Offer sent')
-        } catch (error) {
-            console.error('❌ Error creating offer:', error)
-        }
+    pc.oniceconnectionstatechange = () => {
+      console.log(`ICE connection state with ${remoteUserId}:`, pc.iceConnectionState)
     }
 
-    // Handle incoming offer
-    const handleOffer = async (offer) => {
-        try {
-            await peerConnectionRef.current.setRemoteDescription(offer)
-            const answer = await peerConnectionRef.current.createAnswer()
-            await peerConnectionRef.current.setLocalDescription(answer)
-            
-            wsConnectionRef.current.send(JSON.stringify({
-                type: 'answer',
-                answer: answer
-            }))
-            
-            console.log('📤 Answer sent')
-        } catch (error) {
-            console.error('❌ Error handling offer:', error)
-        }
-    }
-
-    // Handle incoming answer
-    const handleAnswer = async (answer) => {
-        try {
-            await peerConnectionRef.current.setRemoteDescription(answer)
-            console.log('📥 Answer received')
-        } catch (error) {
-            console.error('❌ Error handling answer:', error)
-        }
-    }
-
-    // Handle ICE candidate
-    const handleIceCandidate = async (candidate) => {
-        try {
-            await peerConnectionRef.current.addIceCandidate(candidate)
-            console.log('🧊 ICE candidate added')
-        } catch (error) {
-            console.error('❌ Error handling ICE candidate:', error)
-        }
-    }
-
-    // Cleanup function
-    const cleanup = () => {
-        if (localStreamRef.current) {
-            localStreamRef.current.getTracks().forEach(track => track.stop())
-        }
-        if (peerConnectionRef.current) {
-            peerConnectionRef.current.close()
-        }
-        if (wsConnectionRef.current) {
-            wsConnectionRef.current.close()
-        }
-    }
-
-    const toggleVideo = () => {
-        if (localStreamRef.current) {
-            const videoTrack = localStreamRef.current.getVideoTracks()[0]
-            if (videoTrack) {
-                videoTrack.enabled = !isVideoOn
-                setIsVideoOn(!isVideoOn)
-                
-                // Notify other participants
-                if (wsConnectionRef.current) {
-                    wsConnectionRef.current.send(JSON.stringify({
-                        type: 'toggle-video',
-                        videoEnabled: !isVideoOn
-                    }))
-                }
-            }
-        }
-    }
-
-    const toggleAudio = () => {
-        if (localStreamRef.current) {
-            const audioTrack = localStreamRef.current.getAudioTracks()[0]
-            if (audioTrack) {
-                audioTrack.enabled = !isAudioOn
-                setIsAudioOn(!isAudioOn)
-                
-                // Notify other participants
-                if (wsConnectionRef.current) {
-                    wsConnectionRef.current.send(JSON.stringify({
-                        type: 'toggle-audio',
-                        audioEnabled: !isAudioOn
-                    }))
-                }
-            }
-        }
-    }
-
-    const toggleScreenShare = async () => {
-        try {
-            if (!isScreenSharing) {
-                const screenStream = await navigator.mediaDevices.getDisplayMedia({
-                    video: true,
-                    audio: true
-                })
-                
-                // Replace video track with screen share
-                if (localVideoRef.current) {
-                    localVideoRef.current.srcObject = screenStream
-                }
-                
-                setIsScreenSharing(true)
-                
-                // Listen for screen share end
-                screenStream.getVideoTracks()[0].addEventListener('ended', () => {
-                    setIsScreenSharing(false)
-                    // Switch back to camera
-                    if (localVideoRef.current && localStreamRef.current) {
-                        localVideoRef.current.srcObject = localStreamRef.current
-                    }
-                })
-            } else {
-                // Stop screen sharing and switch back to camera
-                if (localVideoRef.current && localStreamRef.current) {
-                    localVideoRef.current.srcObject = localStreamRef.current
-                }
-                setIsScreenSharing(false)
-            }
-        } catch (error) {
-            console.error('Error with screen sharing:', error)
-            alert('Unable to share screen. Please try again.')
-        }
-    }
-
-    const startCall = () => {
-        setCallStarted(true)
-        console.log('Video call started')
+    if (isOfferer) {
+      try {
+        const offer = await pc.createOffer()
+        await pc.setLocalDescription(offer)
         
-        // Notify other participants
-        if (wsConnectionRef.current) {
-            wsConnectionRef.current.send(JSON.stringify({
-                type: 'call-start'
-            }))
-        }
+        wsRef.current.send(JSON.stringify({
+          type: 'offer',
+          target: remoteUserId,
+          offer: pc.localDescription
+        }))
+        console.log('Sent offer to:', remoteUserId)
+      } catch (err) {
+        console.error('Error creating offer:', err)
+      }
+    }
+  }
+
+  const handleOffer = async (remoteUserId, offer) => {
+    try {
+      if (!peerConnectionsRef.current[remoteUserId]) {
+        await createPeerConnection(remoteUserId, false)
+      }
+
+      const pc = peerConnectionsRef.current[remoteUserId]
+      await pc.setRemoteDescription(new RTCSessionDescription(offer))
+      
+      const answer = await pc.createAnswer()
+      await pc.setLocalDescription(answer)
+      
+      wsRef.current.send(JSON.stringify({
+        type: 'answer',
+        target: remoteUserId,
+        answer: pc.localDescription
+      }))
+      console.log('Sent answer to:', remoteUserId)
+    } catch (err) {
+      console.error('Error handling offer:', err)
+    }
+  }
+
+  const handleAnswer = async (remoteUserId, answer) => {
+    try {
+      const pc = peerConnectionsRef.current[remoteUserId]
+      if (pc) {
+        await pc.setRemoteDescription(new RTCSessionDescription(answer))
+        console.log('Set remote description (answer) for:', remoteUserId)
+      }
+    } catch (err) {
+      console.error('Error handling answer:', err)
+    }
+  }
+
+  const handleIceCandidate = async (remoteUserId, candidate) => {
+    try {
+      const pc = peerConnectionsRef.current[remoteUserId]
+      if (pc && candidate) {
+        await pc.addIceCandidate(new RTCIceCandidate(candidate))
+        console.log('Added ICE candidate for:', remoteUserId)
+      }
+    } catch (err) {
+      console.error('Error adding ICE candidate:', err)
+    }
+  }
+
+  const handleUserLeft = (remoteUserId) => {
+    if (peerConnectionsRef.current[remoteUserId]) {
+      peerConnectionsRef.current[remoteUserId].close()
+      delete peerConnectionsRef.current[remoteUserId]
     }
 
-    const endCall = () => {
-        cleanup()
-        console.log('Video call ended')
-        
-        // Notify other participants
-        if (wsConnectionRef.current) {
-            wsConnectionRef.current.send(JSON.stringify({
-                type: 'call-end'
-            }))
-        }
-        
-        // Redirect based on role
-        if (isDoctor) {
-            navigate('/admin/today-appointments')
-        } else {
-            navigate('/profile')
-        }
-    }
+    delete remoteStreamsRef.current[remoteUserId]
+    setRemoteUsers(prev => prev.filter(user => user.userId !== remoteUserId))
+  }
 
-    const handleCallEnd = () => {
-        cleanup()
-        console.log('Remote user ended the call')
-        // Show notification or redirect
-        alert('The other participant has ended the call')
-        navigate(isDoctor ? '/admin/today-appointments' : '/profile')
+  const toggleVideo = () => {
+    if (!localStreamRef.current) return
+    const videoTrack = localStreamRef.current.getVideoTracks()[0]
+    if (videoTrack) {
+      videoTrack.enabled = !videoTrack.enabled
+      setIsVideoOn(videoTrack.enabled)
     }
+  }
 
-    const sendMessage = () => {
-        if (newMessage.trim()) {
-            const message = {
-                id: Date.now(),
-                text: newMessage,
-                sender: isDoctor ? 'Doctor' : 'Patient',
-                timestamp: new Date().toLocaleTimeString('en-US', {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                })
-            }
-            setMessages(prev => [...prev, message])
-            
-            // Send to other participants via WebSocket
-            if (wsConnectionRef.current) {
-                wsConnectionRef.current.send(JSON.stringify({
-                    type: 'chat-message',
-                    message: newMessage
-                }))
-            }
-            
-            setNewMessage('')
-        }
+  const toggleAudio = () => {
+    if (!localStreamRef.current) return
+    const audioTrack = localStreamRef.current.getAudioTracks()[0]
+    if (audioTrack) {
+      audioTrack.enabled = !audioTrack.enabled
+      setIsAudioOn(audioTrack.enabled)
     }
+  }
 
-    // Copy video call link
-    const copyVideoCallLink = async () => {
-        try {
-            const link = `${window.location.origin}/video-call/${videoCallId}?role=${isDoctor ? 'doctor' : 'patient'}`
-            await navigator.clipboard.writeText(link)
-            setLinkCopied(true)
-            setTimeout(() => setLinkCopied(false), 2000)
-        } catch (error) {
-            console.error('Failed to copy link:', error)
-        }
+  const sendMessage = () => {
+    if (!newMessage.trim() || !wsRef.current) return
+    
+    wsRef.current.send(JSON.stringify({
+      type: 'chat',
+      message: newMessage
+    }))
+    
+    setMessages(prev => [...prev, {
+      id: Date.now(),
+      text: newMessage,
+      sender: username,
+      isMe: true
+    }])
+    
+    setNewMessage('')
+  }
+
+  const cleanup = () => {
+    console.log('Cleaning up...')
+    
+    Object.values(peerConnectionsRef.current).forEach(pc => pc.close())
+    peerConnectionsRef.current = {}
+    
+    if (wsRef.current) {
+      wsRef.current.close()
+      wsRef.current = null
     }
-
-    const formatDuration = (seconds) => {
-        const mins = Math.floor(seconds / 60)
-        const secs = seconds % 60
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+    
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(track => track.stop())
+      localStreamRef.current = null
     }
+  }
 
-    if (loading) {
-        return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
-                    <p className="text-white">Loading video call...</p>
-                </div>
-            </div>
-        )
-    }
+  const handleCallEnd = () => {
+    cleanup()
+    navigate(isDoctor ? '/admin/today-appointments' : '/profile')
+  }
 
-    if (error) {
-        return (
-            <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-                <div className="text-center max-w-md mx-auto p-6">
-                    <div className="w-16 h-16 bg-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <VideoOff className="w-8 h-8 text-white" />
-                    </div>
-                    <h2 className="text-xl font-semibold text-white mb-2">Video Call Unavailable</h2>
-                    <p className="text-gray-300 mb-6">{error}</p>
-                    <Button 
-                        onClick={() => navigate('/admin/dashboard')}
-                        className="bg-blue-600 hover:bg-blue-700"
-                    >
-                        Return to Dashboard
-                    </Button>
-                </div>
-            </div>
-        )
-    }
-
+  if (loading) {
     return (
-        <div className="min-h-screen bg-gray-900 flex flex-col">
-            {/* Header */}
-            <div className="bg-gray-800 px-6 py-4 flex items-center justify-between">
-                <div className="flex items-center space-x-4">
-                    <div className="text-white">
-                        <h1 className="text-lg font-semibold">
-                            {appointmentDetails?.name} - {appointmentDetails?.doctorName}
-                        </h1>
-                        <p className="text-sm text-gray-300">
-                            {appointmentDetails?.date} at {appointmentDetails?.time}
-                        </p>
-                        <div className="flex items-center space-x-2 mt-1">
-                            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                            <span className="text-xs text-gray-400">{connectionStatus}</span>
-                        </div>
-                    </div>
-                    <div className={`px-2 py-1 rounded text-xs font-medium ${isDoctor ? 'bg-blue-600 text-white' : 'bg-gray-600 text-white'}`}>
-                        {isDoctor ? 'Admin/Doctor' : 'Participant'}
-                    </div>
-                    {callStarted && (
-                        <div className="bg-green-600 px-3 py-1 rounded-full">
-                            <span className="text-white text-sm font-medium">
-                                {formatDuration(callDuration)}
-                            </span>
-                        </div>
-                    )}
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                    {/* Only admin can copy link */}
-                    {isAdmin && (
-                        <Button
-                            onClick={copyVideoCallLink}
-                            variant="outline"
-                            size="sm"
-                            className="text-white border-gray-600 hover:bg-gray-700"
-                        >
-                            {linkCopied ? <Check size={16} /> : <Copy size={16} />}
-                            {linkCopied ? 'Copied!' : 'Copy Link'}
-                        </Button>
-                    )}
-                    
-                    {/* Chat is available for everyone */}
-                    <Button
-                        onClick={() => setShowChat(!showChat)}
-                        variant="outline"
-                        size="sm"
-                        className="text-white border-gray-600 hover:bg-gray-700"
-                    >
-                        <MessageCircle size={16} />
-                    </Button>
-                    
-                    {/* Only admin can end call */}
-                    {canEndCall && (
-                        <Button
-                            onClick={endCall}
-                            className="bg-red-600 hover:bg-red-700"
-                            size="sm"
-                        >
-                            <PhoneOff size={16} />
-                            End Call
-                        </Button>
-                    )}
-                    
-                    {/* Participants can only leave */}
-                    {!isAdmin && (
-                        <Button
-                            onClick={() => {
-                                cleanup()
-                                navigate('/profile')
-                            }}
-                            className="bg-gray-600 hover:bg-gray-700"
-                            size="sm"
-                        >
-                            <PhoneOff size={16} />
-                            Leave
-                        </Button>
-                    )}
-                </div>
-            </div>
-
-            {/* Main Video Area */}
-            <div className="flex-1 flex">
-                {/* Video Container */}
-                <div className={`flex-1 relative ${showChat ? 'mr-80' : ''}`}>
-                    {/* Remote Video (Full Screen) */}
-                    <div className="absolute inset-0 bg-gray-800">
-                        <video
-                            ref={remoteVideoRef}
-                            autoPlay
-                            playsInline
-                            className="w-full h-full object-cover"
-                        />
-                        
-                        {/* Placeholder for remote video */}
-                        {!isConnected && (
-                            <div className="absolute inset-0 flex items-center justify-center">
-                                <div className="text-center">
-                                    <div className="w-24 h-24 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                                        <Users size={32} className="text-gray-400" />
-                                    </div>
-                                    <p className="text-gray-300">
-                                        {isDoctor ? 'Waiting for patient to join...' : 'Waiting for doctor to join...'}
-                                    </p>
-                                    <p className="text-gray-400 text-sm mt-2">
-                                        Share the link with the other participant
-                                    </p>
-                                </div>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Local Video (Picture in Picture) */}
-                    <div className="absolute top-4 right-4 w-64 h-48 bg-gray-700 rounded-lg overflow-hidden shadow-lg">
-                        <video
-                            ref={localVideoRef}
-                            autoPlay
-                            playsInline
-                            muted
-                            className="w-full h-full object-cover"
-                        />
-                        {!isVideoOn && (
-                            <div className="absolute inset-0 bg-gray-800 flex items-center justify-center">
-                                <VideoOff className="w-8 h-8 text-gray-400" />
-                            </div>
-                        )}
-                        <div className="absolute bottom-2 left-2 text-white text-sm font-medium">
-                            You
-                        </div>
-                    </div>
-
-                    {/* Controls */}
-                    <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2">
-                        <div className="bg-gray-800/90 backdrop-blur-sm rounded-full px-6 py-4 flex items-center space-x-4">
-                            {/* Only admin can start call */}
-                            {!callStarted && canStartCall && (
-                                <Button
-                                    onClick={startCall}
-                                    className="bg-green-600 hover:bg-green-700 px-6"
-                                >
-                                    <Video size={20} className="mr-2" />
-                                    Start Call
-                                </Button>
-                            )}
-                            
-                            {/* Show waiting message for participants */}
-                            {!callStarted && !isAdmin && (
-                                <div className="text-white text-sm px-4 py-2 bg-gray-700 rounded-full">
-                                    Waiting for admin to start the call...
-                                </div>
-                            )}
-                            
-                            {callStarted && (
-                                <>
-                                    {/* Audio control - available for everyone */}
-                                    <Button
-                                        onClick={toggleAudio}
-                                        variant="outline"
-                                        size="sm"
-                                        className={`rounded-full w-12 h-12 ${
-                                            isAudioOn 
-                                                ? 'bg-gray-600 hover:bg-gray-700 text-white' 
-                                                : 'bg-red-600 hover:bg-red-700 text-white'
-                                        }`}
-                                    >
-                                        {isAudioOn ? <Mic size={20} /> : <MicOff size={20} />}
-                                    </Button>
-                                    
-                                    {/* Video control - available for everyone */}
-                                    <Button
-                                        onClick={toggleVideo}
-                                        variant="outline"
-                                        size="sm"
-                                        className={`rounded-full w-12 h-12 ${
-                                            isVideoOn 
-                                                ? 'bg-gray-600 hover:bg-gray-700 text-white' 
-                                                : 'bg-red-600 hover:bg-red-700 text-white'
-                                        }`}
-                                    >
-                                        {isVideoOn ? <Video size={20} /> : <VideoOff size={20} />}
-                                    </Button>
-                                    
-                                    {/* Screen share - only for admin */}
-                                    {canScreenShare && (
-                                        <Button
-                                            onClick={toggleScreenShare}
-                                            variant="outline"
-                                            size="sm"
-                                            className={`rounded-full w-12 h-12 ${
-                                                isScreenSharing 
-                                                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                                                    : 'bg-gray-600 hover:bg-gray-700 text-white'
-                                            }`}
-                                        >
-                                            {isScreenSharing ? <ScreenShareOff size={20} /> : <ScreenShare size={20} />}
-                                        </Button>
-                                    )}
-                                    
-                                    {/* Speaker control - available for everyone */}
-                                    <Button
-                                        onClick={() => setIsSpeakerOn(!isSpeakerOn)}
-                                        variant="outline"
-                                        size="sm"
-                                        className="rounded-full w-12 h-12 bg-gray-600 hover:bg-gray-700 text-white"
-                                    >
-                                        {isSpeakerOn ? <Volume2 size={20} /> : <VolumeX size={20} />}
-                                    </Button>
-                                </>
-                            )}
-                        </div>
-                    </div>
-                </div>
-
-                {/* Chat Panel */}
-                {showChat && (
-                    <div className="w-80 bg-white border-l border-gray-200 flex flex-col">
-                        <div className="p-4 border-b border-gray-200">
-                            <h3 className="font-semibold text-gray-900">Chat</h3>
-                        </div>
-                        
-                        <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                            {messages.map((message) => (
-                                <div key={message.id} className={`rounded-lg p-3 ${
-                                    message.sender === (isDoctor ? 'Doctor' : 'Patient') 
-                                        ? 'bg-blue-100 ml-8' 
-                                        : 'bg-gray-100 mr-8'
-                                }`}>
-                                    <div className="flex items-center justify-between mb-1">
-                                        <span className={`font-medium text-sm ${
-                                            message.sender === (isDoctor ? 'Doctor' : 'Patient')
-                                                ? 'text-blue-900'
-                                                : 'text-gray-900'
-                                        }`}>
-                                            {message.sender}
-                                            {message.sender === 'Doctor' && (
-                                                <span className="ml-1 text-xs bg-blue-200 text-blue-800 px-1 rounded">
-                                                    Admin
-                                                </span>
-                                            )}
-                                        </span>
-                                        <span className="text-xs text-gray-500">
-                                            {message.timestamp}
-                                        </span>
-                                    </div>
-                                    <p className={`${
-                                        message.sender === (isDoctor ? 'Doctor' : 'Patient')
-                                            ? 'text-blue-800'
-                                            : 'text-gray-700'
-                                    }`}>
-                                        {message.text}
-                                    </p>
-                                </div>
-                            ))}
-                            
-                            {messages.length === 0 && (
-                                <div className="text-center text-gray-500 py-8">
-                                    <MessageCircle size={32} className="mx-auto mb-2 opacity-50" />
-                                    <p>No messages yet</p>
-                                    <p className="text-xs mt-1">
-                                        {isAdmin ? 'Start the conversation' : 'Chat will be available when call starts'}
-                                    </p>
-                                </div>
-                            )}
-                        </div>
-                        
-                        <div className="p-4 border-t border-gray-200">
-                            <div className="flex space-x-2">
-                                <input
-                                    ref={chatInputRef}
-                                    type="text"
-                                    value={newMessage}
-                                    onChange={(e) => setNewMessage(e.target.value)}
-                                    onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                                    placeholder={callStarted ? "Type a message..." : "Chat will be available when call starts"}
-                                    disabled={!callStarted}
-                                    className={`flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                                        !callStarted ? 'bg-gray-100 cursor-not-allowed' : ''
-                                    }`}
-                                />
-                                <Button
-                                    onClick={sendMessage}
-                                    size="sm"
-                                    className="bg-blue-600 hover:bg-blue-700"
-                                    disabled={!callStarted || !newMessage.trim()}
-                                >
-                                    Send
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                )}
-            </div>
-        </div>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
+        <p className="text-xl">Loading video call...</p>
+      </div>
     )
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
+        <div className="text-center">
+          <p className="text-xl text-red-400 mb-4">Error: {error}</p>
+          <Button onClick={() => navigate(-1)}>Go Back</Button>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="min-h-screen bg-gray-900 flex flex-col">
+      <div className="flex-1 relative">
+        {/* Status bar with role indicator */}
+        <div className="absolute top-4 left-4 z-10 bg-black bg-opacity-50 px-4 py-2 rounded-lg text-white">
+          <p className="text-sm font-semibold">{connectionStatus}</p>
+          <p className="text-xs mt-1">
+            You are: <span className={isDoctor ? 'text-blue-400' : 'text-green-400'}>{username}</span>
+          </p>
+          <p className="text-xs">Your ID: {localUserId.substring(0, 20)}...</p>
+          <p className="text-xs">Remote users: {remoteUsers.length}</p>
+          {appointmentDetails && (
+            <p className="text-xs mt-1">
+              Meeting with: {isDoctor ? appointmentDetails.name : appointmentDetails.doctorName}
+            </p>
+          )}
+        </div>
+
+        {/* Remote videos container */}
+        <div className="w-full h-full flex items-center justify-center p-4">
+          {remoteUsers.length === 0 ? (
+            <div className="text-center text-white">
+              <div className="mb-4">
+                <div className="animate-pulse text-6xl mb-4">⏳</div>
+                <p className="text-xl">Waiting for other participant...</p>
+                <p className="text-sm text-gray-400 mt-2">
+                  Share this link with {isDoctor ? 'the patient' : 'your doctor'}:
+                </p>
+                <div className="mt-3 p-3 bg-gray-800 rounded-lg">
+                  <p className="text-xs text-blue-400 break-all">
+                    {window.location.origin}/video-call/{videoCallId}?role={isDoctor ? 'patient' : 'doctor'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full h-full grid gap-4" style={{
+              gridTemplateColumns: remoteUsers.length === 1 ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))'
+            }}>
+              {remoteUsers.map((user) => (
+                <RemoteVideo key={user.userId} stream={user.stream} userId={user.userId} />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Local video */}
+        <div className="absolute top-4 right-4 w-48 h-36 bg-black rounded-lg overflow-hidden shadow-lg z-10 border-2 border-blue-500">
+          <video 
+            ref={localVideoRef} 
+            autoPlay 
+            muted 
+            playsInline
+            className="w-full h-full object-cover"
+            style={{ transform: 'scaleX(-1)' }}
+          />
+          <div className="absolute bottom-2 left-2 text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
+            You ({username})
+          </div>
+        </div>
+
+        {/* Control buttons */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-4 z-10">
+          <Button
+            onClick={toggleAudio}
+            className={`p-4 rounded-full ${isAudioOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}
+          >
+            {isAudioOn ? <Mic size={24} /> : <MicOff size={24} />}
+          </Button>
+          
+          <Button
+            onClick={toggleVideo}
+            className={`p-4 rounded-full ${isVideoOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}
+          >
+            {isVideoOn ? <Video size={24} /> : <VideoOff size={24} />}
+          </Button>
+          
+          <Button
+            onClick={handleCallEnd}
+            className="p-4 rounded-full bg-red-600 hover:bg-red-700"
+          >
+            <PhoneOff size={24} />
+          </Button>
+        </div>
+      </div>
+
+      {/* Chat section */}
+      <div className="bg-gray-800 border-t border-gray-700">
+        <div className="h-32 overflow-y-auto p-3 space-y-2">
+          {messages.length === 0 ? (
+            <p className="text-gray-400 text-sm text-center">No messages yet</p>
+          ) : (
+            messages.map(msg => (
+              <div key={msg.id} className={`text-sm ${msg.isMe ? 'text-blue-400' : 'text-gray-300'}`}>
+                <strong>{msg.sender}:</strong> {msg.text}
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="p-3 flex space-x-2 border-t border-gray-700">
+          <input
+            type="text"
+            value={newMessage}
+            onChange={(e) => setNewMessage(e.target.value)}
+            onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+            placeholder="Type a message..."
+            className="flex-1 px-4 py-2 rounded-lg bg-gray-700 text-white border-none focus:ring-2 focus:ring-blue-500 outline-none"
+          />
+          <Button onClick={sendMessage} className="px-6 py-2 bg-blue-600 hover:bg-blue-700">
+            <MessageCircle size={20} />
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Component to display remote video streams
+const RemoteVideo = ({ stream, userId }) => {
+  const videoRef = useRef(null)
+
+  useEffect(() => {
+    if (videoRef.current && stream) {
+      videoRef.current.srcObject = stream
+      console.log('✅ Remote video stream set for:', userId)
+    }
+  }, [stream, userId])
+
+  const displayName = userId.startsWith('doctor') ? 'Doctor' : 'Patient'
+
+  return (
+    <div className="relative bg-black rounded-lg overflow-hidden border-4 border-green-500 w-full h-full">
+      <video 
+        ref={videoRef} 
+        autoPlay 
+        playsInline
+        className="w-full h-full object-cover"
+      />
+      <div className="absolute top-4 left-4 text-white text-lg font-bold bg-green-600 bg-opacity-90 px-4 py-2 rounded-lg shadow-lg">
+        {displayName}
+      </div>
+      <div className="absolute bottom-4 right-4 text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
+        {userId}
+      </div>
+    </div>
+  )
 }
 
 export default VideoCallRoom
-
-
-
