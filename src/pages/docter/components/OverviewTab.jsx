@@ -305,7 +305,9 @@ const deleteNote = (noteId) => {
       {/* Appointment Statistics Cards */}
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-          <h2 className="text-[22px] font-medium text-gray-800">Appointment Overview</h2>
+          {/* <h2 className="text-[22px] font-medium text-gray-800">Appointment Overview</h2> */}
+          <PageHeader
+          title='Appointment Overview'/>
           <Button 
             variant='outline'
             onClick={fetchDoctorAppointments}

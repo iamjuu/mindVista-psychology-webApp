@@ -19,6 +19,7 @@ const VideoCallRoom = () => {
   const [newMessage, setNewMessage] = useState('')
   const [connectionStatus, setConnectionStatus] = useState('Connecting...')
   const [remoteUsers, setRemoteUsers] = useState([])
+  const [isEndingSession, setIsEndingSession] = useState(false)
 
   const localVideoRef = useRef(null)
   const localStreamRef = useRef(null)
@@ -398,6 +399,27 @@ const VideoCallRoom = () => {
     navigate(isDoctor ? '/doctor' : '/profile')
   }
 
+  const handleEndSession = async () => {
+    if (!isDoctor || isEndingSession) return;
+    try {
+      setIsEndingSession(true);
+      
+      const response = await apiInstance.post('/end-session', { videoCallId });
+      
+      if (response.data.success === true) {
+        alert('Session ended successfully');
+        cleanup();
+        navigate('/doctor');
+      } else {
+        console.warn('Session end failed:', response.data.message);
+      }
+    } catch (e) {
+      console.error('Failed to end session:', e);
+    } finally {
+      setIsEndingSession(false);
+    }
+  };
+  
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
@@ -491,6 +513,16 @@ const VideoCallRoom = () => {
             {isVideoOn ? <Video size={24} /> : <VideoOff size={24} />}
           </Button>
           
+          {isDoctor && (
+            <Button
+              onClick={handleEndSession}
+              disabled={isEndingSession}
+              className={`p-4 rounded-full ${isEndingSession ? 'bg-red-400' : 'bg-red-600 hover:bg-red-700'}`}
+            >
+              <span className="text-sm font-semibold">{isEndingSession ? 'Ending…' : 'End Session'}</span>
+            </Button>
+          )}
+
           <Button
             onClick={handleCallEnd}
             className="p-4 rounded-full bg-red-600 hover:bg-red-700"

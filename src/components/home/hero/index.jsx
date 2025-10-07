@@ -55,9 +55,9 @@ const Index = () => {
 
           <div className="w-full gap-5 flex">
             <Link to="/register">
-              <Button className="bg-[#FFCB05] text-white">Register</Button>
+              <Button className="bg-[#ffb5ea] text-white">Register</Button>
             </Link>
-            <Button className=" border border-[#FFCB05]">Contect us</Button>
+            <Button className=" border border-[#ffb5ea]">Contect us</Button>
           </div>
         </div>
 

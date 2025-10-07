@@ -509,7 +509,7 @@ const DoctorList = () => {
             }}
             variant="outline"
             size="sm"
-            className="px-4 py-2 border-blue-500 text-blue-600 hover:bg-blue-50"
+            className="px-4 py-3 border-blue-500 text-black hover:bg-blue-50"
           >
             Refresh Data
           </Button>

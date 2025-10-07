@@ -28,25 +28,10 @@ function UserRouter() {
     <Router>
       <Suspense fallback={<CustomSpinner />}>
         <Routes>
-
         <Route path="/home" element={<HomePage />} />
-          {/* <Route path="/" element={<Landing />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} /> */}
-          {/* <Route
-            path="/programs/:programId"
-            element={
-              <ProgramContent
-                ProgramSectionleft={ProgramSectionleft}
-                ProgramSectionRight={ProgramSectionRight}
-              />
-            }
-          /> */}
-          {/* <Route path="/scanner" element={<ScannerPage />} /> */}
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/payment" element={<PaymentPage />} />
-          {/* <Route path="/details/:id" element={<DetailsPage />} /> */}
 {/* ************************** */}
 <Route path="/admin/dashboard" element={
   <ThemeProvider>

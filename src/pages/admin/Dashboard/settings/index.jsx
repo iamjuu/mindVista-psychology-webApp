@@ -174,9 +174,7 @@ const SettingsPage = () => {
                   >
                     <div
                       className={`p-2 rounded-lg ${
-                        isActive
-                          ? `bg-gray-100 text-gray-600`
-                          : "bg-gray-100"
+                        isActive ? `bg-gray-100 text-gray-600` : "bg-gray-100"
                       } transition-colors`}
                     >
                       <Icon size={18} />
@@ -846,10 +844,10 @@ const Notifications = () => {
 
   return (
     <div>
-
       <PageHeader
-      title="Notification Preferances"
-      description="Choose what you want to be notified about"/>
+        title="Notification Preferances"
+        description="Choose what you want to be notified about"
+      />
       <div className="space-y-6">
         {notificationGroups.map((group) => {
           const Icon = group.icon;
@@ -920,10 +918,9 @@ const PrivacySettings = () => {
 
   return (
     <div>
-
       <PageHeader
-      title="Privacy Settings"
-      description="Control who can see your content and interact with you"
+        title="Privacy Settings"
+        description="Control who can see your content and interact with you"
       />
       {/* <div className="mb-8">
         <h2 className="text-[16px] font-bold text-gray-900 ">
@@ -1115,13 +1112,10 @@ const AppearanceSettings = ({ theme, setTheme }) => {
 
   return (
     <div>
-
-<PageHeader
-title="Appearance"
-description="Customize hoe the app looks on your device"
-/>
-
-    
+      <PageHeader
+        title="Appearance"
+        description="Customize hoe the app looks on your device"
+      />
 
       <div className="space-y-8">
         {/* Theme Selection */}
@@ -1224,66 +1218,62 @@ const ActivitySettings = () => {
   return (
     <div>
       <PageHeader
-      title="Activity Dashboard"
-      description="Monitor your account activity and engagement"
+        title="Activity Dashboard"
+        description="Monitor your account activity and engagement"
       />
-      {/* <div className="mb-8">
-        <h2 className="text-[16px] font-bold text-gray-900 ">
-          Activity Dashboard
-        </h2>
-        <p className="text-gray-600 text-[14px] font-[400]">
-          Monitor your account activity and engagement
-        </p>
-      </div> */}
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-gray-700">Profile Views</h3>
             <Eye size={20} className="text-blue-600" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">1,284</p>
-          <p className="text-sm text-green-600 mt-1">↑ 12% from last week</p>
+
+          <PageHeader tile title="1,284" description="↑ 12% from last week" />
+          <p className="text-3xl font-bold text-gray-900"></p>
+          <p className="text-sm text-green-600 mt-1"></p>
         </div>
 
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6">
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-gray-700">Total Followers</h3>
             <UserPlus size={20} className="text-purple-600" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">5,432</p>
-          <p className="text-sm text-green-600 mt-1">↑ 8% from last month</p>
+          <PageHeader title="5,432" description="↑ 8% from last month" />
         </div>
 
-        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-6">
+        <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-gray-700">Engagement Rate</h3>
             <Zap size={20} className="text-green-600" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">4.8%</p>
-          <p className="text-sm text-green-600 mt-1">↑ 0.5% from last week</p>
+          <PageHeader title="4.8%" description="↑ 0.5% from last week" />
         </div>
 
-        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-6">
+        <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4">
           <div className="flex items-center justify-between mb-2">
             <h3 className="font-semibold text-gray-700">Content Shared</h3>
             <Share2 size={20} className="text-yellow-600" />
           </div>
-          <p className="text-3xl font-bold text-gray-900">234</p>
-          <p className="text-sm text-red-600 mt-1">↓ 3% from last week</p>
+          <PageHeader title="234" description="↓ 3% from last week" />
+          {/* <p className="text-xl font-bold text-gray-900">234</p>
+          <p className="text-sm text-red-600 mt-1">↓ 3% from last week</p> */}
         </div>
       </div>
 
       <div className="bg-gray-50 rounded-xl p-6">
-        <h3 className="font-semibold text-lg text-gray-900 mb-4">
+        {/* <h3 className="font-semibold text-lg text-gray-900 mb-4">
           Recent Activity
-        </h3>
+        </h3> */}
+        <PageHeader
+        title="Recant Activity"/>
         <div className="space-y-3">
           <div className="flex items-center space-x-3 p-3 bg-white rounded-lg">
             <div className="p-2 bg-blue-100 rounded-lg">
               <Heart size={16} className="text-blue-600" />
             </div>
             <div className="flex-1">
+              
               <p className="font-medium text-gray-900">
                 New likes on your post
               </p>

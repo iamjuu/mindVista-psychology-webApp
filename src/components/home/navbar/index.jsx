@@ -7,6 +7,8 @@ import Button from "../button";
 import { Menu, X, Phone } from "lucide-react"; // Import Lucide icons
 // import { Logo } from "../../public/assets";
 
+const ButtonBorderColor="#ffb5ea"
+
 const navLinks = [
   { href: "#hero", label: "Home" },
   { href: "#solution", label: "Solution" },
@@ -67,7 +69,8 @@ const Header = () => {
           >
             <Button
               href="#contact"
-              className="flex items-center px-4 py-1  border-[#FFCB05] border rounded-[8px] text-gray-700 hover:[#FFCB05] font-medium transition-all duration-200"
+              className={`flex items-center px-4 py-1 border rounded-[8px] text-gray-700 hover:text-white font-medium transition-all duration-200`}
+              style={{ borderColor: ButtonBorderColor }}
             >
               Contact Us
             </Button>
