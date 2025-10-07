@@ -59,7 +59,8 @@ const PatientCard = ({ patient }) => (
             {patient.nextAppointment ? new Date(patient.nextAppointment).toLocaleDateString() : 'Not scheduled'}
           </p>
         </div>
-      </div>
+      </div> 
+
     </div>
   </div>
 );
