@@ -3,12 +3,38 @@ import Navbar from "../../../components/home/navbar";
 import Hero from "../../../components/home/hero";
 import About from "../../../components/home/about";
 import Support from "../../../components/home/support";
-import { MainBackgroundImage } from "../../../assets";
 import Service from "../../../components/home/service";
+import Carousel from "../../../components/home/caroseal";
 import Footer from "../../../components/home/footer";
 import QuickAnswer from "../../../components/home/quickanswer";
 import Contact from "../../../components/home/contect";
+import { useEffect, useState } from "react";
+import api from "../../../instance";
 export default function Home() {
+  const [items, setItems] = useState([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchReviews = async () => {
+      try {
+        const { data } = await api.get('/reviews?limit=20');
+        if (!isMounted) return;
+        const mapped = data.map((r) => ({
+          src: r.avatarUrl || '/x.png',
+          name: r.name,
+          title: r.title,
+          description: r.description,
+          rating: '⭐'.repeat(Math.max(1, Math.min(5, Number(r.rating) || 0)))
+        }));
+        setItems(mapped);
+      } catch {
+        // ignore for now
+      }
+    };
+    fetchReviews();
+    return () => { isMounted = false; };
+  }, []);
+
   return (
     <div
     
@@ -31,7 +57,7 @@ export default function Home() {
           {/* <Support /> */}
         </div>
         <div id="blog">
-          {/* <Carousel items={items} /> */}
+          <Carousel items={items} />
         </div>
         <div id="contact">
           <Contact />

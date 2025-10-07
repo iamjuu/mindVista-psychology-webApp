@@ -1,16 +1,20 @@
 'use client'
 
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import PropTypes from 'prop-types';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
+import {PLaceHolderMen, PlaceHolderWomen} from '../../../assets'
+import { PageHeader } from '../../core/cardHeader';
 
-const   Carousel = ({ items }) => {
+const Carousel = ({ items }) => {
   const containerRef = useRef(null);
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     AOS.init({ duration: 800, once: false });
     AOS.refresh();
+
     const scrollSpeed = 1; // pixels per frame
     let animationFrame;
 
@@ -43,14 +47,25 @@ const   Carousel = ({ items }) => {
       {items.map((item, index) => (
         <div
           key={index}
-          className="flex flex-col items-start gap-5 rounded-xl border border-[#FFCB05] bg-white p-5 shadow-sm transition-shadow hover:shadow-md min-w-[350px]"
+          className="flex flex-col items-end rounded-xl border border-[#FFCB05] p-5 shadow-sm transition-shadow hover:shadow-md min-w-[350px]"
           data-aos="fade-up"
           data-aos-delay={index * 150}
         >
-          {item.icon && <span className="text-2xl">{item.icon}</span>}
-          <div className="flex flex-col gap-2">
-            <h3 className="text-[20px] font-[400]">{item.title}</h3>
-            <p className="text-gray-700">{item.description}</p>
+          <div className="flex flex-col items-center justify-center w-full">
+            <img
+              className="w-20 h-20 rounded-full object-cover"
+              src={PLaceHolderMen}
+              alt={`${item.name} - ${item.title}`}
+            />
+            <PageHeader title={item.name} />
+          </div>
+          <div className="flex  w-full flex-col gap-2">
+
+            <PageHeader
+            title={item.title}
+            description={item.description}
+            />
+            {item.rating && <p className="text-yellow-500">{item.rating}</p>}
           </div>
         </div>
       ))}
@@ -59,3 +74,15 @@ const   Carousel = ({ items }) => {
 };
 
 export default Carousel;
+
+Carousel.propTypes = {
+  items: PropTypes.arrayOf(
+    PropTypes.shape({
+      src: PropTypes.string,
+      name: PropTypes.string.isRequired,
+      title: PropTypes.string.isRequired,
+      description: PropTypes.string.isRequired,
+      rating: PropTypes.string,
+    })
+  ).isRequired,
+};

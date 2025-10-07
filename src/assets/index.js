@@ -20,10 +20,12 @@ import BadgeImage from "./dashbaord/360_F_327858718_Pl52WnI5PVYHVvtoxF96Arb9ZYEo
 
 import MainBackgroundImage from "./home/mindvsitabackgrond.jpg"
 import BrainImage from "./home/colorful-fantastical-depiction-brain-removebg-preview.png"
-
-
+import PLaceHolderMen from "./home/place holder.png"
+import PlaceHolderWomen from "./home/placeholder women.jpg"
 
 export {
+    PlaceHolderWomen,
+    PLaceHolderMen,
     BrainImage,
     MainBackgroundImage,
     BadgeImage,
