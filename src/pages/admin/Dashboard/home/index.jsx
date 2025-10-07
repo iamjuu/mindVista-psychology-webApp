@@ -21,6 +21,8 @@ import Appoiment from "../appoinment";
 import TodayAppointments from "../TodayAppointments";
 import Finance from "../finance";
 import Settings from "../settings";
+
+import ReivewPage from "../rewiew"
 import { Input } from "../../../../components/shadcn/input/input";
 import { BadgeImage } from "../../../../assets";
 import { Search, Bell, Calendar, Plus, Power, SearchCheck, LogOut } from "lucide-react";
@@ -1732,6 +1734,8 @@ const Dashboard = () => {
         return <TodayAppointments />;
       case "finance":
         return <Finance />;
+      case "rewiew":
+        return <ReivewPage />;
       case "settings":
         return <Settings />;
       default:
@@ -1779,8 +1783,10 @@ const Dashboard = () => {
                   "appointments",
                   "today-appointments",
                   "finance",
+                  "rewiew",
                 ].includes(activePage) && ""}
                 {activePage === "settings" && "Settings"}
+                {activePage === "rewiew" && "Rewiew"}
               </h1>
               <p className={`${themeClasses.textSecondary} text-[16px] mt-1`}>
                 Welcome back, Admin

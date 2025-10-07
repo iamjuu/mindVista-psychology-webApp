@@ -28,7 +28,7 @@ function UserRouter() {
     <Router>
       <Suspense fallback={<CustomSpinner />}>
         <Routes>
-        <Route path="/home" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/payment" element={<PaymentPage />} />
