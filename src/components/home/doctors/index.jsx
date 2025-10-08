@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { FaArrowLeft, FaArrowRight } from "react-icons/fa";
 import {  PLaceHolderMen, PlaceHolderWomen } from "../../../assets";
+import { PageHeader } from "../../core/cardHeader";
 
 const Doctors = () => {
   const data = [
@@ -35,6 +36,13 @@ const Doctors = () => {
   return (
     <div className="py-[130px] flex flex-col lg:px-32 px-5">
       <div className="flex flex-col items-center lg:flex-row justify-between mb-10 lg:mb-0">
+
+        <div className="w-full ">
+          <PageHeader
+          title="Doctors"
+          />
+
+        </div>
         <div className="flex gap-5 mt-4 lg:mt-0">
           <button
             className="border border-gray-300 font-[200] text-black p-3 rounded-full"

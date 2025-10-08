@@ -39,30 +39,38 @@ const Index = () => {
       <div className="max-w-7xl flex flex-col md:flex-row">
         {/* Left Side - Text Content */}
         <div className="w-full md:w-1/2 flex flex-col items-center justify-center">
-          <div className="text-left p-6 md:p-8">
-            <AnimationText
-              text="AMC Contract For IT & Security Solutions."
-              delay={150}
-              animateBy="words"
-              direction="top"
-              className="text-xl sm:text-2xl md:text-3xl mb-6 md:mb-8"
-            />
-            <AnimationText
-              text="Proffessionly optimize interdepent intellectual interoparable connect best practices. Progressively fabricate done."
-              delay={80}
-              animateBy="words"
-              direction="top"
-              className="text-base md:text-lg text-gray-600"
-            />
-          </div>
+  <div className="text-left p-6 md:p-8">
+    <AnimationText
+      text="Our Services"
+      delay={150}
+      animateBy="words"
+      direction="top"
+      className="text-xl sm:text-2xl md:text-3xl mb-6 md:mb-8"
+    />
+    <AnimationText
+      text="We offer a range of professional psychological services, including individual therapy, couples counseling, stress management, and personal development programs. Our goal is to support mental well-being through personalized and evidence-based approaches."
+      delay={80}
+      animateBy="words"
+      direction="top"
+      className="text-base md:text-lg text-gray-600"
+    />
+  </div>
 
-          <div className="w-full flex gap-5">
-            <Link to="/register">
-              <Button className="bg-[#ffb5ea] text-white">Register</Button>
-            </Link>
-            <Button className="border border-[#ffb5ea]">Contect us</Button>
-          </div>
-        </div>
+  <div className="w-full flex gap-5">
+    <Link to="/register">
+      <Button className="bg-[#ffb5ea] text-white">Register</Button>
+    </Link>
+    <Button
+      as="a"
+      href="https://wa.me/7025715250"
+      target="_blank"
+      className="border border-[#ffb5ea]"
+    >
+      Contact Us
+    </Button>
+  </div>
+</div>
+
 
         {/* Right Side - Floating Image */}
         <div
@@ -78,7 +86,7 @@ const Index = () => {
             src={BrainImage}
             alt="Background"
             onLoad={() => setImageLoaded(true)}
-            className={`object-contain w-full h-auto max-h-[500px]  transition-opacity duration-300 ${
+            className={`object-contain w-full h-auto  max-h-[200px] md:max-h-[500px]  transition-opacity duration-300 ${
               imageLoaded ? "opacity-100" : "opacity-0"
             }`}
             style={{
