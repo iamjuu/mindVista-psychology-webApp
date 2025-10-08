@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import AOS from "aos";
 import "aos/dist/aos.css";
-import {Link} from "react-router-dom";
+// Removed react-router Link for in-page hash navigation
 import Button from "../button";
 import { Menu, X, Phone } from "lucide-react"; // Import Lucide icons
 // import { Logo } from "../../public/assets";
@@ -11,10 +11,10 @@ const ButtonBorderColor="#ffb5ea"
 
 const navLinks = [
   { href: "#hero", label: "Home" },
-  { href: "#solution", label: "Solution" },
-  { href: "#project", label: "Projects" },
-  { href: "#blog", label: "Blog" },
-  { href: "#about", label: "About" },
+  { href: "#Doctors", label: "Doctors" },
+  { href: "#Services", label: "Services" },
+  { href: "#Reviews", label: "Reviews" },
+  { href: "#contect", label: "Contect" },
 ];
 
 const Header = () => {
@@ -49,15 +49,15 @@ const Header = () => {
           {/* Desktop Navigation Menu */}
           <nav className="hidden md:flex items-center gap-[72px]">
             {navLinks.map((link, index) => (
-              <Link
+              <a
                 key={link.label}
                 href={link.href}
-                className="relative text-[14px] font-medium duration-700 delay-200 hover:text-[#FFCB05] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-[#FFCB05] after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100"
+                className="relative text-[14px] font-medium duration-700 delay-200 hover:text-[#ffb5ea] after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-[#ffb5ea] after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100"
                 data-aos="flip-down"
                 data-aos-delay={index * 400}
               >
                 {link.label}
-              </Link>
+              </a>
             ))}
           </nav>
 
@@ -68,7 +68,7 @@ const Header = () => {
             data-aos-delay={1000}
           >
             <Button
-              href="#contact"
+              href="#contect"
               className={`flex items-center px-4 py-1 border rounded-[8px] text-gray-700 hover:text-white font-medium transition-all duration-200`}
               style={{ borderColor: ButtonBorderColor }}
             >
@@ -111,7 +111,7 @@ const Header = () => {
             </div>
             <nav className="flex flex-col space-y-2 px-4 pt-2 pb-4">
               {navLinks.map((link, index) => (
-                <Link
+                <a
                   key={link.label}
                   href={link.href}
                   onClick={() => setIsMenuOpen(false)}
@@ -120,17 +120,17 @@ const Header = () => {
                   data-aos-delay={index * 100}
                 >
                   <span>{link.label}</span>
-                </Link>
+                </a>
               ))}
-              <Link
-                href="#contact"
+              <a
+                href="#contect"
                 onClick={() => setIsMenuOpen(false)}
                 className="flex items-center space-x-3 px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-[#FFCB05] hover:bg-gray-50 transition-all duration-500 ease-in-out delay-100 hover:scale-105 hover:shadow-sm"
                 data-aos="flip-down"
               >
                 <Phone color="black" className="w-5 h-5" />
                 <span>Contact Us</span>
-              </Link>
+              </a>
             </nav>
           </div>
         </>

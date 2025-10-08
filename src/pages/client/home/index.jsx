@@ -52,7 +52,7 @@ export default function Home() {
           <Support />
           <About />
         </div>
-        <div>
+        <div id="Doctors">
           <Docters />
         </div>
 
@@ -60,13 +60,13 @@ export default function Home() {
         <div>
           <Counter />
         </div>
-        <div id="blog">
+        <div id="Reviews">
           <Carousel items={items} />
         </div>
-        <div id="contact">
+        <div id="contect">
           <Contact />
         </div>
-        <div id="about">
+        <div id="Services">
           <Service />
         </div>
         <div>
