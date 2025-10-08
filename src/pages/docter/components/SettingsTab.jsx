@@ -1,8 +1,42 @@
-import React from "react";
+import { useState } from "react";
+import PropTypes from 'prop-types';
 import { Button } from "../../../components/shadcn/button/button";
 import { PageHeader } from "../../../components/core/cardHeader";
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SettingsTab = ({ doctorData }) => {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleSaveChanges = async () => {
+    setIsSubmitting(true);
+    
+    try {
+      // Simulate API call - replace with actual API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('Settings saved successfully!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } catch {
+      toast.error('Failed to save settings. Please try again.', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
@@ -136,11 +170,28 @@ const SettingsTab = ({ doctorData }) => {
 
         {/* Save Button */}
         <div className="flex justify-end">
-          <Button>Save Changes</Button>
+          <Button 
+            onClick={handleSaveChanges}
+            disabled={isSubmitting}
+            className={isSubmitting ? "opacity-50 cursor-not-allowed" : ""}
+          >
+            {isSubmitting ? "Saving..." : "Save Changes"}
+          </Button>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
+};
+
+SettingsTab.propTypes = {
+  doctorData: PropTypes.shape({
+    name: PropTypes.string,
+    email: PropTypes.string,
+    phone: PropTypes.string,
+    specialization: PropTypes.string,
+    bio: PropTypes.string,
+  }),
 };
 
 export default SettingsTab;

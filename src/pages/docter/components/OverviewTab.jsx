@@ -1,12 +1,13 @@
-import React,{useState} from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {useState} from 'react';
+import PropTypes from 'prop-types';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
 import { DollarSign, TrendingUp, Calendar, Award, Eye, Clock, CheckCircle } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/shadcn/select';
 import { Button } from '../../../components/shadcn/button/button';
 import { PageHeader } from '../../../components/core/cardHeader';
 
 // Income Card Component
-const IncomeCard = ({ title, amount, growth, icon, bgColor, timeFrame }) => (
+const IncomeCard = ({ title, amount, growth, icon, bgColor }) => (
   <div className={`${bgColor} p-6 rounded-2xl text-white shadow-lg`}>
     <div className="flex items-center justify-between">
       <div>
@@ -31,6 +32,14 @@ const IncomeCard = ({ title, amount, growth, icon, bgColor, timeFrame }) => (
   </div>
 );
 
+IncomeCard.propTypes = {
+  title: PropTypes.string.isRequired,
+  amount: PropTypes.number.isRequired,
+  growth: PropTypes.number.isRequired,
+  icon: PropTypes.node.isRequired,
+  bgColor: PropTypes.string.isRequired,
+};
+
 const OverviewTab = ({ 
   selectedTimeFrame, 
   setSelectedTimeFrame, 
@@ -41,6 +50,23 @@ const OverviewTab = ({
 }) => {
 
   const [showAddNoteModal, setShowAddNoteModal] = useState(false);
+
+  // Pie chart data for appointment status distribution
+  const appointmentStatusData = [
+    { name: 'Approved', value: doctorAppointments.filter(a => a.status === 'approved').length, color: '#10B981' },
+    { name: 'Pending', value: doctorAppointments.filter(a => a.status === 'pending').length, color: '#F59E0B' },
+    { name: 'Cancelled', value: doctorAppointments.filter(a => a.status === 'cancelled').length, color: '#EF4444' },
+    { name: 'Completed', value: doctorAppointments.filter(a => a.status === 'completed').length, color: '#3B82F6' }
+  ].filter(item => item.value > 0); // Only show categories with data
+  const [newNote, setNewNote] = useState({
+    title: "",
+    description: "",
+    tags: [],
+    date: new Date().toLocaleDateString("en-US", {
+      month: "short",
+      day: "2-digit",
+    }),
+  });
 
   const [notes, setNotes] = useState([
     {
@@ -104,7 +130,7 @@ const deleteNote = (noteId) => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           {/* <h1 className="text-[14px] font-bold text-gray-900">Income Statistics</h1> */}
           <PageHeader
-          title='Income Statistics'/>
+          title='Appointment Overview'/>
           <div className="flex items-center gap-3">
             <label className="text-sm text-gray-600 font-medium">View:</label>
             <Select value={selectedTimeFrame} onValueChange={setSelectedTimeFrame}>
@@ -121,6 +147,73 @@ const deleteNote = (noteId) => {
           </div>
         </div>
         
+
+      {/* Appointment Statistics Cards */}
+      <div className="mb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
+
+          <Button 
+            variant='outline'
+            onClick={fetchDoctorAppointments}
+            disabled={appointmentsLoading}
+          >
+            {appointmentsLoading ? (
+              <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            ) : (
+              <Eye size={16} />
+            )}
+            {appointmentsLoading ? 'Refreshing...' : 'Refresh Appointments'}
+          </Button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+
+                <PageHeader
+                title="Total Appointments"
+                description={doctorAppointments.length}
+                />
+           </div>
+              <div className="p-3 bg-blue-100 rounded-xl">
+                <Calendar size={18} className="text-blue-600" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <PageHeader
+                title="Pending Appointments"
+                description={doctorAppointments.filter(a => a.status === 'pending').length}
+                />
+           
+              </div>
+              <div className="p-3 bg-yellow-100 rounded-xl">
+                <Clock size={18} className="text-yellow-600" />
+              </div>
+            </div>
+          </div>
+          
+          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <PageHeader
+                title="Approved Appointments"
+                description={doctorAppointments.filter(a => a.status === 'approved').length}
+                />
+             </div>
+              <div className="p-3 bg-green-100 rounded-xl">
+                <CheckCircle size={18} className="text-green-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
           <IncomeCard
             title="Daily Income"
@@ -157,66 +250,113 @@ const deleteNote = (noteId) => {
         </div>
       </div>
 
-      {/* Income Chart */}
-      <div className='grid gap-5 grid-cols-2'>
-      <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
-          <h3 className="text-[18px] font-semibold text-gray-900 mb-2 sm:mb-0">
-            {selectedTimeFrame === 'daily' ? 'Daily' : 
-             selectedTimeFrame === 'weekly' ? 'Weekly' : 
-             selectedTimeFrame === 'monthly' ? 'Monthly' : 'Yearly'} Income Trend
-          </h3>
-          <div className="flex items-center gap-2">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
-              Income
+      {/* Charts Section */}
+      <div className='grid gap-5 grid-cols-1 lg:grid-cols-3 mb-8'>
+        {/* Income Chart */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+            <h3 className="text-[18px] font-semibold text-gray-900 mb-2 sm:mb-0">
+              {selectedTimeFrame === 'daily' ? 'Daily' : 
+               selectedTimeFrame === 'weekly' ? 'Weekly' : 
+               selectedTimeFrame === 'monthly' ? 'Monthly' : 'Yearly'} Income Trend
+            </h3>
+            <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                Income
+              </div>
             </div>
           </div>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={selectedTimeFrame === 'weekly' ? incomeData.weeklyChart : incomeData.monthlyChart}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                <XAxis 
+                  dataKey="name" 
+                  stroke="#6b7280"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+                <YAxis 
+                  stroke="#6b7280"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                  tickFormatter={(value) => `₹${value.toLocaleString()}`}
+                />
+                <Tooltip 
+                  formatter={(value) => [`₹${value.toLocaleString()}`, 'Income']}
+                  labelFormatter={(label) => `${selectedTimeFrame === 'weekly' ? 'Day' : 'Month'}: ${label}`}
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                <Legend />
+                <Line 
+                  type="monotone" 
+                  dataKey="income" 
+                  stroke="#3B82F6" 
+                  strokeWidth={3}
+                  dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, fill: '#1D4ED8' }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-        <div className="h-56">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={selectedTimeFrame === 'weekly' ? incomeData.weeklyChart : incomeData.monthlyChart}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-              <XAxis 
-                dataKey="name" 
-                stroke="#6b7280"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-              />
-              <YAxis 
-                stroke="#6b7280"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
-                tickFormatter={(value) => `₹${value.toLocaleString()}`}
-              />
-              <Tooltip 
-                formatter={(value) => [`₹${value.toLocaleString()}`, 'Income']}
-                labelFormatter={(label) => `${selectedTimeFrame === 'weekly' ? 'Day' : 'Month'}: ${label}`}
-                contentStyle={{
-                  backgroundColor: 'white',
-                  border: '1px solid #e5e7eb',
-                  borderRadius: '12px',
-                  boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
-                }}
-              />
-              <Legend />
-              <Line 
-                type="monotone" 
-                dataKey="income" 
-                stroke="#3B82F6" 
-                strokeWidth={3}
-                dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
-                activeDot={{ r: 8, fill: '#1D4ED8' }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
+
+        {/* Appointment Status Pie Chart */}
+        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
+            <h3 className="text-[18px] font-semibold text-gray-900 mb-2 sm:mb-0">
+              Appointment Status
+            </h3>
+          </div>
+          <div className="h-56">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={appointmentStatusData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={40}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                >
+                  {appointmentStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip 
+                  formatter={(value, name) => [value, name]}
+                  contentStyle={{
+                    backgroundColor: 'white',
+                    border: '1px solid #e5e7eb',
+                    borderRadius: '12px',
+                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                  }}
+                />
+                <Legend 
+                  verticalAlign="bottom" 
+                  height={36}
+                  formatter={(value, entry) => (
+                    <span style={{ color: entry.color, fontSize: '12px' }}>
+                      {value}
+                    </span>
+                  )}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
         </div>
-      </div>
-      <div>
-         {/* Notes Card */}
-         <div className="bg-white p-4 rounded-lg border">
+
+        {/* Notes Card */}
+        <div className="bg-white p-4 rounded-lg border">
           <div className="flex items-center justify-between ">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
@@ -300,74 +440,94 @@ const deleteNote = (noteId) => {
           </div>
         </div>
       </div>
-      </div>
 
-      {/* Appointment Statistics Cards */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-          {/* <h2 className="text-[22px] font-medium text-gray-800">Appointment Overview</h2> */}
-          <PageHeader
-          title='Appointment Overview'/>
-          <Button 
-            variant='outline'
-            onClick={fetchDoctorAppointments}
-            disabled={appointmentsLoading}
-          >
-            {appointmentsLoading ? (
-              <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            ) : (
-              <Eye size={16} />
-            )}
-            {appointmentsLoading ? 'Refreshing...' : 'Refresh Appointments'}
-          </Button>
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Total Appointments</p>
-                <p className="text-3xl font-bold text-gray-900">{doctorAppointments.length}</p>
+    
+   
+      {showAddNoteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div
+            className="absolute inset-0 bg-black/50"
+            onClick={() => setShowAddNoteModal(false)}
+          />
+          <div className="relative z-10 w-full max-w-md bg-white rounded-xl shadow-xl border p-5">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-[16px] font-semibold text-gray-800">Add Note</h3>
+              <button
+                className="text-gray-500 hover:text-gray-700"
+                onClick={() => setShowAddNoteModal(false)}
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-600">Title</label>
+                <input
+                  type="text"
+                  value={newNote.title}
+                  onChange={(e) => setNewNote((prev) => ({ ...prev, title: e.target.value }))}
+                  className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter note title"
+                />
               </div>
-              <div className="p-3 bg-blue-100 rounded-xl">
-                <Calendar size={24} className="text-blue-600" />
+              <div className="flex flex-col gap-1">
+                <label className="text-xs font-medium text-gray-600">Description</label>
+                <textarea
+                  rows={4}
+                  value={newNote.description}
+                  onChange={(e) => setNewNote((prev) => ({ ...prev, description: e.target.value }))}
+                  className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Write details..."
+                />
               </div>
             </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Pending</p>
-                <p className="text-3xl font-bold text-yellow-600">
-                  {doctorAppointments.filter(a => a.status === 'pending').length}
-                </p>
-              </div>
-              <div className="p-3 bg-yellow-100 rounded-xl">
-                <Clock size={24} className="text-yellow-600" />
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">Approved</p>
-                <p className="text-3xl font-bold text-green-600">
-                  {doctorAppointments.filter(a => a.status === 'approved').length}
-                </p>
-              </div>
-              <div className="p-3 bg-green-100 rounded-xl">
-                <CheckCircle size={24} className="text-green-600" />
-              </div>
+            <div className="flex items-center justify-end gap-2 mt-4">
+              <button
+                className="px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 border border-gray-200 rounded-lg hover:bg-gray-200"
+                onClick={() => setShowAddNoteModal(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-60"
+                onClick={handleAddNote}
+                disabled={!newNote.title.trim() || !newNote.description.trim()}
+              >
+                Save Note
+              </button>
             </div>
           </div>
         </div>
-      </div>
+      )}
+
     </>
   );
 };
 
 export default OverviewTab;
+
+OverviewTab.propTypes = {
+  selectedTimeFrame: PropTypes.string.isRequired,
+  setSelectedTimeFrame: PropTypes.func.isRequired,
+  incomeData: PropTypes.shape({
+    daily: PropTypes.number.isRequired,
+    dailyGrowth: PropTypes.number.isRequired,
+    weekly: PropTypes.number.isRequired,
+    weeklyGrowth: PropTypes.number.isRequired,
+    monthly: PropTypes.number.isRequired,
+    monthlyGrowth: PropTypes.number.isRequired,
+    yearly: PropTypes.number.isRequired,
+    yearlyGrowth: PropTypes.number.isRequired,
+    weeklyChart: PropTypes.arrayOf(PropTypes.object).isRequired,
+    monthlyChart: PropTypes.arrayOf(PropTypes.object).isRequired,
+  }).isRequired,
+  doctorAppointments: PropTypes.arrayOf(
+    PropTypes.shape({
+      status: PropTypes.string.isRequired,
+    })
+  ).isRequired,
+  appointmentsLoading: PropTypes.bool.isRequired,
+  fetchDoctorAppointments: PropTypes.func.isRequired,
+};
 

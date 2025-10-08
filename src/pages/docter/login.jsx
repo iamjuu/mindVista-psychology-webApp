@@ -5,6 +5,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Eye, EyeOff, Lock, Mail, Brain } from 'lucide-react';
 import apiInstance from '../../instance';
 import { Button } from '../../components/shadcn/button/button';
+import { MainBackgroundImage } from '../../assets';
 
 const DoctorLogin = () => {
   const navigate = useNavigate();
@@ -82,18 +83,21 @@ const DoctorLogin = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
+    <div 
+    style={{
+      backgroundImage: `url(${MainBackgroundImage})`,
+      backgroundPosition: "top center",
+      backgroundSize: "100% auto",
+      backgroundRepeat: "repeat-y",
+    }}
+    className=" h-screen flex items-center justify-center p-4">
       <ToastContainer position="top-right" />
       
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
-          <div className="mx-auto h-20 w-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4">
-            <Brain className="h-10 w-10 text-white" />
-          </div>
-          <h2 className="text-3xl font-bold text-gray-900 mb-2">
-            Welcome Back, Doctor
-          </h2>
+        
+        
           <p className="text-gray-600">
             Sign in using your email and phone number to access your dashboard
           </p>
@@ -142,7 +146,7 @@ const DoctorLogin = () => {
                   required
                   value={formData.password}
                   onChange={handleChange}
-                  className="block w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                  className="block w-full pl-10 pr-12 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
                   placeholder="Enter your phone number (10 digits)"
                   pattern="[0-9]{10}"
                   maxLength={10}
@@ -150,14 +154,14 @@ const DoctorLogin = () => {
                 <Button
                   type="button"
                   onClick={togglePasswordVisibility}
-                  variant="ghost"
+                  variant="secondary"
                   size="icon"
                   className="absolute inset-y-0 right-0 pr-3"
                 >
                   {showPassword ? (
-                    <EyeOff className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <EyeOff className="h-5 w-5 " />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+                    <Eye className="h-5 w-5 " />
                   )}
                 </Button>
               </div>
