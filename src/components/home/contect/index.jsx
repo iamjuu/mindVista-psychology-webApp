@@ -15,14 +15,14 @@ const Index = () => {
     const form = e.currentTarget;
     const formData = new FormData(form);
     const payload = {
-      name: formData.get('name'),
-      title: formData.get('title'),
-      description: formData.get('description'),
-      rating: Number(formData.get('rating')),
+      name: formData.get("name"),
+      title: formData.get("title"),
+      description: formData.get("description"),
+      rating: Number(formData.get("rating")),
     };
 
     try {
-      await api.post('/reviews', payload);
+      await api.post("/reviews", payload);
       if (typeof window !== "undefined") {
         window.dispatchEvent(
           new CustomEvent("app:toast", {
@@ -61,12 +61,13 @@ const Index = () => {
               Share Your Details
             </h2>
           </div>
-          <p className="text-gray-700 text-[14px]  leading-7 mb-8">
-            Have questions about our services?
+          <p className="text-gray-700 text-[14px] leading-7 mb-8">
+            Have questions about our psychological services?
           </p>
           <p className="text-gray-700 leading-7 mb-8">
-            Here are some of the most common queries we receive. If you need
-            personalized assistance, we’re just a message away.
+            Whether you're seeking therapy, assessments, or wellness programs,
+            we're here to support you. Reach out and let us guide you toward
+            better mental well-being.
           </p>
 
           <div className="grid sm:grid-cols-2 gap-8">
@@ -79,9 +80,10 @@ const Index = () => {
                 <Clock className="text-white" size={24} />
               </div>
               <div>
-                <p className="font-semibold mb-1">Time Response</p>
+                <p className="font-semibold mb-1">Quick Response</p>
                 <p className="text-gray-700 text-sm leading-6">
-                  we prioritize timely responses to ensure smooth community
+                  We prioritize timely support so you can get the help you need
+                  without delays.
                 </p>
               </div>
             </div>
@@ -95,9 +97,10 @@ const Index = () => {
                 <Compass className="text-white" size={24} />
               </div>
               <div>
-                <p className="font-semibold mb-1">Guided next steps</p>
+                <p className="font-semibold mb-1">Guided Support</p>
                 <p className="text-gray-700 text-sm leading-6">
-                  Clear guidance at every stage — no guesswork, just support.
+                  Receive clear, compassionate guidance at every step of your
+                  wellness journey.
                 </p>
               </div>
             </div>
@@ -119,44 +122,44 @@ const Index = () => {
 
           <div className="mb-6" data-aos="fade-up" data-aos-delay={300}>
             <p className="text-gray-700 leading-7">
-              Let’s Start the Conversation Have a project in mind?
+              Let’s Start the Conversation — Your Well-Being Matters.
             </p>
             <p className="text-gray-700 leading-7">
-              Whether it’s electrical, security, or automation, our team is here
-              to help. Share your details and we’ll get back with the right
-              solution — fast.
+              Whether you’re seeking therapy, mental health assessments, or
+              emotional support, our team of professionals is here to listen and
+              guide you. Share your details, and we’ll connect with you to take
+              the next step toward better mental health.
             </p>
           </div>
+
           <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="flex gap-4 justify-between">
-            <div className="w-full" data-aos="fade-up" data-aos-delay={350}>
-              <label className="block text-sm mb-2">Name</label>
-              <input
-                type="text"
-                name="name"
-                placeholder="Enter your name"
-                className="w-full border border-gray-200 rounded-md h-12 px-4 focus:outline-none focus:ring-2 focus:ring-[#FFCB05]"
-                required
-              />
+              <div className="w-full" data-aos="fade-up" data-aos-delay={350}>
+                <label className="block text-sm mb-2">Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Enter your name"
+                  className="w-full border border-gray-200 rounded-md h-12 px-4 focus:outline-none focus:ring-2 focus:ring-[#FFCB05]"
+                  required
+                />
+              </div>
+              <div className="w-full" data-aos="fade-up" data-aos-delay={450}>
+                <label className="block text-sm mb-2">Rating</label>
+                <select
+                  name="rating"
+                  className="w-full border border-gray-200 rounded-md h-12 px-4 focus:outline-none focus:ring-2 focus:ring-[#FFCB05]"
+                  required
+                >
+                  <option value="">Select rating</option>
+                  <option value="1">1</option>
+                  <option value="2">2</option>
+                  <option value="3">3</option>
+                  <option value="4">4</option>
+                  <option value="5">5</option>
+                </select>
+              </div>
             </div>
-            <div className="w-full" data-aos="fade-up" data-aos-delay={450}>
-              <label className="block text-sm mb-2">Rating</label>
-              <select
-                name="rating"
-                className="w-full border border-gray-200 rounded-md h-12 px-4 focus:outline-none focus:ring-2 focus:ring-[#FFCB05]"
-                required
-              >
-                <option value="">Select rating</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-            </div>
-         
-            </div>
-           
 
             <div data-aos="fade-up" data-aos-delay={500}>
               <label className="block text-sm mb-2">Message</label>

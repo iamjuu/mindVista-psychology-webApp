@@ -34,7 +34,7 @@ const Doctors = () => {
   };
 
   return (
-    <div className="py-[130px] flex flex-col lg:px-32 px-5">
+    <div className="pt-[130px] flex flex-col lg:px-32 px-5">
       <div className="flex flex-col items-center lg:flex-row justify-between mb-10 lg:mb-0">
 
         <div className="w-full ">
