@@ -48,15 +48,15 @@ const SettingsPage = () => {
   const { theme, setThemeMode, themeClasses } = useTheme();
   const [activeTab, setActiveTab] = useState("edit-profile");
   const [profileData, setProfileData] = useState({
-    username: "johndoe",
-    name: "John Doe",
-    bio: "Digital creator | Photography enthusiast",
-    email: "john.doe@example.com",
+    username: "muhammed ajmal cc",
+    name: "Software developer",
+    bio: "developing software",
+    email: "muhammedajmalcc6424094@gmail.com",
     phone: "+1 234 567 8900",
     gender: "male",
     avatar: null,
-    website: "johndoe.com",
-    location: "San Francisco, CA",
+    website: "https://muhammedajmal.netlify.app/",
+    location: "Kannur Kerala",
   });
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
   const [saveStatus, setSaveStatus] = useState(null);
@@ -314,7 +314,7 @@ const EditProfile = ({
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Full Name
+              Designation
             </label>
             <Input
               type="text"
@@ -409,7 +409,6 @@ const EditProfile = ({
               <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg">
                 <SelectItem value="male">Male</SelectItem>
                 <SelectItem value="female">Female</SelectItem>
-                <SelectItem value="other">Other</SelectItem>
               </SelectContent>
             </Select>
           </div>

@@ -35,6 +35,7 @@ const Index = () => {
         );
       }
       form.reset();
+      window.location.reload();
     } catch {
       if (typeof window !== "undefined") {
         window.dispatchEvent(
@@ -170,7 +171,7 @@ const Index = () => {
 
             <button
               type="submit"
-              className="w-full bg-green-500 text-white h-12 rounded-md"
+              className="w-full bg-[#E53935] text-white h-12 rounded-md"
               data-aos="fade-up"
               data-aos-delay={550}
             >

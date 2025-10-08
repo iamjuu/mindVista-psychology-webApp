@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../../../instance'
 import PropTypes from 'prop-types'
+import { PageHeader } from '../../../../components/core/cardHeader'
 
 const Index = () => {
   const [rows, setRows] = useState([])
@@ -53,7 +54,6 @@ const Index = () => {
       <div className="border p-3 rounded-md flex flex-col gap-2">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <input className="border p-2 rounded" disabled={disabled} value={form.name} onChange={e=>setForm({...form, name: e.target.value})} placeholder="Name" />
-          <input className="border p-2 rounded" disabled={disabled} value={form.title} onChange={e=>setForm({...form, title: e.target.value})} placeholder="Title" />
           <input className="border p-2 rounded" disabled={disabled} value={form.avatarUrl} onChange={e=>setForm({...form, avatarUrl: e.target.value})} placeholder="Avatar URL" />
           <select className="border p-2 rounded" disabled={disabled} value={form.rating} onChange={e=>setForm({...form, rating: Number(e.target.value)})}>
             {[1,2,3,4,5].map(n => <option key={n} value={n}>{n}</option>)}
@@ -61,7 +61,7 @@ const Index = () => {
           <textarea className="border p-2 rounded md:col-span-2" disabled={disabled} rows={3} value={form.description} onChange={e=>setForm({...form, description: e.target.value})} placeholder="Description" />
         </div>
         <div className="flex gap-2 items-center">
-          <button className="bg-[#ffb5ea] text-white px-4 py-2 rounded" disabled={disabled} onClick={()=>handleSave(r._id, form)}>Save</button>
+          <button className="bg-blue-500 text-white px-4 py-2 rounded" disabled={disabled} onClick={()=>handleSave(r._id, form)}>Save</button>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={r.isActive} disabled={disabled} onChange={e=>handleToggle(r._id, e.target.checked)} />
             <span>{r.isActive ? 'Active' : 'Inactive'}</span>
@@ -86,10 +86,11 @@ const Index = () => {
   return (
     <div className="p-4">
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-semibold">Reviews</h1>
+        <PageHeader
+        title='Reviews'/>
         <button className="border px-3 py-2 rounded" onClick={fetchData} disabled={loading}>{loading ? 'Refreshing...' : 'Refresh'}</button>
       </div>
-      <div className="flex flex-col gap-3">
+      <div className="grid grid-cols-5 gap-3">
         {rows.map(r => <Row key={r._id} r={r} />)}
         {rows.length === 0 && !loading && <p className="text-gray-500">No reviews yet.</p>}
       </div>

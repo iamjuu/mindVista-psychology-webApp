@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import { Search, Filter, ChevronLeft, ChevronRight, User, Mail, Phone, MapPin, Clock, Calendar, DollarSign, Users, Award } from 'lucide-react';
+import { Search, Filter, ChevronLeft, ChevronRight, User, Mail, Phone, MapPin, Clock, Calendar, DollarSign, Users, Award, RefreshCw } from 'lucide-react';
 import { Button } from '../../../../components/shadcn/button/button';
 import { Input } from '../../../../components/shadcn/input/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../../components/shadcn/select';
 import apiInstance from '../../../../instance';
 import { useTheme } from '../../../../contexts/ThemeContext';
-
+import {IconBtn} from '../../../../components/core/button';
 const DoctorList = () => {
   const { themeClasses } = useTheme();
   const [activeTab, setActiveTab] = useState('doctors');
@@ -455,7 +455,7 @@ const DoctorList = () => {
             </div>
           )}
           
-          <Button
+          <IconBtn
             onClick={() => {
               console.log('Refreshing data...');
               setCurrentPage(1);
@@ -507,12 +507,11 @@ const DoctorList = () => {
               };
               fetchData();
             }}
-            variant="outline"
-            size="sm"
-            className="px-4 py-3 border-blue-500 text-black hover:bg-blue-50"
-          >
-            Refresh Data
-          </Button>
+            className="px-3 py-2 bg-white text-black border border-blue-500 hover:bg-blue-50 rounded-md"
+            Icon={RefreshCw}
+            iconClassName="w-5 h-5"
+            label="Refresh"
+          />
           
        
         </div>

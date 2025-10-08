@@ -1,4 +1,3 @@
-
 import Navbar from "../../../components/home/navbar";
 import Hero from "../../../components/home/hero";
 import About from "../../../components/home/about";
@@ -8,6 +7,8 @@ import Carousel from "../../../components/home/caroseal";
 import Footer from "../../../components/home/footer";
 import QuickAnswer from "../../../components/home/quickanswer";
 import Contact from "../../../components/home/contect";
+import Counter from "../../../components/home/counter";
+import Docters from "../../../components/home/doctors";
 import { useEffect, useState } from "react";
 import api from "../../../instance";
 export default function Home() {
@@ -17,14 +18,14 @@ export default function Home() {
     let isMounted = true;
     const fetchReviews = async () => {
       try {
-        const { data } = await api.get('/reviews?limit=20');
+        const { data } = await api.get("/reviews?limit=20");
         if (!isMounted) return;
         const mapped = data.map((r) => ({
-          src: r.avatarUrl || '/x.png',
+          src: r.avatarUrl || "/x.png",
           name: r.name,
           title: r.title,
           description: r.description,
-          rating: '⭐'.repeat(Math.max(1, Math.min(5, Number(r.rating) || 0)))
+          rating: "⭐".repeat(Math.max(1, Math.min(5, Number(r.rating) || 0))),
         }));
         setItems(mapped);
       } catch {
@@ -32,14 +33,13 @@ export default function Home() {
       }
     };
     fetchReviews();
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
-    <div
-    
-      className="min-h-screen  px-2 "
-    >
+    <div className="min-h-screen  px-2 ">
       <div className="flex py-4  gap-3 flex-col ">
         <div>
           <Navbar />
@@ -49,12 +49,16 @@ export default function Home() {
         </div>
 
         <div className="flex flex-col" id="solution">
+          <Support />
           <About />
-                    <Support />
-
         </div>
-        <div id="project">
-          {/* <Support /> */}
+        <div>
+          <Docters />
+        </div>
+
+        <div id="project">{/* <Support /> */}</div>
+        <div>
+          <Counter />
         </div>
         <div id="blog">
           <Carousel items={items} />
