@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 
 const targetCounts = {
-  happyClients: 512,
-  totalProject: 85,
-  awardsWon: 12,
+  happyClients: 20,
+  totalProject: 3,
+  awardsWon: 20,
   teamMembers: 7
 };
 
@@ -112,7 +112,7 @@ const Counter = () => {
               </div>
             </div>
             <p className="text-gray-600 text-sm md:text-base font-medium">
-              Total Project
+              Total Doctors
             </p>
           </div>
 
@@ -127,7 +127,7 @@ const Counter = () => {
               </div>
             </div>
             <p className="text-gray-600 text-sm md:text-base font-medium">
-              Awards Won
+             Lives Sessions
             </p>
           </div>
 
@@ -142,8 +142,7 @@ const Counter = () => {
               </div>
             </div>
             <p className="text-gray-600 text-sm md:text-base font-medium">
-              Team Members
-            </p>
+Pending Lives            </p>
           </div>
         </div>
       </div>

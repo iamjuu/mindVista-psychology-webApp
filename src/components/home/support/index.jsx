@@ -2,7 +2,7 @@ import { Pic1, Pic2, Pic3 } from "../../../assets";
 
 const Index = () => {
   return (
-    <div className=" py-16 lg:py-24 overflow-hidden">
+    <div className="  pb-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Main Title - Centered */}
         <div className="text-center mb-12 lg:mb-16" data-aos="fade-down"></div>

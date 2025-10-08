@@ -1,4 +1,3 @@
-
 import { useState, useRef } from "react";
 import { BrainImage } from "../../../assets";
 import AnimationText from "../../../animation/text";
@@ -7,34 +6,38 @@ import { Link } from "react-router-dom";
 
 const Index = () => {
   const [imageLoaded, setImageLoaded] = useState(false);
-  const [offsetX, setOffsetX] = useState(0);
-  const [offsetY, setOffsetY] = useState(0);
+  const [offset, setOffset] = useState({ x: 0, y: 0 });
   const containerRef = useRef(null);
 
-  const handleMouseMove = (event) => {
+  const handleMouseMove = (e) => {
     const container = containerRef.current;
     if (!container) return;
+
     const rect = container.getBoundingClientRect();
-    const relativeX = event.clientX - rect.left;
-    const relativeY = event.clientY - rect.top;
+    const relativeX = e.clientX - rect.left;
+    const relativeY = e.clientY - rect.top;
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
-    const rawDeltaX = (centerX - relativeX) / 10; // move opposite to cursor X
-    const rawDeltaY = (centerY - relativeY) / 10; // move opposite to cursor Y
-    const clampedX = Math.max(-30, Math.min(30, rawDeltaX));
-    const clampedY = Math.max(-30, Math.min(30, rawDeltaY));
-    setOffsetX(clampedX);
-    setOffsetY(clampedY);
+
+    // Move opposite to cursor direction
+    const rawX = (centerX - relativeX) / 10;
+    const rawY = (centerY - relativeY) / 10;
+
+    // Clamp movement to avoid extreme shifts
+    const x = Math.max(-30, Math.min(30, rawX));
+    const y = Math.max(-30, Math.min(30, rawY));
+
+    setOffset({ x, y });
   };
 
   const handleMouseLeave = () => {
-    setOffsetX(0);
-    setOffsetY(0);
+    setOffset({ x: 0, y: 0 });
   };
+
   return (
-    <div className="flex pb-10 w-full">
-      <div className="max-w-7xl flex flex-col md:flex-row mx-auto">
-        {/* Left Side - Text */}
+    <div className="flex justify-center w-full">
+      <div className="max-w-7xl flex flex-col md:flex-row">
+        {/* Left Side - Text Content */}
         <div className="w-full md:w-1/2 flex flex-col items-center justify-center">
           <div className="text-left p-6 md:p-8">
             <AnimationText
@@ -53,20 +56,20 @@ const Index = () => {
             />
           </div>
 
-          <div className="w-full gap-5 flex">
+          <div className="w-full flex gap-5">
             <Link to="/register">
               <Button className="bg-[#ffb5ea] text-white">Register</Button>
             </Link>
-            <Button className=" border border-[#ffb5ea]">Contect us</Button>
+            <Button className="border border-[#ffb5ea]">Contect us</Button>
           </div>
         </div>
 
-        {/* Right Side - Image */}
+        {/* Right Side - Floating Image */}
         <div
           ref={containerRef}
           onMouseMove={handleMouseMove}
           onMouseLeave={handleMouseLeave}
-          className="w-full md:w-1/2 flex items-center justify-center mt-6 md:mt-0 relative"
+          className="w-full md:w-1/2 flex items-center justify-center relative"
         >
           {!imageLoaded && (
             <div className="absolute inset-0 m-0 rounded-lg bg-gray-200 animate-pulse" />
@@ -75,10 +78,14 @@ const Index = () => {
             src={BrainImage}
             alt="Background"
             onLoad={() => setImageLoaded(true)}
-            className={`object-cover w-full h-auto max-h-[400px] md:max-h-full transition-opacity duration-300 ${
+            className={`object-contain w-full h-auto max-h-[500px]  transition-opacity duration-300 ${
               imageLoaded ? "opacity-100" : "opacity-0"
             }`}
-            style={{ transform: `translate3d(${offsetX}px, ${offsetY}px, 0)`, transition: "transform 60ms linear", willChange: "transform" }}
+            style={{
+              transform: `translate3d(${offset.x}px, ${offset.y}px, 0)`,
+              transition: "transform 60ms linear",
+              willChange: "transform",
+            }}
           />
         </div>
       </div>
