@@ -8,40 +8,40 @@ import "aos/dist/aos.css";
 
 const faqs = [
   {
-    q: "Can you improve weak WiFi signals in multi-floor buildings?",
-    a: "Yes. We design and deploy heat‑mapped WiFi with proper access point placement, structured cabling, and signal optimization for seamless coverage across floors.",
+    q: "What types of therapy do you offer?",
+    a: "We provide individual therapy, couples counseling, family therapy, and group sessions tailored to each client’s needs and goals.",
   },
   {
-    q: "Do you provide CCTV installation and maintenance?",
-    a: "We handle end‑to‑end CCTV solutions including site survey, installation, remote monitoring setup, and ongoing maintenance contracts.",
+    q: "Can I schedule an online session?",
+    a: "Yes, we offer secure online therapy sessions via video conferencing, so you can receive support from the comfort of your home.",
   },
   {
-    q: "Can Tabdeel handle both residential and commercial projects?",
-    a: "Absolutely. Our team executes residential villas, retail, hospitality, warehouses, and mixed‑use projects across the UAE.",
+    q: "How can I know which psychologist is right for me?",
+    a: "We offer an initial consultation to understand your needs and match you with a licensed psychologist whose expertise aligns with your goals.",
   },
   {
-    q: "How quickly can your engineers respond to service requests?",
-    a: "Standard response within the same business day, with 24/7 priority support available under AMC.",
+    q: "Do you provide support for anxiety and stress management?",
+    a: "Absolutely. Our psychologists use evidence-based techniques such as CBT, mindfulness, and relaxation strategies to help manage stress and anxiety.",
   },
   {
-    q: "Do you offer UAE‑wide coverage (Dubai, Abu Dhabi, Sharjah, etc.)?",
-    a: "Yes, we cover all emirates and mobilize teams based on project scope and SLAs.",
+    q: "Are your services confidential?",
+    a: "Yes, all sessions and client information are strictly confidential and comply with professional ethical standards.",
   },
   {
-    q: "What certifications do your engineers and services comply with?",
-    a: "Projects adhere to local authority guidelines; engineers hold vendor and safety certifications relevant to scope.",
+    q: "Can you help with relationship or family issues?",
+    a: "Yes, we provide couples and family counseling to improve communication, resolve conflicts, and strengthen relationships.",
   },
   {
-    q: "Do you provide AMC (Annual Maintenance Contracts) for IT and security systems?",
-    a: "Yes. Flexible AMC packages include preventive visits, remote monitoring, and on‑call support.",
+    q: "Do you offer mental health assessments?",
+    a: "We conduct comprehensive psychological assessments to better understand cognitive, emotional, and behavioral patterns and guide therapy.",
   },
   {
-    q: "How does Tabdeel help businesses reduce costs?",
-    a: "By optimizing infrastructure, preventing downtime, and right‑sizing solutions for current and future needs.",
+    q: "How quickly can I start therapy sessions?",
+    a: "We strive to provide appointments within a few days of your inquiry, depending on availability and urgency.",
   },
   {
-    q: "Can your services scale as my business grows?",
-    a: "Our designs are modular and scalable so you can expand capacity without rework.",
+    q: "Is there support for workplace stress or burnout?",
+    a: "Yes, we offer programs for stress management, resilience building, and emotional wellness in professional settings.",
   },
 ];
 
@@ -64,11 +64,10 @@ export default function QuickAnswer() {
           <div data-aos="fade-up" data-aos-delay={0}>
             <p className="text-sm text-gray-600 mb-2">Frequently Asked Questions</p>
             <h2 className="text-[28px] sm:text-[34px] leading-tight font-semibold text-black mb-4">
-              Quick Answers. Clear Solutions.
+              Quick Answers. Clear Guidance.
             </h2>
             <p className="text-gray-700 text-sm sm:text-base leading-relaxed max-w-[48ch]">
-              Looking for electrical, security, or automation solutions? Tell us about your
-              project, and our team will respond quickly with the next steps.
+              Looking for therapy, counseling, or mental health support? Share your concerns, and our team will respond promptly with guidance and next steps.
             </p>
 
             <div className="mt-10">
@@ -126,5 +125,3 @@ export default function QuickAnswer() {
     </section>
   );
 }
-
-

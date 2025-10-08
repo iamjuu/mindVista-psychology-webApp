@@ -5,7 +5,8 @@ import "aos/dist/aos.css";
 // Removed react-router Link for in-page hash navigation
 import Button from "../button";
 import { Menu, X, Phone } from "lucide-react"; // Import Lucide icons
-// import { Logo } from "../../public/assets";
+import { MindvistaLogo } from "../../../assets";
+import { Link } from "react-router-dom";
 
 const ButtonBorderColor="#ffb5ea"
 
@@ -33,17 +34,17 @@ const Header = () => {
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div className="flex">
-            {/* <Link href="/" className="flex items-center">
+            <Link href="/" className="flex items-center">
               <img
                 data-aos="fade-up"
                 data-aos-delay={100}
-                src={}
+                src={MindvistaLogo}
                 alt="logo"
-                className="w-36 h-36"
+                className="w-20 "
                 width={198}
                 height={72}
               />
-            </Link> */}
+            </Link>
           </div>
 
           {/* Desktop Navigation Menu */}

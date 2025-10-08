@@ -22,13 +22,14 @@ import MainBackgroundImage from "./home/mindvsitabackgrond.jpg"
 import BrainImage from "./home/3d-brain-removebg-preview.png"
 import PLaceHolderMen from "./home/place holder.png"
 import PlaceHolderWomen from "./home/placeholder women.jpg"
-
+import MindvistaLogo from "./home/mindvistalogo.png"
 // teams 
 
 import Ajmal from "./home/croppedimge.jpg"
 
 export {
     Ajmal,
+    MindvistaLogo,
     PlaceHolderWomen,
     PLaceHolderMen,
     BrainImage,
