@@ -5,26 +5,26 @@ import { Zap, ShieldCheck, Clock3, MapPin, Server } from 'lucide-react'
 const features = [
   {
     icon: Zap,
-    title: 'Software Services',
-    description: 'Software services encompass a wide range of'
+    title: 'Therapy & Counseling',
+    description: 'Personalized therapy sessions designed to support mental well-being, emotional healing, and personal growth.'
   },
   {
     icon: ShieldCheck,
-    title: 'IT Consultancy',
-    description: 'We provide new and emerging technologies'
+    title: 'Mental Health Assessments',
+    description: 'Comprehensive psychological evaluations to understand emotional, cognitive, and behavioral patterns.'
   },
   {
     icon: Clock3,
-    title: 'Web development',
-    description: 'Web development is  the work invloved in '
+    title: 'Stress & Anxiety Management',
+    description: 'Effective strategies and evidence-based techniques to manage stress, anxiety, and everyday mental health challenges.'
   },
   {
     icon: MapPin,
-    title: 'Database Security',
-    description: 'Database security is the processes, tools'
+    title: 'Workshops & Wellness Programs',
+    description: 'Group workshops, wellness events, and community programs to promote awareness and resilience.'
   },
-
 ]
+
 
 const index = () => {
   return (
@@ -68,9 +68,10 @@ const index = () => {
     {/* Bottom paragraph */}
         <div className="w-full mt-4 md:mt-8" data-aos="fade-up" data-aos-delay="150">
             <div className=' px-2 md:px-20 '>
-          <p className="w-full py-10 rounded-xl border border-[#ffb5ea] bg-white/30 p-6 text-center text-[30px] leading-relaxed text-gray-700 shadow-sm">
-          We Provide Exclusive Service For Your Business
-      </p>
+            <p className="w-full py-10 rounded-xl border border-[#ffb5ea] bg-white/30 p-6 text-center text-[28px] leading-relaxed text-gray-700 shadow-sm">
+  We Provide Compassionate Psychological Care for a Healthier Mind
+</p>
+
       </div>
     </div>
   </div>
