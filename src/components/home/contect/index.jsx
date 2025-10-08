@@ -56,7 +56,7 @@ const Index = () => {
         {/* Left content */}
         <div data-aos="fade-up" data-aos-delay={0}>
           <div className="mb-6">
-            <h2 className="text-xl font-[400] text-[#ffb5ea]">
+            <h2 className="text-xl font-[400] text-black">
               Share Your Details
             </h2>
           </div>
@@ -110,7 +110,7 @@ const Index = () => {
             data-aos="fade-up"
             data-aos-delay={250}
           >
-            <button className="inline-flex items-center gap-2 bg-[#ffb5ea] text-white px-5 py-3 rounded-full shadow-sm">
+            <button className="inline-flex items-center gap-2 bg-[#E53935] text-white px-5 py-3 rounded-full shadow-sm">
               <span className="h-2.5 w-2.5 rounded-full bg-white" />
               Get in Touch
             </button>
@@ -127,7 +127,8 @@ const Index = () => {
             </p>
           </div>
           <form className="space-y-5" onSubmit={handleSubmit}>
-            <div data-aos="fade-up" data-aos-delay={350}>
+            <div className="flex gap-4 justify-between">
+            <div className="w-full" data-aos="fade-up" data-aos-delay={350}>
               <label className="block text-sm mb-2">Name</label>
               <input
                 type="text"
@@ -137,19 +138,7 @@ const Index = () => {
                 required
               />
             </div>
-
-            <div data-aos="fade-up" data-aos-delay={400}>
-              <label className="block text-sm mb-2">Title</label>
-              <input
-                type="text"
-                name="title"
-                placeholder="Enter the review title"
-                className="w-full border border-gray-200 rounded-md h-12 px-4 focus:outline-none focus:ring-2 focus:ring-[#FFCB05]"
-                required
-              />
-            </div>
-
-            <div data-aos="fade-up" data-aos-delay={450}>
+            <div className="w-full" data-aos="fade-up" data-aos-delay={450}>
               <label className="block text-sm mb-2">Rating</label>
               <select
                 name="rating"
@@ -164,6 +153,9 @@ const Index = () => {
                 <option value="5">5</option>
               </select>
             </div>
+         
+            </div>
+           
 
             <div data-aos="fade-up" data-aos-delay={500}>
               <label className="block text-sm mb-2">Message</label>
@@ -178,7 +170,7 @@ const Index = () => {
 
             <button
               type="submit"
-              className="w-full bg-[#ffb5ea] text-white h-12 rounded-md"
+              className="w-full bg-green-500 text-white h-12 rounded-md"
               data-aos="fade-up"
               data-aos-delay={550}
             >

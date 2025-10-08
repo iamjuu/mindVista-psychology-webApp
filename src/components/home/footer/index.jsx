@@ -356,7 +356,7 @@ const Footer = () => {
 
       {/* Toast Notification */}
       {showToast && (
-        <div className="fixed bottom-6 right-6 bg-[#ffb5ea] text-black px-4 py-3 rounded-md shadow-lg flex items-center space-x-2 animate-fadeIn">
+        <div className="fixed bottom-6 right-6 bg-green-500 text-black px-4 py-3 rounded-md shadow-lg flex items-center space-x-2 animate-fadeIn">
           <svg
             className="w-5 h-5 text-black"
             fill="none"
