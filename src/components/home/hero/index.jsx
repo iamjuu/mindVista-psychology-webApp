@@ -41,7 +41,7 @@ const Index = () => {
         <div className="w-full md:w-1/2 flex flex-col items-center justify-center">
   <div className="text-left p-6 md:p-8">
     <AnimationText
-      text="Our Services"
+      text="Mind Vista"
       delay={150}
       animateBy="words"
       direction="top"
