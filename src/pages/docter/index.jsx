@@ -38,6 +38,15 @@ const DoctorDashboard = () => {
   const [selectedUser, setSelectedUser] = useState(null); // State for selected user data
   const [isUserModalOpen, setIsUserModalOpen] = useState(false); // State for modal visibility
 
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log('selectedUser state changed:', selectedUser);
+  }, [selectedUser]);
+
+  useEffect(() => {
+    console.log('isUserModalOpen state changed:', isUserModalOpen);
+  }, [isUserModalOpen]);
+
   // Get email from URL parameters
   const email = searchParams.get('email');
   console.log(email,'mail ee');
@@ -183,6 +192,7 @@ useEffect(()=>{
             id: request._id,
             _id: request._id,
             name: request.name,
+            email: request.email, // Add missing email field
             phone: request.phone,
             number: request.phone, // Alternative field name
             age: request.age,
@@ -386,6 +396,7 @@ useEffect(()=>{
   
     console.log('Row clicked! User data:', user); // Debug log
     console.log('Setting selectedUser to:', user); // Debug log
+    console.log('Current selectedUser before update:', selectedUser); // Debug log
     setSelectedUser(user);
     setIsUserModalOpen(true);
     console.log('Modal should now be open. selectedUser:', user, 'isUserModalOpen:', true); // Debug log

@@ -10,6 +10,8 @@ const PatientModal = ({
   doctorData, 
   handleAppointmentAction 
 }) => {
+  console.log(selectedUser,'data on top')
+
   const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
   const [messageData, setMessageData] = useState({ date: '', time: '', text: '' });
   const [activeTab, setActiveTab] = useState('details'); // 'details' | 'notifications'
@@ -85,9 +87,12 @@ const PatientModal = ({
       isMounted = false;
     };
   }, [activeTab, selectedUser]);
+  console.log('selectedUser data:', selectedUser);
+  console.log('selectedUser email field:', selectedUser?.email);
+  console.log('selectedUser keys:', selectedUser ? Object.keys(selectedUser) : 'no selectedUser');
 
   if (!isUserModalOpen || !selectedUser) return null;
-
+console.log(selectedUser.name,'name')
   return (
     <>
       {/* Patient Modal */}
@@ -165,7 +170,7 @@ const PatientModal = ({
                       </div>
                       <div>
                         <p className="text-sm text-gray-500">Email Address</p>
-                        <p className="font-medium text-gray-900">{selectedUser.email || 'N/A'}</p>
+                        <p className="font-medium text-wrap text-gray-900">{selectedUser.email || 'N/A'}</p>
                       </div>
                     </div>
                     

@@ -200,6 +200,7 @@ const PatientsTab = ({
             const testUser = {
               id: "test123",
               name: "Test User",
+              email: "test@example.com",
               phone: "+1234567890",
               age: 25,
               location: "Test City",
@@ -263,7 +264,11 @@ const PatientsTab = ({
                 <tr
                   key={request.id || request._id || index}
                   className="border-b border-gray-100 hover:bg-blue-50 transition-colors group cursor-pointer hover:shadow-md"
-                  onClick={() => handleUserRowClick(request)}
+                  onClick={() => {
+                    console.log('Table row clicked, request data:', request);
+                    console.log('Request email field:', request.email);
+                    handleUserRowClick(request);
+                  }}
                   title="Click to view patient details"
                 >
                   <td className="py-4 px-6">
