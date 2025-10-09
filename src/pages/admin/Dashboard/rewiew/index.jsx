@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../../../instance'
 import PropTypes from 'prop-types'
 import { PageHeader } from '../../../../components/core/cardHeader'
-
+import {IconBtn} from "../../../../components/core/button"
 const Index = () => {
   const [rows, setRows] = useState([])
   const [loading, setLoading] = useState(false)
@@ -61,7 +61,17 @@ const Index = () => {
           <textarea className="border p-2 rounded md:col-span-2" disabled={disabled} rows={3} value={form.description} onChange={e=>setForm({...form, description: e.target.value})} placeholder="Description" />
         </div>
         <div className="flex gap-2 items-center">
-          <button className="bg-blue-500 text-white px-4 py-2 rounded" disabled={disabled} onClick={()=>handleSave(r._id, form)}>Save</button>
+          
+          <IconBtn
+            icon="save"
+            color="primary"
+            disabled={disabled}
+            onClick={() => handleSave(r._id, form)}
+            aria-label="Save review"
+            className='bg-white text-black border hover:bg-gray-100'
+          >
+            Save
+          </IconBtn>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={r.isActive} disabled={disabled} onChange={e=>handleToggle(r._id, e.target.checked)} />
             <span>{r.isActive ? 'Active' : 'Inactive'}</span>
@@ -88,7 +98,7 @@ const Index = () => {
       <div className="flex items-center justify-between mb-4">
         <PageHeader
         title='Reviews'/>
-        <button className="border px-3 py-2 rounded" onClick={fetchData} disabled={loading}>{loading ? 'Refreshing...' : 'Refresh'}</button>
+        {/* <button className="border px-3 py-2 rounded" onClick={fetchData} disabled={loading}>{loading ? 'Refreshing...' : 'Refresh'}</button> */}
       </div>
       <div className="grid grid-cols-5 gap-3">
         {rows.map(r => <Row key={r._id} r={r} />)}

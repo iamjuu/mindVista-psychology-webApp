@@ -168,8 +168,8 @@ const SettingsPage = () => {
                     variant={isActive ? "default" : "secondary"}
                     className={`w-full justify-start h-auto p-3 ${
                       isActive
-                        ? `bg-blue-600 text-white shadow-sm hover:bg-blue-500  `
-                        : "hover:bg-blue-300"
+                        ? `bg-gray-400 text-white shadow-sm hover:bg-gray-300  `
+                        : "hover:bg-gray-200"
                     }`}
                   >
                     <div
@@ -543,7 +543,7 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
         {/* Account Actions */}
         <div className="border-t pt-6 space-y-4">
           <Button
-            variant="ghost"
+            variant="secondary"
             className="w-full flex items-center justify-between p-4 bg-yellow-50 rounded-xl hover:bg-yellow-100 transition-colors group h-auto"
           >
             <div className="flex items-center space-x-3">
@@ -559,7 +559,7 @@ const AccountSettings = ({ profileData, handleInputChange }) => {
           </Button>
 
           <Button
-            variant="ghost"
+            variant="secondary"
             className="w-full flex items-center justify-between p-4 bg-red-50 rounded-xl hover:bg-red-100 transition-colors group h-auto"
           >
             <div className="flex items-center space-x-3">
@@ -611,7 +611,7 @@ const SecuritySettings = ({ twoFactorEnabled, setTwoFactorEnabled }) => {
               description="Last changed 3 months ago"
             />
             <Button
-              variant="outline"
+              variant="link "
               size="sm"
               className="text-indigo-600 border-indigo-200 hover:bg-indigo-50"
             >
@@ -921,18 +921,9 @@ const PrivacySettings = () => {
         title="Privacy Settings"
         description="Control who can see your content and interact with you"
       />
-      {/* <div className="mb-8">
-        <h2 className="text-[16px] font-bold text-gray-900 ">
-          Privacy Settings
-        </h2>
-        <p className="text-gray-600 text-[14px] font-[400]">
-          Control who can see your content and interact with you
-        </p>
-      </div> */}
-
       <div className="space-y-6">
         {/* Account Privacy */}
-        <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6">
+        <div className="bg-gray-50 rounded-xl p-6">
           <h3 className="font-semibold text-lg text-gray-900 mb-4 flex items-center">
             <Lock size={20} className="mr-2 text-purple-600" />
             Account Privacy
@@ -1046,13 +1037,13 @@ const PrivacySettings = () => {
         {/* Blocked Accounts */}
         <div className="bg-gray-50 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-lg text-gray-900">
+            <h3 className="font-semibold text-md text-gray-900">
               Blocked Accounts
             </h3>
             <span className="text-sm text-gray-500">3 accounts</span>
           </div>
           <Button
-            variant="ghost"
+            variant="secondary"
             className="w-full flex items-center justify-between p-4 bg-white rounded-lg hover:bg-gray-50 transition-colors group h-auto"
           >
             <span className="font-medium text-gray-700">
@@ -1346,15 +1337,19 @@ const HelpSupport = () => {
           return (
             <Button
               key={topic.label}
-              variant="ghost"
-              className="flex items-center space-x-4 p-6 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors text-left group h-auto"
+              variant="secondary"
+              className="flex items-start space-x-4 px-2 py-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors text-left group h-auto"
             >
               <div className="p-3 bg-white rounded-lg group-hover:shadow-md transition-shadow">
                 <Icon size={24} className="text-gray-700" />
               </div>
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900">{topic.label}</h3>
-                <p className="text-sm text-gray-500">{topic.description}</p>
+              <div className="flex items-center  w-full  justify-between">
+                <PageHeader
+                
+                title={topic.label}
+                description={topic.description}
+                />
+
               </div>
               <ChevronRight
                 size={18}
@@ -1366,14 +1361,14 @@ const HelpSupport = () => {
       </div>
 
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-6">
-        <h3 className="font-semibold text-lg text-gray-900 mb-2">
-          Need more help?
-        </h3>
-        <p className="text-gray-600 mb-4">
-          Our support team is here to assist you 24/7
-        </p>
+        <PageHeader
+        title='Need more help?'
+        description='Our support team is here to assist you 24/7'
+        />
+
+    
         <Button className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium">
-          Start Live Chat
+        connect
         </Button>
       </div>
     </div>
