@@ -21,10 +21,13 @@ import Appoiment from "../appoinment";
 import TodayAppointments from "../TodayAppointments";
 import Finance from "../finance";
 import Settings from "../settings";
+
+import ReivewPage from "../rewiew"
 import { Input } from "../../../../components/shadcn/input/input";
 import { BadgeImage } from "../../../../assets";
-import { Search, Bell, Calendar, Plus, Power, SearchCheck } from "lucide-react";
+import { Search, Bell, Calendar, Plus, Power, SearchCheck, LogOut } from "lucide-react";
 import { useTheme } from "../../../../contexts/ThemeContext";
+import { IconBtn } from "../../../../components/core/button";
 
 // DoctorCard PropTypes
 const DoctorCardPropTypes = {
@@ -1731,6 +1734,8 @@ const Dashboard = () => {
         return <TodayAppointments />;
       case "finance":
         return <Finance />;
+      case "rewiew":
+        return <ReivewPage />;
       case "settings":
         return <Settings />;
       default:
@@ -1778,8 +1783,10 @@ const Dashboard = () => {
                   "appointments",
                   "today-appointments",
                   "finance",
+                  "rewiew",
                 ].includes(activePage) && ""}
                 {activePage === "settings" && "Settings"}
+                {activePage === "rewiew" && "Rewiew"}
               </h1>
               <p className={`${themeClasses.textSecondary} text-[16px] mt-1`}>
                 Welcome back, Admin
@@ -1847,10 +1854,11 @@ const Dashboard = () => {
               </button>
 
               {/* Create Request Button */}
-              <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
+              {/* <button className="flex items-center gap-2 px-4 py-2 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">
                 <Power className="w-4 h-4" />
                 Logout
-              </button>
+              </button> */}
+              <IconBtn  Icon={<LogOut/>}/>
             </div>
           </div>
 

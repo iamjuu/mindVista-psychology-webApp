@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { Users, LogOut, Menu, X, Bell, Settings, Star, Clock, Download, TrendingUp, Calendar } from 'lucide-react';
+import { LogOut, Menu, X, Bell, Download, TrendingUp, Clock } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import apiInstance from '../../instance';
@@ -13,7 +13,8 @@ import {
   MyPatients, 
   PatientModal,
   TodaySessions,
-  UpcomingAppointments
+  UpcomingAppointments,
+  Sidebar
 } from './components';
 
 const DoctorDashboard = () => {
@@ -36,6 +37,15 @@ const DoctorDashboard = () => {
   const [appointmentsError, setAppointmentsError] = useState(null);
   const [selectedUser, setSelectedUser] = useState(null); // State for selected user data
   const [isUserModalOpen, setIsUserModalOpen] = useState(false); // State for modal visibility
+
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log('selectedUser state changed:', selectedUser);
+  }, [selectedUser]);
+
+  useEffect(() => {
+    console.log('isUserModalOpen state changed:', isUserModalOpen);
+  }, [isUserModalOpen]);
 
   // Get email from URL parameters
   const email = searchParams.get('email');
@@ -125,37 +135,8 @@ useEffect(()=>{
     ]
   };
 
-  // Mock patients data
-  const defaultPatientsList = [
-    {
-      id: 1,
-      name: 'John Smith',
-      email: 'john.smith@email.com',
-      phone: '+1 (555) 987-6543',
-      age: 45,
-      location: 'New York, NY',
-      joinDate: '2023-01-15',
-      lastAppointment: '2024-08-10',
-      totalSessions: 12,
-      status: 'active',
-      nextAppointment: '2024-08-20',
-      totalPaid: 18000
-    },
-    {
-      id: 2,
-      name: 'Emma Davis',
-      email: 'emma.davis@email.com',
-      phone: '+1 (555) 456-7890',
-      age: 38,
-      location: 'Los Angeles, CA',
-      joinDate: '2023-03-22',
-      lastAppointment: '2024-08-12',
-      totalSessions: 8,
-      status: 'active',
-      nextAppointment: '2024-08-25',
-      totalPaid: 12000
-    }
-  ];
+
+
 
   // Function to fetch doctor appointments
   const fetchDoctorAppointments = async () => {
@@ -211,6 +192,7 @@ useEffect(()=>{
             id: request._id,
             _id: request._id,
             name: request.name,
+            email: request.email, // Add missing email field
             phone: request.phone,
             number: request.phone, // Alternative field name
             age: request.age,
@@ -414,6 +396,7 @@ useEffect(()=>{
   
     console.log('Row clicked! User data:', user); // Debug log
     console.log('Setting selectedUser to:', user); // Debug log
+    console.log('Current selectedUser before update:', selectedUser); // Debug log
     setSelectedUser(user);
     setIsUserModalOpen(true);
     console.log('Modal should now be open. selectedUser:', user, 'isUserModalOpen:', true); // Debug log
@@ -448,11 +431,10 @@ useEffect(()=>{
         }
         
         setIncomeData(defaultIncomeData);
-        setPatientsList(defaultPatientsList);
+        setPatientsList([]); // Initialize with empty array instead of fake data
         
         console.log('Doctor data loaded successfully:', doctorData);
         console.log('Income data loaded successfully:', defaultIncomeData);
-        console.log('Patients list loaded successfully:', defaultPatientsList.length, 'patients');
         
         setLoading(false);
       } catch (error) {
@@ -506,13 +488,13 @@ useEffect(()=>{
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
       )}
 
-      <div className="flex min-h-screen">
+      <div className="flex h-full">
         {/* Mobile Header */}
         <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm p-4 flex items-center justify-between z-30">
           <Button 
@@ -538,210 +520,21 @@ useEffect(()=>{
             </Button>
           </div>
         </div>
-        {/* Sidebar - Enhanced */}
-        <div className={`fixed lg:relative inset-y-0 left-0 z-40 w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
-          sidebarOpen ? 'translate-x-0' : '-translate-x-full'
-        }`}>
-          <div className="flex flex-col h-full">
-            {/* Sidebar Header */}
-            <div className="p-6 border-b border-gray-200 bg-[#1d4ed8] text-white">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center">
-                  <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mr-3">
-                    <Users size={24} />
-                  </div>
-                  <div>
-                    <h2 className="text-lg font-semibold">MediCare</h2>
-                    <p className="text-sm opacity-80">Doctor Portal</p>
-                  </div>
-                </div>
-                <Button 
-                  onClick={() => setSidebarOpen(false)}
-                  variant="ghost"
-                  size="icon"
-                  className="lg:hidden hover:bg-white hover:bg-opacity-10"
-                >
-                  <X size={20} />
-                </Button>
-              </div>
-            </div>
-
-            {/* Doctor Profile Section */}
-            <div className="p-6 border-b border-gray-200">
-              <div className="flex items-center mb-4">
-                <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                  {doctorData.name?.split(' ').map(n => n[0]).join('') || 'D'}
-                </div>
-                <div className="ml-4 flex-1">
-                  <h3 className="text-lg font-semibold text-gray-900 truncate">{doctorData.name || 'Doctor Name'}</h3>
-                  <p className="text-sm text-gray-600 truncate">{doctorData.specialization || 'Specialist'}</p>
-                  <div className="flex items-center mt-1">
-                    <Star className="text-yellow-400 fill-current w-4 h-4" />
-                    <span className="ml-1 text-sm font-medium text-gray-700">{doctorData.rating || 0}</span>
-                  </div>
-                </div>
-              </div>  
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="bg-blue-50 p-3 rounded-lg text-center">
-                  <div className="text-xl font-bold text-blue-600">{doctorData.patients || 0}</div>
-                  <div className="text-xs text-gray-600">Patients</div>
-                </div>
-                <div className="bg-green-50 p-3 rounded-lg text-center">
-                  <div className="text-xl font-bold text-green-600">{doctorData.experience || 0}y</div>
-                  <div className="text-xs text-gray-600">Experience</div>
-                </div>
-              </div>
-            </div>
-
-            {/* Navigation Menu */}
-            <nav className="flex">
-              <ul className="flex flex-col gap-2 w-full px-2 py-2">
-                <li>
-                  <Button 
-                    onClick={() => setSelectedTab('overview')}
-                    variant="secondary"
-                    className={`w-full justify-start ${
-                      selectedTab === 'overview' 
-                        ? 'bg-blue-50 text-blue-700 font-medium' 
-                        : 'hover:bg-gray-50 text-gray-700'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      selectedTab === 'overview' ? 'bg-blue-100' : 'bg-gray-100'
-                    }`}>
-                      <TrendingUp size={16} />
-                    </div>
-                    Overview
-                  </Button>
-                </li>
-                <li>
-                  <Button 
-                    onClick={() => setSelectedTab('patients')}
-                    variant="secondary"
-                    className={`w-full justify-start ${
-                      selectedTab === 'patients' 
-                        ? 'bg-blue-50 text-blue-700 font-medium' 
-                        : 'hover:bg-gray-50 text-gray-700'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      selectedTab === 'patients' ? 'bg-blue-100' : 'bg-gray-100'
-                    }`}>
-                      <Users size={16} />
-                    </div>
-                    Patients
-                  </Button>
-                </li>
-                <li>
-                  <Button 
-                    onClick={() => setSelectedTab('appointments')}
-                    variant="secondary"
-                    className={`w-full justify-start ${
-                      selectedTab === 'appointments' 
-                        ? 'bg-blue-50 text-blue-700 font-medium' 
-                        : 'hover:bg-gray-50 text-gray-700'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      selectedTab === 'appointments' ? 'bg-blue-100' : 'bg-gray-100'
-                    }`}>
-                      <Calendar size={16} />
-                    </div>
-                    Appointments
-                  </Button>
-                  </li>
-                  <li>
-                  <Button 
-                    onClick={() => handleNavigate('todaySessions')}
-                    variant="secondary"
-                    className={`w-full justify-start ${
-                      selectedTab === 'todaySessions' 
-                        ? 'bg-green-50 text-green-700 font-medium' 
-                        : 'hover:bg-green-50 text-green-700'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      selectedTab === 'todaySessions' ? 'bg-green-100' : 'bg-green-100'
-                    }`}>
-                      <Clock size={16} />
-                    </div>
-                    Today&apos;s Sessions
-                  </Button>
-                  </li>
-                  <li>
-                  <Button 
-                    onClick={() => handleNavigate('upcoming')}
-                    variant="secondary"
-                    className={`w-full justify-start ${
-                      selectedTab === 'upcoming' 
-                        ? 'bg-purple-50 text-purple-700 font-medium' 
-                        : 'hover:bg-purple-50 text-purple-700'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      selectedTab === 'upcoming' ? 'bg-purple-100' : 'bg-purple-100'
-                    }`}>
-                      <TrendingUp size={16} />
-                    </div>
-                    Upcoming
-                  </Button>
-                  </li>
-               
-                <li>
-                  <Button 
-                    onClick={() => setSelectedTab('settings')}
-                    variant="secondary"
-                    className={`w-full justify-start ${
-                      selectedTab === 'settings' 
-                        ? 'bg-blue-50 text-blue-700 font-medium' 
-                        : 'hover:bg-gray-50 text-gray-700'
-                    }`}
-                  >
-                    <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                      selectedTab === 'settings' ? 'bg-blue-100' : 'bg-gray-100'
-                    }`}>
-                      <Settings size={16} />
-                    </div>
-                    Settings
-                  </Button>
-                </li>
-              </ul>
-            </nav>
-
-            {/* Sidebar Footer */}
-            <div className="p-4 border-t border-gray-200">
-              <Button
-                onClick={fetchDoctorProfile}
-                className="w-full"
-                disabled={profileRefreshing}
-              >
-                {profileRefreshing ? (
-                  <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                ) : (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                  </svg>
-                )}
-                {profileRefreshing ? 'Refreshing...' : 'Refresh Profile'}
-              </Button>
-              
-              <Button
-                onClick={handleLogout}
-                variant="outline"
-                className="w-full mt-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
-              >
-                <LogOut size={16} />
-                Logout
-              </Button>
-            </div>
-          </div>
-        </div>
+        {/* Sidebar */}
+        <Sidebar
+          sidebarOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          doctorData={doctorData}
+          selectedTab={selectedTab}
+          setSelectedTab={setSelectedTab}
+          handleNavigate={handleNavigate}
+          profileRefreshing={profileRefreshing}
+          fetchDoctorProfile={fetchDoctorProfile}
+          handleLogout={handleLogout}
+        />
 
         {/* Main Content */}
-        <div className="flex-1 lg:ml-0 w-full">
+        <div className="flex-1 lg:ml-80 w-full overflow-y-auto">
           {/* Add top padding for mobile to account for fixed header */}
           <div className="pt-20 lg:pt-0 p-4 lg:p-8 max-w-7xl mx-auto">
             {/* Main Header - Desktop Only */}

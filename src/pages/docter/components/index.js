@@ -6,4 +6,5 @@ export { default as MyPatients } from './MyPatients';
 export { default as PatientModal } from './PatientModal';
 export { default as TodaySessions } from './TodaySessions';
 export { default as UpcomingAppointments } from './UpcomingAppointments';
+export { default as Sidebar } from './Sidebar';
 

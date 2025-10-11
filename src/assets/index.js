@@ -15,7 +15,25 @@ import Medition from './landing/Embrace Serenity_ Master Emotional Control with 
 import Scanner from "./scanner/WhatsApp Image 2025-06-24 at 19.08.11_f5a44c06.jpg"
 import BadgeImage from "./dashbaord/360_F_327858718_Pl52WnI5PVYHVvtoxF96Arb9ZYEoYrTo-removebg-preview.png"
 
+
+// home background 
+
+import MainBackgroundImage from "./home/mindvsitabackgrond.jpg"
+import BrainImage from "./home/3d-brain-removebg-preview.png"
+import PLaceHolderMen from "./home/place holder.png"
+import PlaceHolderWomen from "./home/placeholder women.jpg"
+import MindvistaLogo from "./home/mindvistalogo.png"
+// teams 
+
+import Ajmal from "./home/croppedimge.jpg"
+
 export {
+    Ajmal,
+    MindvistaLogo,
+    PlaceHolderWomen,
+    PLaceHolderMen,
+    BrainImage,
+    MainBackgroundImage,
     BadgeImage,
     Medition,
     depressed,

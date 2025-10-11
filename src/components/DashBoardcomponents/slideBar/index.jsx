@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { Home, Users, Activity, Calendar, DollarSign, HelpCircle, Settings, Video } from 'lucide-react';
+import { Home, Users, Activity, Calendar, DollarSign, HelpCircle, Settings, Video, MessageSquare } from 'lucide-react';
 import { useTheme } from '../../../contexts/ThemeContext';
 
 // Constants for icon sizes
@@ -15,6 +15,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
     { id: 'doctors', label: 'Doctors', icon: <Activity size={ICON_SIZE} /> },
     { id: 'appointments', label: 'Appointments', icon: <Calendar size={ICON_SIZE} /> },
     { id: 'today-appointments', label: 'Today\'s Sessions', icon: <Video size={ICON_SIZE} /> },
+    { id: 'rewiew', label: 'Rewiew', icon: <MessageSquare size={ICON_SIZE} /> },
     { id: 'finance', label: 'Finance', icon: <DollarSign size={ICON_SIZE} /> },
     { id: 'help', label: 'Help Center', icon: <HelpCircle size={ICON_SIZE} /> },
     { id: 'settings', label: 'Settings', icon: <Settings size={ICON_SIZE} /> }
@@ -27,7 +28,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
         <div className="mb-8">
           <h1 className={`text-xl text-center font-bold ${themeClasses.text}`}>MindVista </h1>
         </div>
-        <nav className="space-y-2 flex-1">
+        <nav className=" flex flex-col gap-1">
           {menuItems.map(item => (
             <button 
               key={item.id}
@@ -35,10 +36,10 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 console.log('Clicked menu item:', item.label);
                 setActivePage(item.id);
               }} 
-              className={`flex items-center text-[12px] space-x-3 w-full p-3 rounded-lg transition-all duration-200 ${
+              className={`flex items-center text-[14px] gap-4 w-full p-4 rounded-lg transition-all duration-200 ${
                 activePage === item.id 
-                  ? `${themeClasses.bgHover} ${themeClasses.bgSecondary} transform scale-[1.02]` 
-                  : `${themeClasses.bgHover} hover:shadow-md`
+                  ? `   bg-gray-400 text-white transform scale-[1.02]` 
+                  : `${themeClasses.bgHover} bg-gray-100`
               }`}
             >
               <span className={`transition-transform duration-200 ${activePage === item.id ? 'transform scale-110' : ''}`}>

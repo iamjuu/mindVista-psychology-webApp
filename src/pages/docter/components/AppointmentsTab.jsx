@@ -148,7 +148,25 @@ const AppointmentsTab = ({
                     </span>
                   </td>
                   <td className="py-4 px-6">
-                    {appointment.videoCallGenerated && appointment.videoCallLink ? (
+                    {appointment.sessionEnd ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center space-x-1">
+                          <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                          <span className="text-xs text-red-600 font-medium">Ended</span>
+                        </div>
+                        {appointment.videoCallLink ? (
+                          <Button
+                            size="sm"
+                            variant='outline'
+                            disabled
+                            className="opacity-50 cursor-not-allowed"
+                          >
+                            <Video size={12} />
+                            <span>Join Disabled</span>
+                          </Button>
+                        ) : null}
+                      </div>
+                    ) : appointment.videoCallGenerated && appointment.videoCallLink ? (
                       <div className="space-y-2">
                         <div className="flex items-center space-x-1">
                           <div className="w-2 h-2 bg-green-500 rounded-full"></div>
@@ -195,7 +213,9 @@ const AppointmentsTab = ({
                     )}
                   </td>
                   <td className="py-4 px-6">
-                    {appointment.status === 'pending' ? (
+                    {appointment.sessionEnd ? (
+                      <span className="flex items-center text-sm font-medium text-gray-500">Session Ended</span>
+                    ) : appointment.status === 'pending' ? (
                       <div className="flex items-center gap-2">
                         <Button 
                           onClick={() => handleAppointmentActionForAppointments(appointment._id, 'approve')}

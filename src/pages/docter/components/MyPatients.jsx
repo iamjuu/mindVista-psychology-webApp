@@ -11,8 +11,8 @@ const PatientCard = ({ patient }) => (
           {patient.name?.split(' ').map(n => n[0]).join('') || 'N/A'}
         </div>
         <div>
-          <h3 className="font-semibold text-gray-900">{patient.name}</h3>
-          <p className="text-sm text-gray-500">{patient.age} years old</p>
+          <h3 className="font-semibold text-gray-900">{patient.name || 'N/A'}</h3>
+          <p className="text-sm text-gray-500">{patient.age || 'N/A'} years old</p>
         </div>
       </div>
       <span className={`px-3 py-1 rounded-full text-xs font-medium ${
@@ -27,19 +27,19 @@ const PatientCard = ({ patient }) => (
     <div className="space-y-3">
       <div className="flex items-center text-sm text-gray-600">
         <Mail size={14} className="mr-2 text-blue-500" />
-        <span className="truncate">{patient.email}</span>
+        <span className="truncate">{patient.email || 'N/A'}</span>
       </div>
       <div className="flex items-center text-sm text-gray-600">
         <Phone size={14} className="mr-2 text-green-500" />
-        <span>{patient.phone}</span>
+        <span>{patient.phone || 'N/A'}</span>
       </div>
       <div className="flex items-center text-sm text-gray-600">
         <MapPin size={14} className="mr-2 text-red-500" />
-        <span className="truncate">{patient.location}</span>
+        <span className="truncate">{patient.location || 'N/A'}</span>
       </div>
       <div className="flex items-center text-sm text-gray-600">
         <Calendar size={14} className="mr-2 text-purple-500" />
-        <span>Joined: {new Date(patient.joinDate).toLocaleDateString()}</span>
+        <span>Joined: {patient.joinDate ? new Date(patient.joinDate).toLocaleDateString() : 'N/A'}</span>
       </div>
     </div>
     
@@ -47,11 +47,11 @@ const PatientCard = ({ patient }) => (
       <div className="flex justify-between text-sm">
         <div>
           <p className="text-gray-500">Total Sessions</p>
-          <p className="font-semibold text-gray-900">{patient.totalSessions}</p>
+          <p className="font-semibold text-gray-900">{patient.totalSessions || 0}</p>
         </div>
         <div>
           <p className="text-gray-500">Total Paid</p>
-          <p className="font-semibold text-gray-900">₹{patient.totalPaid.toLocaleString()}</p>
+          <p className="font-semibold text-gray-900">₹{(patient.totalPaid || 0).toLocaleString()}</p>
         </div>
         <div>
           <p className="text-gray-500">Next Appointment</p>
@@ -59,7 +59,8 @@ const PatientCard = ({ patient }) => (
             {patient.nextAppointment ? new Date(patient.nextAppointment).toLocaleDateString() : 'Not scheduled'}
           </p>
         </div>
-      </div>
+      </div> 
+
     </div>
   </div>
 );

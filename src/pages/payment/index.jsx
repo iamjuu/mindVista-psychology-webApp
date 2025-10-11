@@ -97,7 +97,9 @@ const PaymentPage = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
+    <div 
+    
+    className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
     <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
       {/* Title */}
       <h1 className="text-2xl font-extrabold mb-6 text-center text-gray-800">
