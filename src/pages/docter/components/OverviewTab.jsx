@@ -18,8 +18,6 @@ const IncomeCard = ({ title, amount, growth, icon, bgColor }) => (
   description={`₹${amount.toLocaleString()}`} 
 />
 
-        {/* <p className="text-sm font-medium opacity-90">{title}</p>
-        <p className="text-3xl font-bold">₹{amount.toLocaleString()}</p> */}
         <div className="flex items-center mt-2">
           <TrendingUp size={16} className="mr-1" />
           <span className="text-sm font-medium">+{growth}%</span>
@@ -215,38 +213,46 @@ const deleteNote = (noteId) => {
       </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
-          <IncomeCard
-            title="Daily Income"
-            amount={incomeData.daily}
-            growth={incomeData.dailyGrowth}
-            icon={<DollarSign size={24} />}
-            bgColor="bg-gradient-to-br from-blue-500 to-blue-600"
-            timeFrame="day"
-          />
-          <IncomeCard
-            title="Weekly Income"
-            amount={incomeData.weekly}
-            growth={incomeData.weeklyGrowth}
-            icon={<TrendingUp size={24} />}
-            bgColor="bg-gradient-to-br from-emerald-500 to-emerald-600"
-            timeFrame="week"
-          />
-          <IncomeCard
-            title="Monthly Income"
-            amount={incomeData.monthly}
-            growth={incomeData.monthlyGrowth}
-            icon={<Calendar size={24} />}
-            bgColor="bg-gradient-to-br from-purple-500 to-purple-600"
-            timeFrame="month"
-          />
-          <IncomeCard
-            title="Yearly Income"
-            amount={incomeData.yearly}
-            growth={incomeData.yearlyGrowth}
-            icon={<Award size={24} />}
-            bgColor="bg-gradient-to-br from-orange-500 to-orange-600"
-            timeFrame="year"
-          />
+          {incomeData && Object.keys(incomeData).length > 0 ? (
+            <>
+              <IncomeCard
+                title="Daily Income"
+                amount={incomeData.daily || 0}
+                growth={incomeData.dailyGrowth || 0}
+                icon={<DollarSign size={24} />}
+                bgColor="bg-gradient-to-br from-blue-500 to-blue-600"
+                timeFrame="day"
+              />
+              <IncomeCard
+                title="Weekly Income"
+                amount={incomeData.weekly || 0}
+                growth={incomeData.weeklyGrowth || 0}
+                icon={<TrendingUp size={24} />}
+                bgColor="bg-gradient-to-br from-emerald-500 to-emerald-600"
+                timeFrame="week"
+              />
+              <IncomeCard
+                title="Monthly Income"
+                amount={incomeData.monthly || 0}
+                growth={incomeData.monthlyGrowth || 0}
+                icon={<Calendar size={24} />}
+                bgColor="bg-gradient-to-br from-purple-500 to-purple-600"
+                timeFrame="month"
+              />
+              <IncomeCard
+                title="Yearly Income"
+                amount={incomeData.yearly || 0}
+                growth={incomeData.yearlyGrowth || 0}
+                icon={<Award size={24} />}
+                bgColor="bg-gradient-to-br from-orange-500 to-orange-600"
+                timeFrame="year"
+              />
+            </>
+          ) : (
+            <div className="col-span-4 text-center py-8">
+              <p className="text-gray-500">Loading income data...</p>
+            </div>
+          )}
         </div>
       </div>
 
@@ -269,7 +275,7 @@ const deleteNote = (noteId) => {
           </div>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={selectedTimeFrame === 'weekly' ? incomeData.weeklyChart : incomeData.monthlyChart}>
+              <LineChart data={selectedTimeFrame === 'weekly' ? (incomeData.weeklyChart || []) : (incomeData.monthlyChart || [])}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
                   dataKey="name" 

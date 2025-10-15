@@ -12,16 +12,11 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
     specialization: '',
     phone: '',
     experience: '',
-    qualification: '',
-    designation: '',
-    department: '',
     age: '',
     gender: '',
     address: '',
     bio: '',
-    consultationFee: '',
-    patients: '',  // Changed from '0' to empty string
-    rating: '',    // Changed from '0' to empty string
+
     available: true
   });
   const [loading, setLoading] = useState(false);
@@ -213,58 +208,20 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
             >
               <option value="">Select specialization</option>
               <option value="Psychology">Psychology</option>
-              <option value="Cardiology">Cardiology</option>
+           
               <option value="Addiction Therapy">Addiction Therapy</option>
               <option value="Child Psychology">Child Psychology</option>
               <option value="Marriage & Family Therapy">Marriage & Family Therapy</option>
-              <option value="Cognitive Behavioral Therapy">Cognitive Behavioral Therapy</option>
-              <option value="Clinical Psychology">Clinical Psychology</option>
-              <option value="Counseling Psychology">Counseling Psychology</option>
-              <option value="Educational Psychology">Educational Psychology</option>
+                <option value="Educational Psychology">Educational Psychology</option>
               <option value="Forensic Psychology">Forensic Psychology</option>
               <option value="Health Psychology">Health Psychology</option>
-              <option value="Industrial-Organizational Psychology">Industrial-Organizational Psychology</option>
-              <option value="Neuropsychology">Neuropsychology</option>
-              <option value="Social Psychology">Social Psychology</option>
               <option value="Sports Psychology">Sports Psychology</option>
             </select>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Qualification
-            </label>
-            <Input
-              name="qualification"
-              value={formData.qualification}
-              onChange={handleChange}
-              placeholder="e.g., MBBS, MD, PhD, PsyD"
-            />
-          </div>
+       
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Designation
-            </label>
-            <Input
-              name="designation"
-              value={formData.designation}
-              onChange={handleChange}
-              placeholder="e.g., Senior Psychologist, Consultant"
-            />
-          </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Department
-            </label>
-            <Input
-              name="department"
-              value={formData.department}
-              onChange={handleChange}
-              placeholder="e.g., Psychology, Psychiatry"
-            />
-          </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -294,7 +251,7 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
                 <option value="">Select gender</option>
                 <option value="Male">Male</option>
                 <option value="Female">Female</option>
-                <option value="Other">Other</option>
+
               </select>
             </div>
           </div>
@@ -327,19 +284,6 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Consultation Fee (₹)
-            </label>
-            <Input
-              type="number"
-              name="consultationFee"
-              value={formData.consultationFee}
-              onChange={handleChange}
-              placeholder="Enter consultation fee"
-              min="0"
-            />
-          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -366,36 +310,6 @@ const AddDoctorModal = ({ isOpen, onClose, onDoctorAdded }) => {
               placeholder="Enter years of experience"
               min="0"
               required
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Initial Patients Count (Optional)
-            </label>
-            <Input
-              type="number"
-              name="patients"
-              value={formData.patients}
-              onChange={handleChange}
-              placeholder="Leave empty for 0"
-              min="0"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Initial Rating (Optional)
-            </label>
-            <Input
-              type="number"
-              name="rating"
-              value={formData.rating}
-              onChange={handleChange}
-              placeholder="Leave empty for 0"
-              min="0"
-              max="5"
-              step="0.1"
             />
           </div>
 

@@ -138,18 +138,6 @@ const DoctorList = () => {
 
   return (
     <div className="space-y-6 bg-gray-50 min-h-screen p-4">
-      {/* Header */}
-      {/* <div className="bg-white p-4 sm:p-6 rounded-lg shadow-sm">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <Button 
-            onClick={() => setIsAddModalOpen(true)}
-            className="w-full border hover:bg-gray-200 hover:text-black sm:w-auto"
-          >
-            Add New Doctor
-          </Button>
-        </div>
-      </div> */}
-
       {/* Add Doctor Modal */}
       <AddDoctorModal
         isOpen={isAddModalOpen}

@@ -64,7 +64,10 @@ const TodayAppointments = () => {
     const handleVideoCall = (videoCallLink) => {
         if (videoCallLink) {
             console.log('Opening video call:', videoCallLink)
-            window.open(videoCallLink, '_blank')
+            const link = videoCallLink.includes('?') 
+                ? `${videoCallLink}&role=admin` 
+                : `${videoCallLink}?role=admin`;
+            window.open(link, '_blank')
         } else {
             alert('Video call link not available')
         }

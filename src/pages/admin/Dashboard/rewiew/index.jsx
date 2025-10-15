@@ -63,6 +63,7 @@ const Index = () => {
         <div className="flex gap-2 items-center">
           
           <IconBtn
+          label='Save'
             icon="save"
             color="primary"
             disabled={disabled}
@@ -70,7 +71,7 @@ const Index = () => {
             aria-label="Save review"
             className='bg-white text-black border hover:bg-gray-100'
           >
-            Save
+        
           </IconBtn>
           <label className="flex items-center gap-2">
             <input type="checkbox" checked={r.isActive} disabled={disabled} onChange={e=>handleToggle(r._id, e.target.checked)} />

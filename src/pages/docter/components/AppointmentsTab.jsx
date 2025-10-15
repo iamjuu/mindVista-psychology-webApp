@@ -1,4 +1,5 @@
-import React from 'react';
+import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { Eye, Phone, MapPin, Video, ExternalLink, Calendar } from 'lucide-react';
 import { Button } from '../../../components/shadcn/button/button';
 import { PageHeader } from '../../../components/core/cardHeader';
@@ -11,6 +12,37 @@ const AppointmentsTab = ({
   handleAppointmentActionForAppointments,
   handleGenerateVideoCall
 }) => {
+  const [approvingIds, setApprovingIds] = useState(new Set());
+  const handleApproveClick = async (appointmentId) => {
+    setApprovingIds(prev => {
+      const next = new Set(prev);
+      next.add(appointmentId);
+      return next;
+    });
+    try {
+      await handleAppointmentActionForAppointments(appointmentId, 'approve');
+    } finally {
+      setApprovingIds(prev => {
+        const next = new Set(prev);
+        next.delete(appointmentId);
+        return next;
+      });
+    }
+  };
+  // Deduplicate appointments by _id and filter by payment status
+  const visibleAppointments = Array.isArray(doctorAppointments)
+    ? doctorAppointments
+        .filter((a) => a?.paymentStatus === 'completed')
+        .reduce((unique, appointment) => {
+          // Check if appointment with same _id already exists
+          const exists = unique.find(item => item._id === appointment._id);
+          if (!exists) {
+            unique.push(appointment);
+          }
+          return unique;
+        }, [])
+    : [];
+    console.log('visibleAppointments (deduplicated):', visibleAppointments);
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
@@ -76,10 +108,10 @@ const AppointmentsTab = ({
             Retry
           </Button>
         </div>
-      ) : doctorAppointments.length > 0 ? (
+      ) : visibleAppointments.length > 0 ? (
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead>
+            <thead className='text-[12px]' >
               <tr className="border-b border-gray-200 bg-gray-50">
               <th className="text-left py-4 px-6 font-semibold text-gray-700 rounded-l-xl">PATIENT</th>
               <th className="text-left py-4 px-6 font-semibold text-gray-700">CONTACT</th>
@@ -91,7 +123,7 @@ const AppointmentsTab = ({
             </tr>
             </thead>
             <tbody>
-              {doctorAppointments.map((appointment) => (
+              {visibleAppointments.map((appointment) => (
                 <tr key={appointment._id} className="border-b border-gray-100 hover:bg-blue-50 transition-colors group">
                   <td className="py-4 px-6">
                     <div className="flex items-center">
@@ -184,7 +216,7 @@ const AppointmentsTab = ({
                           }}
                           size="sm"
                           variant='outline'
-                          className="bg-blue-600 hover:bg-blue-700 text-white border-blue-600"
+                          className="bg-blue-600 hover:bg-blue-700 text-black border-blue-600"
                         >
                           <Video size={12} />
                           <span>Join as Admin</span>
@@ -218,12 +250,24 @@ const AppointmentsTab = ({
                     ) : appointment.status === 'pending' ? (
                       <div className="flex items-center gap-2">
                         <Button 
-                          onClick={() => handleAppointmentActionForAppointments(appointment._id, 'approve')}
+                          onClick={() => handleApproveClick(appointment._id)}
                           size="sm"
                           variant='outline'
+                          disabled={approvingIds.has(appointment._id)}
                         >
-                          <span className="mr-1">✓</span>
-                          Approve
+                          {approvingIds.has(appointment._id) ? (
+                            <>
+                              <svg className="w-4 h-4 animate-spin mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                              </svg>
+                              Approving...
+                            </>
+                          ) : (
+                            <>
+                              <span className="mr-1">✓</span>
+                              Approve
+                            </>
+                          )}
                         </Button>
                         <Button 
                           onClick={() => handleAppointmentActionForAppointments(appointment._id, 'decline')}
@@ -267,4 +311,17 @@ const AppointmentsTab = ({
 };
 
 export default AppointmentsTab;
+
+AppointmentsTab.propTypes = {
+  doctorAppointments: PropTypes.arrayOf(PropTypes.object).isRequired,
+  appointmentsLoading: PropTypes.bool,
+  appointmentsError: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+    PropTypes.object,
+  ]),
+  fetchDoctorAppointments: PropTypes.func.isRequired,
+  handleAppointmentActionForAppointments: PropTypes.func.isRequired,
+  handleGenerateVideoCall: PropTypes.func.isRequired,
+};
 

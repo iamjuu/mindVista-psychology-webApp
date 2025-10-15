@@ -41,32 +41,6 @@ const VideoCallRoom = () => {
   const localUserId = useRef(`${userRole}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`).current
   const username = isDoctor ? 'Dr. Smith' : 'Patient'
 
-  const fetchAppointmentDetails = useCallback(async () => {
-    try {
-      setLoading(true)
-      const roleQuery = isDoctor ? '?role=doctor' : ''
-      const response = await apiInstance.get(`/video-call/${videoCallId}/details${roleQuery}`)
-      
-      if (response.data.success) {
-        setAppointmentDetails(response.data.data)
-        await initializeWebRTC()
-      } else {
-        setError(response.data.message || 'Failed to load appointment details')
-      }
-    } catch (err) {
-      console.error('Error fetching details:', err)
-      setError('Unable to load video call')
-    } finally {
-      setLoading(false)
-    }
-  }, [isDoctor, videoCallId])
-
-  // Run after fetchAppointmentDetails is defined
-  useEffect(() => {
-    fetchAppointmentDetails()
-    return () => cleanup()
-  }, [videoCallId, fetchAppointmentDetails])
-
   const initializeWebRTC = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -85,6 +59,57 @@ const VideoCallRoom = () => {
       setError('Cannot access camera/microphone. Please grant permissions.')
     }
   }
+
+  const fetchAppointmentDetails = useCallback(async () => {
+    try {
+      setLoading(true)
+      setError(null) // Clear any previous errors
+      
+      // Always send role parameter to backend
+      const roleQuery = `?role=${userRole}`
+      console.log('🔍 Fetching appointment details for role:', userRole)
+      console.log('🔍 Request URL:', `/video-call/${videoCallId}/details${roleQuery}`)
+      
+      const response = await apiInstance.get(`/video-call/${videoCallId}/details${roleQuery}`)
+      
+      console.log('✅ Response received:', response.data)
+      
+      if (response.data.success) {
+        setAppointmentDetails(response.data.data)
+        await initializeWebRTC()
+      } else {
+        console.error('❌ Backend returned error:', response.data.message)
+        setError(response.data.message || 'Failed to load appointment details')
+      }
+    } catch (err) {
+      console.error('❌ Error fetching details:', err)
+      
+      // Provide more specific error messages
+      if (err.response) {
+        // Server responded with error status
+        const errorMsg = err.response.data?.message || err.response.statusText
+        console.error('Server error:', err.response.status, errorMsg)
+        setError(`Server error: ${errorMsg}`)
+      } else if (err.request) {
+        // Request was made but no response
+        console.error('No response from server')
+        setError('Cannot connect to server. Please check if the backend is running.')
+      } else {
+        // Something else happened
+        console.error('Request setup error:', err.message)
+        setError(`Connection error: ${err.message}`)
+      }
+    } finally {
+      setLoading(false)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userRole, videoCallId])
+
+  // Run after fetchAppointmentDetails is defined
+  useEffect(() => {
+    fetchAppointmentDetails()
+    return () => cleanup()
+  }, [videoCallId, fetchAppointmentDetails])
 
   const connectToSignalingServer = () => {
     const wsUrl = `ws://localhost:3000?videoCallId=${videoCallId}&userId=${localUserId}&username=${username}`
@@ -431,9 +456,41 @@ const VideoCallRoom = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
-        <div className="text-center">
-          <p className="text-xl text-red-400 mb-4">Error: {error}</p>
-          <Button onClick={() => navigate(-1)}>Go Back</Button>
+        <div className="text-center max-w-2xl mx-auto p-8">
+          <div className="mb-6">
+            <div className="text-6xl mb-4">⚠️</div>
+            <h2 className="text-2xl font-bold mb-4">Unable to Connect</h2>
+            <p className="text-xl text-red-400 mb-4">{error}</p>
+          </div>
+          
+          <div className="bg-gray-800 rounded-lg p-6 mb-6 text-left">
+            <h3 className="text-lg font-semibold mb-3">Troubleshooting Steps:</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>✓ Check if the backend server is running (http://localhost:3000)</li>
+              <li>✓ Verify the video call link is correct</li>
+              <li>✓ Make sure you have the correct role parameter (?role=patient or ?role=doctor)</li>
+              <li>✓ Check if the appointment exists and is approved</li>
+              <li>✓ Ensure your browser allows camera/microphone access</li>
+            </ul>
+          </div>
+
+          <div className="bg-blue-900 bg-opacity-30 rounded-lg p-4 mb-6 text-left">
+            <h3 className="text-sm font-semibold mb-2">Debug Info:</h3>
+            <div className="text-xs text-gray-400 space-y-1 font-mono">
+              <p>Video Call ID: {videoCallId}</p>
+              <p>Your Role: {userRole}</p>
+              <p>User ID: {localUserId}</p>
+            </div>
+          </div>
+          
+          <div className="flex space-x-4 justify-center">
+            <Button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700">
+              Retry Connection
+            </Button>
+            <Button onClick={() => navigate(-1)} variant="outline">
+              Go Back
+            </Button>
+          </div>
         </div>
       </div>
     )
