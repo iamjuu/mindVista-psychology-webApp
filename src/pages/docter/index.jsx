@@ -80,16 +80,34 @@ const DoctorDashboard = () => {
   const email = searchParams.get('email');
 
 
-  // Mock API instance for demo
-useEffect(()=>{
+  // Fetch doctor data and income data
+  useEffect(() => {
+    const fetchDoctorData = async () => {
+      if (!email) return;
+      
+      try {
+        const response = await apiInstance.get(`/doctors/email/${encodeURIComponent(email)}`);
+        console.log(response.data, 'doctor response');
+        
+        if (response.data.success && response.data.doctor) {
+          setDoctorData(response.data.doctor);
+          
+          // Fetch income data after doctor data is set
+          const incomeResponse = await apiInstance.get(`/doctors/${response.data.doctor._id}/income`);
+          console.log(incomeResponse.data, 'income response');
+          
+          if (incomeResponse.data.success && incomeResponse.data.incomeData) {
+            setIncomeData(incomeResponse.data.incomeData);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching doctor data:', error);
+        toast.error('Failed to fetch doctor data');
+      }
+    };
 
-
-  const getDocter = async()=>{
-    const response = await apiInstance.get(`/doctors/email/${encodeURIComponent(email)}`);
-    console.log(response.data,'response');
-  }
-  getDocter();
-},[email])
+    fetchDoctorData();
+  }, [email]);
   // Check authentication on component mount
   useEffect(() => {
     // Check if email is provided, if not redirect to login
@@ -99,33 +117,6 @@ useEffect(()=>{
       return;
     }
     
-    // Mock authentication check
-    const mockDoctorData = {
-      _id: 'doc123',
-      name: 'Dr. Sarah Johnson',
-      email: 'sarah.johnson@hospital.com',
-      phone: '+1 (555) 123-4567',
-      address: '123 Medical Center Dr, Healthcare City, HC 12345',
-      specialization: 'Cardiology',
-      experience: 15,
-      patients: 247,
-      rating: 4.8,
-      bio: 'Experienced cardiologist with over 15 years of practice. Specializing in interventional cardiology and heart disease prevention.',
-      qualification: 'MD, FACC',
-      designation: 'Senior Cardiologist',
-      department: 'Cardiology Department',
-      consultationFee: 150,
-      age: 42,
-      gender: 'Female',
-      availableSlots: [
-        { day: 'Monday', startTime: '09:00', endTime: '17:00' },
-        { day: 'Tuesday', startTime: '09:00', endTime: '17:00' },
-        { day: 'Wednesday', startTime: '09:00', endTime: '15:00' }
-      ],
-      createdAt: '2020-01-15T00:00:00.000Z'
-    };
-    
-    setDoctorData(mockDoctorData);
     setLoading(false);
   }, [navigate, email]);
 
@@ -139,6 +130,12 @@ useEffect(()=>{
   const fetchDoctorAppointments = useCallback(async () => {
     if (!doctorData._id) {
       console.log('No doctor ID available, cannot fetch appointments');
+      return;
+    }
+
+    // Prevent multiple simultaneous calls
+    if (appointmentsLoading) {
+      console.log('Appointments already loading, skipping duplicate call');
       return;
     }
 
@@ -156,8 +153,18 @@ useEffect(()=>{
           patientPhone: appointment.phone || appointment.number,
           patientLocation: appointment.location
         }));
-        console.log('Transformed appointments:', transformedAppointments);
-        setDoctorAppointments(transformedAppointments);
+        
+        // Deduplicate appointments by _id
+        const uniqueAppointments = transformedAppointments.reduce((unique, appointment) => {
+          const exists = unique.find(item => item._id === appointment._id);
+          if (!exists) {
+            unique.push(appointment);
+          }
+          return unique;
+        }, []);
+        
+        console.log('Transformed appointments (deduplicated):', uniqueAppointments);
+        setDoctorAppointments(uniqueAppointments);
       } else {
         console.error('Failed to fetch doctor appointments:', response.data.message);
         setAppointmentsError(response.data.message || 'Failed to fetch appointments');
@@ -417,7 +424,7 @@ useEffect(()=>{
       try {
         if (email) {
           await fetchDoctorProfile();
-          await fetchDoctorAppointments(); // Fetch appointments when profile loads
+          // Appointments will be fetched when appointments tab is selected
         } else {
           // Fallback to stored data if no email
           const storedData = localStorage.getItem('doctorData');
@@ -443,19 +450,12 @@ useEffect(()=>{
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email]);
 
-  // Load appointments when appointments tab is selected
+  // Load appointments when appointments tab is selected (only if not already loaded)
   useEffect(() => {
     if (selectedTab === 'appointments' && doctorData._id && doctorAppointments.length === 0) {
       fetchDoctorAppointments();
     }
   }, [selectedTab, doctorData._id, doctorAppointments.length, fetchDoctorAppointments]);
-
-  // Auto-refresh appointments when doctor data changes
-  useEffect(() => {
-    if (doctorData._id) {
-      fetchDoctorAppointments();
-    }
-  }, [doctorData._id, fetchDoctorAppointments]);
 
   // Auto-fetch patient requests when patients tab is selected or doctor data is loaded
   useEffect(() => {

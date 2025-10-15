@@ -29,12 +29,20 @@ const AppointmentsTab = ({
       });
     }
   };
+  // Deduplicate appointments by _id and filter by payment status
   const visibleAppointments = Array.isArray(doctorAppointments)
-    ? doctorAppointments.filter(
-        (a) => a?.paymentStatus === 'completed'
-      )
+    ? doctorAppointments
+        .filter((a) => a?.paymentStatus === 'completed')
+        .reduce((unique, appointment) => {
+          // Check if appointment with same _id already exists
+          const exists = unique.find(item => item._id === appointment._id);
+          if (!exists) {
+            unique.push(appointment);
+          }
+          return unique;
+        }, [])
     : [];
-    console.log('visibleAppointments', visibleAppointments);
+    console.log('visibleAppointments (deduplicated):', visibleAppointments);
   return (
     <div className="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
