@@ -69,7 +69,8 @@ const PaymentPage = () => {
             
             const verifyRes = await apiInstance.post("/verify-payment", {
               ...response,
-              appointmentId: appointmentId
+              appointmentId: appointmentId,
+              amount: 500 // Amount in rupees
             });
 
             if (verifyRes.data.success) {

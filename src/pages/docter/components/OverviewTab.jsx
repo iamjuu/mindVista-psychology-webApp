@@ -18,8 +18,6 @@ const IncomeCard = ({ title, amount, growth, icon, bgColor }) => (
   description={`₹${amount.toLocaleString()}`} 
 />
 
-        {/* <p className="text-sm font-medium opacity-90">{title}</p>
-        <p className="text-3xl font-bold">₹{amount.toLocaleString()}</p> */}
         <div className="flex items-center mt-2">
           <TrendingUp size={16} className="mr-1" />
           <span className="text-sm font-medium">+{growth}%</span>
