@@ -41,6 +41,25 @@ const VideoCallRoom = () => {
   const localUserId = useRef(`${userRole}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`).current
   const username = isDoctor ? 'Dr. Smith' : 'Patient'
 
+  const initializeWebRTC = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ 
+        video: true, 
+        audio: true 
+      })
+      localStreamRef.current = stream
+      
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream
+      }
+      
+      connectToSignalingServer()
+    } catch (err) {
+      console.error('Media error:', err)
+      setError('Cannot access camera/microphone. Please grant permissions.')
+    }
+  }
+
   const fetchAppointmentDetails = useCallback(async () => {
     try {
       setLoading(true)
@@ -83,6 +102,7 @@ const VideoCallRoom = () => {
     } finally {
       setLoading(false)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRole, videoCallId])
 
   // Run after fetchAppointmentDetails is defined
@@ -90,25 +110,6 @@ const VideoCallRoom = () => {
     fetchAppointmentDetails()
     return () => cleanup()
   }, [videoCallId, fetchAppointmentDetails])
-
-  const initializeWebRTC = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, 
-        audio: true 
-      })
-      localStreamRef.current = stream
-      
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream
-      }
-      
-      connectToSignalingServer()
-    } catch (err) {
-      console.error('Media error:', err)
-      setError('Cannot access camera/microphone. Please grant permissions.')
-    }
-  }
 
   const connectToSignalingServer = () => {
     const wsUrl = `ws://localhost:3000?videoCallId=${videoCallId}&userId=${localUserId}&username=${username}`

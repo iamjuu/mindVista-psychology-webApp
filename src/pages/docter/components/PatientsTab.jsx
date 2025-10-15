@@ -396,7 +396,10 @@
                           <Button
                             onClick={(e) => {
                               e.stopPropagation();
-                              window.open(request.videoCallLink, "_blank");
+                              const link = request.videoCallLink?.includes('?') 
+                                ? `${request.videoCallLink}&role=doctor` 
+                                : `${request.videoCallLink}?role=doctor`;
+                              window.open(link, "_blank");
                             }}
                             size="sm"
                             variant="outline"

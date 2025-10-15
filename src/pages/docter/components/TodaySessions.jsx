@@ -371,7 +371,12 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
                               <span className="text-xs text-green-600 font-medium">Available</span>
                             </div>
                             <Button
-                              onClick={() => window.open(session.videoCallLink, '_blank')}
+                              onClick={() => {
+                                const link = session.videoCallLink?.includes('?') 
+                                  ? `${session.videoCallLink}&role=doctor` 
+                                  : `${session.videoCallLink}?role=doctor`;
+                                window.open(link, '_blank');
+                              }}
                               size="sm"
                               variant='outline'
                             >
