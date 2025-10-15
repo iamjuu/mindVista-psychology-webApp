@@ -83,16 +83,18 @@ export default function Home() {
           <Counter />
         </div>
         <div id="Reviews">
+       
           <Carousel items={items} />
         </div>
-        <div id="contect">
-          <Contact />
-        </div>
+    
         <div id="Services">
-          <Service />
+          {/* <Service /> */}
         </div>
         <div>
           <QuickAnswer />
+        </div>
+        <div id="contect">
+          <Contact />
         </div>
         <Footer />
       </div>

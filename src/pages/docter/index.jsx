@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { LogOut, Menu, X, Bell, Download, TrendingUp, Clock } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
@@ -16,6 +16,35 @@ import {
   UpcomingAppointments,
   Sidebar
 } from './components';
+
+// Default income data structure (moved outside component to prevent re-creation)
+const defaultIncomeData = {
+  daily: 1250,
+  weekly: 8750,
+  monthly: 35000,
+  yearly: 420000,
+  dailyGrowth: 5.2,
+  weeklyGrowth: 12.8,
+  monthlyGrowth: 8.5,
+  yearlyGrowth: 15.3,
+  monthlyChart: [
+    { name: 'Jan', income: 25000 },
+    { name: 'Feb', income: 28000 },
+    { name: 'Mar', income: 32000 },
+    { name: 'Apr', income: 30000 },
+    { name: 'May', income: 35000 },
+    { name: 'Jun', income: 38000 },
+  ],
+  weeklyChart: [
+    { name: 'Mon', income: 1200 },
+    { name: 'Tue', income: 1500 },
+    { name: 'Wed', income: 1100 },
+    { name: 'Thu', income: 1800 },
+    { name: 'Fri', income: 1400 },
+    { name: 'Sat', income: 900 },
+    { name: 'Sun', income: 750 },
+  ]
+};
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
@@ -49,11 +78,11 @@ const DoctorDashboard = () => {
 
   // Get email from URL parameters
   const email = searchParams.get('email');
-  console.log(email,'mail ee');
+
 
   // Mock API instance for demo
 useEffect(()=>{
-  console.log(email,'mail ee');
+
 
   const getDocter = async()=>{
     const response = await apiInstance.get(`/doctors/email/${encodeURIComponent(email)}`);
@@ -106,51 +135,17 @@ useEffect(()=>{
     navigate('/doctor/login');
   };
 
-  // Default income data structure
-  const defaultIncomeData = {
-    daily: 1250,
-    weekly: 8750,
-    monthly: 35000,
-    yearly: 420000,
-    dailyGrowth: 5.2,
-    weeklyGrowth: 12.8,
-    monthlyGrowth: 8.5,
-    yearlyGrowth: 15.3,
-    monthlyChart: [
-      { name: 'Jan', income: 25000 },
-      { name: 'Feb', income: 28000 },
-      { name: 'Mar', income: 32000 },
-      { name: 'Apr', income: 30000 },
-      { name: 'May', income: 35000 },
-      { name: 'Jun', income: 38000 },
-    ],
-    weeklyChart: [
-      { name: 'Mon', income: 1200 },
-      { name: 'Tue', income: 1500 },
-      { name: 'Wed', income: 1100 },
-      { name: 'Thu', income: 1800 },
-      { name: 'Fri', income: 1400 },
-      { name: 'Sat', income: 900 },
-      { name: 'Sun', income: 750 },
-    ]
-  };
-
-
-
-
   // Function to fetch doctor appointments
-  const fetchDoctorAppointments = async () => {
+  const fetchDoctorAppointments = useCallback(async () => {
     if (!doctorData._id) {
       console.log('No doctor ID available, cannot fetch appointments');
       return;
     }
 
-    console.log('Fetching appointments for doctor:', doctorData._id);
     setAppointmentsLoading(true);
     setAppointmentsError(null); // Clear previous errors
     try {
       const response = await apiInstance.get(`/doctor/${doctorData._id}/appointments`);
-      console.log('Doctor appointments fetched:', response.data);
       
       if (response.data.success) {
         // Transform the data to match the expected format
@@ -175,10 +170,10 @@ useEffect(()=>{
     } finally {
       setAppointmentsLoading(false);
     }
-  };
+  }, [doctorData._id]);
 
   // Function to fetch patient requests from API
-  const fetchPatientRequests = async () => {
+  const fetchPatientRequests = useCallback(async () => {
     setRequestsLoading(true);
     try {
       // If we have a doctor ID, fetch only appointments for this doctor
@@ -229,10 +224,10 @@ useEffect(()=>{
     } finally {
       setRequestsLoading(false);
     }
-  };
+  }, [doctorData._id, doctorData.name, doctorData.specialization]);
 
   // Function to fetch doctor profile data from API
-  const fetchDoctorProfile = async () => {
+  const fetchDoctorProfile = useCallback(async () => {
     setProfileRefreshing(true);
     try {
       if (!email) {
@@ -258,7 +253,7 @@ useEffect(()=>{
     } finally {
       setProfileRefreshing(false);
     }
-  };
+  }, [email]);
 
   // Function to handle appointment approval
   const handleAppointmentAction = async (appointmentId, action) => {
@@ -373,6 +368,7 @@ useEffect(()=>{
           duration: 5000
         });
         
+
         // Show video call details
         setTimeout(() => {
           toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
@@ -444,6 +440,7 @@ useEffect(()=>{
     };
 
     loadDoctorData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [email]);
 
   // Load appointments when appointments tab is selected
@@ -451,14 +448,21 @@ useEffect(()=>{
     if (selectedTab === 'appointments' && doctorData._id && doctorAppointments.length === 0) {
       fetchDoctorAppointments();
     }
-  }, [selectedTab, doctorData._id]);
+  }, [selectedTab, doctorData._id, doctorAppointments.length, fetchDoctorAppointments]);
 
   // Auto-refresh appointments when doctor data changes
   useEffect(() => {
     if (doctorData._id) {
       fetchDoctorAppointments();
     }
-  }, [doctorData._id]);
+  }, [doctorData._id, fetchDoctorAppointments]);
+
+  // Auto-fetch patient requests when patients tab is selected or doctor data is loaded
+  useEffect(() => {
+    if (selectedTab === 'patients' && doctorData._id && patientRequests.length === 0) {
+      fetchPatientRequests();
+    }
+  }, [selectedTab, doctorData._id, patientRequests.length, fetchPatientRequests]);
 
   // Filter functions
   const filteredRequests = patientRequests.filter(request => {

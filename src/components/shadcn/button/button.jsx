@@ -51,7 +51,6 @@ function Button({
   asChild = false,
   ...props
 }) {
-  console.log('Button component rendered with:', { variant, size, asChild, className });
   
   const Comp = asChild ? Slot : "button"
 

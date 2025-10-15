@@ -8,6 +8,5 @@ import { twMerge } from "tailwind-merge";
  * @returns {string} - Merged class names
  */
 export function cn(...inputs) {
-  console.log('cn utility function called with inputs:', inputs);
   return twMerge(clsx(inputs));
 }

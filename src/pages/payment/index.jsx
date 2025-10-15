@@ -63,11 +63,18 @@ const PaymentPage = () => {
         handler: async function (response) {
           try {
             // Step 3: Verify payment
-            const verifyRes = await apiInstance.post("/verify-payment", response);
+            const appointmentId = appointmentData?._id || appointmentData?.id;
+            console.log('Payment verification - appointmentId:', appointmentId);
+            console.log('Payment verification - response:', response);
+            
+            const verifyRes = await apiInstance.post("/verify-payment", {
+              ...response,
+              appointmentId: appointmentId
+            });
 
             if (verifyRes.data.success) {
               toast.success("Payment successful! Appointment confirmed.");
-              navigate("/about");
+              navigate("/");
             } else {
               toast.error("Payment verification failed.");
             }

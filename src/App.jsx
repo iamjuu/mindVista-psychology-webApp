@@ -8,12 +8,12 @@ import { MainBackgroundImage } from "./assets";
 const App = () => {
   return (
     <div
-    style={{
-      backgroundImage: `url(${MainBackgroundImage})`,
-      backgroundPosition: "top center",
-      backgroundSize: "100% auto",
-      backgroundRepeat: "repeat-y",
-    }}
+    // style={{
+    //   backgroundImage: `url(${MainBackgroundImage})`,
+    //   backgroundPosition: "top center",
+    //   backgroundSize: "100% auto",
+    //   backgroundRepeat: "repeat-y",
+    // }}
     >
       <UserRouter/>
       <ToastContainer

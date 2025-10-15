@@ -72,7 +72,6 @@ const DoctorList = () => {
           date: appointment.date,
           status: appointment.status || 'pending'
         }));
-        console.log('Transformed appointments:', transformedAppointments);
         setUserData(transformedAppointments);
         
         console.log('Data loading completed successfully');
