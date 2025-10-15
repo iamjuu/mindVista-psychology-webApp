@@ -378,10 +378,10 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Daily Work Hours Card */}
           <div className="flex flex-col gap-2 justify-between">
-            <div className=" p-4 bg-white rounded-lg border">
+            <div className={`p-4 ${themeClasses.bgCard} rounded-lg border ${themeClasses.border}`}>
               <div className="flex items-center justify-between ">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-blue-600"
                       fill="none"
@@ -396,22 +396,22 @@ const Dashboard = () => {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-[14px] font-semibold text-gray-800">
+                  <h3 className={`text-[14px] font-semibold ${themeClasses.text}`}>
                     Daily Work Hours
                   </h3>
                 </div>
-                <button className="px-4 py-1 text-sm font-medium text-black rounded-lg hover:bg-blue-100 border transition-colors">
+                <button className={`px-4 py-1 text-sm font-medium ${themeClasses.text} rounded-lg ${themeClasses.bgHover} border ${themeClasses.border} transition-colors`}>
                   Details
                 </button>
               </div>
 
               <div className="flex items-center gap-3 mb-6">
-                <span className="text-[12px] font-bold text-gray-800">
+                <span className={`text-[12px] font-bold ${themeClasses.text}`}>
                   12 hours 41 minutes in total
                 </span>
-                <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className={`w-6 h-6 ${themeClasses.bgSecondary} rounded-lg flex items-center justify-center`}>
                   <svg
-                    className="w-4 h-4 text-gray-600"
+                    className={`w-4 h-4 ${themeClasses.textSecondary}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -428,7 +428,7 @@ const Dashboard = () => {
 
               {/* Progress Bar */}
               <div className="mb-4">
-                <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden flex">
+                <div className={`w-full h-2 ${themeClasses.bgSecondary} rounded-full overflow-hidden flex`}>
                   <div
                     className="h-full bg-yellow-400 flex-shrink-0"
                     style={{ width: "33%" }}
@@ -448,24 +448,24 @@ const Dashboard = () => {
               <div className="flex items-center gap-6">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Pause Time</span>
+                  <span className={`text-sm ${themeClasses.textSecondary}`}>Pause Time</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Active Time</span>
+                  <span className={`text-sm ${themeClasses.textSecondary}`}>Active Time</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                  <span className="text-sm text-gray-600">Extra Time</span>
+                  <span className={`text-sm ${themeClasses.textSecondary}`}>Extra Time</span>
                 </div>
               </div>
             </div>
 
             {/* Course Progress Card */}
-            <div className="bg-white p-4 rounded-lg border">
+            <div className={`${themeClasses.bgCard} p-4 rounded-lg border ${themeClasses.border}`}>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-purple-600"
                       fill="none"
@@ -480,11 +480,11 @@ const Dashboard = () => {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-[14px] font-semibold text-gray-800">
+                  <h3 className={`text-[14px] font-semibold ${themeClasses.text}`}>
                     Course Progress
                   </h3>
                 </div>
-                <button className="px-3 py-1 text-xs font-medium text-gray-600  border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors">
+                <button className={`px-3 py-1 text-xs font-medium ${themeClasses.textSecondary} border ${themeClasses.border} rounded-lg ${themeClasses.bgHover} transition-colors`}>
                   See All
                 </button>
               </div>
@@ -498,7 +498,7 @@ const Dashboard = () => {
                   >
                     {/* Background circle */}
                     <path
-                      className="stroke-gray-200"
+                      className={`${themeClasses.border === 'border-gray-700' ? 'stroke-gray-700' : 'stroke-gray-200'}`}
                       strokeWidth="3"
                       fill="none"
                       d="M18 2.0845
@@ -518,7 +518,7 @@ const Dashboard = () => {
                   </svg>
                   {/* Percentage text */}
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-sm font-semibold text-gray-800">
+                    <span className={`text-sm font-semibold ${themeClasses.text}`}>
                       25%
                     </span>
                   </div>
@@ -526,10 +526,10 @@ const Dashboard = () => {
 
                 {/* Course Info */}
                 <div className="flex-1">
-                  <h4 className="text-sm font-semibold text-gray-800 mb-1">
+                  <h4 className={`text-sm font-semibold ${themeClasses.text} mb-1`}>
                     Team Diversity Training
                   </h4>
-                  <p className="text-xs text-gray-500 mb-3">
+                  <p className={`text-xs ${themeClasses.textMuted} mb-3`}>
                     Designed to foster inclusivity and leverage diverse
                     perspectives.
                   </p>
@@ -545,12 +545,12 @@ const Dashboard = () => {
           </div>
 
           {/* Notes Card */}
-          <div className="bg-white p-4 rounded-lg border">
+          <div className={`${themeClasses.bgCard} p-4 rounded-lg border ${themeClasses.border}`}>
             <div className="flex items-center justify-between ">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className={`w-8 h-8 ${themeClasses.bgSecondary} rounded-lg flex items-center justify-center`}>
                   <svg
-                    className="w-5 h-5 text-gray-600"
+                    className={`w-5 h-5 ${themeClasses.textSecondary}`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -563,13 +563,13 @@ const Dashboard = () => {
                     />
                   </svg>
                 </div>
-                <h3 className="text-[14px] font-semibold text-gray-800">
+                <h3 className={`text-[14px] font-semibold ${themeClasses.text}`}>
                   Notes
                 </h3>
               </div>
               <button
                 onClick={() => setShowAddNoteModal(true)}
-                className="px-3 py-1 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors"
+                className={`px-3 py-1 text-xs font-medium ${themeClasses.textSecondary} ${themeClasses.bgSecondary} border ${themeClasses.border} rounded-lg ${themeClasses.bgHover} transition-colors`}
               >
                 + Add Note
               </button>
@@ -583,22 +583,22 @@ const Dashboard = () => {
                     type="checkbox"
                     checked={note.completed}
                     onChange={() => toggleNoteCompletion(note.id)}
-                    className="mt-1 w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className={`mt-1 w-4 h-4 text-blue-600 ${themeClasses.border} rounded focus:ring-blue-500`}
                   />
                   <div className="flex flex-col gap-1 flex-1">
                     <div className="flex flex-col w-full">
                       <h4
                         className={`text-sm font-medium ${
                           note.completed
-                            ? "text-gray-400 line-through"
-                            : "text-gray-800"
+                            ? `${themeClasses.textMuted} line-through`
+                            : themeClasses.text
                         }`}
                       >
                         {note.title}
                       </h4>
                       <p
                         className={`text-xs ${
-                          note.completed ? "text-gray-300" : "text-gray-500"
+                          note.completed ? themeClasses.textMuted : themeClasses.textSecondary
                         }`}
                       >
                         {note.description}
@@ -608,7 +608,7 @@ const Dashboard = () => {
                   {note.completed && (
                     <button
                       onClick={() => deleteNote(note.id)}
-                      className="mt-1 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors"
+                      className="mt-1 p-1 text-red-500 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/30 rounded transition-colors"
                       title="Delete note"
                     >
                       <svg
@@ -634,12 +634,12 @@ const Dashboard = () => {
           {/* Add Note Modal */}
           {showAddNoteModal && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-              <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-md mx-4">
-                <h3 className="text-lg font-semibold mb-4">Add New Note</h3>
+              <div className={`${themeClasses.bgCard} p-6 rounded-lg shadow-lg w-full max-w-md mx-4`}>
+                <h3 className={`text-lg font-semibold mb-4 ${themeClasses.text}`}>Add New Note</h3>
 
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className={`block text-sm font-medium ${themeClasses.text} mb-1`}>
                       Title
                     </label>
                     <input
@@ -648,13 +648,13 @@ const Dashboard = () => {
                       onChange={(e) =>
                         setNewNote({ ...newNote, title: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={`w-full px-3 py-2 border ${themeClasses.input} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       placeholder="Enter note title..."
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className={`block text-sm font-medium ${themeClasses.text} mb-1`}>
                       Description
                     </label>
                     <textarea
@@ -662,7 +662,7 @@ const Dashboard = () => {
                       onChange={(e) =>
                         setNewNote({ ...newNote, description: e.target.value })
                       }
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={`w-full px-3 py-2 border ${themeClasses.input} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
                       rows="3"
                       placeholder="Enter note description..."
                     />
@@ -678,7 +678,7 @@ const Dashboard = () => {
                   </button>
                   <button
                     onClick={() => setShowAddNoteModal(false)}
-                    className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400 transition-colors"
+                    className={`flex-1 px-4 py-2 ${themeClasses.bgSecondary} ${themeClasses.text} rounded-lg ${themeClasses.bgHover} transition-colors`}
                   >
                     Cancel
                   </button>
@@ -688,10 +688,10 @@ const Dashboard = () => {
           )}
 
           {/* Employee Spotlight Card */}
-          <div className="bg-white p-4 rounded-lg border">
+          <div className={`${themeClasses.bgCard} p-4 rounded-lg border ${themeClasses.border}`}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                <div className="w-8 h-8 bg-yellow-100 dark:bg-yellow-900/30 rounded-lg flex items-center justify-center">
                   <svg
                     className="w-5 h-5 text-yellow-600"
                     fill="none"
@@ -706,11 +706,11 @@ const Dashboard = () => {
                     />
                   </svg>
                 </div>
-                <h3 className="text-[14px] font-semibold text-gray-800">
+                <h3 className={`text-[14px] font-semibold ${themeClasses.text}`}>
                   Employee Spotlight
                 </h3>
               </div>
-              <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-1">
+              <button className={`px-3 py-1 text-xs font-medium ${themeClasses.textSecondary} border ${themeClasses.border} rounded-lg ${themeClasses.bgHover} transition-colors flex items-center gap-1`}>
                 <span>Share</span>
                 <svg
                   className="w-3 h-3"
@@ -730,23 +730,23 @@ const Dashboard = () => {
 
             {/* Navigation Tabs */}
             <div className="flex gap-1 py-3 mb-4">
-              <button className="px-3 py-1 text-xs font-medium text-gray-800 bg-white border border-gray-200 rounded-lg">
+              <button className={`px-3 py-1 text-xs font-medium ${themeClasses.text} ${themeClasses.bgSecondary} border ${themeClasses.border} rounded-lg`}>
                 Overview
               </button>
-              <button className="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700">
+              <button className={`px-3 py-1 text-xs font-medium ${themeClasses.textMuted} hover:${themeClasses.textSecondary}`}>
                 Comments
               </button>
-              <button className="px-3 py-1 text-xs font-medium text-gray-500 hover:text-gray-700">
+              <button className={`px-3 py-1 text-xs font-medium ${themeClasses.textMuted} hover:${themeClasses.textSecondary}`}>
                 Rewards
               </button>
             </div>
 
             {/* Employee Details */}
             <div className="flex w-full justify-between items-center">
-              <h4 className="text-lg font-bold text-gray-800 ">
+              <h4 className={`text-lg font-bold ${themeClasses.text}`}>
                 Matthew Johnson
               </h4>
-              <p className="text-sm text-gray-600">Software Engineer</p>
+              <p className={`text-sm ${themeClasses.textSecondary}`}>Software Engineer</p>
             </div>
             <div className="w-full flex justify-center ">
               <img className="w-24" src={BadgeImage} alt="" />
@@ -754,7 +754,7 @@ const Dashboard = () => {
 
             {/* Recognition Message */}
             <div className="text-center">
-              <p className="text-sm font-medium text-gray-700">
+              <p className={`text-sm font-medium ${themeClasses.text}`}>
                 Top-performing employee of January!
               </p>
             </div>
@@ -762,31 +762,31 @@ const Dashboard = () => {
         </div>
         <div className=" flex gap-2 flex-col">
           <div className=" flex flex-col  rounded-lg ">
-            <h3 className="text-[14px] py-2 font-bold ">
+            <h3 className={`text-[14px] py-2 font-bold ${themeClasses.text}`}>
               {selectedDoctor.name} - Analytics Dashboard
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">Specialization</p>
-                <p className="text-lg font-semibold">
+              <div className={`text-center p-3 ${themeClasses.bgSecondary} rounded-lg`}>
+                <p className={`text-sm ${themeClasses.textSecondary}`}>Specialization</p>
+                <p className={`text-lg font-semibold ${themeClasses.text}`}>
                   {selectedDoctor.specialization}
                 </p>
               </div>
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">Total Patients</p>
+              <div className={`text-center p-3 ${themeClasses.bgSecondary} rounded-lg`}>
+                <p className={`text-sm ${themeClasses.textSecondary}`}>Total Patients</p>
                 <p className="text-lg font-semibold text-blue-600">
                   {selectedDoctor.totalPatients}
                 </p>
               </div>
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600">Total Income</p>
+              <div className={`text-center p-3 ${themeClasses.bgSecondary} rounded-lg`}>
+                <p className={`text-sm ${themeClasses.textSecondary}`}>Total Income</p>
                 <p className="text-lg font-semibold text-green-600">
                   ₹{selectedDoctor.totalIncome.toLocaleString()}
                 </p>
               </div>
               {/* Doctor Reviews */}
-              <div className="text-center p-3 bg-gray-50 rounded-lg">
-                <p className="text-sm text-gray-600 mb-2">Patient Reviews</p>
+              <div className={`text-center p-3 ${themeClasses.bgSecondary} rounded-lg`}>
+                <p className={`text-sm ${themeClasses.textSecondary} mb-2`}>Patient Reviews</p>
                 <div className="flex items-center justify-center gap-1 mb-2">
                   {[...Array(5)].map((_, i) => (
                     <svg
@@ -794,7 +794,7 @@ const Dashboard = () => {
                       className={`w-4 h-4 ${
                         i < Math.floor(selectedDoctor?.avgRating || 0)
                           ? "text-yellow-400"
-                          : "text-gray-300"
+                          : themeClasses.border === 'border-gray-700' ? "text-gray-600" : "text-gray-300"
                       }`}
                       fill="currentColor"
                       viewBox="0 0 20 20"
@@ -803,10 +803,10 @@ const Dashboard = () => {
                     </svg>
                   ))}
                 </div>
-                <p className="text-lg font-semibold text-gray-800">
+                <p className={`text-lg font-semibold ${themeClasses.text}`}>
                   {selectedDoctor?.avgRating || 0}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className={`text-xs ${themeClasses.textMuted}`}>
                   Based on {selectedDoctor?.reviewCount || 0} reviews
                 </p>
               </div>
@@ -815,11 +815,11 @@ const Dashboard = () => {
 
           {/* Courses Component */}
           <div className="flex w-full justify-between gap-2 ">
-            <div className="bg-white w-[70%] p-4 rounded-lg border">
+            <div className={`${themeClasses.bgCard} w-[70%] p-4 rounded-lg border ${themeClasses.border}`}>
               {/* Header Section */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-blue-600"
                       fill="none"
@@ -834,8 +834,8 @@ const Dashboard = () => {
                       />
                     </svg>
                   </div>
-                  <h3 className="text-[14px] font-semibold text-gray-800">
-                    Dotors{" "}
+                  <h3 className={`text-[14px] font-semibold ${themeClasses.text}`}>
+                    Doctors{" "}
                   </h3>
                 </div>
 
@@ -843,7 +843,7 @@ const Dashboard = () => {
                   {/* Search Bar */}
                   <div className="relative">
                     <svg
-                      className="w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                      className={`w-4 h-4 absolute left-3 top-1/2 transform -translate-y-1/2 ${themeClasses.textMuted}`}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -860,7 +860,7 @@ const Dashboard = () => {
                       placeholder="Search doctors..."
                       value={doctorSearchQuery}
                       onChange={(e) => setDoctorSearchQuery(e.target.value)}
-                      className="pl-10 pr-4 py-1 text-xs border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      className={`pl-10 pr-4 py-1 text-xs border ${themeClasses.input} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500`}
                     />
                   </div>
 
@@ -868,7 +868,7 @@ const Dashboard = () => {
                   <div className="relative" ref={filterMenuRef}>
                     <button
                       onClick={() => setShowFilterMenu(!showFilterMenu)}
-                      className="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-50 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-1"
+                      className={`px-2 py-1 text-xs font-medium ${themeClasses.textSecondary} ${themeClasses.bgSecondary} border ${themeClasses.border} rounded-lg ${themeClasses.bgHover} transition-colors flex items-center gap-1`}
                     >
                       <svg
                         className="w-3 h-3"
@@ -892,7 +892,7 @@ const Dashboard = () => {
 
                     {/* Filter Dropdown Menu */}
                     {showFilterMenu && (
-                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 z-10">
+                      <div className={`absolute right-0 mt-2 w-48 ${themeClasses.bgCard} rounded-lg shadow-lg border ${themeClasses.border} z-10`}>
                         <div className="p-2">
                           <p className="text-xs font-semibold text-gray-700 px-2 py-1">
                             Filter by Status
@@ -1119,11 +1119,11 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Time Tracker Component */}
-            <div className="bg-white w-[30%] p-4 rounded-lg border">
+            <div className={`${themeClasses.bgCard} w-[30%] p-4 rounded-lg border ${themeClasses.border}`}>
               {/* Header Section */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-purple-600"
                       fill="none"
@@ -1136,19 +1136,13 @@ const Dashboard = () => {
                         strokeWidth={2}
                         d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                       />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
                     </svg>
                   </div>
-                  <p className="text-[14px] font-semibold text-gray-800">
+                  <p className={`text-[14px] font-semibold ${themeClasses.text}`}>
                     Time Tracker
                   </p>
                 </div>
-                <button className="px-3 py-1 text-xs font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-100 transition-colors flex items-center gap-1">
+                <button className={`px-3 py-1 text-xs font-medium ${themeClasses.textSecondary} border ${themeClasses.border} rounded-lg ${themeClasses.bgHover} transition-colors flex items-center gap-1`}>
                   <svg
                     className="w-3 h-3"
                     fill="none"
@@ -1167,7 +1161,7 @@ const Dashboard = () => {
               </div>
 
               {/* Current Task Timer Section */}
-              <div className="p-4 rounded-lg mb-4 bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-100">
+              <div className={`p-4 rounded-lg mb-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border ${themeClasses.border}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center">
@@ -1180,7 +1174,7 @@ const Dashboard = () => {
                       </svg>
                     </div>
                     <div>
-                      <p className="text-sm font-medium text-gray-800">Dashboard Timer</p>
+                      <p className={`text-sm font-medium ${themeClasses.text}`}>Dashboard Timer</p>
                     </div>
                   </div>
                   {isTracking && (
@@ -1191,16 +1185,16 @@ const Dashboard = () => {
                   )}
                 </div>
 
-                <p className="text-xs text-gray-500 mb-3 uppercase tracking-wide">
+                <p className={`text-xs ${themeClasses.textMuted} mb-3 uppercase tracking-wide`}>
                   {isTracking ? "TRACKING..." : "READY"}
                 </p>
 
                 {/* Timer Display */}
                 <div className="text-center mb-4">
-                  <div className="text-4xl font-bold text-gray-800 font-mono">
+                  <div className={`text-4xl font-bold ${themeClasses.text} font-mono`}>
                     {formatTime(currentTime)}
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">
+                  <p className={`text-xs ${themeClasses.textMuted} mt-2`}>
                     {isTracking ? "Time is running" : "Press start to begin"}
                   </p>
                 </div>
@@ -1243,7 +1237,7 @@ const Dashboard = () => {
               {/* Time History Section */}
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <h4 className="text-xs font-medium text-gray-500 uppercase tracking-wide">
+                  <h4 className={`text-xs font-medium ${themeClasses.textMuted} uppercase tracking-wide`}>
                     History ({timeHistory.length})
                   </h4>
                   {timeHistory.length > 0 && (
@@ -1267,11 +1261,11 @@ const Dashboard = () => {
                     timeHistory.map((entry, index) => {
                       // Color variations for different entries
                       const colors = [
-                        { bg: 'bg-purple-100', text: 'text-purple-600', icon: 'bg-purple-200' },
-                        { bg: 'bg-blue-100', text: 'text-blue-600', icon: 'bg-blue-200' },
-                        { bg: 'bg-green-100', text: 'text-green-600', icon: 'bg-green-200' },
-                        { bg: 'bg-orange-100', text: 'text-orange-600', icon: 'bg-orange-200' },
-                        { bg: 'bg-pink-100', text: 'text-pink-600', icon: 'bg-pink-200' },
+                        { bg: 'bg-purple-100 dark:bg-purple-900/30', text: 'text-purple-600', icon: 'bg-purple-200 dark:bg-purple-800/50' },
+                        { bg: 'bg-blue-100 dark:bg-blue-900/30', text: 'text-blue-600', icon: 'bg-blue-200 dark:bg-blue-800/50' },
+                        { bg: 'bg-green-100 dark:bg-green-900/30', text: 'text-green-600', icon: 'bg-green-200 dark:bg-green-800/50' },
+                        { bg: 'bg-orange-100 dark:bg-orange-900/30', text: 'text-orange-600', icon: 'bg-orange-200 dark:bg-orange-800/50' },
+                        { bg: 'bg-pink-100 dark:bg-pink-900/30', text: 'text-pink-600', icon: 'bg-pink-200 dark:bg-pink-800/50' },
                       ];
                       const colorScheme = colors[index % colors.length];
 
@@ -1291,10 +1285,10 @@ const Dashboard = () => {
                               </svg>
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm font-medium text-gray-800 truncate">
+                              <p className={`text-sm font-medium ${themeClasses.text} truncate`}>
                                 Dashboard Session
                               </p>
-                              <p className="text-xs text-gray-600">
+                              <p className={`text-xs ${themeClasses.textSecondary}`}>
                                 {entry.date}
                               </p>
                             </div>
@@ -1310,7 +1304,7 @@ const Dashboard = () => {
                   ) : (
                     <div className="text-center py-8">
                       <svg
-                        className="w-12 h-12 text-gray-300 mx-auto mb-3"
+                        className={`w-12 h-12 ${themeClasses.textMuted} mx-auto mb-3`}
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1322,8 +1316,8 @@ const Dashboard = () => {
                           d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                         />
                       </svg>
-                      <p className="text-xs text-gray-500">No time records yet</p>
-                      <p className="text-xs text-gray-400 mt-1">
+                      <p className={`text-xs ${themeClasses.textMuted}`}>No time records yet</p>
+                      <p className={`text-xs ${themeClasses.textMuted} mt-1`}>
                         Start the timer to track your time
                       </p>
                     </div>
@@ -1332,8 +1326,8 @@ const Dashboard = () => {
 
                 {/* Total Time Summary */}
                 {timeHistory.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-gray-200">
-                    <div className="flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg">
+                  <div className={`mt-4 pt-4 border-t ${themeClasses.border}`}>
+                    <div className={`flex items-center justify-between p-3 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 rounded-lg`}>
                       <div className="flex items-center gap-2">
                         <svg
                           className="w-5 h-5 text-purple-600"
@@ -1342,7 +1336,7 @@ const Dashboard = () => {
                         >
                           <path d="M11 17c0 .55.45 1 1 1s1-.45 1-1-.45-1-1-1-1 .45-1 1zm0-14v4h2V5.08c3.39.49 6 3.39 6 6.92 0 3.87-3.13 7-7 7s-7-3.13-7-7c0-1.68.59-3.22 1.58-4.42L12 13l1.41-1.41-6.8-6.8v.02C4.42 6.45 3 9.05 3 12c0 4.97 4.02 9 9 9 4.97 0 9-4.03 9-9s-4.03-9-9-9h-1zm7 9c0-.55-.45-1-1-1s-1 .45-1 1 .45 1 1 1 1-.45 1-1zM6 12c0 .55.45 1 1 1s1-.45 1-1-.45-1-1-1-1 .45-1 1z" />
                         </svg>
-                        <span className="text-sm font-medium text-gray-700">
+                        <span className={`text-sm font-medium ${themeClasses.text}`}>
                           Total Time
                         </span>
                       </div>
@@ -1359,21 +1353,21 @@ const Dashboard = () => {
           {/* Analytical Dashboard Cards */}
 
           {/* Summary Statistics */}
-          <div className="bg-white p-4 rounded-lg border">
-            <h3 className="text-[14px] font-semibold mb-4">
+          <div className={`${themeClasses.bgCard} p-4 rounded-lg border ${themeClasses.border}`}>
+            <h3 className={`text-[14px] font-semibold mb-4 ${themeClasses.text}`}>
               Performance Summary
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
+              <div className="text-center p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <p className="text-2xl font-bold text-blue-600">
                   ₹
                   {selectedDoctor.monthlyIncome[
                     selectedDoctor.monthlyIncome.length - 1
                   ].income.toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">Latest Monthly Income</p>
+                <p className={`text-sm ${themeClasses.textSecondary}`}>Latest Monthly Income</p>
               </div>
-              <div className="text-center p-4 bg-green-50 rounded-lg">
+              <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg">
                 <p className="text-2xl font-bold text-green-600">
                   {
                     selectedDoctor.patientGrowth[
@@ -1381,20 +1375,20 @@ const Dashboard = () => {
                     ].patients
                   }
                 </p>
-                <p className="text-sm text-gray-600">Monthly New Patients</p>
+                <p className={`text-sm ${themeClasses.textSecondary}`}>Monthly New Patients</p>
               </div>
-              <div className="text-center p-4 bg-purple-50 rounded-lg">
+              <div className="text-center p-4 bg-purple-50 dark:bg-purple-900/20 rounded-lg">
                 <p className="text-2xl font-bold text-purple-600">
                   ₹
                   {Math.round(
                     selectedDoctor.totalIncome / selectedDoctor.totalPatients
                   ).toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">
+                <p className={`text-sm ${themeClasses.textSecondary}`}>
                   Average Income per Patient
                 </p>
               </div>
-              <div className="text-center p-4 bg-orange-50 rounded-lg">
+              <div className="text-center p-4 bg-orange-50 dark:bg-orange-900/20 rounded-lg">
                 <p className="text-2xl font-bold text-orange-600">
                   {Math.round(
                     selectedDoctor.monthlyIncome.reduce(
@@ -1403,7 +1397,7 @@ const Dashboard = () => {
                     ) / selectedDoctor.monthlyIncome.length
                   ).toLocaleString()}
                 </p>
-                <p className="text-sm text-gray-600">Avg Monthly Income</p>
+                <p className={`text-sm ${themeClasses.textSecondary}`}>Avg Monthly Income</p>
               </div>
             </div>
           </div>
@@ -1658,7 +1652,7 @@ const Dashboard = () => {
               </div>
             </div>
             {/* Work Hour Analysis Card */}
-            <div className="bg-white flex flex-col justify-between p-4 rounded-lg border">
+            <div className={`${themeClasses.bgCard} flex flex-col justify-between p-4 rounded-lg border ${themeClasses.border}`}>
               <div className="flex items-center py-3 border-b justify-between mb-4">
                 <div className="flex  items-center gap-3">
                   <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -1715,8 +1709,8 @@ const Dashboard = () => {
                       key={period}
                       className={`px-10 py-1.5 flex items-center justify-center text-xs font-medium rounded-md transition-colors ${
                         index === 0
-                          ? "bg-white border border-gray-300 text-gray-800 shadow-sm"
-                          : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                          ? `${themeClasses.bgCard} border ${themeClasses.border} ${themeClasses.text} shadow-sm`
+                          : `${themeClasses.textMuted} ${themeClasses.bgHover}`
                       }`}
                     >
                       {period}
@@ -1780,8 +1774,8 @@ const Dashboard = () => {
 
           {/* Charts for Selected Doctor */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-4">
+            <div className={`${themeClasses.bgCard} p-4 rounded-lg shadow`}>
+              <h3 className={`text-lg font-semibold mb-4 ${themeClasses.text}`}>
                 Monthly Income - {selectedDoctor.name}
               </h3>
               <ResponsiveContainer width="100%" height={200}>
@@ -1809,8 +1803,8 @@ const Dashboard = () => {
               </ResponsiveContainer>
             </div>
 
-            <div className="bg-white p-4 rounded-lg shadow">
-              <h3 className="text-lg font-semibold mb-4">
+            <div className={`${themeClasses.bgCard} p-4 rounded-lg shadow`}>
+              <h3 className={`text-lg font-semibold mb-4 ${themeClasses.text}`}>
                 Patient Growth - {selectedDoctor.name}
               </h3>
               <ResponsiveContainer width="100%" height={200}>
@@ -1858,9 +1852,9 @@ const Dashboard = () => {
         return <Settings />;
       default:
         return (
-          <div className="bg-white p-6 rounded-lg shadow text-center">
-            <h3 className="text-xl font-bold">Page Under Construction</h3>
-            <p className="text-gray-500 mt-2">
+          <div className={`${themeClasses.bgCard} p-6 rounded-lg shadow text-center`}>
+            <h3 className={`text-xl font-bold ${themeClasses.text}`}>Page Under Construction</h3>
+            <p className={`${themeClasses.textMuted} mt-2`}>
               This section is currently being developed
             </p>
           </div>
