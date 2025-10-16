@@ -1,4 +1,4 @@
-import { Users, LogOut, X, Star, Clock, TrendingUp, Calendar, Settings } from 'lucide-react';
+import { Users, LogOut, X, Star, Clock, TrendingUp, Calendar, Settings, CalendarDays } from 'lucide-react';
 import { Button } from '../../../components/shadcn/button/button';
 import {MindvistaLogo } from "../../../assets"
 import { PageHeader } from '../../../components/core/cardHeader';
@@ -132,6 +132,24 @@ const Sidebar = ({
                   <Calendar size={16} />
                 </div>
                 Appointments
+              </Button>
+            </li>
+            <li>
+              <Button 
+                onClick={() => setSelectedTab('availableSlots')}
+                variant="secondary"
+                className={`w-full justify-start ${
+                  selectedTab === 'availableSlots' 
+                    ? 'bg-orange-50 text-orange-700 font-medium' 
+                    : 'hover:bg-orange-50 text-orange-700'
+                }`}
+              >
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                  selectedTab === 'availableSlots' ? 'bg-orange-100' : 'bg-orange-100'
+                }`}>
+                  <CalendarDays size={16} />
+                </div>
+                Available Slots
               </Button>
             </li>
             <li>

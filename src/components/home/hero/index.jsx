@@ -85,7 +85,7 @@ const Index = () => {
             src={BrainImage}
             alt="Background"
             onLoad={() => setImageLoaded(true)}
-            className={`object-contain w-full h-auto  max-h-[200px] md:max-h-[500px]  transition-opacity duration-300 ${
+            className={`object-contain w-[350px]  transition-opacity duration-300 ${
               imageLoaded ? "opacity-100" : "opacity-0"
             }`}
             style={{

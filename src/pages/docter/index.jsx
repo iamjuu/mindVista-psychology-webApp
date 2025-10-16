@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { LogOut, Menu, X, Bell, Download, TrendingUp, Clock } from 'lucide-react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -14,8 +14,10 @@ import {
   PatientModal,
   TodaySessions,
   UpcomingAppointments,
+  AvailableSlots,
   Sidebar
 } from './components';
+import { ThemeProvider } from '../../contexts/ThemeContext';
 
 // Default income data structure (moved outside component to prevent re-creation)
 const defaultIncomeData = {
@@ -48,7 +50,7 @@ const defaultIncomeData = {
 
 const DoctorDashboard = () => {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  // const [searchParams] = useSearchParams(); // Remove useSearchParams
   const [loading, setLoading] = useState(true);
   const [doctorData, setDoctorData] = useState({});
   const [incomeData, setIncomeData] = useState({});
@@ -76,8 +78,9 @@ const DoctorDashboard = () => {
     console.log('isUserModalOpen state changed:', isUserModalOpen);
   }, [isUserModalOpen]);
 
-  // Get email from URL parameters
-  const email = searchParams.get('email');
+  // Get email from session storage
+  const encryptedEmail = sessionStorage.getItem('doctorEmail');
+  const email = encryptedEmail ? atob(encryptedEmail) : null; // Decrypt email
 
 
   // Fetch doctor data and income data
@@ -177,7 +180,7 @@ const DoctorDashboard = () => {
     } finally {
       setAppointmentsLoading(false);
     }
-  }, [doctorData._id]);
+  }, [doctorData._id, appointmentsLoading]);
 
   // Function to fetch patient requests from API
   const fetchPatientRequests = useCallback(async () => {
@@ -492,175 +495,182 @@ const DoctorDashboard = () => {
   }
 
   return (
-    <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
-      )}
+    <ThemeProvider>
+      <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
+        {/* Mobile Sidebar Overlay */}
+        {sidebarOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
+        )}
 
-      <div className="flex h-full">
-        {/* Mobile Header */}
-        <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm p-4 flex items-center justify-between z-30">
-          <Button 
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-            variant="ghost"
-            size="icon"
-          >
-            {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-          </Button>
-          <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
-          <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell size={20} />
-              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-            </Button>
+        <div className="flex h-full">
+          {/* Mobile Header */}
+          <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm p-4 flex items-center justify-between z-30">
             <Button 
-              onClick={handleLogout}
+              onClick={() => setSidebarOpen(!sidebarOpen)}
               variant="ghost"
               size="icon"
-              className="text-red-600"
             >
-              <LogOut size={20} />
+              {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
             </Button>
+            <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
+            <div className="flex items-center gap-2">
+              <Button variant="ghost" size="icon" className="relative">
+                <Bell size={20} />
+                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+              </Button>
+              <Button 
+                onClick={handleLogout}
+                variant="ghost"
+                size="icon"
+                className="text-red-600"
+              >
+                <LogOut size={20} />
+              </Button>
+            </div>
+          </div>
+          {/* Sidebar */}
+          <Sidebar
+            sidebarOpen={sidebarOpen}
+            setSidebarOpen={setSidebarOpen}
+            doctorData={doctorData}
+            selectedTab={selectedTab}
+            setSelectedTab={setSelectedTab}
+            handleNavigate={handleNavigate}
+            profileRefreshing={profileRefreshing}
+            fetchDoctorProfile={fetchDoctorProfile}
+            handleLogout={handleLogout}
+          />
+
+          {/* Main Content */}
+          <div className="flex-1 lg:ml-80 w-full overflow-y-auto">
+            {/* Add top padding for mobile to account for fixed header */}
+            <div className="pt-20 lg:pt-0 p-4 lg:p-8 max-w-7xl mx-auto">
+              {/* Main Header - Desktop Only */}
+              <div className="hidden lg:flex items-center justify-between mb-8">
+                <div className="flex py-2 flex-col">
+                  <h1 className="text-[22px] font-medium text-gray-800">Welcome back, Dr. {doctorData.name?.split(' ')[1] || 'Doctor'}!</h1>
+                  <p className="text-gray-500  text-[16px] mt-1">Here&apos;s what&apos;s happening with your practice today.</p>
+                </div>
+                <div className="flex items-center gap-4">
+                  <Button 
+
+                  variant='outline'
+                    onClick={() => handleNavigate('todaySessions')}
+                    className=""
+                  >
+                    <Clock size={16} />
+                    Today&apos;s Sessions
+                  </Button>
+                  <Button 
+                  
+                  variant='outline'
+                    onClick={() => handleNavigate('upcoming')}
+                  
+                  >
+                    <TrendingUp size={16} />
+                    Upcoming
+                  </Button>
+                  <Button variant="outline" size="icon" className="relative">
+                    <Bell size={20} className="text-gray-600" />
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
+                  </Button>
+                  <Button variant="outline" size="icon">
+                    <Download size={20} className="text-gray-600" />
+                  </Button>
+                </div>
+              </div>
+
+              {/* Overview Tab Content */}
+              {selectedTab === 'overview' && (
+                <OverviewTab
+                  selectedTimeFrame={selectedTimeFrame}
+                  setSelectedTimeFrame={setSelectedTimeFrame}
+                  incomeData={incomeData}
+                  doctorAppointments={doctorAppointments}
+                  appointmentsLoading={appointmentsLoading}
+                  fetchDoctorAppointments={fetchDoctorAppointments}
+                />
+              )}
+
+              {/* Patients Tab Content */}
+              {selectedTab === 'patients' && (
+                <PatientsTab
+                  patientRequests={patientRequests}
+                  requestsLoading={requestsLoading}
+                  searchTerm={searchTerm}
+                  setSearchTerm={setSearchTerm}
+                  filterStatus={filterStatus}
+                  setFilterStatus={setFilterStatus}
+                  fetchPatientRequests={fetchPatientRequests}
+                  handleUserRowClick={handleUserRowClick}
+                  handleAppointmentAction={handleAppointmentAction}
+                  handleGenerateVideoCall={handleGenerateVideoCall}
+                  doctorData={doctorData}
+                  filteredRequests={filteredRequests}
+                />
+              )}
+
+              {/* Appointments Tab Content */}
+              {selectedTab === 'appointments' && (
+                <AppointmentsTab
+                  doctorAppointments={doctorAppointments}
+                  appointmentsLoading={appointmentsLoading}
+                  appointmentsError={appointmentsError}
+                  fetchDoctorAppointments={fetchDoctorAppointments}
+                  handleAppointmentActionForAppointments={handleAppointmentActionForAppointments}
+                  handleGenerateVideoCall={handleGenerateVideoCall}
+                />
+              )}
+
+              {/* Available Slots Tab Content */}
+              {selectedTab === 'availableSlots' && (
+                <AvailableSlots doctorData={doctorData} />
+              )}
+
+              {/* My Patients Section - Show in both Overview and Patients tabs */}
+              {(selectedTab === 'overview' || selectedTab === 'patients') && (
+                <MyPatients patientsList={patientsList} />
+              )}
+
+              {/* Today's Sessions Tab Content */}
+              {selectedTab === 'todaySessions' && (
+                <TodaySessions 
+                  doctorData={doctorData} 
+                  email={email} 
+                  onNavigate={handleNavigate}
+                />
+              )}
+
+              {/* Upcoming Appointments Tab Content */}
+              {selectedTab === 'upcoming' && (
+                <UpcomingAppointments 
+                  doctorData={doctorData} 
+                  email={email} 
+                  onNavigate={handleNavigate}
+                />
+              )}
+
+              {/* Settings Tab Content */}
+              {selectedTab === 'settings' && (
+                <SettingsTab doctorData={doctorData} />
+              )}
+            </div>
           </div>
         </div>
-        {/* Sidebar */}
-        <Sidebar
-          sidebarOpen={sidebarOpen}
-          setSidebarOpen={setSidebarOpen}
+
+
+        {/* Patient Details Modal */}
+        <PatientModal
+          isUserModalOpen={isUserModalOpen}
+          closeUserModal={closeUserModal}
+          selectedUser={selectedUser}
           doctorData={doctorData}
-          selectedTab={selectedTab}
-          setSelectedTab={setSelectedTab}
-          handleNavigate={handleNavigate}
-          profileRefreshing={profileRefreshing}
-          fetchDoctorProfile={fetchDoctorProfile}
-          handleLogout={handleLogout}
+          handleAppointmentAction={handleAppointmentAction}
         />
 
-        {/* Main Content */}
-        <div className="flex-1 lg:ml-80 w-full overflow-y-auto">
-          {/* Add top padding for mobile to account for fixed header */}
-          <div className="pt-20 lg:pt-0 p-4 lg:p-8 max-w-7xl mx-auto">
-            {/* Main Header - Desktop Only */}
-            <div className="hidden lg:flex items-center justify-between mb-8">
-              <div className="flex py-2 flex-col">
-                <h1 className="text-[22px] font-medium text-gray-800">Welcome back, Dr. {doctorData.name?.split(' ')[1] || 'Doctor'}!</h1>
-                <p className="text-gray-500  text-[16px] mt-1">Here&apos;s what&apos;s happening with your practice today.</p>
-              </div>
-              <div className="flex items-center gap-4">
-                <Button 
-
-                variant='outline'
-                  onClick={() => handleNavigate('todaySessions')}
-                  className=""
-                >
-                  <Clock size={16} />
-                  Today&apos;s Sessions
-                </Button>
-                <Button 
-                
-                variant='outline'
-                  onClick={() => handleNavigate('upcoming')}
-                
-                >
-                  <TrendingUp size={16} />
-                  Upcoming
-                </Button>
-                <Button variant="outline" size="icon" className="relative">
-                  <Bell size={20} className="text-gray-600" />
-                  <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-                </Button>
-                <Button variant="outline" size="icon">
-                  <Download size={20} className="text-gray-600" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Overview Tab Content */}
-            {selectedTab === 'overview' && (
-              <OverviewTab
-                selectedTimeFrame={selectedTimeFrame}
-                setSelectedTimeFrame={setSelectedTimeFrame}
-                incomeData={incomeData}
-                doctorAppointments={doctorAppointments}
-                appointmentsLoading={appointmentsLoading}
-                fetchDoctorAppointments={fetchDoctorAppointments}
-              />
-            )}
-
-            {/* Patients Tab Content */}
-            {selectedTab === 'patients' && (
-              <PatientsTab
-                patientRequests={patientRequests}
-                requestsLoading={requestsLoading}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filterStatus={filterStatus}
-                setFilterStatus={setFilterStatus}
-                fetchPatientRequests={fetchPatientRequests}
-                handleUserRowClick={handleUserRowClick}
-                handleAppointmentAction={handleAppointmentAction}
-                handleGenerateVideoCall={handleGenerateVideoCall}
-                doctorData={doctorData}
-                filteredRequests={filteredRequests}
-              />
-            )}
-
-            {/* Appointments Tab Content */}
-            {selectedTab === 'appointments' && (
-              <AppointmentsTab
-                doctorAppointments={doctorAppointments}
-                appointmentsLoading={appointmentsLoading}
-                appointmentsError={appointmentsError}
-                fetchDoctorAppointments={fetchDoctorAppointments}
-                handleAppointmentActionForAppointments={handleAppointmentActionForAppointments}
-                handleGenerateVideoCall={handleGenerateVideoCall}
-              />
-            )}
-
-            {/* My Patients Section - Show in both Overview and Patients tabs */}
-            {(selectedTab === 'overview' || selectedTab === 'patients') && (
-              <MyPatients patientsList={patientsList} />
-            )}
-
-            {/* Today's Sessions Tab Content */}
-            {selectedTab === 'todaySessions' && (
-              <TodaySessions 
-                doctorData={doctorData} 
-                email={email} 
-                onNavigate={handleNavigate}
-              />
-            )}
-
-            {/* Upcoming Appointments Tab Content */}
-            {selectedTab === 'upcoming' && (
-              <UpcomingAppointments 
-                doctorData={doctorData} 
-                email={email} 
-                onNavigate={handleNavigate}
-              />
-            )}
-
-            {/* Settings Tab Content */}
-            {selectedTab === 'settings' && (
-              <SettingsTab doctorData={doctorData} />
-            )}
-          </div>
-        </div>
+        <ToastContainer />
       </div>
-
-
-      {/* Patient Details Modal */}
-      <PatientModal
-        isUserModalOpen={isUserModalOpen}
-        closeUserModal={closeUserModal}
-        selectedUser={selectedUser}
-        doctorData={doctorData}
-        handleAppointmentAction={handleAppointmentAction}
-      />
-
-      <ToastContainer />
-    </div>
+    </ThemeProvider>
   );
 };
 
