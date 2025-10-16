@@ -1,28 +1,38 @@
+import { useEffect, useState, useMemo } from "react";
 import Navbar from "../../../components/home/navbar";
 import Hero from "../../../components/home/hero";
 import About from "../../../components/home/about";
 import Support from "../../../components/home/support";
-import Service from "../../../components/home/service";
 import Carousel from "../../../components/home/caroseal";
 import Footer from "../../../components/home/footer";
 import QuickAnswer from "../../../components/home/quickanswer";
 import Contact from "../../../components/home/contect";
 import Counter from "../../../components/home/counter";
 import Docters from "../../../components/home/doctors";
-import { useEffect, useState } from "react";
+import { CustomSpinner } from "../../../common/Loader";
 import api from "../../../instance";
+
 export default function Home() {
   const [items, setItems] = useState([]);
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || ""; // E.164 format, e.g., 15551234567
-  const whatsappText = encodeURIComponent("Hi MindVista, I need help.");
+  const [isLoading, setIsLoading] = useState(true);
   const [isBouncing, setIsBouncing] = useState(false);
 
+  // Memoize WhatsApp URL to avoid recalculation on every render
+  const whatsappUrl = useMemo(() => {
+    const number = import.meta.env.VITE_WHATSAPP_NUMBER || "";
+    const text = encodeURIComponent("Hi MindVista, I need help.");
+    return `https://wa.me/${number}?text=${text}`;
+  }, []);
+
+  // Fetch reviews data
   useEffect(() => {
     let isMounted = true;
+
     const fetchReviews = async () => {
       try {
         const { data } = await api.get("/reviews?limit=20");
         if (!isMounted) return;
+
         const mapped = data.map((r) => ({
           src: r.avatarUrl || "/x.png",
           name: r.name,
@@ -31,76 +41,82 @@ export default function Home() {
           rating: "⭐".repeat(Math.max(1, Math.min(5, Number(r.rating) || 0))),
         }));
         setItems(mapped);
-      } catch {
-        // ignore for now
+      } catch (error) {
+        console.error("Failed to fetch reviews:", error);
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
+
     fetchReviews();
+
     return () => {
       isMounted = false;
     };
   }, []);
 
+  // WhatsApp button bounce animation
   useEffect(() => {
     const triggerBounce = () => {
       setIsBouncing(true);
-      const timeoutId = setTimeout(() => setIsBouncing(false), 1200);
-      return timeoutId;
+      return setTimeout(() => setIsBouncing(false), 1200);
     };
 
-    // Start with an initial bounce, then repeat every 10 seconds
-    let timeoutId = triggerBounce();
-    const intervalId = setInterval(() => {
-      timeoutId = triggerBounce();
-    }, 10000);
+    // Initial bounce after a short delay
+    const initialTimeout = setTimeout(triggerBounce, 500);
+    
+    // Repeat bounce every 10 seconds
+    const intervalId = setInterval(triggerBounce, 10000);
 
     return () => {
       clearInterval(intervalId);
-      clearTimeout(timeoutId);
+      clearTimeout(initialTimeout);
     };
   }, []);
 
-  return (
-    <div className="min-h-screen  px-2 ">
-      <div className="flex py-4  gap-3 flex-col ">
-        <div>
-          <Navbar />
-        </div>
-        <div id="hero">
-          <Hero />
-        </div>
+  // Show loader while initial data is loading
+  if (isLoading) {
+    return <CustomSpinner />;
+  }
 
-        <div className="flex flex-col" id="solution">
+  return (
+    <div className="min-h-screen px-2">
+      <div className="flex py-4 gap-3 flex-col">
+        <Navbar />
+
+        <section id="hero">
+          <Hero />
+        </section>
+
+        <section id="solution" className="flex flex-col">
           <Support />
           <About />
-        </div>
-        <div id="Doctors">
-          <Docters />
-        </div>
+        </section>
 
-        <div id="project">{/* <Support /> */}</div>
-        <div>
-          <Counter />
-        </div>
-        <div id="Reviews">
-       
+        <section id="Doctors">
+          <Docters />
+        </section>
+
+        <Counter />
+
+        <section id="Reviews">
           <Carousel items={items} />
-        </div>
-    
-        <div id="Services">
-          {/* <Service /> */}
-        </div>
-        <div>
-          <QuickAnswer />
-        </div>
-        <div id="contect">
+        </section>
+
+        <QuickAnswer />
+
+        <section id="contect">
           <Contact />
-        </div>
+        </section>
+
         <Footer />
       </div>
+
       {/* Floating WhatsApp button */}
       <a
-        href={`https://wa.me/${whatsappNumber}?text=${whatsappText}`}
+        href={whatsappUrl}
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat on WhatsApp"
@@ -111,7 +127,7 @@ export default function Home() {
         <img
           src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg"
           alt="WhatsApp"
-          className="w-16  drop-shadow-xl"
+          className="w-16 drop-shadow-xl"
         />
       </a>
     </div>

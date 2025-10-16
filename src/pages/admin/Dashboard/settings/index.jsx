@@ -168,13 +168,15 @@ const SettingsPage = () => {
                     variant={isActive ? "default" : "secondary"}
                     className={`w-full justify-start h-auto p-3 ${
                       isActive
-                        ? `bg-gray-400 text-white shadow-sm hover:bg-gray-300  `
-                        : "hover:bg-gray-200"
+                        ? `bg-blue-600 text-white shadow-sm hover:bg-blue-700`
+                        : `${themeClasses.bgSecondary} ${themeClasses.text} ${themeClasses.bgHover}`
                     }`}
                   >
                     <div
                       className={`p-2 rounded-lg ${
-                        isActive ? `bg-gray-100 text-gray-600` : "bg-gray-100"
+                        isActive 
+                          ? `bg-blue-100 dark:bg-blue-900/30 text-blue-600` 
+                          : `${themeClasses.bgSecondary} ${themeClasses.text}`
                       } transition-colors`}
                     >
                       <Icon size={18} />
@@ -185,12 +187,12 @@ const SettingsPage = () => {
                 );
               })}
 
-              <div className="border-t pt-2 mt-2">
+              <div className={`border-t ${themeClasses.border} pt-2 mt-2`}>
                 <Button
                   variant="secondary"
-                  className="w-full justify-start h-auto p-3 text-red-600 hover:bg-red-50"
+                  className={`w-full justify-start h-auto p-3 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 ${themeClasses.bgSecondary}`}
                 >
-                  <div className="p-2 rounded-lg bg-red-100 group-hover:bg-red-200 transition-colors">
+                  <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/30 group-hover:bg-red-200 dark:group-hover:bg-red-900/50 transition-colors">
                     <LogOut size={18} />
                   </div>
                   <span className="font-medium text-sm">Log Out</span>
@@ -241,6 +243,7 @@ const EditProfile = ({
   setSaveStatus,
 }) => {
   const [loading, setLoading] = useState(false);
+  const { themeClasses } = useTheme();
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
@@ -256,11 +259,11 @@ const EditProfile = ({
   return (
     <div>
       {/* Avatar Section */}
-      <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 mb-8">
+      <div className={`bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 ${themeClasses.bgSecondary} rounded-2xl p-6 mb-8`}>
         <div className="flex items-center space-x-6">
           <div className="relative group">
             <div className="w-28 h-28  rounded-full bg-gradient-to-br from-blue-400 to-purple-400 p-1">
-              <div className="w-full h-full rounded-full bg-white overflow-hidden">
+              <div className={`w-full h-full rounded-full ${themeClasses.bg} overflow-hidden`}>
                 {profileData.avatar ? (
                   <img
                     src={profileData.avatar}
@@ -268,14 +271,14 @@ const EditProfile = ({
                     className="w-full rounded-full h-full object-fit"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100">
-                    <User size={40} className="text-gray-400" />
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-800 dark:to-purple-800">
+                    <User size={40} className={themeClasses.textMuted} />
                   </div>
                 )}
               </div>
             </div>
-            <label className="absolute bottom-0 right-0 bg-white border-2 border-white shadow-lg p-2 rounded-xl cursor-pointer hover:shadow-xl transition-shadow transform group-hover:scale-110">
-              <Camera size={18} className="text-gray-700" />
+            <label className={`absolute bottom-0 right-0 ${themeClasses.bgCard} border-2 ${themeClasses.border} shadow-lg p-2 rounded-xl cursor-pointer hover:shadow-xl transition-shadow transform group-hover:scale-110`}>
+              <Camera size={18} className={themeClasses.text} />
               <input
                 type="file"
                 className="hidden"
@@ -285,22 +288,22 @@ const EditProfile = ({
             </label>
           </div>
           <div>
-            <h3 className="font-bold text-xl text-gray-900 mb-1">
+            <h3 className={`font-bold text-xl ${themeClasses.text} mb-1`}>
               {profileData.username}
             </h3>
-            <p className="text-gray-600 mb-3">{profileData.name}</p>
+            <p className={`${themeClasses.textSecondary} mb-3`}>{profileData.name}</p>
             <div className="flex space-x-2">
               <Button
                 variant="outline"
                 size="sm"
-                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                className="text-blue-600 border-blue-200 hover:bg-blue-50 dark:hover:bg-blue-900/30"
               >
                 Change Photo
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                className="text-red-600 border-red-200 hover:bg-red-50"
+                className="text-red-600 border-red-200 hover:bg-red-50 dark:hover:bg-red-900/30"
               >
                 Remove
               </Button>
@@ -313,7 +316,7 @@ const EditProfile = ({
       <form onSubmit={handleFormSubmit} className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold ${themeClasses.text} mb-2`}>
               Designation
             </label>
             <Input
@@ -321,17 +324,17 @@ const EditProfile = ({
               name="name"
               value={profileData.name}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 ${themeClasses.input} border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
               placeholder="Enter your full name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold ${themeClasses.text} mb-2`}>
               Username
             </label>
             <div className="relative">
-              <span className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400">
+              <span className={`absolute left-4 top-1/2 transform -translate-y-1/2 ${themeClasses.textMuted}`}>
                 @
               </span>
               <Input
@@ -339,7 +342,7 @@ const EditProfile = ({
                 name="username"
                 value={profileData.username}
                 onChange={handleInputChange}
-                className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                className={`w-full pl-8 pr-4 py-3 ${themeClasses.input} border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                 placeholder="username"
               />
             </div>
@@ -347,7 +350,7 @@ const EditProfile = ({
         </div>
 
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-2">
+          <label className={`block text-sm font-semibold ${themeClasses.text} mb-2`}>
             Bio
           </label>
           <textarea
@@ -355,17 +358,17 @@ const EditProfile = ({
             value={profileData.bio}
             onChange={handleInputChange}
             rows="4"
-            className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
+            className={`w-full px-4 py-3 ${themeClasses.input} border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none`}
             placeholder="Tell us about yourself..."
           />
-          <p className="mt-2 text-sm text-gray-500">
+          <p className={`mt-2 text-sm ${themeClasses.textMuted}`}>
             {150 - profileData.bio.length} characters remaining
           </p>
         </div>
 
         <div className="grid grid-cols-1  md:grid-cols-3 gap-6">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold ${themeClasses.text} mb-2`}>
               Website
             </label>
             <Input
@@ -373,13 +376,13 @@ const EditProfile = ({
               name="website"
               value={profileData.website}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 ${themeClasses.input} border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
               placeholder="yourwebsite.com"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold ${themeClasses.text} mb-2`}>
               Location
             </label>
             <Input
@@ -387,13 +390,13 @@ const EditProfile = ({
               name="location"
               value={profileData.location}
               onChange={handleInputChange}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              className={`w-full px-4 py-3 ${themeClasses.input} border rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
               placeholder="City, Country"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
+            <label className={`block text-sm font-semibold ${themeClasses.text} mb-2`}>
               Gender
             </label>
             <Select
@@ -403,10 +406,10 @@ const EditProfile = ({
                 handleInputChange({ target: { name: "gender", value } })
               }
             >
-              <SelectTrigger className="w-full px-4 py-3 border bg-white border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all">
+              <SelectTrigger className={`w-full px-4 py-3 border ${themeClasses.bgCard} ${themeClasses.border} ${themeClasses.text} rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}>
                 <SelectValue placeholder="Select gender" />
               </SelectTrigger>
-              <SelectContent className="bg-white border border-gray-200 rounded-lg shadow-lg">
+              <SelectContent className={`${themeClasses.bgCard} border ${themeClasses.border} rounded-lg shadow-lg`}>
                 <SelectItem value="male">Male</SelectItem>
                 <SelectItem value="female">Female</SelectItem>
               </SelectContent>
@@ -418,14 +421,14 @@ const EditProfile = ({
           <Button
             type="button"
             variant="secondary"
-            className="px-6 border-gray-200 border py-3"
+            className={`px-6 ${themeClasses.border} border py-3`}
           >
             Cancel
           </Button>
           <Button
             type="submit"
             disabled={loading}
-            className="px-6 py-3  text-white bg-blue-600  transition-all font-medium shadow-lg hover:shadow-xl"
+            className="px-6 py-3  text-white bg-blue-600 hover:bg-blue-700 transition-all font-medium shadow-lg hover:shadow-xl"
           >
             {loading ? (
               <>
@@ -1104,7 +1107,7 @@ const AppearanceSettings = ({ theme, setTheme }) => {
     <div>
       <PageHeader
         title="Appearance"
-        description="Customize hoe the app looks on your device"
+        description="Customize how the app looks on your device"
       />
 
       <div className="space-y-8">
@@ -1121,10 +1124,10 @@ const AppearanceSettings = ({ theme, setTheme }) => {
                   key={t.id}
                   onClick={() => setTheme(t.id)}
                   variant="outline"
-                  className={`relative p-6 rounded-xl border-2 transition-all h-auto ${
+                  className={`relative p-6 rounded-xl border-2 transition-all h-auto ${themeClasses.bgSecondary} ${
                     theme === t.id
                       ? "border-blue-500 shadow-lg"
-                      : "border-gray-200 hover:border-gray-300"
+                      : `${themeClasses.border} ${themeClasses.borderHover}`
                   }`}
                 >
                   <div
@@ -1132,7 +1135,7 @@ const AppearanceSettings = ({ theme, setTheme }) => {
                   >
                     <Icon size={24} className={t.text} />
                   </div>
-                  <p className="font-medium text-gray-900">{t.label}</p>
+                  <p className={`font-medium ${themeClasses.text}`}>{t.label}</p>
                   {theme === t.id && (
                     <div className="absolute top-2 right-2 bg-blue-500 text-white rounded-full p-1">
                       <Check size={14} />
@@ -1146,7 +1149,7 @@ const AppearanceSettings = ({ theme, setTheme }) => {
 
         {/* Accent Color */}
         <div>
-          <h3 className="font-semibold text-[14px] text-gray-900 mb-4">
+          <h3 className={`font-semibold text-lg ${themeClasses.text} mb-4`}>
             Accent Color
           </h3>
           <div className="flex gap-4">
@@ -1170,11 +1173,11 @@ const AppearanceSettings = ({ theme, setTheme }) => {
 
         {/* Font Size */}
         <div>
-          <h3 className="font-semibold text-lg text-gray-900 mb-4">
+          <h3 className={`font-semibold text-lg ${themeClasses.text} mb-4`}>
             Font Size
           </h3>
-          <div className="bg-gray-50 rounded-xl p-4">
-            <div className="flex items-center justify-between mb-4">
+          <div className={`${themeClasses.bgSecondary} rounded-xl p-4`}>
+            <div className={`flex items-center justify-between mb-4 ${themeClasses.text}`}>
               <span className="text-sm">Aa</span>
               <span className="text-xl">Aa</span>
             </div>
@@ -1191,7 +1194,7 @@ const AppearanceSettings = ({ theme, setTheme }) => {
               }}
               className="w-full"
             />
-            <div className="flex justify-between mt-2 text-xs text-gray-500">
+            <div className={`flex justify-between mt-2 text-xs ${themeClasses.textMuted}`}>
               <span>Small</span>
               <span>Medium</span>
               <span>Large</span>

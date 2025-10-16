@@ -15,7 +15,7 @@ const Sidebar = ({ activePage, setActivePage }) => {
     { id: 'doctors', label: 'Doctors', icon: <Activity size={ICON_SIZE} /> },
     { id: 'appointments', label: 'Appointments', icon: <Calendar size={ICON_SIZE} /> },
     { id: 'today-appointments', label: 'Today\'s Sessions', icon: <Video size={ICON_SIZE} /> },
-    { id: 'rewiew', label: 'Rewiew', icon: <MessageSquare size={ICON_SIZE} /> },
+    { id: 'rewiew', label: 'Reviews', icon: <MessageSquare size={ICON_SIZE} /> },
     { id: 'finance', label: 'Finance', icon: <DollarSign size={ICON_SIZE} /> },
     { id: 'help', label: 'Help Center', icon: <HelpCircle size={ICON_SIZE} /> },
     { id: 'settings', label: 'Settings', icon: <Settings size={ICON_SIZE} /> }
@@ -38,8 +38,8 @@ const Sidebar = ({ activePage, setActivePage }) => {
               }} 
               className={`flex items-center text-[14px] gap-4 w-full p-4 rounded-lg transition-all duration-200 ${
                 activePage === item.id 
-                  ? `   bg-gray-400 text-white transform scale-[1.02]` 
-                  : `${themeClasses.bgHover} bg-gray-100`
+                  ? `bg-blue-600 text-white transform scale-[1.02] shadow-lg` 
+                  : `${themeClasses.bgSecondary} ${themeClasses.text} ${themeClasses.bgHover}`
               }`}
             >
               <span className={`transition-transform duration-200 ${activePage === item.id ? 'transform scale-110' : ''}`}>
@@ -64,8 +64,8 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 }} 
                 className={`flex flex-col text-[12px] items-center justify-center p-2 rounded-lg transition-all duration-200 min-w-[60px] ${
                   activePage === item.id 
-                    ? 'bg-blue-600 transform scale-105' 
-                    : `${themeClasses.bgHover}`
+                    ? 'bg-blue-600 text-white transform scale-105 shadow-lg' 
+                    : `${themeClasses.bgSecondary} ${themeClasses.text} ${themeClasses.bgHover}`
                 }`}
               >
                 <div className={`mb-1 transition-transform duration-200 ${activePage === item.id ? 'transform scale-110' : ''}`}>

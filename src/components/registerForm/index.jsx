@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import { useNavigate } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
-import { Bannar,MainBackgroundImage } from "../../../src/assets";
+import { MainBackgroundImage } from "../../../src/assets";
 import apiInstance from '../../instance';
 
 function Form() {
@@ -22,6 +22,9 @@ function Form() {
   const [doctors, setDoctors] = useState([]);
   const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  const [bookedSlots, setBookedSlots] = useState([]);
 
   useEffect(() => {
     const fetchDoctors = async () => {
@@ -33,7 +36,8 @@ function Form() {
         } else {
           toast.error('Failed to load doctors. Please try again.');
         }
-      } catch (err) {
+      } catch (error) {
+        console.error('Error loading doctors:', error);
         toast.error('Error loading doctors. Please try again.');
       } finally {
         setLoadingDoctors(false);
@@ -42,17 +46,70 @@ function Form() {
     fetchDoctors();
   }, []);
 
+  // Function to fetch available time slots
+  const fetchAvailableTimeSlots = async (doctorId, date, slot) => {
+    if (!doctorId || !date) {
+      setAvailableTimeSlots([]);
+      setBookedSlots([]);
+      return;
+    }
+
+    setLoadingSlots(true);
+    try {
+      const params = { doctorId, date };
+      if (slot) {
+        params.slot = slot;
+      }
+      
+      const response = await apiInstance.get('/available-slots', { params });
+      
+      if (response.data.success) {
+        const data = response.data.data;
+        setAvailableTimeSlots(data.availableSlots || []);
+        setBookedSlots(data.bookedTimeSlots || []);
+      } else {
+        toast.error('Failed to load available time slots');
+        setAvailableTimeSlots([]);
+        setBookedSlots([]);
+      }
+    } catch (err) {
+      console.error('Error fetching time slots:', err);
+      toast.error('Error loading available time slots');
+      setAvailableTimeSlots([]);
+      setBookedSlots([]);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    const newFormData = { ...formData, [name]: value };
+    setFormData(newFormData);
+
+    // If doctor, date, or slot changes, fetch available time slots
+    if (name === 'doctor' || name === 'date' || name === 'slot') {
+      // Reset time selection when changing doctor, date, or slot
+      if (name !== 'time') {
+        newFormData.time = '';
+      }
+      
+      // Fetch available slots if we have doctor and date (slot is optional)
+      if (newFormData.doctor && newFormData.date) {
+        fetchAvailableTimeSlots(newFormData.doctor, newFormData.date, newFormData.slot);
+      } else {
+        setAvailableTimeSlots([]);
+        setBookedSlots([]);
+      }
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Basic validation
-    if (!formData.name || !formData.email || !formData.number || !formData.location || !formData.date || !formData.doctor) {
-      toast.error('Please fill in all required fields');
+    if (!formData.name || !formData.email || !formData.number || !formData.location || !formData.date || !formData.doctor || !formData.time) {
+      toast.error('Please fill in all required fields including time slot');
       return;
     }
     if (formData.number.length !== 10 || !/^\d+$/.test(formData.number)) {
@@ -69,6 +126,12 @@ function Form() {
     today.setHours(0, 0, 0, 0);
     if (selectedDate < today) {
       toast.error('Please select a future date');
+      return;
+    }
+    
+    // Check if selected time slot is still available
+    if (!availableTimeSlots.some(slot => slot.value === formData.time)) {
+      toast.error('Selected time slot is no longer available. Please choose another slot.');
       return;
     }
 
@@ -105,7 +168,8 @@ function Form() {
       } else {
         throw new Error(saveResponse.data.message || 'Failed to save registration');
       }
-    } catch (err) {
+    } catch (error) {
+      console.error('Error submitting appointment:', error);
       toast.error('Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
@@ -230,42 +294,7 @@ function Form() {
             </div>
           </div>
 
-          {/* Time Slot */}
-          <div className="flex flex-col">
-            <label htmlFor="time" className=" font-medium mb-1">
-              Time Slot
-            </label>
-            <select
-              id="time"
-              name="time"
-              value={formData.time}
-              onChange={handleChange}
-              required
-              className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
-            >
-              <optgroup label="Morning">
-                <option value="09:00-10:00">9:00 AM - 10:00 AM</option>
-                <option value="10:00-11:00">10:00 AM - 11:00 AM</option>
-                <option value="11:00-12:00">11:00 AM - 12:00 PM</option>
-              </optgroup>
-              <optgroup label="Afternoon">
-                <option value="12:00-13:00">12:00 PM - 1:00 PM</option>
-                <option value="13:00-14:00">1:00 PM - 2:00 PM</option>
-                <option value="14:00-15:00">2:00 PM - 3:00 PM</option>
-              </optgroup>
-              <optgroup label="Evening">
-                <option value="15:00-16:00">3:00 PM - 4:00 PM</option>
-                <option value="16:00-17:00">4:00 PM - 5:00 PM</option>
-              </optgroup>
-              <optgroup label="Night">
-                <option value="19:00-22:00">7:00 PM - 10:00 PM</option>
-                <option value="22:00-23:00">10:00 PM - 11:00 PM</option>
-                <option value="23:00-00:00">11:00 PM - 12:00 AM</option>
-                <option value="00:00-01:00">12:00 AM - 1:00 AM</option>
-                <option value="01:00-02:00">1:00 AM - 2:00 AM</option>
-              </optgroup>
-            </select>
-          </div>
+        
 
           {/* Location, Age, Date */}
           <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-6 rounded-xl'>
@@ -318,7 +347,57 @@ function Form() {
               </p>
             </div>
           </div>
-
+  {/* Time Slot */}
+  <div className="flex flex-col">
+            <label htmlFor="time" className=" font-medium mb-1">
+              Time Slot
+            </label>
+            <select
+              id="time"
+              name="time"
+              value={formData.time}
+              onChange={handleChange}
+              required
+              disabled={!formData.doctor || !formData.date || loadingSlots}
+              className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+            >
+              {!formData.doctor || !formData.date ? (
+                <option value="">Please select doctor and date first</option>
+              ) : loadingSlots ? (
+                <option value="" disabled>Loading available slots...</option>
+              ) : availableTimeSlots.length === 0 ? (
+                <option value="" disabled>No available slots for this date</option>
+              ) : (
+                <>
+                  <option value="">-- Select a Time Slot --</option>
+                  {availableTimeSlots.map((timeSlot) => (
+                    <option key={timeSlot.value} value={timeSlot.value}>
+                      {timeSlot.label}
+                    </option>
+                  ))}
+                </>
+              )}
+            </select>
+            {formData.doctor && formData.date && !loadingSlots && (
+              <div className="mt-2 text-sm text-gray-600">
+                {availableTimeSlots.length > 0 ? (
+                  <span className="text-green-600">
+                    {availableTimeSlots.length} slot{availableTimeSlots.length !== 1 ? 's' : ''} available
+                    {formData.slot && ` for ${formData.slot}`}
+                  </span>
+                ) : (
+                  <span className="text-red-600">
+                    No slots available for {formData.slot || 'any slot'} on {new Date(formData.date).toLocaleDateString()}
+                  </span>
+                )}
+                {bookedSlots.length > 0 && (
+                  <div className="mt-1 text-xs text-gray-500">
+                    Booked slots: {bookedSlots.join(', ')}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
           {/* Submit Button */}
           <div className="flex justify-center">
             <button
