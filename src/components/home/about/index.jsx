@@ -1,17 +1,17 @@
 import React from 'react'
 import { Pic1,Pic2,Pic3,Medition} from '../../../assets'
-import { Zap, ShieldCheck, Clock3, MapPin, Server } from 'lucide-react'
+import { Zap, ShieldCheck, Clock3, MapPin, Server, GraduationCap, Users } from 'lucide-react'
 
 const features = [
   {
     icon: Zap,
-    title: 'Therapy & Counseling',
-    description: 'Personalized therapy sessions designed to support mental well-being, emotional healing, and personal growth.'
+    title: 'Individual Therapy',
+    description: 'One-on-one personalized counseling sessions tailored to your unique needs, fostering self-discovery and mental wellness.'
   },
   {
     icon: ShieldCheck,
-    title: 'Mental Health Assessments',
-    description: 'Comprehensive psychological evaluations to understand emotional, cognitive, and behavioral patterns.'
+    title: 'Couple Therapy',
+    description: 'Relationship counseling tailored for modern couples, combining emotional awareness with respect to their needs.'
   },
   {
     icon: Clock3,
@@ -21,7 +21,17 @@ const features = [
   {
     icon: MapPin,
     title: 'Workshops & Wellness Programs',
-    description: 'Group workshops, wellness events, and community programs to promote awareness and resilience.'
+    description: 'Group workshops, wellness events, and community programs to encourage awareness.'
+  },
+  {
+    icon: GraduationCap,
+    title: 'Student Mentorship Therapy',
+    description: 'Dedicated support for students facing academic pressure, career decisions, and personal development challenges.'
+  },
+  {
+    icon: Users,
+    title: 'Community Circles',
+    description: 'Safe, small online groups where people share, learn, and heal together — from grief to growth.'
   },
 ]
 
