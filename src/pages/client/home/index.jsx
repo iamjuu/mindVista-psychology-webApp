@@ -24,6 +24,10 @@ export default function Home() {
     return `https://wa.me/${number}?text=${text}`;
   }, []);
 
+
+
+
+  
   // Fetch reviews data
   useEffect(() => {
     let isMounted = true;

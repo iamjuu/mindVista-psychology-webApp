@@ -72,7 +72,7 @@ export default function QuickAnswer() {
 
             <div className="mt-10">
               <p className="text-red-600 text-[12px] mb-3">Didn’t find your question?</p>
-              <Button as="a" href="#contact" className=" border border-[#FFCB05] text-black hover:bg-[#FFCB05]/90">
+              <Button as="a" href="#contact" className=" border border-primary-300 text-black hover:bg-primary-300/90">
                 Contact Us Now
               </Button>
             </div>

@@ -293,7 +293,7 @@ function Form() {
                 onChange={handleChange}
                 required
                 disabled={loadingDoctors}
-                className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm md:text-base"
               >
                 <option value="">-- Select a Doctor --</option>
                 {loadingDoctors ? (
@@ -377,7 +377,7 @@ function Form() {
               onChange={handleChange}
               required
               disabled={!formData.doctor || !formData.date || loadingSlots}
-              className="p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed"
+                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100 disabled:cursor-not-allowed text-sm md:text-base"
             >
               {!formData.doctor ? (
                 <option value="">Select a doctor first</option>

@@ -36,7 +36,7 @@ function Brain() {
       {/* Main Brain Shape */}
       <Sphere args={[1.5, 64, 64]} position={[0, 0, 0]}>
         <MeshDistortMaterial
-          color="#ff69b4"
+          color="primary-300"
           attach="material"
           distort={0.3}
           speed={1.5}
@@ -75,8 +75,8 @@ function Neuron({ position, scale, delay }) {
     <mesh ref={ref} position={position}>
       <sphereGeometry args={[1, 8, 8]} />
       <meshStandardMaterial
-        color="#ffb5ea"
-        emissive="#ff69b4"
+        color="primary-300"
+        emissive="primary-500"
         emissiveIntensity={0.5}
       />
     </mesh>
@@ -116,7 +116,7 @@ function ConnectionLines({ neurons }) {
 
   return (
     <lineSegments ref={linesRef}>
-      <lineBasicMaterial color="#ffb5ea" opacity={0.3} transparent />
+      <lineBasicMaterial color="primary-300" opacity={0.3} transparent />
     </lineSegments>
   );
 }
@@ -132,7 +132,7 @@ export default function Brain3D() {
         {/* Lighting */}
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} />
-        <pointLight position={[-10, -10, -5]} intensity={0.5} color="#ff69b4" />
+        <pointLight position={[-10, -10, -5]} intensity={0.5} color="primary-500" />
         <spotLight
           position={[0, 10, 0]}
           angle={0.3}

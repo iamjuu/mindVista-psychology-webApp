@@ -48,7 +48,7 @@ const index = () => {
               {features.map(({ icon: Icon, title, description }, idx) => (
             <div
               key={idx}
-                  className="flex items-start gap-5 rounded-xl border border-[#ffb5ea] bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+                  className="flex items-start gap-5 rounded-xl border border-primary-300 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
                   data-aos="fade-up"
                   data-aos-delay={(idx % 2 === 0 ? 0 : 100) + Math.floor(idx / 2) * 100}
             >
@@ -68,7 +68,7 @@ const index = () => {
     {/* Bottom paragraph */}
         <div className="w-full mt-4 md:mt-8" data-aos="fade-up" data-aos-delay="150">
             <div className=' px-2 md:px-20 '>
-            <p className="w-full py-10 rounded-xl border border-[#ffb5ea] bg-white/30 p-6 text-center text-[28px] leading-relaxed text-gray-700 shadow-sm">
+            <p className="w-full py-10 rounded-xl border border-primary-300 bg-white/30 p-6 text-center text-[28px] leading-relaxed text-gray-700 shadow-sm">
   We Provide Compassionate Psychological Care for a Healthier Mind
 </p>
 

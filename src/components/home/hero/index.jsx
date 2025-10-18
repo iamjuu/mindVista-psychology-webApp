@@ -58,13 +58,13 @@ const Index = () => {
 
           <div className="w-full flex gap-5">
             <Link to="/register">
-              <Button className="bg-[#ffb5ea] text-white">Register</Button>
+              <Button className="bg-primary-300 text-white">Register</Button>
             </Link>
             <Button
               as="a"
               href="https://wa.me/7025715250"
               target="_blank"
-              className="border border-[#ffb5ea]"
+              className="border border-primary-300"
             >
               Contact Us
             </Button>

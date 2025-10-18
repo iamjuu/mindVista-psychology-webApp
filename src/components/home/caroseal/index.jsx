@@ -52,7 +52,7 @@ const Carousel = ({ items }) => {
         {extendedItems.map((item, index) => (
           <div
             key={index}
-            className="flex flex-col justify-between rounded-xl border border-[#FFCB05] p-5 shadow-sm transition-shadow hover:shadow-md min-w-[350px]"
+            className="flex flex-col justify-between rounded-xl border border-primary-300 p-5 shadow-sm transition-shadow hover:shadow-md min-w-[350px]"
             data-aos="fade-up"
             data-aos-delay={index * 150}
           >
