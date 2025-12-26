@@ -239,3 +239,4 @@ setInterval(() => { ... }, 8000); // Change 8000 to your preferred ms
 **Created for Mind Vista Psychology Web App**  
 *Helping users find mental wellness through engaging design* 🧠✨
 
+

@@ -14,6 +14,7 @@ const Sidebar = ({
   fetchDoctorProfile,
   handleLogout
 }) => {
+  console.log(doctorData.profilePicture,'full data')
   return (
     <div className={`fixed lg:fixed inset-y-0 left-0 z-40 w-80 bg-white shadow-xl transform transition-transform duration-300 ease-in-out lg:translate-x-0 ${
       sidebarOpen ? 'translate-x-0' : '-translate-x-full'
@@ -47,7 +48,9 @@ const Sidebar = ({
         <div className="p-6 border-b border-gray-200 flex-shrink-0">
           <div className="flex items-center mb-4">
             <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center text-white text-xl font-bold shadow-lg">
-              {doctorData.name?.split(' ').map(n => n[0]).join('') || 'D'}
+              {/* {doctorData.name?.split(' ').map(n => n[0]).join('') || 'D'}   */}
+
+              <img src={doctorData.profilePicture} alt="" />
             </div>
             <div className="ml-4 flex-1">
               <h3 className="text-lg font-semibold text-gray-900 truncate">{doctorData.name || 'Doctor Name'}</h3>

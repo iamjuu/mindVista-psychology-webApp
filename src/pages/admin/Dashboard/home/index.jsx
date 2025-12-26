@@ -1123,7 +1123,7 @@ const Dashboard = () => {
               {/* Header Section */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                  <div className="w-8 h-8  border rounded-lg flex items-center justify-center">
                     <svg
                       className="w-5 h-5 text-purple-600"
                       fill="none"
@@ -1164,15 +1164,7 @@ const Dashboard = () => {
               <div className={`p-4 rounded-lg mb-4 bg-gradient-to-br from-purple-50 to-blue-50 dark:from-purple-900/20 dark:to-blue-900/20 border ${themeClasses.border}`}>
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded flex items-center justify-center">
-                      <svg
-                        className="w-3 h-3 text-white"
-                        fill="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z" />
-                      </svg>
-                    </div>
+                   
                     <div>
                       <p className={`text-sm font-medium ${themeClasses.text}`}>Dashboard Timer</p>
                     </div>
@@ -1256,7 +1248,7 @@ const Dashboard = () => {
                 </div>
 
                 {/* Scrollable History List - Shows 2 entries, scrolls if more */}
-                <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 custom-scrollbar">
+                <div className="space-y-2 max-h-[140px] overflow-y-auto pr-2 ">
                   {timeHistory.length > 0 ? (
                     timeHistory.map((entry, index) => {
                       // Color variations for different entries

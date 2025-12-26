@@ -7,7 +7,7 @@ const UserProfile = React.lazy(() => import("../pages/client/profile"));
 import RegisterForm from "../components/registerForm";
 import {CustomSpinner}from "../common/Loader";
 
-import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
+// import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 
 import PaymentPage from "../pages/payment"
 // ***************  admin  *************
@@ -20,6 +20,9 @@ import DoctorLogin from '../pages/docter/login'
 import VideoCallRoom from '../pages/videocall/VideoCallRoom'
 // ***************  theme context  *************
 import HomePage from "../pages/client/home"
+// *************** profile page ***************
+import Profle from "../pages/client/profile"
+
 
 import { ThemeProvider } from '../contexts/ThemeContext'
 
@@ -32,6 +35,7 @@ function UserRouter() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/profile" element={<Profle/>}/>
 {/* ************************** */}
 <Route path="/admin/dashboard" element={
   <ThemeProvider>
