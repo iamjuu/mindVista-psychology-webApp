@@ -166,7 +166,7 @@ const SettingsPage = () => {
                     key={item.id}
                     onClick={() => handleTabChange(item.id)}
                     variant={isActive ? "default" : "secondary"}
-                    className={`w-full justify-start h-auto p-3 ${
+                    className={`w-full   justify-start h-auto p-3 ${
                       isActive
                         ? `bg-blue-600 text-white shadow-sm hover:bg-blue-700`
                         : `${themeClasses.bgSecondary} ${themeClasses.text} ${themeClasses.bgHover}`
@@ -175,7 +175,7 @@ const SettingsPage = () => {
                     <div
                       className={`p-2 rounded-lg ${
                         isActive 
-                          ? `bg-blue-100 dark:bg-blue-900/30 text-blue-600` 
+                          ? `bg-blue-100  text-blue-600` 
                           : `${themeClasses.bgSecondary} ${themeClasses.text}`
                       } transition-colors`}
                     >
@@ -259,11 +259,11 @@ const EditProfile = ({
   return (
     <div>
       {/* Avatar Section */}
-      <div className={`bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 ${themeClasses.bgSecondary} rounded-2xl p-6 mb-8`}>
+      <div className={` ${themeClasses.bgSecondary} rounded-2xl p-6 mb-8`}>
         <div className="flex items-center space-x-6">
           <div className="relative group">
-            <div className="w-28 h-28  rounded-full bg-gradient-to-br from-blue-400 to-purple-400 p-1">
-              <div className={`w-full h-full rounded-full ${themeClasses.bg} overflow-hidden`}>
+            <div className="w-28 h-28  rounded-full  p-1">
+              <div className={`w-full h-full rounded-full border border-2 overflow-hidden`}>
                 {profileData.avatar ? (
                   <img
                     src={profileData.avatar}
@@ -271,7 +271,7 @@ const EditProfile = ({
                     className="w-full rounded-full h-full object-fit"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-800 dark:to-purple-800">
+                  <div className="w-full h-full flex items-center justify-center border">
                     <User size={40} className={themeClasses.textMuted} />
                   </div>
                 )}

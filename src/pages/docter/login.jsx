@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Eye, EyeOff, Lock, Mail, Brain } from 'lucide-react';
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react';
 import apiInstance from '../../instance';
 import { Button } from '../../components/shadcn/button/button';
 import { MainBackgroundImage } from '../../assets';
@@ -57,12 +57,16 @@ const DoctorLogin = () => {
         toast.success('Login successful!');
         
         // Store doctor data in localStorage
-        localStorage.setItem('doctorData', JSON.stringify(response.data.doctor));
         localStorage.setItem('isDoctorLoggedIn', 'true');
-        
-        // Navigate to doctor dashboard
+        localStorage.setItem('doctorData', JSON.stringify(response.data.doctor));
+
+        // Encrypt and save email to session storage
+        const encryptedEmail = btoa(formData.email); // Simple Base64 encoding
+        sessionStorage.setItem('doctorEmail', encryptedEmail);
+
+        // Navigate to doctor dashboard without email in URL
         setTimeout(() => {
-          navigate(`/doctor?email=${encodeURIComponent(formData.email)}`);
+          navigate('/doctor');
         }, 1500);
       }
     } catch (error) {

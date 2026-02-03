@@ -26,8 +26,11 @@ import MindvistaLogo from "./home/mindvistalogo.png"
 // teams 
 
 import Ajmal from "./home/croppedimge.jpg"
+import BackgroundImage from "./home/backgroundhero.jpg"
+import Manstha from  "./home/manstha.png"
 
-export {
+export {Manstha,
+    BackgroundImage,
     Ajmal,
     MindvistaLogo,
     PlaceHolderWomen,

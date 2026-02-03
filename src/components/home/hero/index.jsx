@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { BrainImage } from "../../../assets";
+import { BrainImage,BackgroundImage, Manstha } from "../../../assets";
 import AnimationText from "../../../animation/text";
 import Button from "../button";
 import { Link } from "react-router-dom";
@@ -35,20 +35,30 @@ const Index = () => {
   };
 
   return (
-    <div className="flex justify-center w-full">
+    <div
+    // style={
+    //   {
+    //     backgroundImage: `url(${BackgroundImage})`,
+    //     backgroundPosition: "center",
+    //     backgroundSize: "cover",
+    //     backgroundRepeat: "no-repeat",
+    //     backgroundAttachment: "fixed",
+    //   }
+    // }
+    className="flex justify-center w-full">
       <div className="max-w-7xl flex flex-col md:flex-row">
         {/* Left Side - Text Content */}
         <div className="w-full md:w-1/2 flex flex-col items-center justify-center">
           <div className="text-left p-6 md:p-8">
             <AnimationText
-              text="Mind Vista"
+              text="Find your balance within."
               delay={150}
               animateBy="words"
               direction="top"
-              className="text-xl sm:text-2xl md:text-3xl mb-6 md:mb-8"
+              className="text-xl sm:text-2xl md:text-4xl mb-6 md:mb-8"
             />
             <AnimationText
-              text="We offer a range of professional psychological services, including individual therapy, couples counseling, stress management, and personal development programs. Our goal is to support mental well-being through personalized and evidence-based approaches."
+              text="Kerala’s trusted online therapy platform — connecting you to certified psychologists in English and Malayalam.Healing begins with one conversation."
               delay={80}
               animateBy="words"
               direction="top"
@@ -58,13 +68,13 @@ const Index = () => {
 
           <div className="w-full flex gap-5">
             <Link to="/register">
-              <Button className="bg-[#ffb5ea] text-white">Register</Button>
+              <Button className="bg-primary-300 text-white">Register</Button>
             </Link>
             <Button
               as="a"
               href="https://wa.me/7025715250"
               target="_blank"
-              className="border border-[#ffb5ea]"
+              className="border border-primary-300"
             >
               Contact Us
             </Button>
@@ -82,10 +92,10 @@ const Index = () => {
             <div className="absolute inset-0 m-0 rounded-lg bg-gray-200 animate-pulse" />
           )}
           <img
-            src={BrainImage}
+            src={Manstha}
             alt="Background"
             onLoad={() => setImageLoaded(true)}
-            className={`object-contain w-full h-auto  max-h-[200px] md:max-h-[500px]  transition-opacity duration-300 ${
+            className={`object-contain w-[350px]  transition-opacity duration-300 ${
               imageLoaded ? "opacity-100" : "opacity-0"
             }`}
             style={{

@@ -1,4 +1,4 @@
-import {Consulting,Medition,Psychologist} from "../../../assets";
+import { Consulting, Medition, Psychologist } from "../../../assets";
 
 const Index = () => {
   return (
@@ -11,27 +11,35 @@ const Index = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 xl:gap-16">
           {/* Left Content */}
           <div
-  className="flex flex-col justify-center space-y-6 lg:space-y-8"
-  data-aos="fade-down"
->
-  <>
-    <h1 className="text-[24px]">
-      Mindful Growth
-      <br />
-      For a Healthier, Happier Life
-    </h1>
-    <p className="text-gray-600 text-base sm:text-lg lg:text-xl leading-relaxed">
-      At Mind Vista, we go beyond therapy — fostering personal growth,
-      emotional resilience, and mental well-being. Our team of licensed
-      psychologists provides compassionate, evidence-based support for
-      individuals, families, and organizations. From stress and anxiety
-      management to relationship counseling and wellness programs, we create
-      a safe space for positive change. With both in-person and online
-      sessions, we’re here to help you thrive wherever you are.
-    </p>
-  </>
-</div>
+            className="flex flex-col justify-center space-y-6 lg:space-y-8"
+            data-aos="fade-down"
+          >
+            <>
+              <h1 className="text-4xl">
+              Rooted in care, powered by connection.
 
+              </h1>
+              <p className="text-gray-600 text-base sm:text-lg lg:text-xl leading-relaxed">
+            In Kerala, wellness has always been more than just
+                health — it’s harmony of the body, mind, and spirit. At Sthithi,
+                we reimagine that harmony for today’s world — blending
+                traditional values of empathy with modern psychological science.
+              </p>
+            <h1 className="text-2xl text-blue-400">   How It Works?</h1>
+            <p className="text-gray-600">Three steps to your calm.</p>
+            <ul className="space-y-4  text-gray-600  sm:text-lg">
+              <li  className="text-xl">
+                <strong className="text-gray-800 ">Explore</strong> – Choose from verified psychologists trained in emotional, behavioral, and mindfulness therapy.
+              </li>
+              <li className="text-xl">
+                <strong className="text-gray-800">Book</strong> – Schedule your online session at your time, in your language.
+              </li>
+              <li className="text-xl">
+                <strong className="text-gray-800">Begin</strong> – A confidential video or audio talk — where you can finally let your thoughts flow.
+              </li>
+            </ul>
+            </>
+          </div>
 
           {/* Right Content - Images Grid */}
           <div className="relative " data-aos="fade-up">
@@ -73,6 +81,9 @@ const Index = () => {
                 </div>
               </div>
             </div>
+          </div>
+          <div className="bg-red-100 w-full">
+        
           </div>
         </div>
       </div>

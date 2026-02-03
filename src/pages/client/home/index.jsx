@@ -24,6 +24,10 @@ export default function Home() {
     return `https://wa.me/${number}?text=${text}`;
   }, []);
 
+
+
+
+  
   // Fetch reviews data
   useEffect(() => {
     let isMounted = true;
@@ -90,9 +94,9 @@ export default function Home() {
           <Hero />
         </section>
 
-        <section id="solution" className="flex flex-col">
-          <Support />
+        <section id="solution" className="flex md:mt-24 flex-col">
           <About />
+          <Support />
         </section>
 
         <section id="Doctors">
