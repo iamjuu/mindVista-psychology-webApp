@@ -46,20 +46,20 @@ const Doctors = () => {
           <div className="text-center text-gray-500 py-10">No doctors available right now.</div>
         ) : (
           <div className="max-h-[1000px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-500">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
               {doctors.map((e, index) => {
                 const imageUrl = e?.profilePicture
                   ? `${apiInstance.defaults.baseURL}/${e.profilePicture.replace(/^\//, "")}`
                   : null;
                 const fallbackImg = e?.gender?.toLowerCase() === "female" ? PlaceHolderWomen : PLaceHolderMen;
                 return (
-                  <div key={index} className="w-full">
-                    <div className="h-[350px] flex flex-col text-black rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition-all duration-300 bg-white overflow-hidden group">
-                      <div className="h-72 overflow-hidden">
+                  <div key={index} className="w-full  flex items-center justify-center">
+                    <div className="h-[280px] flex flex-col text-black rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition-all duration-300 bg-white overflow-hidden group">
+                      <div className="h-56  overflow-hidden flex items-center justify-center">
                         <img
                           src={imageUrl || fallbackImg}
                           alt={e?.name || "Doctor"}
-                          className="w-full  object-cover group-hover:scale-110 transition-transform duration-500"
+                          className="w-36 object-cover group-hover:scale-110 transition-transform duration-500"
                           onError={(evt) => {
                             evt.currentTarget.src = fallbackImg;
                           }}

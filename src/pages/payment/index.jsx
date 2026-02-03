@@ -62,6 +62,7 @@ const PaymentPage = () => {
         order_id: order.order.id,
         handler: async function (response) {
           try {
+            setLoading(true);
             // Step 3: Verify payment
             const appointmentId = appointmentData?._id || appointmentData?.id;
             console.log('Payment verification - appointmentId:', appointmentId);
@@ -75,13 +76,19 @@ const PaymentPage = () => {
 
             if (verifyRes.data.success) {
               toast.success("Payment successful! Appointment confirmed.");
-              navigate("/");
+              setLoading(false);
+              // Small delay to ensure toast is visible before navigation
+              setTimeout(() => {
+                navigate("/");
+              }, 1000);
             } else {
               toast.error("Payment verification failed.");
+              setLoading(false);
             }
           } catch (err) {
             console.error("Verification error:", err);
             toast.error("Something went wrong verifying payment.");
+            setLoading(false);
           }
         },
         prefill: {
@@ -95,13 +102,25 @@ const PaymentPage = () => {
       };
 
       const paymentObject = new window.Razorpay(options);
+      
+      // Handle modal close without payment
+      paymentObject.on('payment.failed', function (response) {
+        console.error("Payment failed:", response);
+        toast.error("Payment failed. Please try again.");
+        setLoading(false);
+      });
+
+      paymentObject.on('close', function () {
+        console.log("Payment modal closed");
+        setLoading(false);
+      });
+
       paymentObject.open();
     } catch (err) {
       console.error("Payment error:", err);
       toast.error("Payment initiation failed.");
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

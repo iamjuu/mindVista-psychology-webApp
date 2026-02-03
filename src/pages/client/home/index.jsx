@@ -94,9 +94,9 @@ export default function Home() {
           <Hero />
         </section>
 
-        <section id="solution" className="flex flex-col">
-          <Support />
+        <section id="solution" className="flex md:mt-24 flex-col">
           <About />
+          <Support />
         </section>
 
         <section id="Doctors">

@@ -214,7 +214,7 @@ const Footer = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-secondary text-black border  px-4 py-2.5 rounded-xl hover:bg-gray-400 transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                className="w-full bg-[#E53935] text-white border  px-4 py-2.5 rounded-xl hover:bg-[#d92f2c] hover:text-white transition-colors text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >
                 {isSubmitting ? (
                   <>

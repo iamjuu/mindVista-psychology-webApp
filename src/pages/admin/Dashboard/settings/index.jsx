@@ -175,7 +175,7 @@ const SettingsPage = () => {
                     <div
                       className={`p-2 rounded-lg ${
                         isActive 
-                          ? `bg-blue-100 dark:bg-blue-900/30 text-blue-600` 
+                          ? `bg-blue-100  text-blue-600` 
                           : `${themeClasses.bgSecondary} ${themeClasses.text}`
                       } transition-colors`}
                     >
