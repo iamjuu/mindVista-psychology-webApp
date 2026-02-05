@@ -35,6 +35,7 @@ module.exports = {
         'blink': 'blink 1s step-end infinite',
         'float': 'float 3s ease-in-out infinite',
         'spin-slow': 'spin 20s linear infinite',
+        'carousel': 'carousel 30s linear infinite',
       },
       keyframes: {
         blob: {
@@ -118,6 +119,14 @@ module.exports = {
           '50%': {
             transform: 'translateY(-20px)',
             opacity: '0.8',
+          },
+        },
+        carousel: {
+          '0%': {
+            transform: 'translateX(0)',
+          },
+          '100%': {
+            transform: 'translateX(-50%)',
           },
         },
       },
