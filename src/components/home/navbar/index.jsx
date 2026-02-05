@@ -14,7 +14,7 @@ const navLinks = [
   { href: "#hero", label: "Home" },
   { href: "#Doctors", label: "Doctors" },
   { href: "#Services", label: "Services" },
-  { href: "#Reviews", label: "Reviews" },
+  // { href: "#Reviews", label: "Reviews" },
   { href: "https://wa.me/7025715250", label: "Contect" },
   {href:"/profile",label:"profile"}
 ];

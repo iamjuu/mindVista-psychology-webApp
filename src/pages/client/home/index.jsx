@@ -12,7 +12,53 @@ import Docters from "../../../components/home/doctors";
 import { CustomSpinner } from "../../../common/Loader";
 import api from "../../../instance";
 
+
+
+
 export default function Home() {
+
+
+
+
+    function PsychologyCarousel() {
+    const [index, setIndex] = useState(0);
+  
+    useEffect(() => {
+      const timer = setInterval(() => {
+        setIndex((prev) => (prev + 1) % psychologyContent.length);
+      }, 3500);
+  
+      return () => clearInterval(timer);
+    }, []);
+  
+    return (
+      <section  className="w-full py-16 bg-gray-50 overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        <div className="relative">
+          <div className="flex gap-6   animate-carousel">
+            {[...psychologyContent, ...psychologyContent].map((item, i) => (
+              <div
+                key={i}
+                className="min-w-[320px] md:min-w-[360px] bg-white/5 backdrop-blur-md border rounded-2xl p-6 shadow-lg"
+              >
+                <p className="text-base md:text-lg leading-relaxed opacity-90">
+                  {item.text}
+                </p>
+
+                <div className="mt-4 text-sm text-gray-600">
+                  <p className="font-medium text-gray-900">{item.title}</p>
+                  <p>{item.subtitle}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    );
+  }
+
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isBouncing, setIsBouncing] = useState(false);
@@ -26,7 +72,59 @@ export default function Home() {
 
 
 
-
+  const psychologyContent = [
+    {
+      text: "Psychology is the scientific study of the mind and behavior, helping us understand thoughts, emotions, and actions.",
+      title: "Psychology",
+      subtitle: "Introduction",
+    },
+    {
+      text: "Mental health includes emotional, psychological, and social well-being, influencing how we think, feel, and act.",
+      title: "Mental Health",
+      subtitle: "Core Concept",
+    },
+    {
+      text: "Cognitive psychology explores mental processes such as perception, memory, learning, and problem-solving.",
+      title: "Cognitive Psychology",
+      subtitle: "Branch of Psychology",
+    },
+    {
+      text: "Behavioral psychology focuses on observable behaviors and how they are learned through interaction with the environment.",
+      title: "Behavioral Psychology",
+      subtitle: "Learning & Behavior",
+    },
+    {
+      text: "Developmental psychology studies how people grow and change throughout their lifespan, from infancy to old age.",
+      title: "Developmental Psychology",
+      subtitle: "Human Growth",
+    },
+    {
+      text: "Clinical psychology focuses on diagnosing and treating mental, emotional, and behavioral disorders.",
+      title: "Clinical Psychology",
+      subtitle: "Therapy & Treatment",
+    },
+    {
+      text: "Social psychology examines how individuals are influenced by social interactions, groups, and cultural norms.",
+      title: "Social Psychology",
+      subtitle: "Society & Behavior",
+    },
+    {
+      text: "Positive psychology emphasizes strengths, well-being, happiness, and what helps people thrive in life.",
+      title: "Positive Psychology",
+      subtitle: "Well-Being",
+    },
+    {
+      text: "Neuropsychology explores the relationship between the brain, nervous system, and behavior.",
+      title: "Neuropsychology",
+      subtitle: "Brain & Behavior",
+    },
+    {
+      text: "Educational psychology studies how people learn and how teaching methods can improve learning outcomes.",
+      title: "Educational Psychology",
+      subtitle: "Learning Science",
+    },
+  ];
+  
   
   // Fetch reviews data
   useEffect(() => {
@@ -112,7 +210,10 @@ export default function Home() {
         <QuickAnswer />
 
         <section id="contect">
-          <Contact />
+          {/* <Contact /> */}
+        </section>
+        <section id="contect">
+        <PsychologyCarousel/>
         </section>
 
         <Footer />
