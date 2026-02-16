@@ -3,7 +3,7 @@ import axios from 'axios';
 // Create axios instance for localhost server
 
 const apiInstance = axios.create({
-  baseURL: 'http://localhost:3000/api',
+  baseURL: 'https://mind-vista-backend.vercel.app/api',
   headers: {
     'Content-Type': 'application/json',
   },
