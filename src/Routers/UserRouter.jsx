@@ -20,10 +20,6 @@ import DoctorLogin from '../pages/docter/login'
 import VideoCallRoom from '../pages/videocall/VideoCallRoom'
 // ***************  theme context  *************
 import HomePage from "../pages/client/home"
-// *************** profile page ***************
-import Profle from "../pages/client/profile"
-
-
 import { ThemeProvider } from '../contexts/ThemeContext'
 
 function UserRouter() {
@@ -35,7 +31,6 @@ function UserRouter() {
           <Route path="/profile" element={<UserProfile />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/profile" element={<Profle/>}/>
 {/* ************************** */}
 <Route path="/admin/dashboard" element={
   <ThemeProvider>
