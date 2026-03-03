@@ -53,8 +53,8 @@ const Doctors = () => {
                   : null;
                 const fallbackImg = e?.gender?.toLowerCase() === "female" ? PlaceHolderWomen : PLaceHolderMen;
                 return (
-                  <div key={index} className="w-full  flex items-center justify-center">
-                    <div className="h-[280px] flex flex-col text-black rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition-all duration-300 bg-white overflow-hidden group">
+                  <div key={index} className="w-full min-w-0">
+                    <div className="w-full h-[280px] flex flex-col text-black rounded-xl shadow-lg cursor-pointer hover:shadow-2xl transition-all duration-300 bg-white overflow-hidden group">
                       <div className="h-56  overflow-hidden flex items-center justify-center">
                         <img
                           src={imageUrl || fallbackImg}
@@ -67,8 +67,8 @@ const Doctors = () => {
                       </div>
                       <div className="flex flex-col justify-center items-center p-6 flex-1">
                         <h1 className="font-bold text-xl text-gray-900 text-center">{e?.name || "Unnamed Doctor"}</h1>
-                        <h3 className="pt-3 text-gray-600 text-center text-base font-medium">{e?.specialization || "General"}</h3>
-                        <div className="mt-4 w-16 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"></div>
+                        <h3 className=" text-gray-600 text-center text-base font-medium">{e?.specialization || "General"}</h3>
+                        {/* <div className="mt-4 w-16 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full"></div> */}
                       </div>
                     </div>
                   </div>

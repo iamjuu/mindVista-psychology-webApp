@@ -25,7 +25,7 @@ const Index = () => {
                 we reimagine that harmony for today’s world — blending
                 traditional values of empathy with modern psychological science.
               </p>
-            <h1 className="text-2xl text-blue-400">   How It Works?</h1>
+            <h1 className="text-2xl font-[600] text-black">   How It Works?</h1>
             <p className="text-gray-600">Three steps to your calm.</p>
             <ul className="space-y-4  text-gray-600  sm:text-lg">
               <li  className="text-xl">

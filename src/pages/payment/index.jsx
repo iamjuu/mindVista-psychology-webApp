@@ -45,21 +45,30 @@ const PaymentPage = () => {
 
     try {
       // Step 1: Create order on backend
-      const { data: order } = await apiInstance.post("/create-order", {
+      const { data } = await apiInstance.post("/create-order", {
         amount: 50000, // ₹500 in paise (500 * 100)
         currency: "INR",
-        receipt: `receipt_${Date.now()}`,
-        appointmentData: appointmentData
+        appointmentData: appointmentData,
       });
+
+      // Validate and extract order data from response
+      if (!data?.success || !data?.data) {
+        console.error("Unexpected create-order response:", data);
+        toast.error("Failed to initiate payment. Please try again.");
+        setLoading(false);
+        return;
+      }
+
+      const order = data.data;
 
       // Step 2: Open Razorpay Checkout
       const options = {
         key: "rzp_test_RMhvZDD0dxSGn0", // Razorpay test key
-        amount: order.order.amount,
-        currency: order.order.currency,
+        amount: order.amount,
+        currency: order.currency,
         name: "MindVista Psychology",
         description: "Appointment Payment",
-        order_id: order.order.id,
+        order_id: order.id,
         handler: async function (response) {
           try {
             setLoading(true);
@@ -70,8 +79,10 @@ const PaymentPage = () => {
             
             const verifyRes = await apiInstance.post("/verify-payment", {
               ...response,
-              appointmentId: appointmentId,
-              amount: 500 // Amount in rupees
+              appointmentData: {
+                appointmentId: appointmentId,
+              },
+              amount: 500, // Amount in rupees
             });
 
             if (verifyRes.data.success) {

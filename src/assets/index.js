@@ -20,8 +20,8 @@ import BadgeImage from "./dashbaord/360_F_327858718_Pl52WnI5PVYHVvtoxF96Arb9ZYEo
 
 import MainBackgroundImage from "./home/mindvsitabackgrond.jpg"
 import BrainImage from "./home/3d-brain-removebg-preview.png"
-import PLaceHolderMen from "./home/place holder.png"
-import PlaceHolderWomen from "./home/placeholder women.jpg"
+import PLaceHolderMen from "./home/men.png"
+import PlaceHolderWomen from "./home/women.png"
 import MindvistaLogo from "./home/mindvistalogo.png"
 // teams 
 
