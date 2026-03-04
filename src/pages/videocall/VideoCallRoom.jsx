@@ -2,8 +2,10 @@ import { useEffect, useState, useRef, useCallback } from 'react'
 import PropTypes from 'prop-types'
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom'
 import { Button } from '../../components/shadcn/button/button'
-import { Video, VideoOff, Mic, MicOff, PhoneOff, MessageCircle } from 'lucide-react'
+import { Video, VideoOff, Mic, MicOff, PhoneOff, MessageCircle, Copy } from 'lucide-react'
+import Peer from 'peerjs'
 import apiInstance from '../../instance'
+import { API_HOST } from '../../config/api'
 
 const VideoCallRoom = () => {
   const { videoCallId } = useParams()
@@ -20,83 +22,44 @@ const VideoCallRoom = () => {
   const [connectionStatus, setConnectionStatus] = useState('Connecting...')
   const [remoteUsers, setRemoteUsers] = useState([])
   const [isEndingSession, setIsEndingSession] = useState(false)
+  const [linkCopied, setLinkCopied] = useState(false)
+  const [dataConnectionReady, setDataConnectionReady] = useState(false)
 
   const localVideoRef = useRef(null)
   const localStreamRef = useRef(null)
-  const wsRef = useRef(null)
-  const heartbeatRef = useRef(null)
-  const shouldReconnectRef = useRef(true)
-  const pendingMessagesRef = useRef([])
-  const peerConnectionsRef = useRef({})
-  const remoteStreamsRef = useRef({})
+  const peerRef = useRef(null)
+  const dataConnRef = useRef(null)
+  const mediaConnRef = useRef(null)
 
-  // FIX: Determine role from URL query parameter OR localStorage
   // URL: /video-call/:videoCallId?role=doctor
   const roleFromUrl = searchParams.get('role')
   const roleFromStorage = localStorage.getItem('isDoctorLoggedIn') === 'true' ? 'doctor' : 'patient'
   const userRole = roleFromUrl || roleFromStorage
   const isDoctor = userRole === 'doctor'
-  
-  // Generate unique userId with role prefix
+
   const localUserId = useRef(`${userRole}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`).current
   const username = isDoctor ? 'Dr. Smith' : 'Patient'
-
-  const initializeWebRTC = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: true, 
-        audio: true 
-      })
-      localStreamRef.current = stream
-      
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream
-      }
-      
-      connectToSignalingServer()
-    } catch (err) {
-      console.error('Media error:', err)
-      setError('Cannot access camera/microphone. Please grant permissions.')
-    }
-  }
 
   const fetchAppointmentDetails = useCallback(async () => {
     try {
       setLoading(true)
-      setError(null) // Clear any previous errors
-      
-      // Always send role parameter to backend
+      setError(null)
       const roleQuery = `?role=${userRole}`
-      console.log('🔍 Fetching appointment details for role:', userRole)
-      console.log('🔍 Request URL:', `/video-call/${videoCallId}/details${roleQuery}`)
-      
       const response = await apiInstance.get(`/video-call/${videoCallId}/details${roleQuery}`)
-      
-      console.log('✅ Response received:', response.data)
-      
+
       if (response.data.success) {
         setAppointmentDetails(response.data.data)
-        await initializeWebRTC()
+        await initializePeerJS()
       } else {
-        console.error('❌ Backend returned error:', response.data.message)
         setError(response.data.message || 'Failed to load appointment details')
       }
     } catch (err) {
-      console.error('❌ Error fetching details:', err)
-      
-      // Provide more specific error messages
+      console.error('Error fetching details:', err)
       if (err.response) {
-        // Server responded with error status
-        const errorMsg = err.response.data?.message || err.response.statusText
-        console.error('Server error:', err.response.status, errorMsg)
-        setError(`Server error: ${errorMsg}`)
+        setError(err.response.data?.message || err.response.statusText)
       } else if (err.request) {
-        // Request was made but no response
-        console.error('No response from server')
         setError('Cannot connect to server. Please check if the backend is running.')
       } else {
-        // Something else happened
-        console.error('Request setup error:', err.message)
         setError(`Connection error: ${err.message}`)
       }
     } finally {
@@ -105,252 +68,145 @@ const VideoCallRoom = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userRole, videoCallId])
 
-  // Run after fetchAppointmentDetails is defined
   useEffect(() => {
     fetchAppointmentDetails()
     return () => cleanup()
   }, [videoCallId, fetchAppointmentDetails])
 
-  const connectToSignalingServer = () => {
-    const wsUrl = `wss://mind-vista-backend.vercel.app?videoCallId=${videoCallId}&userId=${localUserId}&username=${username}`
-    console.log('Connecting to:', wsUrl)
-    console.log('Role:', userRole, '| UserId:', localUserId)
-    
-    const ws = new WebSocket(wsUrl)
-    wsRef.current = ws
-
-    ws.onopen = () => {
-      console.log('✅ Connected to signaling server')
-      setConnectionStatus('Connected')
-
-      // Flush any pending messages queued while disconnected
-      while (pendingMessagesRef.current.length > 0 && wsRef.current?.readyState === WebSocket.OPEN) {
-        const msg = pendingMessagesRef.current.shift()
-        wsRef.current.send(JSON.stringify(msg))
+  const initializePeerJS = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      localStreamRef.current = stream
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream
       }
 
-      // Heartbeat to keep the connection alive
-      if (heartbeatRef.current) clearInterval(heartbeatRef.current)
-      heartbeatRef.current = setInterval(() => {
-        if (wsRef.current?.readyState === WebSocket.OPEN) {
-          wsRef.current.send(JSON.stringify({ type: 'ping', t: Date.now() }))
+      // Unique peer ID for this session (PeerJS free server)
+      const peerId = `${videoCallId}-${userRole}-${Date.now()}`
+      const peer = new Peer(peerId, {
+        host: '0.peerjs.com',
+        path: '/',
+        secure: true,
+        config: {
+          iceServers: [
+            { urls: 'stun:stun.l.google.com:19302' },
+            { urls: 'stun:stun1.l.google.com:19302' }
+          ]
         }
-      }, 20000)
-    }
+      })
+      peerRef.current = peer
 
-    ws.onmessage = async (event) => {
-      const data = JSON.parse(event.data)
-      console.log('📨 Received:', data.type, data)
+      peer.on('open', async () => {
+        console.log('✅ PeerJS connected, ID:', peerId)
+        setConnectionStatus('Connected')
 
-      switch (data.type) {
-        case 'room-joined':
-          console.log('Room joined. Existing participants:', data.participants)
-          for (const participant of data.participants) {
-            await createPeerConnection(participant.userId, true)
+        // Register with backend and get other peer's ID if they're waiting
+        try {
+          const { data } = await apiInstance.post(`/video-call/${videoCallId}/join`, {
+            role: userRole,
+            peerId
+          })
+
+          if (data.shouldCall && data.otherPeerId) {
+            // Other person is waiting - we call them
+            console.log('Calling other peer:', data.otherPeerId)
+            const call = peer.call(data.otherPeerId, stream)
+            if (call) {
+              mediaConnRef.current = call
+              call.on('stream', (remoteStream) => {
+                addRemoteUser(data.otherPeerId, remoteStream)
+              })
+              call.on('close', () => handleRemoteLeft(data.otherPeerId))
+              call.on('error', (err) => console.error('Call error:', err))
+            }
+            // Open data connection for chat
+            const conn = peer.connect(data.otherPeerId)
+            if (conn) {
+              setupDataConnection(conn)
+            }
+          } else {
+            // We're first - wait for incoming call
+            console.log('Waiting for other participant...')
           }
-          break
+        } catch (err) {
+          console.error('Join room error:', err)
+          setError('Failed to join video call room')
+        }
+      })
 
-        case 'user-joined':
-          console.log('New user joined:', data.userId, data.username)
-          if (data.userId !== localUserId) {
-            // Existing participants should NOT create an offer to avoid glare.
-            // The joining user (who received 'room-joined') will create the offer.
-            await createPeerConnection(data.userId, false)
-          }
-          break
+      peer.on('call', (call) => {
+        console.log('📞 Incoming call from:', call.peer)
+        mediaConnRef.current = call
+        call.answer(stream)
+        call.on('stream', (remoteStream) => {
+          addRemoteUser(call.peer, remoteStream)
+        })
+        call.on('close', () => handleRemoteLeft(call.peer))
+        call.on('error', (err) => console.error('Call error:', err))
+      })
 
-        case 'offer':
-          console.log('Received offer from:', data.userId)
-          await handleOffer(data.userId, data.offer)
-          break
+      peer.on('connection', (conn) => {
+        console.log('📨 Incoming data connection from:', conn.peer)
+        setupDataConnection(conn)
+      })
 
-        case 'answer':
-          console.log('Received answer from:', data.userId)
-          await handleAnswer(data.userId, data.answer)
-          break
+      peer.on('error', (err) => {
+        console.error('PeerJS error:', err)
+        if (err.type === 'peer-unavailable') {
+          setConnectionStatus('Waiting for other participant...')
+        } else {
+          setConnectionStatus('Connection error')
+        }
+      })
 
-        case 'ice-candidate':
-          console.log('Received ICE candidate from:', data.userId)
-          await handleIceCandidate(data.userId, data.candidate)
-          break
-
-        case 'chat':
-          setMessages(prev => [...prev, {
-            id: data.timestamp,
-            text: data.message,
-            sender: data.username,
-            isMe: data.userId === localUserId
-          }])
-          break
-
-        case 'user-left':
-          console.log('User left:', data.userId)
-          handleUserLeft(data.userId)
-          break
-      }
-    }
-
-    ws.onclose = () => {
-      console.log('❌ Disconnected from signaling server')
-      setConnectionStatus('Disconnected')
-      if (heartbeatRef.current) {
-        clearInterval(heartbeatRef.current)
-        heartbeatRef.current = null
-      }
-      // Auto-reconnect if user is still on the page
-      if (shouldReconnectRef.current) {
-        setTimeout(() => {
-          if (shouldReconnectRef.current && !wsRef.current) {
-            console.log('🔄 Attempting to reconnect to signaling server...')
-            connectToSignalingServer()
-          }
-        }, 2000)
-      }
-    }
-
-    ws.onerror = (err) => {
-      console.error('WebSocket error:', err)
-      setConnectionStatus('Connection error')
+      peer.on('disconnected', () => {
+        setConnectionStatus('Disconnected')
+      })
+    } catch (err) {
+      console.error('Media/PeerJS error:', err)
+      setError('Cannot access camera/microphone. Please grant permissions.')
     }
   }
 
-  const createPeerConnection = async (remoteUserId, isOfferer) => {
-    if (peerConnectionsRef.current[remoteUserId]) {
-      console.log('Peer connection already exists for:', remoteUserId)
-      return
-    }
+  const setupDataConnection = (conn) => {
+    if (dataConnRef.current) return
+    dataConnRef.current = conn
 
-    console.log(`Creating peer connection with ${remoteUserId} (offerer: ${isOfferer})`)
-
-    const pc = new RTCPeerConnection({
-      iceServers: [
-        { urls: 'stun:stun.l.google.com:19302' },
-        { urls: 'stun:stun1.l.google.com:19302' }
-      ]
+    conn.on('open', () => {
+      console.log('Data connection open for chat')
+      setDataConnectionReady(true)
     })
 
-    peerConnectionsRef.current[remoteUserId] = pc
-
-    if (localStreamRef.current) {
-      localStreamRef.current.getTracks().forEach(track => {
-        pc.addTrack(track, localStreamRef.current)
-        console.log('Added local track:', track.kind)
-      })
-    }
-
-    pc.ontrack = (event) => {
-      console.log('🎥 Received remote track from:', remoteUserId, event.track.kind)
-      console.log('🎥 Stream:', event.streams[0])
-      console.log('🎥 Track state:', event.track.readyState)
-      
-      if (!remoteStreamsRef.current[remoteUserId]) {
-        remoteStreamsRef.current[remoteUserId] = event.streams[0]
-        
-        setRemoteUsers(prev => {
-          console.log('👥 Current remote users:', prev)
-          if (prev.find(u => u.userId === remoteUserId)) {
-            console.log('⚠️ User already exists, skipping')
-            return prev
-          }
-          console.log('✅ Adding new remote user:', remoteUserId)
-          return [...prev, { userId: remoteUserId, stream: event.streams[0] }]
-        })
-      } else {
-        console.log('⚠️ Stream already exists for:', remoteUserId)
+    conn.on('data', (data) => {
+      if (typeof data === 'object' && data.type === 'chat') {
+        setMessages(prev => [...prev, {
+          id: data.timestamp || Date.now(),
+          text: data.message,
+          sender: data.username || 'Remote',
+          isMe: false
+        }])
       }
-    }
+    })
 
-    pc.onicecandidate = (event) => {
-      if (event.candidate && wsRef.current?.readyState === WebSocket.OPEN) {
-        wsRef.current.send(JSON.stringify({
-          type: 'ice-candidate',
-          target: remoteUserId,
-          candidate: event.candidate
-        }))
-        console.log('Sent ICE candidate to:', remoteUserId)
-      }
-    }
-
-    pc.onconnectionstatechange = () => {
-      console.log(`Connection state with ${remoteUserId}:`, pc.connectionState)
-    }
-
-    pc.oniceconnectionstatechange = () => {
-      console.log(`ICE connection state with ${remoteUserId}:`, pc.iceConnectionState)
-    }
-
-    if (isOfferer) {
-      try {
-        const offer = await pc.createOffer()
-        await pc.setLocalDescription(offer)
-        
-        wsRef.current.send(JSON.stringify({
-          type: 'offer',
-          target: remoteUserId,
-          offer: pc.localDescription
-        }))
-        console.log('Sent offer to:', remoteUserId)
-      } catch (err) {
-        console.error('Error creating offer:', err)
-      }
-    }
+    conn.on('close', () => {
+      dataConnRef.current = null
+      setDataConnectionReady(false)
+    })
   }
 
-  const handleOffer = async (remoteUserId, offer) => {
-    try {
-      if (!peerConnectionsRef.current[remoteUserId]) {
-        await createPeerConnection(remoteUserId, false)
-      }
-
-      const pc = peerConnectionsRef.current[remoteUserId]
-      await pc.setRemoteDescription(new RTCSessionDescription(offer))
-      
-      const answer = await pc.createAnswer()
-      await pc.setLocalDescription(answer)
-      
-      wsRef.current.send(JSON.stringify({
-        type: 'answer',
-        target: remoteUserId,
-        answer: pc.localDescription
-      }))
-      console.log('Sent answer to:', remoteUserId)
-    } catch (err) {
-      console.error('Error handling offer:', err)
-    }
+  const addRemoteUser = (userId, stream) => {
+    setRemoteUsers(prev => {
+      if (prev.find(u => u.userId === userId)) return prev
+      return [...prev, { userId, stream }]
+    })
   }
 
-  const handleAnswer = async (remoteUserId, answer) => {
-    try {
-      const pc = peerConnectionsRef.current[remoteUserId]
-      if (pc) {
-        await pc.setRemoteDescription(new RTCSessionDescription(answer))
-        console.log('Set remote description (answer) for:', remoteUserId)
-      }
-    } catch (err) {
-      console.error('Error handling answer:', err)
+  const handleRemoteLeft = (userId) => {
+    setRemoteUsers(prev => prev.filter(u => u.userId !== userId))
+    if (dataConnRef.current?.peer === userId) {
+      dataConnRef.current?.close()
+      dataConnRef.current = null
     }
-  }
-
-  const handleIceCandidate = async (remoteUserId, candidate) => {
-    try {
-      const pc = peerConnectionsRef.current[remoteUserId]
-      if (pc && candidate) {
-        await pc.addIceCandidate(new RTCIceCandidate(candidate))
-        console.log('Added ICE candidate for:', remoteUserId)
-      }
-    } catch (err) {
-      console.error('Error adding ICE candidate:', err)
-    }
-  }
-
-  const handleUserLeft = (remoteUserId) => {
-    if (peerConnectionsRef.current[remoteUserId]) {
-      peerConnectionsRef.current[remoteUserId].close()
-      delete peerConnectionsRef.current[remoteUserId]
-    }
-
-    delete remoteStreamsRef.current[remoteUserId]
-    setRemoteUsers(prev => prev.filter(user => user.userId !== remoteUserId))
   }
 
   const toggleVideo = () => {
@@ -372,51 +228,38 @@ const VideoCallRoom = () => {
   }
 
   const sendMessage = () => {
-    if (!newMessage.trim() || !wsRef.current) return
-    const payload = { type: 'chat', message: newMessage }
-    if (wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(JSON.stringify(payload))
-    } else {
-      // Queue message to be sent once reconnected
-      pendingMessagesRef.current.push(payload)
-      setConnectionStatus('Reconnecting...')
-      // Trigger reconnect if not already connected
-      if (!wsRef.current || wsRef.current.readyState === WebSocket.CLOSED) {
-        wsRef.current = null
-        connectToSignalingServer()
-      }
+    if (!newMessage.trim()) return
+    const payload = { type: 'chat', message: newMessage, username, timestamp: Date.now() }
+    if (dataConnRef.current && dataConnectionReady) {
+      dataConnRef.current.send(payload)
     }
-    
     setMessages(prev => [...prev, {
       id: Date.now(),
       text: newMessage,
       sender: username,
       isMe: true
     }])
-    
     setNewMessage('')
   }
 
   const cleanup = () => {
-    console.log('Cleaning up...')
-    shouldReconnectRef.current = false
-    
-    Object.values(peerConnectionsRef.current).forEach(pc => pc.close())
-    peerConnectionsRef.current = {}
-    
-    if (wsRef.current) {
-      wsRef.current.close()
-      wsRef.current = null
+    if (mediaConnRef.current) {
+      mediaConnRef.current.close()
+      mediaConnRef.current = null
     }
-    if (heartbeatRef.current) {
-      clearInterval(heartbeatRef.current)
-      heartbeatRef.current = null
+    if (dataConnRef.current) {
+      dataConnRef.current.close()
+      dataConnRef.current = null
     }
-    
+    if (peerRef.current) {
+      peerRef.current.destroy()
+      peerRef.current = null
+    }
     if (localStreamRef.current) {
       localStreamRef.current.getTracks().forEach(track => track.stop())
       localStreamRef.current = null
     }
+    setRemoteUsers([])
   }
 
   const handleCallEnd = () => {
@@ -424,27 +267,34 @@ const VideoCallRoom = () => {
     navigate(isDoctor ? '/doctor' : '/profile')
   }
 
-  const handleEndSession = async () => {
-    if (!isDoctor || isEndingSession) return;
+  const shareLink = `${window.location.origin}/video-call/${videoCallId}?role=${isDoctor ? 'patient' : 'doctor'}`
+  const copyShareLink = async () => {
     try {
-      setIsEndingSession(true);
-      
-      const response = await apiInstance.post('/end-session', { videoCallId });
-      
+      await navigator.clipboard.writeText(shareLink)
+      setLinkCopied(true)
+      setTimeout(() => setLinkCopied(false), 2000)
+    } catch (err) {
+      console.error('Failed to copy link:', err)
+    }
+  }
+
+  const handleEndSession = async () => {
+    if (!isDoctor || isEndingSession) return
+    try {
+      setIsEndingSession(true)
+      const response = await apiInstance.post('/end-session', { videoCallId })
       if (response.data.success === true) {
-        alert('Session ended successfully');
-        cleanup();
-        navigate('/doctor');
-      } else {
-        console.warn('Session end failed:', response.data.message);
+        alert('Session ended successfully')
+        cleanup()
+        navigate('/doctor')
       }
     } catch (e) {
-      console.error('Failed to end session:', e);
+      console.error('Failed to end session:', e)
     } finally {
-      setIsEndingSession(false);
+      setIsEndingSession(false)
     }
-  };
-  
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center text-white">
@@ -462,34 +312,19 @@ const VideoCallRoom = () => {
             <h2 className="text-2xl font-bold mb-4">Unable to Connect</h2>
             <p className="text-xl text-red-400 mb-4">{error}</p>
           </div>
-          
           <div className="bg-gray-800 rounded-lg p-6 mb-6 text-left">
             <h3 className="text-lg font-semibold mb-3">Troubleshooting Steps:</h3>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li>✓ Check if the backend server is running (https://mind-vista-backend.vercel.app)</li>
+              <li>✓ Check if the backend server is running ({API_HOST})</li>
               <li>✓ Verify the video call link is correct</li>
               <li>✓ Make sure you have the correct role parameter (?role=patient or ?role=doctor)</li>
               <li>✓ Check if the appointment exists and is approved</li>
               <li>✓ Ensure your browser allows camera/microphone access</li>
             </ul>
           </div>
-
-          <div className="bg-blue-900 bg-opacity-30 rounded-lg p-4 mb-6 text-left">
-            <h3 className="text-sm font-semibold mb-2">Debug Info:</h3>
-            <div className="text-xs text-gray-400 space-y-1 font-mono">
-              <p>Video Call ID: {videoCallId}</p>
-              <p>Your Role: {userRole}</p>
-              <p>User ID: {localUserId}</p>
-            </div>
-          </div>
-          
           <div className="flex space-x-4 justify-center">
-            <Button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700">
-              Retry Connection
-            </Button>
-            <Button onClick={() => navigate(-1)} variant="outline">
-              Go Back
-            </Button>
+            <Button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700">Retry Connection</Button>
+            <Button onClick={() => navigate(-1)} variant="outline">Go Back</Button>
           </div>
         </div>
       </div>
@@ -499,97 +334,57 @@ const VideoCallRoom = () => {
   return (
     <div className="min-h-screen bg-gray-900 flex flex-col">
       <div className="flex-1 relative">
-        {/* Status bar with role indicator */}
         <div className="absolute top-4 left-4 z-10 bg-black bg-opacity-50 px-4 py-2 rounded-lg text-white">
           <p className="text-sm font-semibold">{connectionStatus}</p>
-          <p className="text-xs mt-1">
-            You are: <span className={isDoctor ? 'text-blue-400' : 'text-green-400'}>{username}</span>
-          </p>
-          <p className="text-xs">Your ID: {localUserId.substring(0, 20)}...</p>
+          <p className="text-xs mt-1">You are: <span className={isDoctor ? 'text-blue-400' : 'text-green-400'}>{username}</span></p>
           <p className="text-xs">Remote users: {remoteUsers.length}</p>
           {appointmentDetails && (
-            <p className="text-xs mt-1">
-              Meeting with: {isDoctor ? appointmentDetails.name : appointmentDetails.doctorName}
-            </p>
+            <p className="text-xs mt-1">Meeting with: {isDoctor ? appointmentDetails.name : appointmentDetails.doctorName}</p>
           )}
         </div>
 
-        {/* Combined videos grid (local + remotes) */}
         <div className="w-full h-full flex items-center justify-center p-4">
-          <div
-            className="w-full h-full grid gap-4"
-            style={{
-              gridTemplateColumns:
-                (remoteUsers.length + 1) === 1
-                  ? '1fr'
-                  : 'repeat(auto-fit, minmax(400px, 1fr))'
-            }}
-          >
-            {/* Local video as a tile */}
-            <LocalVideoTile
-              videoRef={localVideoRef}
-              userId={localUserId}
-            />
-
+          <div className="w-full h-full grid gap-4" style={{ gridTemplateColumns: (remoteUsers.length + 1) === 1 ? '1fr' : 'repeat(auto-fit, minmax(400px, 1fr))' }}>
+            <LocalVideoTile videoRef={localVideoRef} userId={localUserId} />
             {remoteUsers.length === 0 ? (
               <div className="col-span-full text-center text-white self-center">
                 <div className="mb-4">
                   <div className="animate-pulse text-6xl mb-4">⏳</div>
                   <p className="text-xl">Waiting for other participant...</p>
-                  <p className="text-sm text-gray-400 mt-2">
-                    Share this link with {isDoctor ? 'the patient' : 'your doctor'}:
-                  </p>
-                  <div className="mt-3 p-3 bg-gray-800 rounded-lg">
-                    <p className="text-xs text-blue-400 break-all">
-                      {window.location.origin}/video-call/{videoCallId}?role={isDoctor ? 'patient' : 'doctor'}
-                    </p>
+                  <p className="text-sm text-gray-400 mt-2">Share this link with {isDoctor ? 'the patient' : 'your doctor'}:</p>
+                  <div className="mt-3 p-3 bg-gray-800 rounded-lg flex items-center gap-2">
+                    <p className="text-xs text-blue-400 break-all flex-1">{shareLink}</p>
+                    <Button onClick={copyShareLink} size="sm" className="shrink-0 bg-gray-700 hover:bg-gray-600">
+                      <Copy size={16} className="mr-1" />
+                      {linkCopied ? 'Copied!' : 'Copy'}
+                    </Button>
                   </div>
                 </div>
               </div>
             ) : (
-              remoteUsers.map((user) => (
-                <RemoteVideo key={user.userId} stream={user.stream} userId={user.userId} />
-              ))
+              remoteUsers.map((user) => <RemoteVideo key={user.userId} stream={user.stream} userId={user.userId} />)
             )}
           </div>
         </div>
 
-        {/* Control buttons */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex space-x-4 z-10">
-          <Button
-            onClick={toggleAudio}
-            className={`p-4 rounded-full ${isAudioOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}
-          >
+          <Button onClick={toggleAudio} className={`p-4 rounded-full ${isAudioOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}>
             {isAudioOn ? <Mic size={24} /> : <MicOff size={24} />}
           </Button>
-          
-          <Button
-            onClick={toggleVideo}
-            className={`p-4 rounded-full ${isVideoOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}
-          >
+          <Button onClick={toggleVideo} className={`p-4 rounded-full ${isVideoOn ? 'bg-gray-700 hover:bg-gray-600' : 'bg-red-600 hover:bg-red-700'}`}>
             {isVideoOn ? <Video size={24} /> : <VideoOff size={24} />}
           </Button>
-          
           {isDoctor && (
-            <Button
-              onClick={handleEndSession}
-              disabled={isEndingSession}
-              className={`p-4 rounded-full ${isEndingSession ? 'bg-red-400' : 'bg-red-600 hover:bg-red-700'}`}
-            >
+            <Button onClick={handleEndSession} disabled={isEndingSession} className={`p-4 rounded-full ${isEndingSession ? 'bg-red-400' : 'bg-red-600 hover:bg-red-700'}`}>
               <span className="text-sm font-semibold">{isEndingSession ? 'Ending…' : 'End Session'}</span>
             </Button>
           )}
-
-          <Button
-            onClick={handleCallEnd}
-            className="p-4 rounded-full bg-red-600 hover:bg-red-700"
-          >
+          <Button onClick={handleCallEnd} className="p-4 rounded-full bg-red-600 hover:bg-red-700">
             <PhoneOff size={24} />
           </Button>
         </div>
       </div>
 
-      {/* Chat section */}
       <div className="bg-gray-800 border-t border-gray-700">
         <div className="h-32 overflow-y-auto p-3 space-y-2">
           {messages.length === 0 ? (
@@ -602,7 +397,6 @@ const VideoCallRoom = () => {
             ))
           )}
         </div>
-
         <div className="p-3 flex space-x-2 border-t border-gray-700">
           <input
             type="text"
@@ -621,69 +415,33 @@ const VideoCallRoom = () => {
   )
 }
 
-// Component to display remote video streams
 const RemoteVideo = ({ stream, userId }) => {
   const videoRef = useRef(null)
-
   useEffect(() => {
     if (videoRef.current && stream) {
       videoRef.current.srcObject = stream
-      console.log('✅ Remote video stream set for:', userId)
     }
   }, [stream, userId])
-
-  const displayName = userId.startsWith('doctor') ? 'Doctor' : 'Patient'
-
+  const displayName = userId.includes('doctor') ? 'Doctor' : 'Patient'
   return (
     <div className="relative bg-black rounded-lg overflow-hidden border-4 border-green-500 w-full h-full">
-      <video 
-        ref={videoRef} 
-        autoPlay 
-        playsInline
-        className="w-full h-full object-cover"
-      />
-      <div className="absolute top-4 left-4 text-white text-lg font-bold bg-green-600 bg-opacity-90 px-4 py-2 rounded-lg shadow-lg">
-        {displayName}
-      </div>
-      <div className="absolute bottom-4 right-4 text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
-        {userId}
-      </div>
+      <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+      <div className="absolute top-4 left-4 text-white text-lg font-bold bg-green-600 bg-opacity-90 px-4 py-2 rounded-lg shadow-lg">{displayName}</div>
     </div>
   )
 }
 
-// Component to display local video as grid tile
 const LocalVideoTile = ({ videoRef, userId }) => {
   const displayName = userId.startsWith('doctor') ? 'Doctor (You)' : 'Patient (You)'
-
   return (
     <div className="relative bg-black rounded-lg overflow-hidden border-4 border-blue-500 w-full h-full">
-      <video
-        ref={videoRef}
-        autoPlay
-        muted
-        playsInline
-        className="w-full h-full object-cover"
-        style={{ transform: 'scaleX(-1)' }}
-      />
-      <div className="absolute top-4 left-4 text-white text-lg font-bold bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg shadow-lg">
-        {displayName}
-      </div>
-      <div className="absolute bottom-4 right-4 text-white text-xs bg-black bg-opacity-70 px-2 py-1 rounded">
-        {userId}
-      </div>
+      <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover" style={{ transform: 'scaleX(-1)' }} />
+      <div className="absolute top-4 left-4 text-white text-lg font-bold bg-blue-600 bg-opacity-90 px-4 py-2 rounded-lg shadow-lg">{displayName}</div>
     </div>
   )
 }
 
-RemoteVideo.propTypes = {
-  stream: PropTypes.object,
-  userId: PropTypes.string.isRequired,
-}
-
-LocalVideoTile.propTypes = {
-  videoRef: PropTypes.object.isRequired,
-  userId: PropTypes.string.isRequired,
-}
+RemoteVideo.propTypes = { stream: PropTypes.object, userId: PropTypes.string.isRequired }
+LocalVideoTile.propTypes = { videoRef: PropTypes.object.isRequired, userId: PropTypes.string.isRequired }
 
 export default VideoCallRoom

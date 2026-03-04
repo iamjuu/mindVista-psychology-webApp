@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Button } from '../components/shadcn/button/button'
-import { CheckCircle, XCircle, AlertCircle, RefreshCw, Wifi, WifiOff } from 'lucide-react'
+import { CheckCircle, XCircle, AlertCircle, RefreshCw, Wifi } from 'lucide-react'
 import apiInstance from '../instance'
+import { API_BASE_URL } from '../config/api'
 
 const VideoCallTroubleshooting = () => {
     const [healthStatus, setHealthStatus] = useState(null)
@@ -192,7 +193,7 @@ const VideoCallTroubleshooting = () => {
                         <h4 className="font-semibold text-gray-900 mb-3">Quick Actions</h4>
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                             <Button
-                                onClick={() => window.open('https://mind-vista-backend.vercel.app', '_blank')}
+                                onClick={() => window.open(API_BASE_URL.replace(/\/api\/?$/, ''), '_blank')}
                                 variant="outline"
                                 size="sm"
                                 className="text-blue-600 border-blue-300 hover:bg-blue-50"
@@ -200,15 +201,16 @@ const VideoCallTroubleshooting = () => {
                                 Backend
                             </Button>
                             <Button
-                                onClick={() => window.open('wss://mind-vista-backend.vercel.app/signaling', '_blank')}
+                                onClick={() => window.open('https://peerjs.com', '_blank')}
                                 variant="outline"
                                 size="sm"
                                 className="text-green-600 border-green-300 hover:bg-green-50"
                             >
-                                Signaling
+                                PeerJS (signaling)
                             </Button>
                             <Button
                                 onClick={() => window.open('https://mind-vista-psychology-web-app-dvb3.vercel.app', '_blank')}
+                                // onClick={() => window.open('http://localhost:5173', '_blank')}  // for local dev
                                 variant="outline"
                                 size="sm"
                                 className="text-purple-600 border-purple-300 hover:bg-purple-50"

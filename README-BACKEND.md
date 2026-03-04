@@ -43,7 +43,7 @@ npx nodemon server.js
 
 Once the server starts, you should see:
 ```
-Server running on https://mind-vista-backend.vercel.app
+Server running on https://mind-vista-backend.vercel.app (or http://localhost:3000 for local dev)
 Available routes:
   GET    /api/doctors
   POST   /api/doctors
@@ -53,7 +53,7 @@ Available routes:
 ```
 
 You can test the server by opening your browser and visiting:
-- `https://mind-vista-backend.vercel.app/api/health` - Health check
+- `https://mind-vista-backend.vercel.app/api/health` - Health check (or http://localhost:3000/api/health for local dev)
 - `https://mind-vista-backend.vercel.app/api/doctors` - List all doctors
 
 ### 4. Start the Frontend
@@ -108,7 +108,7 @@ If you get an error that port 3000 is already in use, you can:
 ### CORS Issues
 The server is configured to allow CORS from any origin. If you encounter CORS issues, make sure:
 1. The backend server is running
-2. The frontend is making requests to the correct URL (`https://mind-vista-backend.vercel.app`)
+2. The frontend is making requests to the correct URL (`https://mind-vista-backend.vercel.app` or `http://localhost:3000` for local dev)
 
 ### API 404 Errors
 If you get 404 errors:
