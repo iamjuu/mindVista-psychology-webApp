@@ -43,7 +43,7 @@ npx nodemon server.js
 
 Once the server starts, you should see:
 ```
-Server running on http://localhost:3000
+Server running on https://mind-vista-backend.vercel.app
 Available routes:
   GET    /api/doctors
   POST   /api/doctors
@@ -53,8 +53,8 @@ Available routes:
 ```
 
 You can test the server by opening your browser and visiting:
-- `http://localhost:3000/api/health` - Health check
-- `http://localhost:3000/api/doctors` - List all doctors
+- `https://mind-vista-backend.vercel.app/api/health` - Health check
+- `https://mind-vista-backend.vercel.app/api/doctors` - List all doctors
 
 ### 4. Start the Frontend
 
@@ -64,7 +64,7 @@ In a **separate terminal window**, navigate to your project directory and start 
 npm run dev
 ```
 
-This will start the React frontend on `http://localhost:5173` (or another port if 5173 is busy).
+This will start the React frontend on `https://mind-vista-psychology-web-app-dvb3.vercel.app` (or locally on port 5173).
 
 ## API Endpoints
 
@@ -80,7 +80,7 @@ The backend server provides the following API endpoints:
 
 ### Create a New Doctor
 ```bash
-curl -X POST http://localhost:3000/api/doctors \
+curl -X POST https://mind-vista-backend.vercel.app/api/doctors \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Dr. John Doe",
@@ -95,7 +95,7 @@ curl -X POST http://localhost:3000/api/doctors \
 
 ### Get All Doctors
 ```bash
-curl http://localhost:3000/api/doctors
+curl https://mind-vista-backend.vercel.app/api/doctors
 ```
 
 ## Troubleshooting
@@ -108,7 +108,7 @@ If you get an error that port 3000 is already in use, you can:
 ### CORS Issues
 The server is configured to allow CORS from any origin. If you encounter CORS issues, make sure:
 1. The backend server is running
-2. The frontend is making requests to the correct URL (`http://localhost:3000`)
+2. The frontend is making requests to the correct URL (`https://mind-vista-backend.vercel.app`)
 
 ### API 404 Errors
 If you get 404 errors:

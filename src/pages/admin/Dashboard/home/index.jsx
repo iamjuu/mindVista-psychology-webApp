@@ -54,10 +54,12 @@ const Dashboard = () => {
   const [doctorsData, setDoctorsData] = useState([]);
   const [doctorsProgress, setDoctorsProgress] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [doctorSearchQuery, setDoctorSearchQuery] = useState("");
   const [doctorStatusFilter, setDoctorStatusFilter] = useState("all");
   const [showAllDoctors, setShowAllDoctors] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
+  const [workHoursDoctorId, setWorkHoursDoctorId] = useState(null); // Doctor selected for Daily Work Hours card
   const [isTracking, setIsTracking] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [timeHistory, setTimeHistory] = useState([]);
@@ -71,60 +73,78 @@ const Dashboard = () => {
       day: "2-digit",
     }),
   });
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: "Text Inputs for Design System",
-      description: "Search for inspiration to provide a rich content of te...",
-      completed: false,
-    },
-    {
-      id: 2,
-      title: "Meeting with Arthur Taylor",
-      description: "Discuss the MVP version of Apex Mobile and Deskt...",
-      completed: false,
-    },
-    {
-      id: 3,
-      title: "Check neutral and state colors",
-      description: "Button components will be revised and designed ag...",
-      completed: false,
-    },
-  ]);
+  const [notes, setNotes] = useState([]);
+  const [notesLoading, setNotesLoading] = useState(false);
 
-  // Functions for note management
-  const handleAddNote = () => {
-    if (newNote.title.trim() && newNote.description.trim()) {
-      const note = {
-        id: Date.now(),
-        title: newNote.title,
-        description: newNote.description,
-        completed: false,
-      };
-      setNotes([note, ...notes]);
-      setNewNote({
-        title: "",
-        description: "",
-        tags: [],
-        date: new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "2-digit",
-        }),
-      });
-      setShowAddNoteModal(false);
+  // Fetch notes from API
+  const fetchNotes = async () => {
+    try {
+      setNotesLoading(true);
+      const res = await apiInstance.get("/dashboard/notes");
+      if (res.data?.success && res.data?.data) {
+        setNotes(res.data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching notes:", err);
+    } finally {
+      setNotesLoading(false);
     }
   };
 
-  const toggleNoteCompletion = (noteId) => {
-    setNotes(
-      notes.map((note) =>
-        note.id === noteId ? { ...note, completed: !note.completed } : note
-      )
-    );
+  // Functions for note management
+  const handleAddNote = async () => {
+    if (!newNote.title.trim() || !newNote.description.trim()) return;
+    try {
+      const res = await apiInstance.post("/dashboard/notes", {
+        title: newNote.title.trim(),
+        description: newNote.description.trim(),
+        tags: newNote.tags || [],
+      });
+      if (res.data?.success && res.data?.data) {
+        setNotes((prev) => [res.data.data, ...prev]);
+        setNewNote({
+          title: "",
+          description: "",
+          tags: [],
+          date: new Date().toLocaleDateString("en-US", {
+            month: "short",
+            day: "2-digit",
+          }),
+        });
+        setShowAddNoteModal(false);
+      }
+    } catch (err) {
+      console.error("Error creating note:", err);
+    }
   };
 
-  const deleteNote = (noteId) => {
-    setNotes(notes.filter((note) => note.id !== noteId));
+  const toggleNoteCompletion = async (noteId) => {
+    try {
+      const res = await apiInstance.put(`/dashboard/notes/${noteId}/toggle`);
+      if (res.data?.success && res.data?.data) {
+        const updated = res.data.data;
+        setNotes((prev) =>
+          prev.map((note) =>
+            String(note.id) === String(noteId)
+              ? { ...note, ...updated, id: updated.id || note.id }
+              : note
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error toggling note:", err);
+    }
+  };
+
+  const deleteNote = async (noteId) => {
+    try {
+      const res = await apiInstance.delete(`/dashboard/notes/${noteId}`);
+      if (res.data?.success) {
+        setNotes(notes.filter((note) => String(note.id) !== String(noteId)));
+      }
+    } catch (err) {
+      console.error("Error deleting note:", err);
+    }
   };
 
   // Filter doctors based on search and status
@@ -231,56 +251,65 @@ const Dashboard = () => {
   }, []);
 
   // Fetch dashboard data
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        setLoading(true);
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
 
-        // Fetch doctors with stats
-        const doctorsResponse = await apiInstance.get("/api/dashboard/doctors");
+      const doctorsResponse = await apiInstance.get("/dashboard/doctors");
 
-        if (doctorsResponse.data.success) {
-          const doctors = doctorsResponse.data.data;
+      if (doctorsResponse.data.success) {
+        const doctors = doctorsResponse.data.data;
+        const bgColors = [
+          "bg-blue-500",
+          "bg-green-500",
+          "bg-purple-500",
+          "bg-orange-500",
+          "bg-indigo-500",
+          "bg-pink-500",
+          "bg-yellow-500",
+          "bg-red-500",
+        ];
+        const doctorsWithColors = doctors.map((doctor, index) => ({
+          ...doctor,
+          bgColor: bgColors[index % bgColors.length],
+        }));
 
-          // Add background colors to doctors
-          const bgColors = [
-            "bg-blue-500",
-            "bg-green-500",
-            "bg-purple-500",
-            "bg-orange-500",
-            "bg-indigo-500",
-            "bg-pink-500",
-            "bg-yellow-500",
-            "bg-red-500",
-          ];
-          const doctorsWithColors = doctors.map((doctor, index) => ({
-            ...doctor,
-            bgColor: bgColors[index % bgColors.length],
-          }));
-
-          setDoctorsData(doctorsWithColors);
-
-          // Set first doctor as selected if not already set
-          if (doctorsWithColors.length > 0) {
-            setSelectedDoctorId(doctorsWithColors[0].id);
-          }
+        setDoctorsData(doctorsWithColors);
+        if (doctorsWithColors.length > 0) {
+          setSelectedDoctorId(doctorsWithColors[0].id);
+          setWorkHoursDoctorId((prev) => prev ?? doctorsWithColors[0].id);
         }
-
-        // Fetch doctors work progress
-        const progressResponse = await apiInstance.get("/api/dashboard/doctors-progress");
-        
-        if (progressResponse.data.success) {
-          setDoctorsProgress(progressResponse.data.data);
-        }
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      } finally {
-        setLoading(false);
       }
-    };
 
+      const progressResponse = await apiInstance.get("/dashboard/doctors-progress");
+      if (progressResponse.data.success) {
+        setDoctorsProgress(progressResponse.data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+      setError(err?.response?.data?.message || err?.message || "Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchDashboardData();
   }, []);
+
+  useEffect(() => {
+    if (activePage === "dashboard") {
+      fetchNotes();
+    }
+  }, [activePage]);
+
+  // Sync workHoursDoctorId when doctorsData loads and no doctor selected yet
+  useEffect(() => {
+    if (doctorsData.length > 0 && !workHoursDoctorId) {
+      setWorkHoursDoctorId(doctorsData[0].id);
+    }
+  }, [doctorsData, workHoursDoctorId]);
 
   // Handle click outside filter menu
   useEffect(() => {
@@ -346,11 +375,31 @@ const Dashboard = () => {
       );
     }
 
-    if (!doctorsData.length) {
+    if (error) {
       return (
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
-            <p className="text-gray-600">No data available</p>
+            <p className="text-red-600 mb-2">{error}</p>
+            <p className="text-sm text-gray-500">Check the browser console for details</p>
+          </div>
+        </div>
+      );
+    }
+
+    if (!doctorsData.length) {
+      return (
+        <div className="flex items-center justify-center min-h-[400px]">
+          <div className="text-center max-w-md">
+            <p className="text-gray-600 font-medium">No data available</p>
+            <p className="text-sm text-gray-500 mt-2">
+              No doctors found in the database. Add doctors via Doctor Management to see dashboard analytics.
+            </p>
+            <button
+              onClick={fetchDashboardData}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+            >
+              Retry
+            </button>
           </div>
         </div>
       );
@@ -379,6 +428,25 @@ const Dashboard = () => {
           {/* Daily Work Hours Card */}
           <div className="flex flex-col gap-2 justify-between">
             <div className={`p-4 ${themeClasses.bgCard} rounded-lg border ${themeClasses.border}`}>
+              {/* Doctor selector - choose which doctor's time to view */}
+              <div className="mb-4">
+                <label className={`block text-xs font-medium ${themeClasses.textSecondary} mb-1`}>
+                  Select Doctor
+                </label>
+                <select
+                  value={workHoursDoctorId || ""}
+                  onChange={(e) => setWorkHoursDoctorId(e.target.value || null)}
+                  className={`w-full px-3 py-2 text-sm border ${themeClasses.input} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${themeClasses.bgCard} ${themeClasses.text}`}
+                >
+                  <option value="">Choose a doctor</option>
+                  {doctorsData.map((doc) => (
+                    <option key={doc.id} value={doc.id}>
+                      {doc.name} ({doc.specialization})
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <div className="flex items-center justify-between ">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
@@ -397,7 +465,7 @@ const Dashboard = () => {
                     </svg>
                   </div>
                   <h3 className={`text-[14px] font-semibold ${themeClasses.text}`}>
-                    Daily Work Hours
+                    Time Spent in App
                   </h3>
                 </div>
                 <button className={`px-4 py-1 text-sm font-medium ${themeClasses.text} rounded-lg ${themeClasses.bgHover} border ${themeClasses.border} transition-colors`}>
@@ -407,7 +475,17 @@ const Dashboard = () => {
 
               <div className="flex items-center gap-3 mb-6">
                 <span className={`text-[12px] font-bold ${themeClasses.text}`}>
-                  12 hours 41 minutes in total
+                  {(() => {
+                    const doctorProgress = doctorsProgress.find((d) => d.id === workHoursDoctorId || d.id?.toString() === workHoursDoctorId);
+                    const completedSessions = doctorProgress?.completedAppointments ?? 0;
+                    const avgMinutesPerSession = 30; // Based on appointment/session duration
+                    const totalMinutes = completedSessions * avgMinutesPerSession;
+                    const hours = Math.floor(totalMinutes / 60);
+                    const mins = totalMinutes % 60;
+                    return workHoursDoctorId
+                      ? `${hours} hours ${mins} minutes in total (${completedSessions} completed sessions)`
+                      : "Select a doctor to view time spent";
+                  })()}
                 </span>
                 <div className={`w-6 h-6 ${themeClasses.bgSecondary} rounded-lg flex items-center justify-center`}>
                   <svg
@@ -426,37 +504,32 @@ const Dashboard = () => {
                 </div>
               </div>
 
-              {/* Progress Bar */}
+              {/* Progress Bar - Active time from completed appointments (30 min each) */}
               <div className="mb-4">
-                <div className={`w-full h-2 ${themeClasses.bgSecondary} rounded-full overflow-hidden flex`}>
-                  <div
-                    className="h-full bg-yellow-400 flex-shrink-0"
-                    style={{ width: "33%" }}
-                  ></div>
-                  <div
-                    className="h-full bg-blue-400 flex-shrink-0"
-                    style={{ width: "45%" }}
-                  ></div>
-                  <div
-                    className="h-full bg-purple-400 flex-shrink-0"
-                    style={{ width: "22%" }}
-                  ></div>
+                <div className={`w-full h-2 ${themeClasses.bgSecondary} rounded-full overflow-hidden`}>
+                  {(() => {
+                    const doctorProgress = doctorsProgress.find((d) => String(d.id) === String(workHoursDoctorId));
+                    const completed = doctorProgress?.completedAppointments ?? 0;
+                    const total = doctorProgress?.totalAppointments ?? 1;
+                    const pct = total > 0 ? Math.min(100, Math.round((completed / total) * 100)) : 0;
+                    return (
+                      <div
+                        className="h-full bg-blue-500 rounded-full transition-all duration-300"
+                        style={{ width: `${pct}%` }}
+                      />
+                    );
+                  })()}
                 </div>
+                <p className={`text-xs mt-1 ${themeClasses.textMuted}`}>
+                  Completed sessions vs total appointments
+                </p>
               </div>
 
-              {/* Legend */}
-              <div className="flex items-center gap-6">
+              {/* Legend - simplified for appointment-based tracking */}
+              <div className="flex items-center gap-4 flex-wrap">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Pause Time</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Active Time</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 bg-purple-400 rounded-full"></div>
-                  <span className={`text-sm ${themeClasses.textSecondary}`}>Extra Time</span>
+                  <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
+                  <span className={`text-sm ${themeClasses.textSecondary}`}>Completed sessions (30 min each)</span>
                 </div>
               </div>
             </div>
@@ -577,7 +650,15 @@ const Dashboard = () => {
 
             {/* Notes List */}
             <div className="flex  flex-col gap-2 px-3 py-2 max-h-60 overflow-y-auto">
-              {notes.map((note) => (
+              {notesLoading ? (
+                <div className="text-center py-4">
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                  <p className={`text-xs mt-2 ${themeClasses.textMuted}`}>Loading notes...</p>
+                </div>
+              ) : notes.length === 0 ? (
+                <p className={`text-sm py-4 text-center ${themeClasses.textMuted}`}>No notes yet. Click + Add Note to create one.</p>
+              ) : (
+              notes.map((note) => (
                 <div key={note.id} className="flex gap-4 items-start">
                   <input
                     type="checkbox"
@@ -627,7 +708,8 @@ const Dashboard = () => {
                     </button>
                   )}
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </div>
 

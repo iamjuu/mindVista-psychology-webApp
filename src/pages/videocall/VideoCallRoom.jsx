@@ -112,7 +112,7 @@ const VideoCallRoom = () => {
   }, [videoCallId, fetchAppointmentDetails])
 
   const connectToSignalingServer = () => {
-    const wsUrl = `ws://localhost:3000?videoCallId=${videoCallId}&userId=${localUserId}&username=${username}`
+    const wsUrl = `wss://mind-vista-backend.vercel.app?videoCallId=${videoCallId}&userId=${localUserId}&username=${username}`
     console.log('Connecting to:', wsUrl)
     console.log('Role:', userRole, '| UserId:', localUserId)
     
@@ -466,7 +466,7 @@ const VideoCallRoom = () => {
           <div className="bg-gray-800 rounded-lg p-6 mb-6 text-left">
             <h3 className="text-lg font-semibold mb-3">Troubleshooting Steps:</h3>
             <ul className="space-y-2 text-sm text-gray-300">
-              <li>✓ Check if the backend server is running (http://localhost:3000)</li>
+              <li>✓ Check if the backend server is running (https://mind-vista-backend.vercel.app)</li>
               <li>✓ Verify the video call link is correct</li>
               <li>✓ Make sure you have the correct role parameter (?role=patient or ?role=doctor)</li>
               <li>✓ Check if the appointment exists and is approved</li>
