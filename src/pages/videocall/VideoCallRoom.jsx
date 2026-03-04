@@ -108,20 +108,11 @@ const VideoCallRoom = () => {
         peerId
       })
 
-      let responseData = null
-      if (response.data.data) {
-        responseData = response.data.data
-      } else if (response.data.otherPeerIds !== undefined) {
-        responseData = response.data
-      } else {
-        responseData = { otherPeerIds: [], shouldCall: false }
-      }
-      
+      const responseData = response.data.data || response.data
       const otherPeerIds = responseData.otherPeerIds || []
       const shouldCall = responseData.shouldCall || false
       
       if (shouldCall && otherPeerIds && otherPeerIds.length > 0) {
-        console.log('🔔 Polling found peers:', otherPeerIds)
         otherPeerIds.forEach(otherPeerId => {
           if (!mediaConnRef.current[otherPeerId]) {
             console.log('🔔 Found new peer, calling:', otherPeerId)
@@ -243,30 +234,18 @@ const VideoCallRoom = () => {
             peerId
           })
 
-          console.log('📡 Join response FULL:', JSON.stringify(response, null, 2))
-          console.log('📡 response.data:', response.data)
-          console.log('📡 response.data.data:', response.data.data)
-          console.log('📡 response.data.success:', response.data.success)
+          console.log('Join response FULL:', JSON.stringify(response.data, null, 2))
+          console.log('response.data.data:', response.data.data)
+          console.log('response.data:', response.data)
           
-          // Try multiple extraction paths
-          let responseData = null
-          if (response.data.data) {
-            responseData = response.data.data
-            console.log('✅ Using response.data.data')
-          } else if (response.data.otherPeerIds !== undefined) {
-            responseData = response.data
-            console.log('✅ Using response.data directly')
-          } else {
-            console.error('❌ Cannot find otherPeerIds in response!')
-            responseData = { otherPeerIds: [], shouldCall: false }
-          }
-          
+          // Extract from nested data object
+          const responseData = response.data.data || response.data
           const otherPeerIds = responseData.otherPeerIds || []
           const shouldCall = responseData.shouldCall || false
           
-          console.log('✅ Extracted otherPeerIds:', JSON.stringify(otherPeerIds))
-          console.log('✅ Extracted shouldCall:', shouldCall)
-          console.log('✅ Array length:', otherPeerIds.length)
+          console.log('Extracted otherPeerIds:', JSON.stringify(otherPeerIds))
+          console.log('Extracted shouldCall:', shouldCall)
+          console.log('Array length:', otherPeerIds.length)
 
           if (shouldCall && otherPeerIds && otherPeerIds.length > 0) {
             console.log('🔥 Calling other peers immediately:', otherPeerIds)
@@ -417,28 +396,16 @@ const VideoCallRoom = () => {
   }
 
   const addRemoteUser = (userId, stream) => {
-    console.log('📹 Adding remote user:', userId)
-    console.log('Stream details:', {
-      id: stream.id,
-      active: stream.active,
-      videoTracks: stream.getVideoTracks().length,
-      audioTracks: stream.getAudioTracks().length
-    })
-    
+    console.log('Adding remote user:', userId)
     setConnectionStep('connected')
     setConnectionStatus('Connected')
     setRemoteUsers(prev => {
-      const exists = prev.find(u => u.userId === userId)
-      if (exists) {
+      if (prev.find(u => u.userId === userId)) {
         console.log('User already exists, updating stream')
-        const updated = prev.map(u => u.userId === userId ? { ...u, stream } : u)
-        console.log('Updated remoteUsers:', updated.map(u => u.userId))
-        return updated
+        return prev.map(u => u.userId === userId ? { ...u, stream } : u)
       }
-      console.log('Adding new user to remoteUsers')
-      const newUsers = [...prev, { userId, stream }]
-      console.log('New remoteUsers array:', newUsers.map(u => u.userId))
-      return newUsers
+      console.log('Adding new user')
+      return [...prev, { userId, stream }]
     })
   }
 
@@ -465,6 +432,7 @@ const VideoCallRoom = () => {
       setIsVideoOn(videoTrack.enabled)
     }
   }
+
 
   const toggleAudio = () => {
     if (!localStreamRef.current) return
@@ -504,7 +472,7 @@ const VideoCallRoom = () => {
           role: userRole,
           peerId: peerRef.current.id
         })
-        console.log('✅ Left room, peer ID removed from backend')
+        console.log(' Left room, peer ID removed from backend')
       } catch (err) {
         console.error('Failed to leave room:', err)
       }
@@ -561,7 +529,7 @@ const VideoCallRoom = () => {
       if (response.data.success === true) {
         alert('Session ended successfully')
         cleanup()
-        navigate('/')
+        navigate('/doctor')
       }
     } catch (e) {
       console.error('Failed to end session:', e)
@@ -572,16 +540,10 @@ const VideoCallRoom = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#1a1d21] via-[#202124] to-[#2d3034] flex items-center justify-center">
+      <div className="min-h-screen bg-[#202124] flex items-center justify-center">
         <div className="text-center">
-          <div className="relative mb-6">
-            <div className="animate-spin rounded-full h-20 w-20 border-4 border-t-blue-500 border-r-blue-400 border-b-blue-300 border-l-transparent mx-auto"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Video size={32} className="text-blue-400" />
-            </div>
-          </div>
-          <p className="text-white text-xl font-semibold mb-2">Joining meeting...</p>
-          <p className="text-gray-400 text-sm">Please wait while we connect you</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-[#1a73e8] mx-auto mb-4"></div>
+          <p className="text-white text-lg">Joining meeting...</p>
         </div>
       </div>
     )
@@ -589,49 +551,26 @@ const VideoCallRoom = () => {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-[#1a1d21] via-[#202124] to-[#2d3034] flex items-center justify-center text-white">
+      <div className="min-h-screen bg-[#202124] flex items-center justify-center text-white">
         <div className="text-center max-w-2xl mx-auto p-8">
-          <div className="w-24 h-24 bg-gradient-to-br from-red-500 to-orange-500 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl">
-            <span className="text-5xl">⚠️</span>
-          </div>
-          <h2 className="text-3xl font-bold mb-4">Unable to Join</h2>
-          <p className="text-lg text-red-400 mb-8 font-medium">{error}</p>
-          <div className="bg-white/5 backdrop-blur-md rounded-2xl p-6 mb-8 text-left border border-white/10">
-            <h3 className="text-lg font-bold mb-4 flex items-center">
-              <span className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center mr-3">💡</span>
-              Troubleshooting Steps:
-            </h3>
-            <ul className="space-y-3 text-sm text-gray-300">
-              <li className="flex items-start space-x-3">
-                <span className="text-blue-400 font-bold">1.</span>
-                <span>Check backend server is running ({API_HOST})</span>
-              </li>
-              <li className="flex items-start space-x-3">
-                <span className="text-blue-400 font-bold">2.</span>
-                <span>Verify video call link is correct</span>
-              </li>
-              <li className="flex items-start space-x-3">
-                <span className="text-blue-400 font-bold">3.</span>
-                <span>Ensure role parameter is set (?role=patient or ?role=doctor)</span>
-              </li>
-              <li className="flex items-start space-x-3">
-                <span className="text-blue-400 font-bold">4.</span>
-                <span>Allow camera/microphone permissions in browser</span>
-              </li>
+          <div className="text-6xl mb-4">⚠️</div>
+          <h2 className="text-2xl font-bold mb-4">Unable to Join</h2>
+          <p className="text-xl text-red-400 mb-6">{error}</p>
+          <div className="bg-[#3c4043] rounded-lg p-6 mb-6 text-left">
+            <h3 className="text-lg font-semibold mb-3">Troubleshooting:</h3>
+            <ul className="space-y-2 text-sm text-gray-300">
+              <li>✓ Check backend server ({API_HOST})</li>
+              <li>✓ Verify video call link</li>
+              <li>✓ Check role parameter (?role=patient or ?role=doctor)</li>
+              <li>✓ Allow camera/microphone permissions</li>
             </ul>
           </div>
           <div className="flex space-x-4 justify-center">
-            <Button 
-              onClick={() => window.location.reload()} 
-              className="bg-gradient-to-r from-[#1a73e8] to-[#1557b0] hover:from-[#1557b0] hover:to-[#0d47a1] px-8 py-3 rounded-xl font-semibold shadow-lg"
-            >
-              🔄 Retry
+            <Button onClick={() => window.location.reload()} className="bg-[#1a73e8] hover:bg-[#1557b0] px-6 py-3">
+              Retry
             </Button>
-            <Button 
-              onClick={() => navigate(-1)} 
-              className="bg-white/10 hover:bg-white/20 backdrop-blur-md px-8 py-3 rounded-xl font-semibold border border-white/20"
-            >
-              ← Go Back
+            <Button onClick={() => navigate(-1)} className="bg-[#3c4043] hover:bg-[#5f6368] px-6 py-3">
+              Go Back
             </Button>
           </div>
         </div>
@@ -642,36 +581,19 @@ const VideoCallRoom = () => {
   const totalParticipants = 1 + remoteUsers.length
   const patientUsers = remoteUsers.filter(u => u.userId.includes('patient'))
   const doctorUser = remoteUsers.find(u => u.userId.includes('doctor'))
-  
-  // Debug logging
-  useEffect(() => {
-    console.log('🔍 Remote users updated:', remoteUsers.map(u => u.userId))
-    console.log('🔍 Doctor user found:', doctorUser?.userId || 'NONE')
-    console.log('🔍 Patient users found:', patientUsers.map(u => u.userId))
-  }, [remoteUsers, doctorUser, patientUsers])
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#1a1d21] via-[#202124] to-[#2d3034] flex flex-col relative">
-      {/* Top Bar - Enhanced Design */}
-      <div className="absolute top-0 left-0 right-0 z-20 bg-gradient-to-b from-black/40 to-transparent backdrop-blur-sm">
-        <div className="flex items-center justify-between px-6 py-4">
-          <div className="flex items-center space-x-4">
-            <div className="text-white">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#1a73e8] to-[#0d47a1] rounded-full flex items-center justify-center shadow-lg">
-                  <Video size={20} className="text-white" />
-                </div>
-                <div>
-                  <p className="font-semibold text-lg">
-                    {appointmentDetails ? (isDoctor ? appointmentDetails.name : appointmentDetails.doctorName) : 'Video Call'}
-                  </p>
-                  <p className="text-xs text-gray-400">
-                    {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} • ID: {videoCallId.substring(0, 10)}...
-                  </p>
-                </div>
-              </div>
-            </div>
+    <div className="min-h-screen bg-[#202124] flex flex-col relative">
+      {/* Top Bar - Google Meet Style */}
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4">
+        <div className="flex items-center space-x-4">
+          <div className="text-white">
+            <p className="text-sm text-gray-400">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} | {videoCallId.substring(0, 12)}...</p>
+            <p className="font-medium text-base">
+              {appointmentDetails ? (isDoctor ? appointmentDetails.name : appointmentDetails.doctorName) : 'Video Call'}
+            </p>
           </div>
+        </div>
         
         {/* Share Links - Only visible to doctor */}
         {isDoctor && (
@@ -679,132 +601,102 @@ const VideoCallRoom = () => {
             <div className="relative">
               <button
                 onClick={() => setShowShareMenu(!showShareMenu)}
-                className="flex items-center space-x-2 bg-white/10 hover:bg-white/20 backdrop-blur-md px-4 py-2.5 rounded-xl text-white transition-all shadow-lg border border-white/10"
+                className="flex items-center space-x-2 bg-[#3c4043] hover:bg-[#5f6368] px-4 py-2 rounded-lg text-white transition-all"
               >
                 <Share2 size={18} />
                 <span className="text-sm font-medium">Share</span>
               </button>
               
               {showShareMenu && (
-                <div className="absolute right-0 top-14 bg-white rounded-2xl shadow-2xl p-6 w-[420px] z-50 border border-gray-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <h3 className="font-bold text-gray-900 text-lg">Share Meeting Link</h3>
-                    <button 
-                      onClick={() => setShowShareMenu(false)} 
-                      className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 w-8 h-8 rounded-full flex items-center justify-center transition-all"
-                    >
-                      ✕
-                    </button>
+                <div className="absolute right-0 top-12 bg-white rounded-lg shadow-2xl p-4 w-96 z-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">Share meeting link</h3>
+                    <button onClick={() => setShowShareMenu(false)} className="text-gray-500 hover:text-gray-700">✕</button>
                   </div>
                   
                   {/* Patient Link */}
-                  <div className="mb-5">
-                    <label className="text-xs text-gray-600 font-semibold mb-2 block uppercase tracking-wide">Patient Link</label>
-                    <div className="flex items-center space-x-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-3 border border-blue-200">
+                  <div className="mb-4">
+                    <label className="text-xs text-gray-600 font-medium mb-1 block">Patient/Observer Link</label>
+                    <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-2">
                       <input
                         type="text"
                         value={patientLink}
                         readOnly
-                        className="flex-1 bg-transparent text-sm text-gray-800 outline-none font-mono"
+                        className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
                       />
                       <button
                         onClick={() => copyLink(patientLink, 'patient')}
-                        className="shrink-0 p-2.5 hover:bg-blue-200 rounded-lg transition-all"
+                        className="shrink-0 p-2 hover:bg-gray-200 rounded transition-all"
                         title="Copy patient link"
                       >
-                        {linkCopied === 'patient' ? <Check size={18} className="text-green-600" /> : <Copy size={18} className="text-blue-600" />}
+                        {linkCopied === 'patient' ? <Check size={16} className="text-green-600" /> : <Copy size={16} className="text-gray-600" />}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-600 mt-2 flex items-center">
-                      <span className="w-1.5 h-1.5 bg-blue-500 rounded-full mr-2"></span>
-                      Share this link with patients to join the session
-                    </p>
+                    <p className="text-xs text-gray-500 mt-1">Anyone with this link can join as a participant</p>
                   </div>
                   
                   {/* Doctor Link */}
                   <div>
-                    <label className="text-xs text-gray-600 font-semibold mb-2 block uppercase tracking-wide">Doctor Link</label>
-                    <div className="flex items-center space-x-2 bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-3 border border-green-200">
+                    <label className="text-xs text-gray-600 font-medium mb-1 block">Doctor Link</label>
+                    <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-2">
                       <input
                         type="text"
                         value={doctorLink}
                         readOnly
-                        className="flex-1 bg-transparent text-sm text-gray-800 outline-none font-mono"
+                        className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
                       />
                       <button
                         onClick={() => copyLink(doctorLink, 'doctor')}
-                        className="shrink-0 p-2.5 hover:bg-green-200 rounded-lg transition-all"
+                        className="shrink-0 p-2 hover:bg-gray-200 rounded transition-all"
                         title="Copy doctor link"
                       >
-                        {linkCopied === 'doctor' ? <Check size={18} className="text-green-600" /> : <Copy size={18} className="text-green-600" />}
+                        {linkCopied === 'doctor' ? <Check size={16} className="text-green-600" /> : <Copy size={16} className="text-gray-600" />}
                       </button>
                     </div>
-                    <p className="text-xs text-gray-600 mt-2 flex items-center">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-2"></span>
-                      For doctor/admin access only
-                    </p>
+                    <p className="text-xs text-gray-500 mt-1">For doctor/admin access</p>
                   </div>
                   
                   {/* Clear Room Button (for testing/debugging) */}
-                  <div className="mt-5 pt-5 border-t border-gray-200">
+                  <div className="mt-4 pt-4 border-t border-gray-200">
                     <button
                       onClick={clearRoom}
-                      className="w-full px-4 py-2.5 bg-gradient-to-r from-red-50 to-orange-50 hover:from-red-100 hover:to-orange-100 text-red-600 rounded-xl text-sm font-semibold transition-all border border-red-200"
+                      className="w-full px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-all"
                     >
-                      🔄 Clear Room
+                      Clear Room (Remove stale connections)
                     </button>
-                    <p className="text-xs text-gray-500 mt-2 text-center">Remove stale connections if issues occur</p>
+                    <p className="text-xs text-gray-500 mt-1">Use this if you see connection issues during testing</p>
                   </div>
                 </div>
               )}
             </div>
             
-            <div className={`px-4 py-2.5 rounded-xl text-white text-sm font-medium flex items-center space-x-2 shadow-lg backdrop-blur-md border transition-all ${
-              connectionStep === 'connected' 
-                ? 'bg-gradient-to-r from-green-500/90 to-emerald-500/90 border-green-400/30' 
-                : 'bg-white/10 border-white/20 animate-pulse'
-            }`}>
+            <div className="bg-[#1a73e8] px-3 py-2 rounded-lg text-white text-sm flex items-center space-x-2">
               {connectionStep === 'connected' ? (
-                <>
-                  <div className="w-2 h-2 bg-white rounded-full shadow-lg"></div>
-                  <span>Connected</span>
-                </>
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
               ) : (
-                <>
-                  <div className="w-2 h-2 bg-white/70 rounded-full animate-pulse"></div>
-                  <span>{connectionStatus}</span>
-                </>
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
               )}
+              <span>{connectionStatus}</span>
             </div>
           </div>
         )}
         
         {/* Status for non-doctors */}
         {!isDoctor && (
-          <div className={`px-4 py-2.5 rounded-xl text-white text-sm font-medium flex items-center space-x-2 shadow-lg backdrop-blur-md border transition-all ${
-            connectionStep === 'connected' 
-              ? 'bg-gradient-to-r from-green-500/90 to-emerald-500/90 border-green-400/30' 
-              : 'bg-white/10 border-white/20 animate-pulse'
-          }`}>
+          <div className="bg-[#1a73e8] px-3 py-2 rounded-lg text-white text-sm flex items-center space-x-2">
             {connectionStep === 'connected' ? (
-              <>
-                <div className="w-2 h-2 bg-white rounded-full shadow-lg"></div>
-                <span>Connected</span>
-              </>
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
             ) : (
-              <>
-                <div className="w-2 h-2 bg-white/70 rounded-full animate-pulse"></div>
-                <span>{connectionStatus}</span>
-              </>
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
             )}
+            <span>{connectionStatus}</span>
           </div>
         )}
-        </div>
       </div>
 
-      {/* Video Layout: Enhanced Responsive Design */}
-      <div className="flex-1 relative pt-24 pb-28">
-        <div className="h-full flex flex-col md:flex-row gap-3 px-4 md:px-6">
+      {/* Video Layout: Responsive - Desktop: Row (Doctor Left 50% | Patients Right 50%), Mobile: Column (Doctor Top, Patients Bottom) */}
+      <div className="flex-1 relative pt-20 pb-24">
+        <div className="h-full flex flex-col md:flex-row gap-2 px-4">
           {/* Doctor Section - Mobile: Top, Desktop: Left 50% */}
           <div className="flex-1 md:w-1/2 h-1/2 md:h-full">
             {isDoctor ? (
@@ -812,27 +704,19 @@ const VideoCallRoom = () => {
             ) : doctorUser ? (
               <RemoteVideo stream={doctorUser.stream} userId={doctorUser.userId} />
             ) : (
-              <div className="h-full bg-gradient-to-br from-[#2d3034] to-[#3c4043] rounded-2xl flex items-center justify-center shadow-2xl border border-white/5">
-                <div className="text-center text-white p-8">
-                  <div className="relative mb-6">
-                    <div className="w-28 h-28 bg-gradient-to-br from-[#4a5058] to-[#5f6368] rounded-full flex items-center justify-center mx-auto shadow-xl">
-                      <Users size={56} className="text-gray-300" />
-                    </div>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-yellow-500 px-3 py-1 rounded-full text-xs font-semibold text-black">
-                        Waiting
-                      </div>
-                    </div>
+              <div className="h-full bg-[#3c4043] rounded-xl flex items-center justify-center shadow-lg">
+                <div className="text-center text-white">
+                  <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Users size={48} className="text-gray-400" />
                   </div>
-                  <p className="text-xl font-semibold mb-2">Waiting for doctor...</p>
-                  <p className="text-sm text-gray-400">The doctor will join shortly</p>
+                  <p className="text-lg">Waiting for doctor...</p>
                 </div>
               </div>
             )}
           </div>
 
           {/* Patients Section - Mobile: Bottom, Desktop: Right 50% - FULL HEIGHT */}
-          <div className="flex-1 md:w-1/2 h-1/2 md:h-full flex flex-col gap-3">
+          <div className="flex-1 md:w-1/2 h-1/2 md:h-full flex flex-col gap-2">
             {!isDoctor && (
               <div className="flex-1 min-h-0">
                 <LocalVideoTile videoRef={localVideoRef} username={username} isVideoOn={isVideoOn} />
@@ -847,25 +731,18 @@ const VideoCallRoom = () => {
             
             {/* Waiting state for patients side - FULL HEIGHT */}
             {patientUsers.length === 0 && isDoctor && (
-              <div className="flex-1 min-h-0 bg-gradient-to-br from-[#2d3034] to-[#3c4043] rounded-2xl flex items-center justify-center shadow-2xl border border-white/5">
+              <div className="flex-1 min-h-0 bg-[#3c4043] rounded-xl flex items-center justify-center shadow-lg">
                 <div className="text-center text-white p-8">
-                  <div className="relative mb-6">
-                    <div className="w-28 h-28 bg-gradient-to-br from-[#4a5058] to-[#5f6368] rounded-full flex items-center justify-center mx-auto shadow-xl">
-                      <Users size={56} className="text-gray-300" />
-                    </div>
-                    <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2">
-                      <div className="bg-blue-500 px-3 py-1 rounded-full text-xs font-semibold text-white animate-pulse">
-                        Waiting
-                      </div>
-                    </div>
+                  <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users size={48} className="text-gray-400" />
                   </div>
-                  <p className="text-xl font-semibold mb-2">Waiting for patients...</p>
-                  <p className="text-sm text-gray-400 mb-6">Share the patient link to start</p>
+                  <p className="text-xl font-medium mb-2">Waiting for patients...</p>
+                  <p className="text-sm text-gray-400 mb-6">Share the patient link</p>
                   <button
                     onClick={() => setShowShareMenu(true)}
-                    className="bg-gradient-to-r from-[#1a73e8] to-[#1557b0] hover:from-[#1557b0] hover:to-[#0d47a1] px-6 py-3 rounded-xl font-semibold transition-all inline-flex items-center space-x-2 shadow-lg"
+                    className="bg-[#1a73e8] hover:bg-[#1557b0] px-6 py-3 rounded-lg font-medium transition-all inline-flex items-center space-x-2"
                   >
-                    <Share2 size={20} />
+                    <Share2 size={18} />
                     <span>Share Link</span>
                   </button>
                 </div>
@@ -875,28 +752,25 @@ const VideoCallRoom = () => {
         </div>
       </div>
 
-      {/* Bottom Controls - Enhanced Design */}
-      <div className="absolute bottom-0 left-0 right-0 z-20 pb-6 bg-gradient-to-t from-black/50 to-transparent backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto flex items-center justify-between px-6">
+      {/* Bottom Controls - Exact Google Meet Style */}
+      <div className="absolute bottom-0 left-0 right-0 z-20 pb-6">
+        <div className="max-w-4xl mx-auto flex items-center justify-between px-6">
           {/* Left - Meeting Info */}
-          <div className="flex items-center space-x-3 text-white bg-white/10 backdrop-blur-md px-4 py-3 rounded-xl border border-white/10">
+          <div className="flex items-center space-x-3 text-white">
             <div className="text-sm">
-              <p className="font-semibold">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
-              <p className="text-xs text-gray-300 flex items-center">
-                <span className="w-1.5 h-1.5 bg-green-400 rounded-full mr-1.5"></span>
-                {totalParticipants} {totalParticipants === 1 ? 'participant' : 'participants'}
-              </p>
+              <p className="font-medium">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</p>
+              <p className="text-xs text-gray-400">{totalParticipants} in call</p>
             </div>
           </div>
 
           {/* Center - Main Controls */}
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-2">
             <button
               onClick={toggleAudio}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-xl backdrop-blur-md border-2 ${
+              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg ${
                 isAudioOn 
-                  ? 'bg-white/10 hover:bg-white/20 text-white border-white/20 hover:border-white/30' 
-                  : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-red-400/50'
+                  ? 'bg-[#3c4043] hover:bg-[#5f6368] text-white' 
+                  : 'bg-[#ea4335] hover:bg-[#d33426] text-white'
               }`}
               title={isAudioOn ? 'Mute' : 'Unmute'}
             >
@@ -905,10 +779,10 @@ const VideoCallRoom = () => {
 
             <button
               onClick={toggleVideo}
-              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-xl backdrop-blur-md border-2 ${
+              className={`w-14 h-14 rounded-full flex items-center justify-center transition-all shadow-lg ${
                 isVideoOn 
-                  ? 'bg-white/10 hover:bg-white/20 text-white border-white/20 hover:border-white/30' 
-                  : 'bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white border-red-400/50'
+                  ? 'bg-[#3c4043] hover:bg-[#5f6368] text-white' 
+                  : 'bg-[#ea4335] hover:bg-[#d33426] text-white'
               }`}
               title={isVideoOn ? 'Turn off camera' : 'Turn on camera'}
             >
@@ -917,7 +791,7 @@ const VideoCallRoom = () => {
 
             <button
               onClick={handleCallEnd}
-              className="w-16 h-16 rounded-full bg-gradient-to-br from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 flex items-center justify-center text-white transition-all shadow-2xl mx-2 border-2 border-red-400/50 hover:scale-105"
+              className="w-16 h-16 rounded-full bg-[#ea4335] hover:bg-[#d33426] flex items-center justify-center text-white transition-all shadow-lg mx-2"
               title="Leave call"
             >
               <PhoneOff size={28} />
@@ -927,7 +801,7 @@ const VideoCallRoom = () => {
               <button
                 onClick={handleEndSession}
                 disabled={isEndingSession}
-                className="px-6 h-14 rounded-full bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-semibold transition-all shadow-xl disabled:opacity-50 disabled:cursor-not-allowed border-2 border-red-400/30"
+                className="px-6 h-14 rounded-full bg-[#ea4335] hover:bg-[#d33426] text-white font-medium transition-all shadow-lg disabled:opacity-50"
               >
                 {isEndingSession ? 'Ending...' : 'End Session'}
               </button>
@@ -938,12 +812,12 @@ const VideoCallRoom = () => {
           <div className="flex items-center space-x-2">
             <button
               onClick={() => setShowChat(!showChat)}
-              className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all shadow-lg relative border border-white/10"
+              className="w-12 h-12 rounded-full bg-[#3c4043] hover:bg-[#5f6368] flex items-center justify-center text-white transition-all shadow-lg relative"
               title="Chat"
             >
               <MessageCircle size={20} />
               {messages.length > 0 && !showChat && (
-                <span className="absolute -top-1 -right-1 w-6 h-6 bg-gradient-to-br from-red-500 to-red-600 rounded-full text-xs flex items-center justify-center font-bold shadow-lg border-2 border-white">
+                <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#ea4335] rounded-full text-xs flex items-center justify-center font-semibold">
                   {messages.length}
                 </span>
               )}
@@ -951,14 +825,14 @@ const VideoCallRoom = () => {
 
             <button
               onClick={() => setShowParticipants(!showParticipants)}
-              className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all shadow-lg border border-white/10"
+              className="w-12 h-12 rounded-full bg-[#3c4043] hover:bg-[#5f6368] flex items-center justify-center text-white transition-all shadow-lg"
               title="Participants"
             >
               <Users size={20} />
             </button>
 
             <button
-              className="w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md flex items-center justify-center text-white transition-all shadow-lg border border-white/10"
+              className="w-12 h-12 rounded-full bg-[#3c4043] hover:bg-[#5f6368] flex items-center justify-center text-white transition-all shadow-lg"
               title="More options"
             >
               <MoreVertical size={20} />
@@ -967,152 +841,83 @@ const VideoCallRoom = () => {
         </div>
       </div>
 
-      {/* Chat Sidebar - Enhanced Design */}
+      {/* Chat Sidebar */}
       {showChat && (
-        <div className="absolute right-0 top-0 bottom-0 w-96 bg-white shadow-2xl z-30 flex flex-col animate-slide-in-right">
-          <div className="p-5 bg-gradient-to-r from-[#1a73e8] to-[#1557b0] flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <MessageCircle size={20} className="text-white" />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg text-white">In-call Messages</h3>
-                <p className="text-xs text-blue-100">Private to this call</p>
-              </div>
-            </div>
-            <button 
-              onClick={() => setShowChat(false)} 
-              className="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-all"
-            >
-              ✕
-            </button>
+        <div className="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-30 flex flex-col">
+          <div className="p-4 border-b flex items-center justify-between">
+            <h3 className="font-semibold text-lg">In-call messages</h3>
+            <button onClick={() => setShowChat(false)} className="text-gray-500 hover:text-gray-700 text-xl">✕</button>
           </div>
-          <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-gray-50">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3">
             {messages.length === 0 ? (
-              <div className="text-center mt-12">
-                <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mx-auto mb-3">
-                  <MessageCircle size={28} className="text-gray-400" />
-                </div>
-                <p className="text-gray-500 text-sm font-medium">No messages yet</p>
-                <p className="text-gray-400 text-xs mt-1">Start a conversation</p>
-              </div>
+              <p className="text-gray-400 text-sm text-center mt-8">Messages can only be seen by people in the call</p>
             ) : (
               messages.map(msg => (
-                <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'} animate-fade-in`}>
-                  <div className={`max-w-[75%] rounded-2xl px-4 py-3 shadow-md ${
-                    msg.isMe 
-                      ? 'bg-gradient-to-br from-[#1a73e8] to-[#1557b0] text-white' 
-                      : 'bg-white text-gray-900 border border-gray-200'
+                <div key={msg.id} className={`flex ${msg.isMe ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`max-w-[75%] rounded-2xl px-4 py-2 ${
+                    msg.isMe ? 'bg-[#1a73e8] text-white' : 'bg-gray-100 text-gray-900'
                   }`}>
-                    <p className={`text-xs font-bold mb-1 ${msg.isMe ? 'text-blue-100' : 'text-gray-600'}`}>
-                      {msg.sender}
-                    </p>
-                    <p className="text-sm leading-relaxed">{msg.text}</p>
+                    <p className="text-xs font-semibold mb-1 opacity-75">{msg.sender}</p>
+                    <p className="text-sm">{msg.text}</p>
                   </div>
                 </div>
               ))
             )}
           </div>
-          <div className="p-5 border-t border-gray-200 bg-white">
+          <div className="p-4 border-t">
             <div className="flex space-x-2">
               <input
                 type="text"
                 value={newMessage}
                 onChange={(e) => setNewMessage(e.target.value)}
                 onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
-                placeholder="Type your message..."
-                className="flex-1 px-5 py-3 border-2 border-gray-200 rounded-2xl outline-none focus:border-[#1a73e8] focus:ring-2 focus:ring-blue-100 text-sm transition-all"
+                placeholder="Send a message to everyone"
+                className="flex-1 px-4 py-2.5 border border-gray-300 rounded-full outline-none focus:border-[#1a73e8] text-sm"
               />
               <button
                 onClick={sendMessage}
                 disabled={!newMessage.trim()}
-                className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#1a73e8] to-[#1557b0] hover:from-[#1557b0] hover:to-[#0d47a1] disabled:from-gray-300 disabled:to-gray-400 flex items-center justify-center text-white transition-all shadow-lg disabled:cursor-not-allowed"
+                className="w-10 h-10 rounded-full bg-[#1a73e8] hover:bg-[#1557b0] disabled:bg-gray-300 flex items-center justify-center text-white transition-all"
               >
-                <MessageCircle size={20} />
+                <MessageCircle size={18} />
               </button>
             </div>
           </div>
         </div>
       )}
 
-      {/* Participants Sidebar - Enhanced Design */}
+      {/* Participants Sidebar */}
       {showParticipants && (
-        <div className="absolute right-0 top-0 bottom-0 w-96 bg-white shadow-2xl z-30 flex flex-col animate-slide-in-right">
-          <div className="p-5 bg-gradient-to-r from-purple-500 to-indigo-600 flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center">
-                <Users size={20} className="text-white" />
-              </div>
-              <div>
-                <h3 className="font-bold text-lg text-white">Participants</h3>
-                <p className="text-xs text-purple-100">{totalParticipants} {totalParticipants === 1 ? 'person' : 'people'} in call</p>
-              </div>
-            </div>
-            <button 
-              onClick={() => setShowParticipants(false)} 
-              className="text-white hover:bg-white/20 w-8 h-8 rounded-full flex items-center justify-center transition-all"
-            >
-              ✕
-            </button>
+        <div className="absolute right-0 top-0 bottom-0 w-80 bg-white shadow-2xl z-30 flex flex-col">
+          <div className="p-4 border-b flex items-center justify-between">
+            <h3 className="font-semibold text-lg">People ({totalParticipants})</h3>
+            <button onClick={() => setShowParticipants(false)} className="text-gray-500 hover:text-gray-700 text-xl">✕</button>
           </div>
-          <div className="flex-1 overflow-y-auto p-5 space-y-3 bg-gray-50">
-            {/* Current User */}
-            <div className="flex items-center space-x-3 p-4 rounded-2xl bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 shadow-sm">
-              <div className="w-12 h-12 bg-gradient-to-br from-[#1a73e8] to-[#1557b0] rounded-full flex items-center justify-center text-white font-bold shadow-lg">
+          <div className="flex-1 overflow-y-auto p-4 space-y-2">
+            <div className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50">
+              <div className="w-10 h-10 bg-[#1a73e8] rounded-full flex items-center justify-center text-white font-semibold">
                 {username.charAt(0)}
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-gray-900">{username}</p>
-                <p className="text-xs text-gray-600 font-medium uppercase tracking-wide">{userRole} • You</p>
+                <p className="font-medium">{username} (You)</p>
+                <p className="text-sm text-gray-500">{userRole}</p>
               </div>
-              <div className="flex flex-col space-y-1">
-                {isAudioOn ? (
-                  <div className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-lg">
-                    <Mic size={14} className="text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">On</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-1 bg-red-100 px-2 py-1 rounded-lg">
-                    <MicOff size={14} className="text-red-600" />
-                    <span className="text-xs font-semibold text-red-700">Off</span>
-                  </div>
-                )}
-                {isVideoOn ? (
-                  <div className="flex items-center space-x-1 bg-green-100 px-2 py-1 rounded-lg">
-                    <Video size={14} className="text-green-600" />
-                    <span className="text-xs font-semibold text-green-700">On</span>
-                  </div>
-                ) : (
-                  <div className="flex items-center space-x-1 bg-red-100 px-2 py-1 rounded-lg">
-                    <VideoOff size={14} className="text-red-600" />
-                    <span className="text-xs font-semibold text-red-700">Off</span>
-                  </div>
-                )}
+              <div className="flex space-x-1">
+                {isAudioOn ? <Mic size={16} className="text-green-600" /> : <MicOff size={16} className="text-red-600" />}
+                {isVideoOn ? <Video size={16} className="text-green-600" /> : <VideoOff size={16} className="text-red-600" />}
               </div>
             </div>
-            
-            {/* Remote Users */}
-            {remoteUsers.map((user) => {
-              const isRemoteDoctor = user.userId.includes('doctor')
-              return (
-                <div key={user.userId} className="flex items-center space-x-3 p-4 rounded-2xl bg-white hover:bg-gray-50 transition-all border border-gray-200 shadow-sm">
-                  <div className={`w-12 h-12 rounded-full flex items-center justify-center text-white font-bold shadow-lg ${
-                    isRemoteDoctor 
-                      ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
-                      : 'bg-gradient-to-br from-blue-500 to-indigo-600'
-                  }`}>
-                    {isRemoteDoctor ? 'D' : 'P'}
-                  </div>
-                  <div className="flex-1">
-                    <p className="font-semibold text-gray-900">{isRemoteDoctor ? 'Doctor' : 'Patient'}</p>
-                    <p className="text-xs text-gray-600 flex items-center">
-                      <span className="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></span>
-                      In call
-                    </p>
-                  </div>
+            {remoteUsers.map((user) => (
+              <div key={user.userId} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-gray-50">
+                <div className="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center text-white font-semibold">
+                  {user.userId.includes('doctor') ? 'D' : 'P'}
                 </div>
-              )
-            })}
+                <div className="flex-1">
+                  <p className="font-medium">{user.userId.includes('doctor') ? 'Doctor' : 'Patient'}</p>
+                  <p className="text-sm text-gray-500">In call</p>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       )}
@@ -1206,7 +1011,7 @@ const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
   }, [videoRef])
 
   return (
-    <div className="relative bg-black rounded-2xl overflow-hidden h-full shadow-2xl border-2 border-white/10 group">
+    <div className="relative bg-black rounded-xl overflow-hidden h-full shadow-lg">
       <video
         ref={videoRef}
         autoPlay
@@ -1216,36 +1021,26 @@ const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
         style={{ transform: 'scaleX(-1)' }}
       />
       {!videoLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2d3034] to-[#3c4043] flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
           <div className="text-center">
-            <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-blue-500 border-r-blue-400 border-b-blue-300 border-l-transparent mb-4 mx-auto"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Video size={24} className="text-blue-400" />
-              </div>
-            </div>
-            <p className="text-white text-sm font-medium">Loading camera...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-3 mx-auto"></div>
+            <p className="text-white text-sm">Loading camera...</p>
           </div>
         </div>
       )}
       {!isVideoOn && videoLoaded && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2d3034] to-[#3c4043] flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
           <div className="text-center">
-            <div className="w-28 h-28 bg-gradient-to-br from-[#1a73e8] to-[#0d47a1] rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl">
-              <span className="text-5xl text-white font-bold">{username.charAt(0)}</span>
+            <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
+              <span className="text-4xl text-white font-semibold">{username.charAt(0)}</span>
             </div>
-            <p className="text-white text-sm font-medium">Camera is off</p>
+            <p className="text-white text-sm">Camera is off</p>
           </div>
         </div>
       )}
-      <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md px-4 py-2 rounded-xl text-white text-sm font-semibold z-20 border border-white/10 shadow-lg">
-        <div className="flex items-center space-x-2">
-          <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span>{username} (You)</span>
-        </div>
+      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium z-20">
+        {username} (You)
       </div>
-      {/* Hover overlay for better UX */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
     </div>
   )
 }
@@ -1309,10 +1104,9 @@ const RemoteVideo = ({ stream, userId }) => {
   }, [stream, userId])
 
   const displayName = userId.includes('doctor') ? 'Doctor' : 'Patient'
-  const isDoctor = userId.includes('doctor')
 
   return (
-    <div className="relative bg-black rounded-2xl overflow-hidden h-full shadow-2xl border-2 border-white/10 group">
+    <div className="relative bg-black rounded-xl overflow-hidden h-full shadow-lg">
       <video 
         ref={videoRef} 
         autoPlay 
@@ -1320,40 +1114,26 @@ const RemoteVideo = ({ stream, userId }) => {
         className="w-full h-full object-cover"
       />
       {!videoReady && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2d3034] to-[#3c4043] flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
           <div className="text-center">
-            <div className="relative">
-              <div className="animate-spin rounded-full h-16 w-16 border-4 border-t-green-500 border-r-green-400 border-b-green-300 border-l-transparent mb-4 mx-auto"></div>
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Video size={24} className="text-green-400" />
-              </div>
-            </div>
-            <p className="text-white text-sm font-medium">Connecting video...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-3 mx-auto"></div>
+            <p className="text-white text-sm">Connecting video...</p>
           </div>
         </div>
       )}
       {!hasVideo && videoReady && (
-        <div className="absolute inset-0 bg-gradient-to-br from-[#2d3034] to-[#3c4043] flex items-center justify-center z-10">
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
           <div className="text-center">
-            <div className={`w-28 h-28 rounded-full flex items-center justify-center mx-auto mb-4 shadow-xl ${
-              isDoctor 
-                ? 'bg-gradient-to-br from-green-500 to-emerald-600' 
-                : 'bg-gradient-to-br from-blue-500 to-indigo-600'
-            }`}>
-              <span className="text-5xl text-white font-bold">{displayName.charAt(0)}</span>
+            <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
+              <span className="text-4xl text-white font-semibold">{displayName.charAt(0)}</span>
             </div>
-            <p className="text-white text-sm font-medium">Camera is off</p>
+            <p className="text-white text-sm">Camera is off</p>
           </div>
         </div>
       )}
-      <div className="absolute bottom-4 left-4 bg-black/70 backdrop-blur-md px-4 py-2 rounded-xl text-white text-sm font-semibold z-20 border border-white/10 shadow-lg">
-        <div className="flex items-center space-x-2">
-          <div className={`w-2 h-2 rounded-full ${isDoctor ? 'bg-green-400' : 'bg-blue-400'}`}></div>
-          <span>{displayName}</span>
-        </div>
+      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium z-20">
+        {displayName}
       </div>
-      {/* Hover overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
     </div>
   )
 }
