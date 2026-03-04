@@ -86,7 +86,6 @@ const VideoCallRoom = () => {
       })
 
       if (data.shouldCall && data.otherPeerIds && data.otherPeerIds.length > 0) {
-        // Call any new peers we haven't connected to yet
         data.otherPeerIds.forEach(otherPeerId => {
           if (!mediaConnRef.current[otherPeerId]) {
             console.log('🔔 Found new peer, calling:', otherPeerId)
@@ -129,13 +128,16 @@ const VideoCallRoom = () => {
         audio: { echoCancellation: true, noiseSuppression: true }
       })
       localStreamRef.current = stream
+      
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream
+        localVideoRef.current.play().catch(err => console.error('Video play error:', err))
       }
 
       const peerId = `${videoCallId}-${userRole}-${Date.now()}`
       const peer = new Peer(peerId, {
         host: '0.peerjs.com',
+        port: 443,
         path: '/',
         secure: true,
         config: {
@@ -158,14 +160,16 @@ const VideoCallRoom = () => {
             peerId
           })
 
+          console.log('Join response:', data)
+
           if (data.shouldCall && data.otherPeerIds && data.otherPeerIds.length > 0) {
             console.log('Calling other peers immediately:', data.otherPeerIds)
-            // Call all existing peers
             data.otherPeerIds.forEach(otherPeerId => {
               const call = peer.call(otherPeerId, stream)
               if (call) {
                 mediaConnRef.current[otherPeerId] = call
                 call.on('stream', (remoteStream) => {
+                  console.log('📹 Received stream from', otherPeerId)
                   addRemoteUser(otherPeerId, remoteStream)
                 })
                 call.on('close', () => handleRemoteLeft(otherPeerId))
@@ -181,7 +185,6 @@ const VideoCallRoom = () => {
             setConnectionStatus('Waiting for participants...')
           }
           
-          // Always poll for new participants joining
           pollIntervalRef.current = setInterval(() => {
             pollForOtherPeers(peerId)
           }, 3000)
@@ -199,6 +202,7 @@ const VideoCallRoom = () => {
         mediaConnRef.current[call.peer] = call
         call.answer(stream)
         call.on('stream', (remoteStream) => {
+          console.log('📹 Answering call, received stream from', call.peer)
           addRemoteUser(call.peer, remoteStream)
         })
         call.on('close', () => handleRemoteLeft(call.peer))
@@ -214,13 +218,16 @@ const VideoCallRoom = () => {
         console.error('PeerJS error:', err)
         if (err.type === 'peer-unavailable') {
           console.log('Peer unavailable, will retry...')
+        } else if (err.type === 'network') {
+          setError('Network error. Please check your internet connection.')
         } else {
-          setConnectionStatus('Connection error')
+          setConnectionStatus('Connection error: ' + err.type)
         }
       })
 
       peer.on('disconnected', () => {
         console.log('Peer disconnected, attempting reconnect...')
+        setConnectionStatus('Reconnecting...')
         peer.reconnect()
       })
     } catch (err) {
@@ -257,7 +264,11 @@ const VideoCallRoom = () => {
     console.log('Adding remote user:', userId)
     setConnectionStatus('Connected')
     setRemoteUsers(prev => {
-      if (prev.find(u => u.userId === userId)) return prev
+      if (prev.find(u => u.userId === userId)) {
+        console.log('User already exists, updating stream')
+        return prev.map(u => u.userId === userId ? { ...u, stream } : u)
+      }
+      console.log('Adding new user')
       return [...prev, { userId, stream }]
     })
   }
@@ -298,7 +309,6 @@ const VideoCallRoom = () => {
   const sendMessage = () => {
     if (!newMessage.trim()) return
     const payload = { type: 'chat', message: newMessage, username, timestamp: Date.now() }
-    // Send to all connected peers
     Object.values(dataConnsRef.current).forEach(conn => {
       if (conn.open) {
         conn.send(payload)
@@ -408,6 +418,8 @@ const VideoCallRoom = () => {
   }
 
   const totalParticipants = 1 + remoteUsers.length
+  const patientUsers = remoteUsers.filter(u => u.userId.includes('patient'))
+  const doctorUser = remoteUsers.find(u => u.userId.includes('doctor'))
 
   return (
     <div className="min-h-screen bg-[#202124] flex flex-col relative">
@@ -422,47 +434,47 @@ const VideoCallRoom = () => {
           </div>
         </div>
         
-        {/* Share Links - Top Right */}
-        <div className="flex items-center space-x-3">
-          <div className="relative">
-            <button
-              onClick={() => setShowShareMenu(!showShareMenu)}
-              className="flex items-center space-x-2 bg-[#3c4043] hover:bg-[#5f6368] px-4 py-2 rounded-lg text-white transition-all"
-            >
-              <Share2 size={18} />
-              <span className="text-sm font-medium">Share</span>
-            </button>
-            
-            {showShareMenu && (
-              <div className="absolute right-0 top-12 bg-white rounded-lg shadow-2xl p-4 w-96 z-50">
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="font-semibold text-gray-900">Share meeting link</h3>
-                  <button onClick={() => setShowShareMenu(false)} className="text-gray-500 hover:text-gray-700">✕</button>
-                </div>
-                
-                {/* Patient Link */}
-                <div className="mb-4">
-                  <label className="text-xs text-gray-600 font-medium mb-1 block">Patient/Observer Link</label>
-                  <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-2">
-                    <input
-                      type="text"
-                      value={patientLink}
-                      readOnly
-                      className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
-                    />
-                    <button
-                      onClick={() => copyLink(patientLink, 'patient')}
-                      className="shrink-0 p-2 hover:bg-gray-200 rounded transition-all"
-                      title="Copy patient link"
-                    >
-                      {linkCopied === 'patient' ? <Check size={16} className="text-green-600" /> : <Copy size={16} className="text-gray-600" />}
-                    </button>
+        {/* Share Links - Only visible to doctor */}
+        {isDoctor && (
+          <div className="flex items-center space-x-3">
+            <div className="relative">
+              <button
+                onClick={() => setShowShareMenu(!showShareMenu)}
+                className="flex items-center space-x-2 bg-[#3c4043] hover:bg-[#5f6368] px-4 py-2 rounded-lg text-white transition-all"
+              >
+                <Share2 size={18} />
+                <span className="text-sm font-medium">Share</span>
+              </button>
+              
+              {showShareMenu && (
+                <div className="absolute right-0 top-12 bg-white rounded-lg shadow-2xl p-4 w-96 z-50">
+                  <div className="flex items-center justify-between mb-3">
+                    <h3 className="font-semibold text-gray-900">Share meeting link</h3>
+                    <button onClick={() => setShowShareMenu(false)} className="text-gray-500 hover:text-gray-700">✕</button>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">Anyone with this link can join as a participant</p>
-                </div>
-                
-                {/* Doctor Link */}
-                {isDoctor && (
+                  
+                  {/* Patient Link */}
+                  <div className="mb-4">
+                    <label className="text-xs text-gray-600 font-medium mb-1 block">Patient/Observer Link</label>
+                    <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-2">
+                      <input
+                        type="text"
+                        value={patientLink}
+                        readOnly
+                        className="flex-1 bg-transparent text-sm text-gray-700 outline-none"
+                      />
+                      <button
+                        onClick={() => copyLink(patientLink, 'patient')}
+                        className="shrink-0 p-2 hover:bg-gray-200 rounded transition-all"
+                        title="Copy patient link"
+                      >
+                        {linkCopied === 'patient' ? <Check size={16} className="text-green-600" /> : <Copy size={16} className="text-gray-600" />}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 mt-1">Anyone with this link can join as a participant</p>
+                  </div>
+                  
+                  {/* Doctor Link */}
                   <div>
                     <label className="text-xs text-gray-600 font-medium mb-1 block">Doctor Link</label>
                     <div className="flex items-center space-x-2 bg-gray-100 rounded-lg p-2">
@@ -482,75 +494,81 @@ const VideoCallRoom = () => {
                     </div>
                     <p className="text-xs text-gray-500 mt-1">For doctor/admin access</p>
                   </div>
-                )}
-              </div>
-            )}
+                </div>
+              )}
+            </div>
+            
+            <div className="bg-[#1a73e8] px-3 py-2 rounded-lg text-white text-sm flex items-center space-x-2">
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              <span>{connectionStatus}</span>
+            </div>
           </div>
-          
+        )}
+        
+        {/* Status for non-doctors */}
+        {!isDoctor && (
           <div className="bg-[#1a73e8] px-3 py-2 rounded-lg text-white text-sm flex items-center space-x-2">
             <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
             <span>{connectionStatus}</span>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Video Grid */}
-      <div className="flex-1 relative p-4 pt-20">
-        <div className={`h-full grid gap-2 ${
-          totalParticipants === 1 ? 'grid-cols-1' :
-          totalParticipants === 2 ? 'grid-cols-2' :
-          totalParticipants <= 4 ? 'grid-cols-2 grid-rows-2' :
-          'grid-cols-3 grid-rows-2'
-        }`}>
-          {/* Local Video */}
-          <div className="relative bg-black rounded-xl overflow-hidden group shadow-lg">
-            <video
-              ref={localVideoRef}
-              autoPlay
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-              style={{ transform: 'scaleX(-1)' }}
-            />
-            <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium">
-              {username} (You)
-            </div>
-            {!isVideoOn && (
-              <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center">
-                <div className="text-center">
+      {/* Video Layout: Doctor Left 50% | Patients Right 50% */}
+      <div className="flex-1 relative pt-20 pb-24">
+        <div className="h-full flex gap-2 px-4">
+          {/* Left Side - Doctor (50%) */}
+          <div className="w-1/2 h-full">
+            {isDoctor ? (
+              <LocalVideoTile videoRef={localVideoRef} username={username} isVideoOn={isVideoOn} />
+            ) : doctorUser ? (
+              <RemoteVideo stream={doctorUser.stream} userId={doctorUser.userId} />
+            ) : (
+              <div className="h-full bg-[#3c4043] rounded-xl flex items-center justify-center shadow-lg">
+                <div className="text-center text-white">
                   <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
-                    <span className="text-4xl text-white font-semibold">{username.charAt(0)}</span>
+                    <Users size={48} className="text-gray-400" />
                   </div>
-                  <p className="text-white text-sm">Camera is off</p>
+                  <p className="text-lg">Waiting for doctor...</p>
                 </div>
               </div>
             )}
           </div>
 
-          {/* Remote Videos */}
-          {remoteUsers.map((user) => (
-            <RemoteVideo key={user.userId} stream={user.stream} userId={user.userId} />
-          ))}
-
-          {/* Waiting State */}
-          {remoteUsers.length === 0 && (
-            <div className="relative bg-[#3c4043] rounded-xl overflow-hidden flex items-center justify-center shadow-lg">
-              <div className="text-center text-white p-8">
-                <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users size={48} className="text-gray-400" />
-                </div>
-                <p className="text-xl font-medium mb-2">Waiting for others to join...</p>
-                <p className="text-sm text-gray-400 mb-6">Share the meeting link</p>
-                <button
-                  onClick={() => setShowShareMenu(true)}
-                  className="bg-[#1a73e8] hover:bg-[#1557b0] px-6 py-3 rounded-lg font-medium transition-all inline-flex items-center space-x-2"
-                >
-                  <Share2 size={18} />
-                  <span>Share Link</span>
-                </button>
+          {/* Right Side - Patients (50%) */}
+          <div className="w-1/2 h-full flex flex-col gap-2">
+            {!isDoctor && (
+              <div className="flex-1">
+                <LocalVideoTile videoRef={localVideoRef} username={username} isVideoOn={isVideoOn} />
               </div>
-            </div>
-          )}
+            )}
+            
+            {patientUsers.map((user) => (
+              <div key={user.userId} className="flex-1">
+                <RemoteVideo stream={user.stream} userId={user.userId} />
+              </div>
+            ))}
+            
+            {/* Waiting state for patients side */}
+            {patientUsers.length === 0 && isDoctor && (
+              <div className="flex-1 bg-[#3c4043] rounded-xl flex items-center justify-center shadow-lg">
+                <div className="text-center text-white p-8">
+                  <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-4">
+                    <Users size={48} className="text-gray-400" />
+                  </div>
+                  <p className="text-xl font-medium mb-2">Waiting for patients...</p>
+                  <p className="text-sm text-gray-400 mb-6">Share the patient link</p>
+                  <button
+                    onClick={() => setShowShareMenu(true)}
+                    className="bg-[#1a73e8] hover:bg-[#1557b0] px-6 py-3 rounded-lg font-medium transition-all inline-flex items-center space-x-2"
+                  >
+                    <Share2 size={18} />
+                    <span>Share Link</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -727,17 +745,50 @@ const VideoCallRoom = () => {
   )
 }
 
+const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
+  return (
+    <div className="relative bg-black rounded-xl overflow-hidden h-full shadow-lg">
+      <video
+        ref={videoRef}
+        autoPlay
+        muted
+        playsInline
+        className="w-full h-full object-cover"
+        style={{ transform: 'scaleX(-1)' }}
+      />
+      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium">
+        {username} (You)
+      </div>
+      {!isVideoOn && (
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center">
+          <div className="text-center">
+            <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
+              <span className="text-4xl text-white font-semibold">{username.charAt(0)}</span>
+            </div>
+            <p className="text-white text-sm">Camera is off</p>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
 const RemoteVideo = ({ stream, userId }) => {
   const videoRef = useRef(null)
   const [hasVideo, setHasVideo] = useState(true)
 
   useEffect(() => {
     if (videoRef.current && stream) {
+      console.log('Setting video srcObject for', userId)
       videoRef.current.srcObject = stream
+      videoRef.current.play().catch(err => console.error('Remote video play error:', err))
+      
       const videoTrack = stream.getVideoTracks()[0]
       if (videoTrack) {
         setHasVideo(videoTrack.enabled)
         videoTrack.onended = () => setHasVideo(false)
+        videoTrack.onmute = () => setHasVideo(false)
+        videoTrack.onunmute = () => setHasVideo(true)
       }
     }
   }, [stream, userId])
@@ -745,8 +796,13 @@ const RemoteVideo = ({ stream, userId }) => {
   const displayName = userId.includes('doctor') ? 'Doctor' : 'Patient'
 
   return (
-    <div className="relative bg-black rounded-xl overflow-hidden group shadow-lg">
-      <video ref={videoRef} autoPlay playsInline className="w-full h-full object-cover" />
+    <div className="relative bg-black rounded-xl overflow-hidden h-full shadow-lg">
+      <video 
+        ref={videoRef} 
+        autoPlay 
+        playsInline 
+        className="w-full h-full object-cover"
+      />
       <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium">
         {displayName}
       </div>
@@ -764,6 +820,11 @@ const RemoteVideo = ({ stream, userId }) => {
   )
 }
 
+LocalVideoTile.propTypes = { 
+  videoRef: PropTypes.object.isRequired, 
+  username: PropTypes.string.isRequired,
+  isVideoOn: PropTypes.bool.isRequired
+}
 RemoteVideo.propTypes = { stream: PropTypes.object, userId: PropTypes.string.isRequired }
 
 export default VideoCallRoom
