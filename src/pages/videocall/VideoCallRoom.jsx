@@ -8,7 +8,7 @@ import {
 } from 'lucide-react'
 import Peer from 'peerjs'
 import apiInstance from '../../instance'
-import { API_HOST } from '../../config/api'
+import { API_HOST, API_BASE_URL } from '../../config/api'
 
 const VideoCallRoom = () => {
   const { videoCallId } = useParams()
@@ -22,7 +22,8 @@ const VideoCallRoom = () => {
   const [error, setError] = useState(null)
   const [messages, setMessages] = useState([])
   const [newMessage, setNewMessage] = useState('')
-  const [connectionStatus, setConnectionStatus] = useState('Connecting...')
+  const [connectionStatus, setConnectionStatus] = useState('Initializing...')
+  const [connectionStep, setConnectionStep] = useState('loading') // loading, camera, connecting, waiting, connected
   const [remoteUsers, setRemoteUsers] = useState([])
   const [isEndingSession, setIsEndingSession] = useState(false)
   const [linkCopied, setLinkCopied] = useState(false)
@@ -46,14 +47,21 @@ const VideoCallRoom = () => {
   const username = isDoctor ? 'Dr. Smith' : 'Patient'
 
   const fetchAppointmentDetails = useCallback(async () => {
+    console.log('🔍 Fetching appointment details for videoCallId:', videoCallId, 'role:', userRole)
     try {
       setLoading(true)
       setError(null)
+      setConnectionStep('loading')
+      setConnectionStatus('Loading appointment details...')
+      
       const roleQuery = `?role=${userRole}`
       const response = await apiInstance.get(`/video-call/${videoCallId}/details${roleQuery}`)
+      console.log('Appointment details response:', response.data)
 
       if (response.data.success) {
         setAppointmentDetails(response.data.data)
+        setConnectionStep('camera')
+        setConnectionStatus('Requesting camera access...')
         await initializePeerJS()
       } else {
         setError(response.data.message || 'Failed to load appointment details')
@@ -75,8 +83,23 @@ const VideoCallRoom = () => {
 
   useEffect(() => {
     fetchAppointmentDetails()
-    return () => cleanup()
-  }, [videoCallId, fetchAppointmentDetails])
+    
+    // Cleanup on page close/refresh
+    const handleBeforeUnload = () => {
+      if (peerRef.current?.id) {
+        navigator.sendBeacon(
+          `${API_BASE_URL}/video-call/${videoCallId}/leave`,
+          JSON.stringify({ role: userRole, peerId: peerRef.current.id })
+        )
+      }
+    }
+    window.addEventListener('beforeunload', handleBeforeUnload)
+    
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      cleanup()
+    }
+  }, [videoCallId, fetchAppointmentDetails, userRole, cleanup])
 
   const pollForOtherPeers = async (peerId) => {
     try {
@@ -123,15 +146,75 @@ const VideoCallRoom = () => {
 
   const initializePeerJS = async () => {
     try {
+      console.log('🎥 Requesting camera and microphone access...')
+      console.log('Current URL:', window.location.href)
+      console.log('Protocol:', window.location.protocol)
+      
+      // Check if page is secure (HTTPS or localhost)
+      const isSecure = window.location.protocol === 'https:' || window.location.hostname === 'localhost'
+      if (!isSecure) {
+        console.warn('⚠️ Page is not secure (HTTPS). Camera may not work!')
+      }
+      
+      // Check if getUserMedia is supported
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('getUserMedia is not supported in this browser')
+      }
+      
+      console.log('Browser:', navigator.userAgent)
+      
+      // Check camera permission status
+      if (navigator.permissions && navigator.permissions.query) {
+        try {
+          const cameraPermission = await navigator.permissions.query({ name: 'camera' })
+          const micPermission = await navigator.permissions.query({ name: 'microphone' })
+          console.log('Camera permission:', cameraPermission.state)
+          console.log('Microphone permission:', micPermission.state)
+        } catch (e) {
+          console.log('Could not check permissions:', e)
+        }
+      }
+
       const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } }, 
-        audio: { echoCancellation: true, noiseSuppression: true }
+        video: { 
+          width: { ideal: 1280 }, 
+          height: { ideal: 720 },
+          facingMode: 'user'
+        }, 
+        audio: { 
+          echoCancellation: true, 
+          noiseSuppression: true,
+          autoGainControl: true
+        }
       })
+      
+      console.log('✅ Media stream obtained:', {
+        videoTracks: stream.getVideoTracks().length,
+        audioTracks: stream.getAudioTracks().length,
+        videoEnabled: stream.getVideoTracks()[0]?.enabled,
+        audioEnabled: stream.getAudioTracks()[0]?.enabled,
+        videoLabel: stream.getVideoTracks()[0]?.label,
+        audioLabel: stream.getAudioTracks()[0]?.label
+      })
+      
+      setConnectionStep('connecting')
+      setConnectionStatus('Connecting to call...')
       localStreamRef.current = stream
       
       if (localVideoRef.current) {
+        console.log('Setting video srcObject...')
         localVideoRef.current.srcObject = stream
-        localVideoRef.current.play().catch(err => console.error('Video play error:', err))
+        
+        // Force immediate play (the LocalVideoTile component will also handle this)
+        setTimeout(() => {
+          if (localVideoRef.current) {
+            localVideoRef.current.play()
+              .then(() => console.log('✅ Video playing successfully'))
+              .catch(err => console.error('❌ Video play error:', err))
+          }
+        }, 200)
+      } else {
+        console.error('❌ localVideoRef.current is null!')
       }
 
       const peerId = `${videoCallId}-${userRole}-${Date.now()}`
@@ -152,7 +235,7 @@ const VideoCallRoom = () => {
 
       peer.on('open', async () => {
         console.log('✅ PeerJS connected, ID:', peerId)
-        setConnectionStatus('Ready')
+        setConnectionStatus('Joining room...')
 
         try {
           const { data } = await apiInstance.post(`/video-call/${videoCallId}/join`, {
@@ -161,33 +244,53 @@ const VideoCallRoom = () => {
           })
 
           console.log('Join response:', data)
+          console.log('Other peer IDs:', JSON.stringify(data.otherPeerIds))
+          console.log('Should call?', data.shouldCall)
+          console.log('Array length:', data.otherPeerIds?.length)
 
           if (data.shouldCall && data.otherPeerIds && data.otherPeerIds.length > 0) {
-            console.log('Calling other peers immediately:', data.otherPeerIds)
+            console.log('🔥 Calling other peers immediately:', data.otherPeerIds)
+            setConnectionStep('connecting')
+            setConnectionStatus(`Connecting to ${data.otherPeerIds.length} participant(s)...`)
             data.otherPeerIds.forEach(otherPeerId => {
+              console.log('Attempting to call peer:', otherPeerId)
               const call = peer.call(otherPeerId, stream)
               if (call) {
+                console.log('✅ Call initiated to', otherPeerId)
                 mediaConnRef.current[otherPeerId] = call
                 call.on('stream', (remoteStream) => {
                   console.log('📹 Received stream from', otherPeerId)
                   addRemoteUser(otherPeerId, remoteStream)
                 })
-                call.on('close', () => handleRemoteLeft(otherPeerId))
-                call.on('error', (err) => console.error('Call error:', err))
+                call.on('close', () => {
+                  console.log('Call closed with', otherPeerId)
+                  handleRemoteLeft(otherPeerId)
+                })
+                call.on('error', (err) => {
+                  console.error('❌ Call error with', otherPeerId, ':', err)
+                })
+              } else {
+                console.error('❌ Failed to initiate call to', otherPeerId)
               }
+              
+              console.log('Establishing data connection to', otherPeerId)
               const conn = peer.connect(otherPeerId)
               if (conn) {
                 setupDataConnection(conn)
+              } else {
+                console.error('❌ Failed to establish data connection to', otherPeerId)
               }
             })
           } else {
             console.log('Waiting for other participants, polling every 3 seconds...')
-            setConnectionStatus('Waiting for participants...')
+            setConnectionStep('waiting')
+            setConnectionStatus('Waiting for participants to join...')
           }
           
+          // Reduce polling interval to 2 seconds for faster connection
           pollIntervalRef.current = setInterval(() => {
             pollForOtherPeers(peerId)
-          }, 3000)
+          }, 2000)
         } catch (err) {
           console.error('Join room error:', err)
           setError('Failed to join video call room')
@@ -217,9 +320,13 @@ const VideoCallRoom = () => {
       peer.on('error', (err) => {
         console.error('PeerJS error:', err)
         if (err.type === 'peer-unavailable') {
-          console.log('Peer unavailable, will retry...')
+          console.log('⚠️ Peer unavailable (might be disconnected):', err.message)
+          // The peer might have disconnected - polling will find active peers
         } else if (err.type === 'network') {
           setError('Network error. Please check your internet connection.')
+        } else if (err.type === 'unavailable-id') {
+          console.error('❌ Peer ID already in use')
+          setError('Connection error: ID conflict. Please refresh.')
         } else {
           setConnectionStatus('Connection error: ' + err.type)
         }
@@ -231,8 +338,37 @@ const VideoCallRoom = () => {
         peer.reconnect()
       })
     } catch (err) {
-      console.error('Media/PeerJS error:', err)
-      setError('Cannot access camera/microphone. Please grant permissions.')
+      console.error('❌ Media/PeerJS error:', err)
+      
+      // Detailed error messages
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setError('Camera/microphone access denied. Please allow permissions and refresh.')
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setError('No camera or microphone found. Please connect a device.')
+      } else if (err.name === 'NotReadableError' || err.name === 'TrackStartError') {
+        setError('Camera is in use by another application. Please close other apps and refresh.')
+      } else if (err.name === 'OverconstrainedError') {
+        setError('Camera does not meet requirements. Trying with lower settings...')
+        // Retry with lower constraints
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ 
+            video: true, 
+            audio: true 
+          })
+          localStreamRef.current = stream
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = stream
+            localVideoRef.current.play().catch(e => console.error('Play error:', e))
+          }
+          setError(null)
+          console.log('✅ Camera initialized with basic settings')
+        } catch (retryErr) {
+          console.error('Retry failed:', retryErr)
+          setError('Cannot access camera/microphone. Please check permissions.')
+        }
+      } else {
+        setError(`Camera error: ${err.message || 'Cannot access camera/microphone'}`)
+      }
     }
   }
 
@@ -262,6 +398,7 @@ const VideoCallRoom = () => {
 
   const addRemoteUser = (userId, stream) => {
     console.log('Adding remote user:', userId)
+    setConnectionStep('connected')
     setConnectionStatus('Connected')
     setRemoteUsers(prev => {
       if (prev.find(u => u.userId === userId)) {
@@ -323,10 +460,24 @@ const VideoCallRoom = () => {
     setNewMessage('')
   }
 
-  const cleanup = () => {
+  const cleanup = useCallback(async () => {
     if (pollIntervalRef.current) {
       clearInterval(pollIntervalRef.current)
     }
+    
+    // Notify backend to remove this peer from the room
+    if (peerRef.current?.id) {
+      try {
+        await apiInstance.post(`/video-call/${videoCallId}/leave`, {
+          role: userRole,
+          peerId: peerRef.current.id
+        })
+        console.log('✅ Left room, peer ID removed from backend')
+      } catch (err) {
+        console.error('Failed to leave room:', err)
+      }
+    }
+    
     Object.values(mediaConnRef.current).forEach(call => call?.close())
     mediaConnRef.current = {}
     Object.values(dataConnsRef.current).forEach(conn => conn?.close())
@@ -340,7 +491,7 @@ const VideoCallRoom = () => {
       localStreamRef.current = null
     }
     setRemoteUsers([])
-  }
+  }, [videoCallId, userRole])
 
   const handleCallEnd = () => {
     cleanup()
@@ -357,6 +508,16 @@ const VideoCallRoom = () => {
       setTimeout(() => setLinkCopied(false), 2000)
     } catch (err) {
       console.error('Failed to copy link:', err)
+    }
+  }
+
+  const clearRoom = async () => {
+    try {
+      await apiInstance.delete(`/video-call/${videoCallId}/room`)
+      console.log('✅ Room cleared, refreshing...')
+      window.location.reload()
+    } catch (err) {
+      console.error('Failed to clear room:', err)
     }
   }
 
@@ -494,12 +655,27 @@ const VideoCallRoom = () => {
                     </div>
                     <p className="text-xs text-gray-500 mt-1">For doctor/admin access</p>
                   </div>
+                  
+                  {/* Clear Room Button (for testing/debugging) */}
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <button
+                      onClick={clearRoom}
+                      className="w-full px-4 py-2 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-sm font-medium transition-all"
+                    >
+                      Clear Room (Remove stale connections)
+                    </button>
+                    <p className="text-xs text-gray-500 mt-1">Use this if you see connection issues during testing</p>
+                  </div>
                 </div>
               )}
             </div>
             
             <div className="bg-[#1a73e8] px-3 py-2 rounded-lg text-white text-sm flex items-center space-x-2">
-              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              {connectionStep === 'connected' ? (
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+              ) : (
+                <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+              )}
               <span>{connectionStatus}</span>
             </div>
           </div>
@@ -508,17 +684,21 @@ const VideoCallRoom = () => {
         {/* Status for non-doctors */}
         {!isDoctor && (
           <div className="bg-[#1a73e8] px-3 py-2 rounded-lg text-white text-sm flex items-center space-x-2">
-            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            {connectionStep === 'connected' ? (
+              <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+            ) : (
+              <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            )}
             <span>{connectionStatus}</span>
           </div>
         )}
       </div>
 
-      {/* Video Layout: Doctor Left 50% | Patients Right 50% */}
+      {/* Video Layout: Responsive - Desktop: Row (Doctor Left 50% | Patients Right 50%), Mobile: Column (Doctor Top, Patients Bottom) */}
       <div className="flex-1 relative pt-20 pb-24">
-        <div className="h-full flex gap-2 px-4">
-          {/* Left Side - Doctor (50%) */}
-          <div className="w-1/2 h-full">
+        <div className="h-full flex flex-col md:flex-row gap-2 px-4">
+          {/* Doctor Section - Mobile: Top, Desktop: Left 50% */}
+          <div className="flex-1 md:w-1/2 h-1/2 md:h-full">
             {isDoctor ? (
               <LocalVideoTile videoRef={localVideoRef} username={username} isVideoOn={isVideoOn} />
             ) : doctorUser ? (
@@ -535,23 +715,23 @@ const VideoCallRoom = () => {
             )}
           </div>
 
-          {/* Right Side - Patients (50%) */}
-          <div className="w-1/2 h-full flex flex-col gap-2">
+          {/* Patients Section - Mobile: Bottom, Desktop: Right 50% - FULL HEIGHT */}
+          <div className="flex-1 md:w-1/2 h-1/2 md:h-full flex flex-col gap-2">
             {!isDoctor && (
-              <div className="flex-1">
+              <div className="flex-1 min-h-0">
                 <LocalVideoTile videoRef={localVideoRef} username={username} isVideoOn={isVideoOn} />
               </div>
             )}
             
             {patientUsers.map((user) => (
-              <div key={user.userId} className="flex-1">
+              <div key={user.userId} className="flex-1 min-h-0">
                 <RemoteVideo stream={user.stream} userId={user.userId} />
               </div>
             ))}
             
-            {/* Waiting state for patients side */}
+            {/* Waiting state for patients side - FULL HEIGHT */}
             {patientUsers.length === 0 && isDoctor && (
-              <div className="flex-1 bg-[#3c4043] rounded-xl flex items-center justify-center shadow-lg">
+              <div className="flex-1 min-h-0 bg-[#3c4043] rounded-xl flex items-center justify-center shadow-lg">
                 <div className="text-center text-white p-8">
                   <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-4">
                     <Users size={48} className="text-gray-400" />
@@ -746,6 +926,51 @@ const VideoCallRoom = () => {
 }
 
 const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  
+  useEffect(() => {
+    if (videoRef.current) {
+      const video = videoRef.current
+      
+      const handleLoadedMetadata = () => {
+        console.log('✅ Local video metadata loaded in component')
+        setVideoLoaded(true)
+        // Ensure video plays
+        video.play()
+          .then(() => console.log('✅ Video autoplay started'))
+          .catch(err => console.error('❌ Autoplay failed:', err))
+      }
+      
+      const handleLoadedData = () => {
+        console.log('✅ Local video data loaded')
+      }
+      
+      const handleCanPlay = () => {
+        console.log('✅ Video can play')
+        setVideoLoaded(true)
+      }
+      
+      video.addEventListener('loadedmetadata', handleLoadedMetadata)
+      video.addEventListener('loadeddata', handleLoadedData)
+      video.addEventListener('canplay', handleCanPlay)
+      
+      // If stream is already attached, trigger load
+      if (video.srcObject) {
+        console.log('Stream already attached, checking readyState:', video.readyState)
+        if (video.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+          setVideoLoaded(true)
+          video.play().catch(err => console.error('Play error:', err))
+        }
+      }
+      
+      return () => {
+        video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+        video.removeEventListener('loadeddata', handleLoadedData)
+        video.removeEventListener('canplay', handleCanPlay)
+      }
+    }
+  }, [videoRef])
+
   return (
     <div className="relative bg-black rounded-xl overflow-hidden h-full shadow-lg">
       <video
@@ -756,10 +981,18 @@ const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
         className="w-full h-full object-cover"
         style={{ transform: 'scaleX(-1)' }}
       />
+      {!videoLoaded && (
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-3"></div>
+            <p className="text-white text-sm">Loading camera...</p>
+          </div>
+        </div>
+      )}
       <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium">
         {username} (You)
       </div>
-      {!isVideoOn && (
+      {!isVideoOn && videoLoaded && (
         <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center">
           <div className="text-center">
             <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
@@ -781,10 +1014,17 @@ const RemoteVideo = ({ stream, userId }) => {
     if (videoRef.current && stream) {
       console.log('Setting video srcObject for', userId)
       videoRef.current.srcObject = stream
-      videoRef.current.play().catch(err => console.error('Remote video play error:', err))
+      
+      // Force play after a short delay
+      setTimeout(() => {
+        if (videoRef.current) {
+          videoRef.current.play().catch(err => console.error('Remote video play error:', err))
+        }
+      }, 100)
       
       const videoTrack = stream.getVideoTracks()[0]
       if (videoTrack) {
+        console.log('Remote video track:', videoTrack.label, 'enabled:', videoTrack.enabled)
         setHasVideo(videoTrack.enabled)
         videoTrack.onended = () => setHasVideo(false)
         videoTrack.onmute = () => setHasVideo(false)
