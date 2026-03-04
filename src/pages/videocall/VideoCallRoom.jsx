@@ -46,7 +46,7 @@ const VideoCallRoom = () => {
 
   const username = isDoctor ? 'Dr. Smith' : 'Patient'
 
-  const fetchAppointmentDetails = useCallback(async () => {
+  const fetchAppointmentDetails = async () => {
     console.log('🔍 Fetching appointment details for videoCallId:', videoCallId, 'role:', userRole)
     try {
       setLoading(true)
@@ -78,8 +78,7 @@ const VideoCallRoom = () => {
     } finally {
       setLoading(false)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [userRole, videoCallId])
+  }
 
   useEffect(() => {
     fetchAppointmentDetails()
@@ -99,7 +98,8 @@ const VideoCallRoom = () => {
       window.removeEventListener('beforeunload', handleBeforeUnload)
       cleanup()
     }
-  }, [videoCallId, fetchAppointmentDetails, userRole, cleanup])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [videoCallId, userRole])
 
   const pollForOtherPeers = async (peerId) => {
     try {
