@@ -63,7 +63,7 @@ const PaymentPage = () => {
 
       // Step 2: Open Razorpay Checkout
       const options = {
-        key: "rzp_test_RMhvZDD0dxSGn0", // Razorpay test key
+        key: "rzp_test_SN3KWXr3ClAEo8", // Razorpay test key
         amount: order.amount,
         currency: order.currency,
         name: "MindVista Psychology",

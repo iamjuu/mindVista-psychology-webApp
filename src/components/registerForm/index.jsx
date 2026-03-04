@@ -58,6 +58,7 @@ function Form() {
       // First, get the doctor's available slots for the selected date
       const doctorResponse = await apiInstance.get(`/doctors/${doctorId}/available-slots/${date}`);
       
+      console.log(doctorResponse.data,'fsst');
       if (doctorResponse.data.success) {
         const doctorSlots = doctorResponse.data.slots || [];
         
