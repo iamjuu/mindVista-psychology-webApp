@@ -103,13 +103,17 @@ const VideoCallRoom = () => {
 
   const pollForOtherPeers = async (peerId) => {
     try {
-      const { data } = await apiInstance.post(`/video-call/${videoCallId}/join`, {
+      const response = await apiInstance.post(`/video-call/${videoCallId}/join`, {
         role: userRole,
         peerId
       })
 
-      if (data.shouldCall && data.otherPeerIds && data.otherPeerIds.length > 0) {
-        data.otherPeerIds.forEach(otherPeerId => {
+      const responseData = response.data.data || response.data
+      const otherPeerIds = responseData.otherPeerIds || []
+      const shouldCall = responseData.shouldCall || false
+      
+      if (shouldCall && otherPeerIds && otherPeerIds.length > 0) {
+        otherPeerIds.forEach(otherPeerId => {
           if (!mediaConnRef.current[otherPeerId]) {
             console.log('🔔 Found new peer, calling:', otherPeerId)
             
@@ -201,21 +205,8 @@ const VideoCallRoom = () => {
       setConnectionStatus('Connecting to call...')
       localStreamRef.current = stream
       
-      if (localVideoRef.current) {
-        console.log('Setting video srcObject...')
-        localVideoRef.current.srcObject = stream
-        
-        // Force immediate play (the LocalVideoTile component will also handle this)
-        setTimeout(() => {
-          if (localVideoRef.current) {
-            localVideoRef.current.play()
-              .then(() => console.log('✅ Video playing successfully'))
-              .catch(err => console.error('❌ Video play error:', err))
-          }
-        }, 200)
-      } else {
-        console.error('❌ localVideoRef.current is null!')
-      }
+      // Make stream available globally for LocalVideoTile component
+      window.localStreamForVideo = stream
 
       const peerId = `${videoCallId}-${userRole}-${Date.now()}`
       const peer = new Peer(peerId, {
@@ -238,21 +229,29 @@ const VideoCallRoom = () => {
         setConnectionStatus('Joining room...')
 
         try {
-          const { data } = await apiInstance.post(`/video-call/${videoCallId}/join`, {
+          const response = await apiInstance.post(`/video-call/${videoCallId}/join`, {
             role: userRole,
             peerId
           })
 
-          console.log('Join response:', data)
-          console.log('Other peer IDs:', JSON.stringify(data.otherPeerIds))
-          console.log('Should call?', data.shouldCall)
-          console.log('Array length:', data.otherPeerIds?.length)
+          console.log('Join response FULL:', JSON.stringify(response.data, null, 2))
+          console.log('response.data.data:', response.data.data)
+          console.log('response.data:', response.data)
+          
+          // Extract from nested data object
+          const responseData = response.data.data || response.data
+          const otherPeerIds = responseData.otherPeerIds || []
+          const shouldCall = responseData.shouldCall || false
+          
+          console.log('Extracted otherPeerIds:', JSON.stringify(otherPeerIds))
+          console.log('Extracted shouldCall:', shouldCall)
+          console.log('Array length:', otherPeerIds.length)
 
-          if (data.shouldCall && data.otherPeerIds && data.otherPeerIds.length > 0) {
-            console.log('🔥 Calling other peers immediately:', data.otherPeerIds)
+          if (shouldCall && otherPeerIds && otherPeerIds.length > 0) {
+            console.log('🔥 Calling other peers immediately:', otherPeerIds)
             setConnectionStep('connecting')
-            setConnectionStatus(`Connecting to ${data.otherPeerIds.length} participant(s)...`)
-            data.otherPeerIds.forEach(otherPeerId => {
+            setConnectionStatus(`Connecting to ${otherPeerIds.length} participant(s)...`)
+            otherPeerIds.forEach(otherPeerId => {
               console.log('Attempting to call peer:', otherPeerId)
               const call = peer.call(otherPeerId, stream)
               if (call) {
@@ -927,48 +926,87 @@ const VideoCallRoom = () => {
 
 const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
   const [videoLoaded, setVideoLoaded] = useState(false)
+  const localStreamRef = useRef(null)
   
   useEffect(() => {
-    if (videoRef.current) {
-      const video = videoRef.current
-      
-      const handleLoadedMetadata = () => {
-        console.log('✅ Local video metadata loaded in component')
-        setVideoLoaded(true)
-        // Ensure video plays
-        video.play()
-          .then(() => console.log('✅ Video autoplay started'))
-          .catch(err => console.error('❌ Autoplay failed:', err))
-      }
-      
-      const handleLoadedData = () => {
-        console.log('✅ Local video data loaded')
-      }
-      
-      const handleCanPlay = () => {
-        console.log('✅ Video can play')
-        setVideoLoaded(true)
-      }
-      
-      video.addEventListener('loadedmetadata', handleLoadedMetadata)
-      video.addEventListener('loadeddata', handleLoadedData)
-      video.addEventListener('canplay', handleCanPlay)
-      
-      // If stream is already attached, trigger load
-      if (video.srcObject) {
-        console.log('Stream already attached, checking readyState:', video.readyState)
-        if (video.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+    // Get the stream from the parent's localStreamRef
+    const checkForStream = () => {
+      if (videoRef.current && window.localStreamForVideo) {
+        const video = videoRef.current
+        const stream = window.localStreamForVideo
+        
+        console.log('📹 LocalVideoTile: Setting up video with stream')
+        video.srcObject = stream
+        localStreamRef.current = stream
+        
+        const handleLoadedMetadata = () => {
+          console.log('✅ Local video metadata loaded')
+          setVideoLoaded(true)
+          video.play()
+            .then(() => console.log('✅ Video autoplay started'))
+            .catch(err => console.error('❌ Autoplay failed:', err))
+        }
+        
+        const handleLoadedData = () => {
+          console.log('✅ Local video data loaded')
+          setVideoLoaded(true)
+        }
+        
+        const handleCanPlay = () => {
+          console.log('✅ Video can play')
+          setVideoLoaded(true)
+        }
+        
+        const handlePlaying = () => {
+          console.log('✅ Video is playing')
+          setVideoLoaded(true)
+        }
+        
+        video.addEventListener('loadedmetadata', handleLoadedMetadata)
+        video.addEventListener('loadeddata', handleLoadedData)
+        video.addEventListener('canplay', handleCanPlay)
+        video.addEventListener('playing', handlePlaying)
+        
+        // Try to play immediately
+        if (video.readyState >= 1) {
+          console.log('Video has metadata, marking as loaded')
           setVideoLoaded(true)
           video.play().catch(err => console.error('Play error:', err))
         }
-      }
-      
-      return () => {
-        video.removeEventListener('loadedmetadata', handleLoadedMetadata)
-        video.removeEventListener('loadeddata', handleLoadedData)
-        video.removeEventListener('canplay', handleCanPlay)
+        
+        // Aggressive fallback: Force show video after 2 seconds
+        const fallbackTimeoutId = setTimeout(() => {
+          console.log('⏰ Fallback timeout: forcing video to show')
+          setVideoLoaded(true)
+          video.play().catch(err => console.error('Fallback play error:', err))
+        }, 2000)
+        
+        return () => {
+          clearTimeout(fallbackTimeoutId)
+          video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+          video.removeEventListener('loadeddata', handleLoadedData)
+          video.removeEventListener('canplay', handleCanPlay)
+          video.removeEventListener('playing', handlePlaying)
+        }
       }
     }
+    
+    // Try immediately and retry every 100ms for up to 3 seconds
+    const cleanup = checkForStream()
+    if (cleanup) return cleanup
+    
+    let attempts = 0
+    const maxAttempts = 30
+    const intervalId = setInterval(() => {
+      attempts++
+      const cleanup = checkForStream()
+      if (cleanup || attempts >= maxAttempts) {
+        clearInterval(intervalId)
+        if (cleanup) return cleanup
+      }
+    }, 100)
+    
+    return () => clearInterval(intervalId)
   }, [videoRef])
 
   return (
@@ -982,18 +1020,15 @@ const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
         style={{ transform: 'scaleX(-1)' }}
       />
       {!videoLoaded && (
-        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center">
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-3"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-3 mx-auto"></div>
             <p className="text-white text-sm">Loading camera...</p>
           </div>
         </div>
       )}
-      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium">
-        {username} (You)
-      </div>
       {!isVideoOn && videoLoaded && (
-        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center">
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
           <div className="text-center">
             <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-4xl text-white font-semibold">{username.charAt(0)}</span>
@@ -1002,6 +1037,9 @@ const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
           </div>
         </div>
       )}
+      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium z-20">
+        {username} (You)
+      </div>
     </div>
   )
 }
@@ -1009,18 +1047,43 @@ const LocalVideoTile = ({ videoRef, username, isVideoOn }) => {
 const RemoteVideo = ({ stream, userId }) => {
   const videoRef = useRef(null)
   const [hasVideo, setHasVideo] = useState(true)
+  const [videoReady, setVideoReady] = useState(false)
 
   useEffect(() => {
     if (videoRef.current && stream) {
-      console.log('Setting video srcObject for', userId)
-      videoRef.current.srcObject = stream
+      console.log('📹 Setting remote video srcObject for', userId)
+      const video = videoRef.current
+      video.srcObject = stream
       
-      // Force play after a short delay
-      setTimeout(() => {
-        if (videoRef.current) {
-          videoRef.current.play().catch(err => console.error('Remote video play error:', err))
-        }
-      }, 100)
+      // Add event listeners for video ready state
+      const handleCanPlay = () => {
+        console.log('✅ Remote video can play for', userId)
+        setVideoReady(true)
+        video.play().catch(err => console.error('Remote video play error:', err))
+      }
+      
+      const handlePlaying = () => {
+        console.log('✅ Remote video is playing for', userId)
+        setVideoReady(true)
+      }
+      
+      video.addEventListener('canplay', handleCanPlay)
+      video.addEventListener('playing', handlePlaying)
+      
+      // Force play immediately
+      video.play()
+        .then(() => {
+          console.log('✅ Remote video play started for', userId)
+          setVideoReady(true)
+        })
+        .catch(err => console.error('Remote video play error:', err))
+      
+      // Fallback: show video after 2 seconds regardless
+      const fallbackTimeout = setTimeout(() => {
+        console.log('⏰ Fallback: showing remote video for', userId)
+        setVideoReady(true)
+        video.play().catch(err => console.error('Fallback play error:', err))
+      }, 2000)
       
       const videoTrack = stream.getVideoTracks()[0]
       if (videoTrack) {
@@ -1029,6 +1092,12 @@ const RemoteVideo = ({ stream, userId }) => {
         videoTrack.onended = () => setHasVideo(false)
         videoTrack.onmute = () => setHasVideo(false)
         videoTrack.onunmute = () => setHasVideo(true)
+      }
+      
+      return () => {
+        clearTimeout(fallbackTimeout)
+        video.removeEventListener('canplay', handleCanPlay)
+        video.removeEventListener('playing', handlePlaying)
       }
     }
   }, [stream, userId])
@@ -1043,11 +1112,16 @@ const RemoteVideo = ({ stream, userId }) => {
         playsInline 
         className="w-full h-full object-cover"
       />
-      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium">
-        {displayName}
-      </div>
-      {!hasVideo && (
-        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center">
+      {!videoReady && (
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-white mb-3 mx-auto"></div>
+            <p className="text-white text-sm">Connecting video...</p>
+          </div>
+        </div>
+      )}
+      {!hasVideo && videoReady && (
+        <div className="absolute inset-0 bg-[#3c4043] flex items-center justify-center z-10">
           <div className="text-center">
             <div className="w-24 h-24 bg-[#5f6368] rounded-full flex items-center justify-center mx-auto mb-3">
               <span className="text-4xl text-white font-semibold">{displayName.charAt(0)}</span>
@@ -1056,6 +1130,9 @@ const RemoteVideo = ({ stream, userId }) => {
           </div>
         </div>
       )}
+      <div className="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm px-3 py-1.5 rounded-lg text-white text-sm font-medium z-20">
+        {displayName}
+      </div>
     </div>
   )
 }
