@@ -24,11 +24,12 @@ const Sidebar = ({ activePage, setActivePage }) => {
   return (
     <>
       {/* Desktop Sidebar */}
-      <div className={`fixed left-0 top-0 h-screen w-64 ${themeClasses.bg} ${themeClasses.text} p-4 hidden md:flex flex-col transition-all duration-300 ease-in-out z-20`}>
-        <div className="mb-8">
-          <h1 className={`text-xl text-center font-bold ${themeClasses.text}`}>MindVista </h1>
+      <div className={`fixed left-0 top-0 h-screen w-80 ${themeClasses.bg} ${themeClasses.text} p-6 hidden md:flex flex-col transition-all duration-300 ease-in-out z-20 shadow-xl`}>
+        <div className="mb-8 pb-6 border-b border-gray-200">
+          <h1 className={`text-[22px] text-center font-semibold ${themeClasses.text}`}>MindVista</h1>
+          <p className="text-xs text-center text-gray-500 mt-1">Admin Portal</p>
         </div>
-        <nav className=" flex flex-col gap-1">
+        <nav className="flex-1 flex flex-col gap-2">
           {menuItems.map(item => (
             <button 
               key={item.id}
@@ -36,15 +37,17 @@ const Sidebar = ({ activePage, setActivePage }) => {
                 console.log('Clicked menu item:', item.label);
                 setActivePage(item.id);
               }} 
-              className={`flex items-center text-[14px] gap-4 w-full p-4 rounded-lg transition-all duration-200 ${
+              className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                 activePage === item.id 
-                  ? `bg-blue-600 text-white transform scale-[1.02] shadow-lg` 
+                  ? `bg-blue-50 text-blue-700 font-medium` 
                   : `${themeClasses.bgSecondary} ${themeClasses.text} ${themeClasses.bgHover}`
               }`}
             >
-              <span className={`transition-transform duration-200 ${activePage === item.id ? 'transform scale-110' : ''}`}>
+              <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                activePage === item.id ? 'bg-blue-100' : 'bg-gray-100'
+              }`}>
                 {item.icon}
-              </span>
+              </div>
               <span className="font-medium">{item.label}</span>
             </button>
           ))}

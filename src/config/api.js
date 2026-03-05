@@ -1,25 +1,12 @@
-/**
- * API and WebSocket configuration
- * 
- * Set these in .env for your deployment:
- * - VITE_API_URL: Backend REST API base URL (e.g. https://your-app.railway.app)
- * - VITE_WS_URL: WebSocket signaling URL (e.g. wss://your-app.railway.app)
- * 
- * When deploying backend to Railway/Render (for WebSocket support),
- * use the same host for both - e.g. https://mindvista-backend.railway.app
- */
+
 
 const getApiBaseUrl = () => {
   const url = import.meta.env.VITE_API_URL
-  if (url) {
-    const base = url.replace(/\/+$/, '') // trim trailing slashes
-    return base.endsWith('/api') ? base : `${base}/api`
+  if (!url) {
+    throw new Error('VITE_API_URL is not defined in .env file')
   }
-  // Fallback: Vercel backend (REST works, WebSocket does NOT)
-  return 'https://mind-vista-backend.vercel.app/api'
-  // return 'http://localhost:3000/api'
-
-
+  const base = url.replace(/\/+$/, '') // trim trailing slashes
+  return base.endsWith('/api') ? base : `${base}/api`
 }
 
 const getWsUrl = () => {
@@ -27,12 +14,11 @@ const getWsUrl = () => {
   if (url) return url
   // Derive from API URL if only VITE_API_URL is set
   const apiUrl = import.meta.env.VITE_API_URL
-  if (apiUrl) {
-    const ws = apiUrl.replace(/^https?:\/\//, 'wss://').replace(/\/api\/?$/, '')
-    return ws
+  if (!apiUrl) {
+    throw new Error('VITE_API_URL is not defined in .env file')
   }
-  // Fallback: Vercel (WebSocket will fail - deploy to Railway/Render for video calls)
-  return 'wss://mind-vista-backend.vercel.app'
+  const ws = apiUrl.replace(/^https?:\/\//, 'wss://').replace(/\/api\/?$/, '')
+  return ws
 }
 
 export const API_BASE_URL = getApiBaseUrl()

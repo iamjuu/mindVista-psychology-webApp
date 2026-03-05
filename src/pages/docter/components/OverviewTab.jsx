@@ -1,31 +1,55 @@
-import {useState} from 'react';
-import PropTypes from 'prop-types';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
-import { DollarSign, TrendingUp, Calendar, Award, Eye, Clock, CheckCircle } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../../../components/shadcn/select';
-import { Button } from '../../../components/shadcn/button/button';
-import { PageHeader } from '../../../components/core/cardHeader';
+import { useState } from "react";
+import PropTypes from "prop-types";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell
+} from "recharts";
+import {
+  DollarSign,
+  TrendingUp,
+  Calendar,
+  Award,
+  Eye,
+  Clock,
+  CheckCircle
+} from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "../../../components/shadcn/select";
+import { Button } from "../../../components/shadcn/button/button";
+import { PageHeader } from "../../../components/core/cardHeader";
 
 // Income Card Component
 const IncomeCard = ({ title, amount, growth, icon, bgColor }) => (
-  <div className={`${bgColor} p-6 rounded-2xl text-white shadow-lg`}>
+  <div className={`${bgColor} p-6 rounded-2xl text-white `}>
     <div className="flex items-center justify-between">
       <div>
-      <PageHeader 
-     titleclassName={'text-white'}
-     desclassName={'text-white'}
-  title={title} 
-  description={`₹${amount.toLocaleString()}`} 
-/>
+        <PageHeader
+          titleclassName={"text-white"}
+          desclassName={"text-white"}
+          title={title}
+          description={`₹${amount.toLocaleString()}`}
+        />
 
         <div className="flex items-center mt-2">
           <TrendingUp size={16} className="mr-1" />
           <span className="text-sm font-medium">+{growth}%</span>
         </div>
       </div>
-      <div className="p-3 bg-white bg-opacity-20 rounded-xl">
-        {icon}
-      </div>
+      <div className="p-3 bg-white bg-opacity-20 rounded-xl">{icon}</div>
     </div>
   </div>
 );
@@ -35,35 +59,50 @@ IncomeCard.propTypes = {
   amount: PropTypes.number.isRequired,
   growth: PropTypes.number.isRequired,
   icon: PropTypes.node.isRequired,
-  bgColor: PropTypes.string.isRequired,
+  bgColor: PropTypes.string.isRequired
 };
 
-const OverviewTab = ({ 
-  selectedTimeFrame, 
-  setSelectedTimeFrame, 
-  incomeData, 
-  doctorAppointments, 
-  appointmentsLoading, 
-  fetchDoctorAppointments 
+const OverviewTab = ({
+  selectedTimeFrame,
+  setSelectedTimeFrame,
+  incomeData,
+  doctorAppointments,
+  appointmentsLoading,
+  fetchDoctorAppointments
 }) => {
-
   const [showAddNoteModal, setShowAddNoteModal] = useState(false);
 
   // Pie chart data for appointment status distribution
   const appointmentStatusData = [
-    { name: 'Approved', value: doctorAppointments.filter(a => a.status === 'approved').length, color: '#10B981' },
-    { name: 'Pending', value: doctorAppointments.filter(a => a.status === 'pending').length, color: '#F59E0B' },
-    { name: 'Cancelled', value: doctorAppointments.filter(a => a.status === 'cancelled').length, color: '#EF4444' },
-    { name: 'Completed', value: doctorAppointments.filter(a => a.status === 'completed').length, color: '#3B82F6' }
-  ].filter(item => item.value > 0); // Only show categories with data
+    {
+      name: "Approved",
+      value: doctorAppointments.filter((a) => a.status === "approved").length,
+      color: "#10B981"
+    },
+    {
+      name: "Pending",
+      value: doctorAppointments.filter((a) => a.status === "pending").length,
+      color: "#F59E0B"
+    },
+    {
+      name: "Cancelled",
+      value: doctorAppointments.filter((a) => a.status === "cancelled").length,
+      color: "#EF4444"
+    },
+    {
+      name: "Completed",
+      value: doctorAppointments.filter((a) => a.status === "completed").length,
+      color: "#3B82F6"
+    }
+  ].filter((item) => item.value > 0); // Only show categories with data
   const [newNote, setNewNote] = useState({
     title: "",
     description: "",
     tags: [],
     date: new Date().toLocaleDateString("en-US", {
       month: "short",
-      day: "2-digit",
-    }),
+      day: "2-digit"
+    })
   });
 
   const [notes, setNotes] = useState([
@@ -71,55 +110,55 @@ const OverviewTab = ({
       id: 1,
       title: "Text Inputs for Design System",
       description: "Search for inspiration to provide a rich content of te...",
-      completed: false,
+      completed: false
     },
     {
       id: 2,
       title: "Meeting with Arthur Taylor",
       description: "Discuss the MVP version of Apex Mobile and Deskt...",
-      completed: false,
+      completed: false
     },
     {
       id: 3,
       title: "Check neutral and state colors",
       description: "Button components will be revised and designed ag...",
-      completed: false,
-    },
+      completed: false
+    }
   ]);
-// Functions for note management
-const handleAddNote = () => {
-  if (newNote.title.trim() && newNote.description.trim()) {
-    const note = {
-      id: Date.now(),
-      title: newNote.title,
-      description: newNote.description,
-      completed: false,
-    };
-    setNotes([note, ...notes]);
-    setNewNote({
-      title: "",
-      description: "",
-      tags: [],
-      date: new Date().toLocaleDateString("en-US", {
-        month: "short",
-        day: "2-digit",
-      }),
-    });
-    setShowAddNoteModal(false);
-  }
-};
+  // Functions for note management
+  const handleAddNote = () => {
+    if (newNote.title.trim() && newNote.description.trim()) {
+      const note = {
+        id: Date.now(),
+        title: newNote.title,
+        description: newNote.description,
+        completed: false
+      };
+      setNotes([note, ...notes]);
+      setNewNote({
+        title: "",
+        description: "",
+        tags: [],
+        date: new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "2-digit"
+        })
+      });
+      setShowAddNoteModal(false);
+    }
+  };
 
-const toggleNoteCompletion = (noteId) => {
-  setNotes(
-    notes.map((note) =>
-      note.id === noteId ? { ...note, completed: !note.completed } : note
-    )
-  );
-};
+  const toggleNoteCompletion = (noteId) => {
+    setNotes(
+      notes.map((note) =>
+        note.id === noteId ? { ...note, completed: !note.completed } : note
+      )
+    );
+  };
 
-const deleteNote = (noteId) => {
-  setNotes(notes.filter((note) => note.id !== noteId));
-};
+  const deleteNote = (noteId) => {
+    setNotes(notes.filter((note) => note.id !== noteId));
+  };
 
   return (
     <>
@@ -127,11 +166,13 @@ const deleteNote = (noteId) => {
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
           {/* <h1 className="text-[14px] font-bold text-gray-900">Income Statistics</h1> */}
-          <PageHeader
-          title='Appointment Overview'/>
+          <PageHeader title="" />
           <div className="flex items-center gap-3">
             <label className="text-sm text-gray-600 font-medium">View:</label>
-            <Select value={selectedTimeFrame} onValueChange={setSelectedTimeFrame}>
+            <Select
+              value={selectedTimeFrame}
+              onValueChange={setSelectedTimeFrame}
+            >
               <SelectTrigger className="w-[180px] bg-white">
                 <SelectValue placeholder="Select time frame" />
               </SelectTrigger>
@@ -144,37 +185,18 @@ const deleteNote = (noteId) => {
             </Select>
           </div>
         </div>
-        
 
-      {/* Appointment Statistics Cards */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
-
-          <Button 
-            variant='outline'
-            onClick={fetchDoctorAppointments}
-            disabled={appointmentsLoading}
-          >
-            {appointmentsLoading ? (
-              <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-            ) : (
-              <Eye size={16} />
-            )}
-            {appointmentsLoading ? 'Refreshing...' : 'Refresh Appointments'}
-          </Button>
-        </div>
+        {/* Appointment Statistics Cards */}
+        {/* <div className="mb-8">
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-100">
             <div className="flex items-center justify-between">
               <div>
-
                 <PageHeader
-                title="Total Appointments"
-                description={doctorAppointments.length}
+                  title="Total Appointments"
+                  description={doctorAppointments.length}
                 />
-           </div>
+              </div>
               <div className="p-3 bg-blue-100 rounded-xl">
                 <Calendar size={18} className="text-blue-600" />
               </div>
@@ -185,10 +207,9 @@ const deleteNote = (noteId) => {
             <div className="flex items-center justify-between">
               <div>
                 <PageHeader
-                title="Pending Appointments"
-                description={doctorAppointments.filter(a => a.status === 'pending').length}
+                  title="Pending Appointments"
+                  description={doctorAppointments.filter(a => a.status === 'pending').length}
                 />
-           
               </div>
               <div className="p-3 bg-yellow-100 rounded-xl">
                 <Clock size={18} className="text-yellow-600" />
@@ -200,17 +221,17 @@ const deleteNote = (noteId) => {
             <div className="flex items-center justify-between">
               <div>
                 <PageHeader
-                title="Approved Appointments"
-                description={doctorAppointments.filter(a => a.status === 'approved').length}
+                  title="Approved Appointments"
+                  description={doctorAppointments.filter(a => a.status === 'approved').length}
                 />
-             </div>
+              </div>
               <div className="p-3 bg-green-100 rounded-xl">
                 <CheckCircle size={18} className="text-green-600" />
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
           {incomeData && Object.keys(incomeData).length > 0 ? (
@@ -257,14 +278,19 @@ const deleteNote = (noteId) => {
       </div>
 
       {/* Charts Section */}
-      <div className='grid gap-5 grid-cols-1 lg:grid-cols-3 mb-8'>
+      <div className="grid gap-5 grid-cols-1 lg:grid-cols-3 mb-8">
         {/* Income Chart */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl  p-6 border border-gray-100">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
             <h3 className="text-[18px] font-semibold text-gray-900 mb-2 sm:mb-0">
-              {selectedTimeFrame === 'daily' ? 'Daily' : 
-               selectedTimeFrame === 'weekly' ? 'Weekly' : 
-               selectedTimeFrame === 'monthly' ? 'Monthly' : 'Yearly'} Income Trend
+              {selectedTimeFrame === "daily"
+                ? "Daily"
+                : selectedTimeFrame === "weekly"
+                  ? "Weekly"
+                  : selectedTimeFrame === "monthly"
+                    ? "Monthly"
+                    : "Yearly"}{" "}
+              Income Trend
             </h3>
             <div className="flex items-center gap-2">
               <div className="flex items-center gap-2 text-sm text-gray-600">
@@ -275,40 +301,51 @@ const deleteNote = (noteId) => {
           </div>
           <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={selectedTimeFrame === 'weekly' ? (incomeData.weeklyChart || []) : (incomeData.monthlyChart || [])}>
+              <LineChart
+                data={
+                  selectedTimeFrame === "weekly"
+                    ? incomeData.weeklyChart || []
+                    : incomeData.monthlyChart || []
+                }
+              >
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
-                <XAxis 
-                  dataKey="name" 
+                <XAxis
+                  dataKey="name"
                   stroke="#6b7280"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                 />
-                <YAxis 
+                <YAxis
                   stroke="#6b7280"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   tickFormatter={(value) => `₹${value.toLocaleString()}`}
                 />
-                <Tooltip 
-                  formatter={(value) => [`₹${value.toLocaleString()}`, 'Income']}
-                  labelFormatter={(label) => `${selectedTimeFrame === 'weekly' ? 'Day' : 'Month'}: ${label}`}
+                <Tooltip
+                  formatter={(value) => [
+                    `₹${value.toLocaleString()}`,
+                    "Income"
+                  ]}
+                  labelFormatter={(label) =>
+                    `${selectedTimeFrame === "weekly" ? "Day" : "Month"}: ${label}`
+                  }
                   contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    backgroundColor: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
                   }}
                 />
                 <Legend />
-                <Line 
-                  type="monotone" 
-                  dataKey="income" 
-                  stroke="#3B82F6" 
+                <Line
+                  type="monotone"
+                  dataKey="income"
+                  stroke="#3B82F6"
                   strokeWidth={3}
-                  dot={{ fill: '#3B82F6', strokeWidth: 2, r: 6 }}
-                  activeDot={{ r: 8, fill: '#1D4ED8' }}
+                  dot={{ fill: "#3B82F6", strokeWidth: 2, r: 6 }}
+                  activeDot={{ r: 8, fill: "#1D4ED8" }}
                 />
               </LineChart>
             </ResponsiveContainer>
@@ -316,7 +353,7 @@ const deleteNote = (noteId) => {
         </div>
 
         {/* Appointment Status Pie Chart */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+        <div className="bg-white rounded-2xl  p-6 border border-gray-100">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6">
             <h3 className="text-[18px] font-semibold text-gray-900 mb-2 sm:mb-0">
               Appointment Status
@@ -338,20 +375,20 @@ const deleteNote = (noteId) => {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
                   formatter={(value, name) => [value, name]}
                   contentStyle={{
-                    backgroundColor: 'white',
-                    border: '1px solid #e5e7eb',
-                    borderRadius: '12px',
-                    boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1)'
+                    backgroundColor: "white",
+                    border: "1px solid #e5e7eb",
+                    borderRadius: "12px",
+                    boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1)"
                   }}
                 />
-                <Legend 
-                  verticalAlign="bottom" 
+                <Legend
+                  verticalAlign="bottom"
                   height={36}
                   formatter={(value, entry) => (
-                    <span style={{ color: entry.color, fontSize: '12px' }}>
+                    <span style={{ color: entry.color, fontSize: "12px" }}>
                       {value}
                     </span>
                   )}
@@ -447,8 +484,6 @@ const deleteNote = (noteId) => {
         </div>
       </div>
 
-    
-   
       {showAddNoteModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
           <div
@@ -457,7 +492,9 @@ const deleteNote = (noteId) => {
           />
           <div className="relative z-10 w-full max-w-md bg-white rounded-xl shadow-xl border p-5">
             <div className="flex items-center justify-between mb-3">
-              <h3 className="text-[16px] font-semibold text-gray-800">Add Note</h3>
+              <h3 className="text-[16px] font-semibold text-gray-800">
+                Add Note
+              </h3>
               <button
                 className="text-gray-500 hover:text-gray-700"
                 onClick={() => setShowAddNoteModal(false)}
@@ -468,21 +505,32 @@ const deleteNote = (noteId) => {
             </div>
             <div className="flex flex-col gap-3">
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-gray-600">Title</label>
+                <label className="text-xs font-medium text-gray-600">
+                  Title
+                </label>
                 <input
                   type="text"
                   value={newNote.title}
-                  onChange={(e) => setNewNote((prev) => ({ ...prev, title: e.target.value }))}
+                  onChange={(e) =>
+                    setNewNote((prev) => ({ ...prev, title: e.target.value }))
+                  }
                   className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Enter note title"
                 />
               </div>
               <div className="flex flex-col gap-1">
-                <label className="text-xs font-medium text-gray-600">Description</label>
+                <label className="text-xs font-medium text-gray-600">
+                  Description
+                </label>
                 <textarea
                   rows={4}
                   value={newNote.description}
-                  onChange={(e) => setNewNote((prev) => ({ ...prev, description: e.target.value }))}
+                  onChange={(e) =>
+                    setNewNote((prev) => ({
+                      ...prev,
+                      description: e.target.value
+                    }))
+                  }
                   className="w-full border rounded-lg px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Write details..."
                 />
@@ -506,7 +554,6 @@ const deleteNote = (noteId) => {
           </div>
         </div>
       )}
-
     </>
   );
 };
@@ -526,14 +573,13 @@ OverviewTab.propTypes = {
     yearly: PropTypes.number.isRequired,
     yearlyGrowth: PropTypes.number.isRequired,
     weeklyChart: PropTypes.arrayOf(PropTypes.object).isRequired,
-    monthlyChart: PropTypes.arrayOf(PropTypes.object).isRequired,
+    monthlyChart: PropTypes.arrayOf(PropTypes.object).isRequired
   }).isRequired,
   doctorAppointments: PropTypes.arrayOf(
     PropTypes.shape({
-      status: PropTypes.string.isRequired,
+      status: PropTypes.string.isRequired
     })
   ).isRequired,
   appointmentsLoading: PropTypes.bool.isRequired,
-  fetchDoctorAppointments: PropTypes.func.isRequired,
+  fetchDoctorAppointments: PropTypes.func.isRequired
 };
-

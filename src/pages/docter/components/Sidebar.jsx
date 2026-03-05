@@ -82,132 +82,125 @@ const Sidebar = ({
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto">
-          <ul className="flex flex-col gap-2 w-full px-2 py-2">
+          <ul className="flex flex-col gap-2 w-full px-3">
             <li>
-              <Button 
+              <button 
                 onClick={() => setSelectedTab('overview')}
-                variant="secondary"
-                className={`w-full justify-start ${
+                className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                   selectedTab === 'overview' 
                     ? 'bg-blue-50 text-blue-700 font-medium' 
                     : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   selectedTab === 'overview' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <TrendingUp size={16} />
                 </div>
-                Overview
-              </Button>
+                <span className="font-medium">Overview</span>
+              </button>
             </li>
             <li>
-              <Button 
+              <button 
                 onClick={() => setSelectedTab('patients')}
-                variant="secondary"
-                className={`w-full justify-start ${
+                className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                   selectedTab === 'patients' 
                     ? 'bg-blue-50 text-blue-700 font-medium' 
                     : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   selectedTab === 'patients' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <Users size={16} />
                 </div>
-                Patients
-              </Button>
+                <span className="font-medium">Patients</span>
+              </button>
             </li>
             <li>
-              <Button 
+              <button 
                 onClick={() => setSelectedTab('appointments')}
-                variant="secondary"
-                className={`w-full justify-start ${
+                className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                   selectedTab === 'appointments' 
                     ? 'bg-blue-50 text-blue-700 font-medium' 
                     : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   selectedTab === 'appointments' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <Calendar size={16} />
                 </div>
-                Appointments
-              </Button>
+                <span className="font-medium">Appointments</span>
+              </button>
             </li>
             <li>
-              <Button 
+              <button 
                 onClick={() => setSelectedTab('availableSlots')}
-                variant="secondary"
-                className={`w-full justify-start ${
+                className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                   selectedTab === 'availableSlots' 
-                    ? 'bg-orange-50 text-orange-700 font-medium' 
-                    : 'hover:bg-orange-50 text-orange-700'
+                    ? 'bg-blue-50 text-blue-700 font-medium' 
+                    : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                  selectedTab === 'availableSlots' ? 'bg-orange-100' : 'bg-orange-100'
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  selectedTab === 'availableSlots' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <CalendarDays size={16} />
                 </div>
-                Available Slots
-              </Button>
+                <span className="font-medium">Available Slots</span>
+              </button>
             </li>
             <li>
-              <Button 
+              <button 
                 onClick={() => handleNavigate('todaySessions')}
-                variant="secondary"
-                className={`w-full justify-start ${
+                className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                   selectedTab === 'todaySessions' 
-                    ? 'bg-green-50 text-green-700 font-medium' 
-                    : 'hover:bg-green-50 text-green-700'
+                    ? 'bg-blue-50 text-blue-700 font-medium' 
+                    : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                  selectedTab === 'todaySessions' ? 'bg-green-100' : 'bg-green-100'
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  selectedTab === 'todaySessions' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <Clock size={16} />
                 </div>
-                Today&apos;s Sessions
-              </Button>
+                <span className="font-medium">Today&apos;s Sessions</span>
+              </button>
             </li>
             <li>
-              <Button 
+              <button 
                 onClick={() => handleNavigate('upcoming')}
-                variant="secondary"
-                className={`w-full justify-start ${
+                className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                   selectedTab === 'upcoming' 
-                    ? 'bg-purple-50 text-purple-700 font-medium' 
-                    : 'hover:bg-purple-50 text-purple-700'
+                    ? 'bg-blue-50 text-blue-700 font-medium' 
+                    : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
-                  selectedTab === 'upcoming' ? 'bg-purple-100' : 'bg-purple-100'
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  selectedTab === 'upcoming' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <TrendingUp size={16} />
                 </div>
-                Upcoming
-              </Button>
+                <span className="font-medium">Upcoming</span>
+              </button>
             </li>
             <li>
-              <Button 
+              <button 
                 onClick={() => setSelectedTab('settings')}
-                variant="secondary"
-                className={`w-full justify-start ${
+                className={`flex items-center text-sm gap-3 w-full p-3 rounded-lg transition-all duration-200 ${
                   selectedTab === 'settings' 
                     ? 'bg-blue-50 text-blue-700 font-medium' 
                     : 'hover:bg-gray-50 text-gray-700'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 ${
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
                   selectedTab === 'settings' ? 'bg-blue-100' : 'bg-gray-100'
                 }`}>
                   <Settings size={16} />
                 </div>
-                Settings
-              </Button>
+                <span className="font-medium">Settings</span>
+              </button>
             </li>
           </ul>
         </nav>
@@ -216,28 +209,33 @@ const Sidebar = ({
         <div className="p-4 border-t border-gray-200 flex-shrink-0">
           <Button
             onClick={fetchDoctorProfile}
-            className="w-full"
+            className="w-full text-sm flex items-center justify-center gap-2"
             disabled={profileRefreshing}
           >
             {profileRefreshing ? (
-              <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              <>
+                <svg className="w-4 h-4 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Refreshing...</span>
+              </>
             ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
+              <>
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                <span>Refresh Profile</span>
+              </>
             )}
-            {profileRefreshing ? 'Refreshing...' : 'Refresh Profile'}
           </Button>
           
           <Button
             onClick={handleLogout}
             variant="outline"
-            className="w-full mt-2 bg-red-50 text-red-600 border-red-200 hover:bg-red-100"
+            className="w-full mt-2 text-sm bg-red-50 text-red-600 border-red-200 hover:bg-red-100 flex items-center justify-center gap-2"
           >
             <LogOut size={16} />
-            Logout
+            <span>Logout</span>
           </Button>
         </div>
       </div>

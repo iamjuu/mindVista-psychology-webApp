@@ -1948,7 +1948,7 @@ const Dashboard = () => {
           msOverflowStyle: "none", // For Internet Explorer and Edge
           overflow: "auto",
         }}
-        className={`md:pl-64 px-2 min-h-screen ${themeClasses.bg}`}
+        className={`md:pl-80 px-2 min-h-screen ${themeClasses.bg}`}
       >
         <div className="p-4 sm:p-6 pb-20 md:pb-6"></div>
         <div className="flex flex-col gap-4 mb-6">
