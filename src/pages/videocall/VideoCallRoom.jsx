@@ -44,7 +44,7 @@ const VideoCallRoom = () => {
   const userRole = roleFromUrl || roleFromStorage
   const isDoctor = userRole === 'doctor'
 
-  const username = isDoctor ? 'Dr. Smith' : 'Patient'
+  const username = isDoctor ? (appointmentDetails?.doctorName || 'Doctor') : 'Patient'
 
   const fetchAppointmentDetails = async () => {
     console.log('🔍 Fetching appointment details for videoCallId:', videoCallId, 'role:', userRole)
@@ -585,7 +585,7 @@ const VideoCallRoom = () => {
   return (
     <div className="min-h-screen bg-[#202124] flex flex-col relative">
       {/* Top Bar - Google Meet Style */}
-      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4">
+      <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-4 md:px-6 py-3 md:py-4">
         <div className="flex items-center space-x-4">
           <div className="text-white">
             <p className="text-sm text-gray-400">{new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} | {videoCallId.substring(0, 12)}...</p>
@@ -696,9 +696,9 @@ const VideoCallRoom = () => {
 
       {/* Video Layout: Responsive - Desktop: Row (Doctor Left 50% | Patients Right 50%), Mobile: Column (Doctor Top, Patients Bottom) */}
       <div className="flex-1 relative pt-20 pb-24">
-        <div className="h-full flex flex-col md:flex-row gap-2 px-4">
+        <div className="h-full flex flex-col md:flex-row gap-2 px-4 min-h-0">
           {/* Doctor Section - Mobile: Top, Desktop: Left 50% */}
-          <div className="flex-1 md:w-1/2 h-1/2 md:h-full">
+          <div className="flex-1 md:w-1/2 min-h-0 md:min-h-0 h-1/2 md:h-full min-w-0">
             {isDoctor ? (
               <LocalVideoTile videoRef={localVideoRef} username={username} isVideoOn={isVideoOn} />
             ) : doctorUser ? (
@@ -716,15 +716,15 @@ const VideoCallRoom = () => {
           </div>
 
           {/* Patients Section - Mobile: Bottom, Desktop: Right 50% - FULL HEIGHT */}
-          <div className="flex-1 md:w-1/2 h-1/2 md:h-full flex flex-col gap-2">
+          <div className="flex-1 md:w-1/2 min-h-0 md:min-h-0 h-1/2 md:h-full flex flex-col gap-2 min-w-0">
             {!isDoctor && (
-              <div className="flex-1 min-h-0">
+              <div className="flex-1 min-h-0 min-w-0">
                 <LocalVideoTile videoRef={localVideoRef} username={username} isVideoOn={isVideoOn} />
               </div>
             )}
             
             {patientUsers.map((user) => (
-              <div key={user.userId} className="flex-1 min-h-0">
+              <div key={user.userId} className="flex-1 min-h-0 min-w-0">
                 <RemoteVideo stream={user.stream} userId={user.userId} />
               </div>
             ))}
@@ -754,7 +754,7 @@ const VideoCallRoom = () => {
 
       {/* Bottom Controls - Exact Google Meet Style */}
       <div className="absolute bottom-0 left-0 right-0 z-20 pb-6">
-        <div className="max-w-4xl mx-auto flex items-center justify-between px-6">
+        <div className="max-w-4xl mx-auto flex items-center justify-between px-4 md:px-6">
           {/* Left - Meeting Info */}
           <div className="flex items-center space-x-3 text-white">
             <div className="text-sm">

@@ -17,6 +17,9 @@ const getApiBaseUrl = () => {
   }
   // Fallback: Vercel backend (REST works, WebSocket does NOT)
   return 'https://mind-vista-backend.vercel.app/api'
+  // return 'http://localhost:3000/api'
+
+
 }
 
 const getWsUrl = () => {
