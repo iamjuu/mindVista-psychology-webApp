@@ -34,7 +34,7 @@ const Footer = () => {
           {/* Company Information */}
           <div className="sm:col-span-2 lg:col-span-1 xl:col-span-1">
             <div className="flex items-center justify-center sm:mb-6">
-              <img src={MindvistaLogo} alt="MindEase Logo" className="w-20" />
+              <img src={MindvistaLogo} alt="Mind Vista Logo" className="w-20 rounded-lg" />
             </div>
             <div className="space-y-3 text-sm">
               <div className="flex items-start">

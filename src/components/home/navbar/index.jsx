@@ -41,7 +41,7 @@ const Header = () => {
                 data-aos-delay={100}
                 src={MindvistaLogo}
                 alt="logo"
-                className="w-20 "
+                className="w-20 rounded-lg"
                 width={198}
                 height={72}
               />

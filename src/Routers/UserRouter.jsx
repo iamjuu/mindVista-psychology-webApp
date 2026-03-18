@@ -43,8 +43,8 @@ function UserRouter() {
   </ThemeProvider>
 } />
 {/* **************************** */}
-<Route path="/doctor" element={<Docter />} />
 <Route path="/doctor/login" element={<DoctorLogin />} />
+<Route path="/doctor" element={<Docter />} />
 {/* **************************** */}
 <Route path="/video-call/:videoCallId" element={<VideoCallRoom />} />
         </Routes>

@@ -78,9 +78,20 @@ const DoctorDashboard = () => {
     console.log('isUserModalOpen state changed:', isUserModalOpen);
   }, [isUserModalOpen]);
 
-  // Get email from session storage
-  const encryptedEmail = sessionStorage.getItem('doctorEmail');
-  const email = encryptedEmail ? atob(encryptedEmail) : null; // Decrypt email
+  // Get email from session storage, fallback to localStorage (doctorData) for reliable read on navigation
+  const getEmail = () => {
+    const encryptedEmail = sessionStorage.getItem('doctorEmail');
+    if (encryptedEmail) return atob(encryptedEmail);
+    const stored = localStorage.getItem('doctorData');
+    if (stored) {
+      try {
+        const doctor = JSON.parse(stored);
+        return doctor?.email || null;
+      } catch { /* ignore */ }
+    }
+    return null;
+  };
+  const email = getEmail();
 
 
   // Fetch doctor data and income data
@@ -126,6 +137,7 @@ const DoctorDashboard = () => {
   const handleLogout = () => {
     localStorage.removeItem('isDoctorLoggedIn');
     localStorage.removeItem('doctorData');
+    sessionStorage.removeItem('doctorEmail');
     navigate('/doctor/login');
   };
 
@@ -475,7 +487,10 @@ const DoctorDashboard = () => {
     return matchesSearch && matchesFilter;
   });
 
-
+  // When not authenticated, render nothing to avoid flash of dashboard before redirect
+  if (!email) {
+    return null;
+  }
 
   if (loading) {
     return (

@@ -61,9 +61,15 @@ const PaymentPage = () => {
 
       const order = data.data;
 
-      // Step 2: Open Razorpay Checkout
+      // Step 2: Open Razorpay Checkout (key must match backend - live or test)
+      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
+      if (!razorpayKey) {
+        toast.error("Razorpay key not configured. Check VITE_RAZORPAY_KEY_ID in .env");
+        setLoading(false);
+        return;
+      }
       const options = {
-        key: "rzp_test_SN3KWXr3ClAEo8", // Razorpay test key
+        key: razorpayKey,
         amount: order.amount,
         currency: order.currency,
         name: "MindVista Psychology",

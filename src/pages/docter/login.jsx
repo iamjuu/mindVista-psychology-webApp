@@ -54,8 +54,6 @@ const DoctorLogin = () => {
           return;
         }
         
-        toast.success('Login successful!');
-        
         // Store doctor data in localStorage
         localStorage.setItem('isDoctorLoggedIn', 'true');
         localStorage.setItem('doctorData', JSON.stringify(response.data.doctor));
@@ -64,10 +62,8 @@ const DoctorLogin = () => {
         const encryptedEmail = btoa(formData.email); // Simple Base64 encoding
         sessionStorage.setItem('doctorEmail', encryptedEmail);
 
-        // Navigate to doctor dashboard without email in URL
-        setTimeout(() => {
-          navigate('/doctor');
-        }, 1500);
+        toast.success('Login successful!');
+        navigate('/doctor');
       }
     } catch (error) {
       console.error('Login error:', error);

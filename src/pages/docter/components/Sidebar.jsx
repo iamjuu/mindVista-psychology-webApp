@@ -24,7 +24,7 @@ const Sidebar = ({
         <div className=" border-b border-gray-200 bg-[#1d4ed8] text-white flex-shrink-0">
           <div className="flex items-start justify-between">
             <div className="flex  items-center">
-                <img  className='w-20' src={MindvistaLogo} alt="" />
+                <img className='w-20 rounded-lg' src={MindvistaLogo} alt="" />
               {/* <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center mr-3">
                 <Users size={24} />
               </div> */}
