@@ -46,7 +46,7 @@ const PaymentPage = () => {
     try {
       // Step 1: Create order on backend
       const { data } = await apiInstance.post("/create-order", {
-        amount: 50000, // ₹500 in paise (500 * 100)
+        amount: 5000, // ₹50 in paise (50 * 100)
         currency: "INR",
         appointmentData: appointmentData,
       });
@@ -88,7 +88,7 @@ const PaymentPage = () => {
               appointmentData: {
                 appointmentId: appointmentId,
               },
-              amount: 500, // Amount in rupees
+              amount: 50, // Amount in rupees
             });
 
             if (verifyRes.data.success) {
@@ -190,7 +190,7 @@ const PaymentPage = () => {
         </div>
         <div className="flex justify-between text-lg font-semibold text-gray-900 pt-2 border-t">
           <span>Fee:</span>
-          <span>₹500</span>
+          <span>₹50</span>
         </div>
       </div>
   
