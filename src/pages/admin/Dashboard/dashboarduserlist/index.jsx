@@ -637,7 +637,7 @@ const DoctorList = () => {
           {currentData.length > 0 && (
             <div className="w-full ">
               <div className="w-full mx-auto">
-                <div className="relative">
+                <div className="relative px-3">
                   {activeTab === "doctors" ? (
                     <div className="overflow-x-auto px-4">
                       <table className="w-full px-4 table-auto">

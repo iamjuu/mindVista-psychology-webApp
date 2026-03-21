@@ -411,7 +411,7 @@ const Dashboard = () => {
         <div>
           {/* <h3 className="text-lg font-semibold mb-4">Doctor Performance Dashboard</h3> */}
           {/* <p className="text-gray-600 mb-4">Click on any doctor card to view their detailed analytics</p> */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 px-3 lg:grid-cols-5 gap-4">
             {doctorsData.map((doctor) => (
               <DoctorCard
                 key={doctor.id}
@@ -424,7 +424,7 @@ const Dashboard = () => {
         </div>
 
         {/* Selected Doctor Info */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 px-3 lg:grid-cols-3 gap-4">
           {/* Daily Work Hours Card */}
           <div className="flex flex-col gap-2 justify-between">
             <div className={`p-4 ${themeClasses.bgCard} rounded-lg border ${themeClasses.border}`}>
@@ -842,7 +842,7 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
-        <div className=" flex gap-2 flex-col">
+        <div className=" flex gap-2 px-3 flex-col">
           <div className=" flex flex-col  rounded-lg ">
             <h3 className={`text-[14px] py-2 font-bold ${themeClasses.text}`}>
               {selectedDoctor.name} - Analytics Dashboard
@@ -1952,7 +1952,7 @@ const Dashboard = () => {
       >
         <div className="p-4 sm:p-6 pb-20 md:pb-6"></div>
         <div className="flex flex-col gap-4 mb-6">
-          <div className="w-full justify-between flex">
+          <div className="w-full px-3 justify-between flex">
             <div>
               <h1 className={`text-[22px] font-medium ${themeClasses.text}`}>
                 {activePage === "dashboard" && "Dashboard Overview"}
