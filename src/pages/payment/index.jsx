@@ -95,11 +95,11 @@ const PaymentPage = () => {
             if (verifyRes.data.success) {
               savePatientProfileAfterPayment(appointmentData, appointmentId);
               toast.success(
-                "Payment successful! Log in to message your doctor from your profile."
+                "Payment successful! Open your profile to message your doctor."
               );
               setLoading(false);
               setTimeout(() => {
-                navigate("/login", {
+                navigate("/profile", {
                   state: {
                     email: appointmentData?.email || "",
                     fromPayment: true,

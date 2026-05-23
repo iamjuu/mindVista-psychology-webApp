@@ -34,7 +34,10 @@ function Form() {
         ...(location.state?.phone ? { number: location.state.phone } : {}),
       }));
     }
-  }, [location.state?.email, location.state?.phone]);
+    if (location.state?.fromProfileGate) {
+      toast.info("Complete your details to book or link your appointment.");
+    }
+  }, [location.state?.email, location.state?.phone, location.state?.fromProfileGate]);
 
   useEffect(() => {
     const fetchDoctors = async () => {

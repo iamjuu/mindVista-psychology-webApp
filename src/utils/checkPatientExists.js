@@ -1,11 +1,12 @@
 import apiInstance from "../instance";
+import { resolveChatAppointmentId } from "../components/chat/chatUtils";
 import { normalizePhoneDigits, parsePatientIdentifier } from "./patientIdentifier";
 
 function normalizeEmail(value) {
   return String(value || "").toLowerCase().trim();
 }
 
-function appointmentMatchesIdentifier(appointment, parsed) {
+export function appointmentMatchesIdentifier(appointment, parsed) {
   if (!appointment) return false;
   const apptEmail = normalizeEmail(appointment.email);
   if (parsed.type === "email" && apptEmail && apptEmail === parsed.email) {
@@ -80,6 +81,77 @@ async function lookupViaAppointments(parsed) {
  * Primary: GET /patient/exists (when deployed on Vercel).
  * Fallback: GET /request-pateint (works on current production).
  */
+export function mapAppointmentsToGuestProfile(appointments, checkData = {}) {
+  if (!Array.isArray(appointments) || appointments.length === 0) return null;
+
+  const sorted = [...appointments].sort((a, b) => {
+    const da = new Date(a.date || a.createdAt || 0).getTime();
+    const db = new Date(b.date || b.createdAt || 0).getTime();
+    return db - da;
+  });
+  const latest = sorted[0];
+  const history = sorted.map((a) => {
+    const chatId = resolveChatAppointmentId(a);
+    return {
+      id: chatId,
+      appointmentId: chatId,
+      displayAppointmentId: a.appointmentId || null,
+      doctorId: a.doctor?._id || a.doctor || null,
+      doctorName: a.doctorName,
+      age: a.age,
+      date: a.date,
+      time: a.time,
+      location: a.location,
+      name: a.name,
+    };
+  });
+
+  const latestChatId = resolveChatAppointmentId(latest);
+
+  return {
+    source: "booking",
+    name: latest?.name || "",
+    email: checkData.email || latest?.email || "",
+    number:
+      checkData.phone ||
+      normalizePhoneDigits(latest?.phone || latest?.number) ||
+      "",
+    appointmentId: latestChatId,
+    age: latest?.age,
+    doctorName: latest?.doctorName,
+    date: latest?.date,
+    time: latest?.time,
+    location: latest?.location,
+    history,
+  };
+}
+
+export async function loadGuestProfileByIdentifier(identifier, checkData = {}) {
+  const parsed = parsePatientIdentifier(identifier);
+  if (!parsed.type) return null;
+
+  const { data } = await apiInstance.get("/request-pateint");
+  const list = Array.isArray(data?.data) ? data.data : [];
+  const matches = list.filter((row) => appointmentMatchesIdentifier(row, parsed));
+  return mapAppointmentsToGuestProfile(matches, checkData);
+}
+
+export async function trySendPatientOtp(email) {
+  if (!email) return null;
+  try {
+    const { data } = await apiInstance.post("/patient/login/send-otp", {
+      email: email.trim(),
+    });
+    if (data.success && data.expiresAt) {
+      return { email: email.trim(), expiresAt: data.expiresAt };
+    }
+  } catch (err) {
+    if (err.response?.status === 404) return null;
+    throw err;
+  }
+  return null;
+}
+
 export async function checkPatientExists(identifier) {
   const parsed = parsePatientIdentifier(identifier);
   if (!parsed.type) {

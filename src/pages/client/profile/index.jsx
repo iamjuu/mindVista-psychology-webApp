@@ -1,15 +1,35 @@
-import React, { useEffect, useState, useCallback, useRef } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import toast from "react-hot-toast";
 import apiInstance from "../../../instance";
 import {
   isValidPatientIdentifier,
   parsePatientIdentifier,
 } from "../../../utils/patientIdentifier";
-import { checkPatientExists } from "../../../utils/checkPatientExists";
+import {
+  checkPatientExists,
+  loadGuestProfileByIdentifier,
+} from "../../../utils/checkPatientExists";
+import PatientOtpForm, {
+  OTP_STORAGE_KEY,
+} from "../../../components/patient/PatientOtpForm";
+import {
+  resolveChatAppointmentId,
+  groupPatientThreadsByDoctor,
+  expandGroupedThreads,
+  clearGroupedThreadUnread,
+} from "../../../components/chat/chatUtils";
 import {
   getPatientToken,
   clearPatientSession,
 } from "../../../constants/patientAuthStorage";
+import {
+  saveGuestProfileSession,
+  loadGuestProfileSession,
+  clearGuestProfileSession,
+} from "../../../constants/patientGuestSession";
+import { getGuestChatEmail } from "../../../constants/patientGuestChat";
+import { loadGuestChatThreadsFromBookings } from "../../../utils/loadGuestChatThreads";
 import {
   ActionButton,
   Actions,
@@ -53,6 +73,7 @@ import {
 } from "./style";
 import { Pic1 } from "../../../assets";
 import WhatsAppChatShell from "../../../components/chat/WhatsAppChatShell";
+import { useAppointmentChatRealtime } from "../../../hooks/useAppointmentChatRealtime";
 
 function formatDateDisplay(d) {
   if (!d) return "";
@@ -76,16 +97,20 @@ function formatPhone(num) {
 
 function mapApiResponseToProfile(data) {
   const { patient, summary, appointments } = data;
-  const history = (appointments || []).map((a) => ({
-    id: a.id || a.appointmentId,
-    appointmentId: a.appointmentId,
-    doctorName: a.doctorName,
-    age: a.age,
-    date: a.date,
-    time: a.time,
-    location: a.location,
-    name: a.name,
-  }));
+  const history = (appointments || []).map((a) => {
+    const chatId = resolveChatAppointmentId(a);
+    return {
+      id: chatId,
+      appointmentId: chatId,
+      doctorId: a.doctorId,
+      doctorName: a.doctorName,
+      age: a.age,
+      date: a.date,
+      time: a.time,
+      location: a.location,
+      name: a.name,
+    };
+  });
   const s = summary;
   return {
     source: "api",
@@ -105,6 +130,7 @@ function mapApiResponseToProfile(data) {
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [profile, setProfile] = useState(null);
   const [ready, setReady] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -116,6 +142,9 @@ const ProfilePage = () => {
   const [gateIdentifier, setGateIdentifier] = useState("");
   const [gateChecking, setGateChecking] = useState(false);
   const [gateError, setGateError] = useState("");
+  const [otpEmail, setOtpEmail] = useState("");
+  const [otpExpiresAt, setOtpExpiresAt] = useState(null);
+  const [guestProfileUnlocked, setGuestProfileUnlocked] = useState(false);
   const selectedChatIdRef = useRef(null);
 
   useEffect(() => {
@@ -127,11 +156,25 @@ const ProfilePage = () => {
   const loadProfile = useCallback(async () => {
     const token = getPatientToken();
     if (!token) {
+      const guestSession = loadGuestProfileSession();
+      if (guestSession?.profile) {
+        setProfile(guestSession.profile);
+        setGuestProfileUnlocked(true);
+        if (guestSession.identifier) {
+          setGateIdentifier(guestSession.identifier);
+        }
+        setReady(true);
+        setLoading(false);
+        return;
+      }
       setProfile(null);
+      setGuestProfileUnlocked(false);
       setReady(true);
       setLoading(false);
       return;
     }
+
+    clearGuestProfileSession();
 
     setLoading(true);
     try {
@@ -159,6 +202,15 @@ const ProfilePage = () => {
   }, [loadProfile]);
 
   useEffect(() => {
+    if (location.state?.email) {
+      setGateIdentifier(location.state.email);
+    }
+    if (location.state?.fromPayment) {
+      toast.success("Enter your booking email below to open your profile.");
+    }
+  }, [location.state?.email, location.state?.fromPayment]);
+
+  useEffect(() => {
     const onPatientAuthChanged = () => {
       if (getPatientToken()) {
         loadProfile();
@@ -169,17 +221,73 @@ const ProfilePage = () => {
       window.removeEventListener("patient-auth-changed", onPatientAuthChanged);
   }, [loadProfile]);
 
+  const buildThreadsFromHistory = useCallback((historyItems) => {
+    if (!Array.isArray(historyItems)) return [];
+    const seen = new Set();
+    return historyItems
+      .map((item) => {
+        const appointmentId = resolveChatAppointmentId(item);
+        if (!appointmentId || seen.has(appointmentId)) return null;
+        seen.add(appointmentId);
+        return {
+          appointmentId,
+          doctorId: item.doctorId,
+          doctorName: item.doctorName || profile?.doctorName || "Doctor",
+          patientName: profile?.name || "",
+          date: item.date,
+          time: item.time,
+          lastMessage: null,
+          unreadCount: 0,
+          updatedAt: item.date || new Date().toISOString(),
+        };
+      })
+      .filter(Boolean);
+  }, [profile?.doctorName, profile?.name]);
+
   const loadChatThreads = useCallback(async () => {
-    if (!getPatientToken()) return;
+    const token = getPatientToken();
     setChatThreadsLoading(true);
     setChatThreadsError("");
     try {
-      const { data } = await apiInstance.get("/chat/patient/me/threads");
-      const threads = Array.isArray(data?.data) ? data.data : [];
+      let threads = [];
+      if (token) {
+        const { data } = await apiInstance.get("/chat/patient/me/threads");
+        threads = Array.isArray(data?.data) ? data.data : [];
+      } else {
+        const guestEmail = profile?.email?.trim() || getGuestChatEmail();
+        if (guestEmail) {
+          try {
+            const { data } = await apiInstance.get("/chat/patient/threads", {
+              params: { patientEmail: guestEmail },
+            });
+            threads = Array.isArray(data?.data) ? data.data : [];
+          } catch (threadErr) {
+            if (threadErr.response?.status === 404) {
+              console.warn(
+                "[Messages] /chat/patient/threads not on server — using booking fallback"
+              );
+              threads = await loadGuestChatThreadsFromBookings(guestEmail);
+            } else {
+              throw threadErr;
+            }
+          }
+        }
+      }
+      if (threads.length === 0 && profile?.history?.length) {
+        threads = buildThreadsFromHistory(profile.history);
+      }
+      threads = groupPatientThreadsByDoctor(threads);
       setChatThreads(threads);
       setSelectedChatThread((current) => {
         if (current && threads.some((thread) => thread.appointmentId === current.appointmentId)) {
           return threads.find((thread) => thread.appointmentId === current.appointmentId);
+        }
+        const preferredId = profile?.appointmentId
+          ? String(profile.appointmentId)
+          : null;
+        if (preferredId) {
+          const preferred = threads.find((thread) => String(thread.appointmentId) === preferredId);
+          if (preferred) return preferred;
         }
         return threads[0] || null;
       });
@@ -189,38 +297,83 @@ const ProfilePage = () => {
     } finally {
       setChatThreadsLoading(false);
     }
-  }, []);
+  }, [buildThreadsFromHistory, profile?.appointmentId, profile?.history, profile?.email]);
 
   useEffect(() => {
-    if (activeTab === "messages" && hasToken()) {
+    const canLoadMessages =
+      activeTab === "messages" &&
+      profile &&
+      (hasToken() || guestProfileUnlocked);
+    if (canLoadMessages) {
       loadChatThreads();
     }
-  }, [activeTab, loadChatThreads]);
+  }, [activeTab, loadChatThreads, profile, guestProfileUnlocked]);
 
   const handleIncomingMessage = useCallback((message) => {
     if (!message?.appointmentId) return;
-    const isActive = selectedChatIdRef.current === message.appointmentId;
+    const appointmentId = String(message.appointmentId);
+    const isActive = selectedChatIdRef.current === appointmentId;
     const fromDoctor = message.senderRole === "doctor";
+
     setChatThreads((prev) => {
-      const updated = prev.map((thread) => {
-        if (thread.appointmentId !== message.appointmentId) return thread;
-        return {
-          ...thread,
-          lastMessage: message,
-          updatedAt: message.createdAt,
-          unreadCount:
-            fromDoctor && !isActive
-              ? (thread.unreadCount || 0) + 1
-              : fromDoctor && isActive
-                ? 0
-                : thread.unreadCount,
-        };
-      });
-      updated.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
-      return updated;
+      let flat = expandGroupedThreads(prev);
+      const idx = flat.findIndex((t) => String(t.appointmentId) === appointmentId);
+      if (idx === -1) {
+        flat = [
+          {
+            appointmentId,
+            doctorId: message.doctorId,
+            doctorName: message.senderName || profile?.doctorName || "Doctor",
+            patientName: profile?.name || "",
+            date: profile?.date,
+            time: profile?.time,
+            lastMessage: message,
+            unreadCount: fromDoctor && !isActive ? 1 : 0,
+            updatedAt: message.createdAt,
+          },
+          ...flat,
+        ];
+      } else {
+        flat = flat.map((t) => {
+          if (String(t.appointmentId) !== appointmentId) return t;
+          return {
+            ...t,
+            lastMessage: message,
+            updatedAt: message.createdAt,
+            unreadCount:
+              fromDoctor && !isActive
+                ? (t.unreadCount || 0) + 1
+                : fromDoctor && isActive
+                  ? 0
+                  : t.unreadCount,
+          };
+        });
+      }
+      return groupPatientThreadsByDoctor(flat);
     });
-    loadChatThreads();
-  }, [loadChatThreads]);
+  }, [profile?.date, profile?.doctorName, profile?.name, profile?.time]);
+
+  const handleMarkedRead = useCallback((appointmentId) => {
+    setChatThreads((prev) => clearGroupedThreadUnread(prev, appointmentId));
+  }, []);
+
+  const guestChatEmail =
+    !hasToken() && guestProfileUnlocked
+      ? profile?.email?.trim() || getGuestChatEmail()
+      : "";
+
+  useAppointmentChatRealtime({
+    enabled:
+      activeTab === "messages" && (!!getPatientToken() || !!guestChatEmail),
+    appointmentIds: chatThreads.flatMap((thread) =>
+      thread.appointmentIds?.length ? thread.appointmentIds : [thread.appointmentId]
+    ),
+    currentRole: "patient",
+    currentUserId: profile?.patientId || profile?.email,
+    currentUserName: profile?.name || "Patient",
+    skipAppointmentId: selectedChatThread?.appointmentId,
+    onMessage: handleIncomingMessage,
+  });
 
   const handleGateSubmit = async (e) => {
     e.preventDefault();
@@ -245,41 +398,28 @@ const ProfilePage = () => {
       const { data, source } = await checkPatientExists(identifier);
       console.log("[ProfileGate] check response:", { data, source });
       if (data.success) {
-        if (data.exists) {
-          if (data.email) {
-            console.log("[ProfileGate] Account exists → login:", data.email);
-            navigate("/login", { state: { email: data.email } });
-          } else {
-            setGateError(
-              "Account found but no email on file. Please contact support."
-            );
+        if (data.exists || data.hasBooking) {
+          const guestProfile = await loadGuestProfileByIdentifier(identifier, data);
+          if (guestProfile) {
+            setProfile(guestProfile);
+            setGuestProfileUnlocked(true);
+            saveGuestProfileSession(identifier, guestProfile);
+            setReady(true);
+            toast.success("Welcome back");
+            return;
           }
-        } else if (data.hasBooking) {
-          const loginEmail =
-            data.email || (parsed.type === "email" ? parsed.email : undefined);
-          console.log("[ProfileGate] Booking found → login:", {
-            email: loginEmail,
-            phone: data.phone,
-            source,
-          });
-          navigate("/login", {
-            state: {
-              email: loginEmail,
-              phone:
-                data.phone ||
-                (parsed.type === "phone" ? parsed.phone : undefined),
-              hasBooking: true,
-              fromProfileGate: true,
-            },
-          });
-        } else {
-          console.warn("[ProfileGate] No account or booking found for:", identifier);
           setGateError(
-            parsed.type === "email"
-              ? "No booking found for this email. Check spelling (e.g. muhammed vs muhammad) or try your phone number."
-              : "No account or booking found with this phone. Please check the number or try your booking email."
+            "We found your booking but could not load your profile. Try your email or contact support."
           );
+          return;
         }
+
+        navigate("/register", {
+          state: {
+            email: parsed.type === "email" ? parsed.email : undefined,
+            phone: parsed.type === "phone" ? parsed.phone : undefined,
+          },
+        });
       } else {
         console.warn("[ProfileGate] API returned success:false", data);
         setGateError("Could not verify your details. Please try again.");
@@ -312,6 +452,22 @@ const ProfilePage = () => {
     }
   };
 
+  const handleLogout = () => {
+    clearPatientSession();
+    clearGuestProfileSession();
+    sessionStorage.removeItem(OTP_STORAGE_KEY);
+    setOtpEmail("");
+    setOtpExpiresAt(null);
+    setGuestProfileUnlocked(false);
+    setProfile(null);
+    setGateIdentifier("");
+    setActiveTab("profile");
+    setChatThreads([]);
+    setSelectedChatThread(null);
+    setReady(true);
+    toast.success("Logged out");
+  };
+
   const hasData =
     ready &&
     !loading &&
@@ -325,9 +481,33 @@ const ProfilePage = () => {
       ? [profile.doctorName, formatPhone(profile.number)].filter(Boolean)
       : [];
 
-  const showShimmer = loading || !ready || (hasToken() && !profile);
+  const showShimmer =
+    loading || !ready || (hasToken() && !profile) || (guestProfileUnlocked && !profile);
 
-  if (ready && !hasToken()) {
+  if (ready && !hasToken() && otpEmail && otpExpiresAt && !guestProfileUnlocked) {
+    return (
+      <PageWrapper>
+        <Container>
+          <PatientOtpForm
+            email={otpEmail}
+            expiresAt={otpExpiresAt}
+            onVerified={() => {
+              setOtpEmail("");
+              setOtpExpiresAt(null);
+              clearGuestProfileSession();
+              loadProfile();
+            }}
+            onBack={() => {
+              setOtpEmail("");
+              setOtpExpiresAt(null);
+            }}
+          />
+        </Container>
+      </PageWrapper>
+    );
+  }
+
+  if (ready && !hasToken() && !guestProfileUnlocked) {
     return (
       <PageWrapper>
         <Container>
@@ -394,21 +574,31 @@ const ProfilePage = () => {
             <p style={{ color: "#666", marginTop: 8 }}>
               Please log in again to access your profile and messages.
             </p>
-            <Link
-              to="/login"
-              onClick={clearPatientSession}
+            <button
+              type="button"
+              onClick={() => {
+                clearPatientSession();
+                clearGuestProfileSession();
+                setOtpEmail("");
+                setOtpExpiresAt(null);
+                setGuestProfileUnlocked(false);
+                setProfile(null);
+                setGateIdentifier("");
+                setReady(true);
+              }}
               style={{
-                display: "inline-block",
                 marginTop: 16,
                 padding: "10px 16px",
                 background: "#007bff",
                 color: "#fff",
+                border: "none",
                 borderRadius: 8,
-                textDecoration: "none",
+                cursor: "pointer",
+                fontWeight: 600,
               }}
             >
-              Log in again
-            </Link>
+              Try again
+            </button>
           </div>
         </Container>
       </PageWrapper>
@@ -418,13 +608,19 @@ const ProfilePage = () => {
   const getThreadDisplayName = (thread) =>
     thread.doctorName || profile?.doctorName || "Doctor";
 
-  const getThreadSubtitle = (thread) =>
-    `${thread.date || ""}${thread.time ? ` at ${thread.time}` : ""}`.trim();
+  const getThreadSubtitle = () => "";
 
   return (
     <PageWrapper>
       <Container>
-        <div style={{ display: "flex", gap: 12, padding: "20px 24px 0" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "20px 24px 0",
+          }}
+        >
           <button
             type="button"
             onClick={() => setActiveTab("profile")}
@@ -455,6 +651,25 @@ const ProfilePage = () => {
           >
             Messages
           </button>
+          {(hasToken() || guestProfileUnlocked) && (
+            <button
+              type="button"
+              onClick={handleLogout}
+              style={{
+                marginLeft: "auto",
+                padding: "8px 14px",
+                border: "1px solid #e9edef",
+                borderRadius: 8,
+                background: "#fff",
+                color: "#dc2626",
+                fontWeight: 600,
+                fontSize: 14,
+                cursor: "pointer",
+              }}
+            >
+              Log out
+            </button>
+          )}
         </div>
 
         {activeTab === "profile" ? (
@@ -640,6 +855,7 @@ const ProfilePage = () => {
               currentUserId={profile?.patientId || profile?.email}
               currentUserName={profile?.name || "Patient"}
               doctorId={selectedChatThread?.doctorId}
+              patientEmail={guestChatEmail}
               getThreadDisplayName={getThreadDisplayName}
               getThreadSubtitle={getThreadSubtitle}
               onMessageSent={(message) => {
@@ -654,6 +870,7 @@ const ProfilePage = () => {
                 });
               }}
               onIncomingMessage={handleIncomingMessage}
+              onMarkedRead={handleMarkedRead}
               emptyStateText="No appointment chats yet."
               listTitle="Messages"
               listSubtitle="Your appointment conversations"

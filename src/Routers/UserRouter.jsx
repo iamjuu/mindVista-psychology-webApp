@@ -1,5 +1,5 @@
 import React, { Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 
 // Lazy loading components
 
@@ -10,8 +10,6 @@ import {CustomSpinner}from "../common/Loader";
 // import { ProgramSectionleft, ProgramSectionRight } from "../constant/datas";
 
 import PaymentPage from "../pages/payment"
-import PatientLoginPage from "../pages/client/patientLogin"
-import PatientLoginOtp from "../pages/client/patientLogin/PatientLoginOtp"
 // ***************  admin  *************
 import DashbaordHome from '../pages/admin/Dashboard/home'
 import TodayAppointments from '../pages/admin/Dashboard/TodayAppointments'
@@ -31,8 +29,8 @@ function UserRouter() {
         <Routes>
         <Route path="/" element={<HomePage />} />
           <Route path="/profile" element={<UserProfile />} />
-          <Route path="/login" element={<PatientLoginPage />} />
-          <Route path="/login/otp" element={<PatientLoginOtp />} />
+          <Route path="/login" element={<Navigate to="/profile" replace />} />
+          <Route path="/login/otp" element={<Navigate to="/profile" replace />} />
           <Route path="/register" element={<RegisterForm />} />
           <Route path="/payment" element={<PaymentPage />} />
 {/* ************************** */}

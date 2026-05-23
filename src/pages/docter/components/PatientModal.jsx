@@ -18,7 +18,9 @@ const PatientModal = ({
 
   if (!isUserModalOpen || !selectedUser) return null;
 
-  const appointmentId = selectedUser.id || selectedUser._id;
+  const appointmentId = selectedUser.id || selectedUser._id
+    ? String(selectedUser.id || selectedUser._id)
+    : null;
 
   return (
     <>

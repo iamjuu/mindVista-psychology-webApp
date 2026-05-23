@@ -18,10 +18,12 @@ const WhatsAppChatShell = ({
   getThreadSubtitle,
   onMessageSent,
   onIncomingMessage,
+  onMarkedRead,
   emptyStateText = "No conversations yet.",
   compact = false,
   listTitle = "Messages",
   listSubtitle = "",
+  patientEmail = "",
 }) => {
   const [mobileShowChat, setMobileShowChat] = useState(false);
 
@@ -44,11 +46,13 @@ const WhatsAppChatShell = ({
     currentUserId,
     currentUserName,
     doctorId: doctorId ?? selectedThread?.doctorId,
+    patientEmail,
     title: selectedThread ? getThreadDisplayName(selectedThread) : "Messages",
     subtitle: selectedThread ? getThreadSubtitle(selectedThread) : "",
     compact,
     onMessageSent,
     onIncomingMessage,
+    onMarkedRead,
     onBack: handleBack,
     hideHeader: false,
   };

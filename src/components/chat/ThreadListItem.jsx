@@ -7,11 +7,12 @@ const ThreadListItem = ({
   displayName,
   subtitle,
 }) => {
-  const preview =
-    thread?.lastMessage?.message ||
-    subtitle ||
-    `${thread?.date || ""} ${thread?.time || ""}`.trim() ||
-    "No messages yet";
+  const last = thread?.lastMessage;
+  const preview = last?.message
+    ? last.senderRole === "doctor"
+      ? last.message
+      : `You: ${last.message}`
+    : subtitle || "No messages yet";
   const time = formatThreadTime(thread?.updatedAt || thread?.lastMessage?.createdAt);
   const unread = (thread?.unreadCount || 0) > 0;
 

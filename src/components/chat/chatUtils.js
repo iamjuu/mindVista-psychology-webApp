@@ -1,3 +1,16 @@
+/** Chat API uses MongoDB appointment _id (24 hex chars), not the display appointmentId string. */
+export function resolveChatAppointmentId(item) {
+  if (!item || typeof item !== "object") return "";
+  const candidates = [item._id, item.id, item.appointmentId];
+  for (const value of candidates) {
+    if (value == null || value === "") continue;
+    const s = String(value);
+    if (/^[a-f0-9]{24}$/i.test(s)) return s;
+  }
+  const fallback = item._id ?? item.id ?? item.appointmentId;
+  return fallback != null ? String(fallback) : "";
+}
+
 export function upsertMessage(messages, message) {
   if (!message) return messages;
   const id = message._id;
@@ -90,4 +103,111 @@ export function getDateKey(value) {
   } catch {
     return "";
   }
+}
+
+function doctorGroupKey(thread) {
+  if (thread?.doctorId) return `id:${String(thread.doctorId)}`;
+  const name = String(thread?.doctorName || "").trim().toLowerCase();
+  if (name) return `name:${name}`;
+  return `appt:${thread?.appointmentId || "unknown"}`;
+}
+
+function pickDisplayLastMessage(sources) {
+  const withMsg = sources.filter((s) => s?.lastMessage?.message);
+  if (!withMsg.length) return null;
+
+  const doctorSources = withMsg.filter((s) => s.lastMessage.senderRole === "doctor");
+  const pool = doctorSources.length ? doctorSources : withMsg;
+
+  let best = pool[0].lastMessage;
+  let bestTime = new Date(best.createdAt || 0).getTime();
+
+  for (let i = 1; i < pool.length; i += 1) {
+    const msg = pool[i].lastMessage;
+    const t = new Date(msg.createdAt || 0).getTime();
+    if (t > bestTime) {
+      best = msg;
+      bestTime = t;
+    }
+  }
+  return best;
+}
+
+function mergeSourceThreads(sources) {
+  const sorted = [...sources].sort(
+    (a, b) =>
+      new Date(b.updatedAt || b.lastMessage?.createdAt || 0) -
+      new Date(a.updatedAt || a.lastMessage?.createdAt || 0)
+  );
+  const primary = sorted[0];
+  const lastMessage = pickDisplayLastMessage(sources);
+  const unreadCount = sources.reduce((sum, s) => sum + (s.unreadCount || 0), 0);
+
+  return {
+    appointmentId: primary.appointmentId,
+    doctorId: primary.doctorId,
+    doctorName: primary.doctorName,
+    patientName: primary.patientName,
+    date: primary.date,
+    time: primary.time,
+    lastMessage,
+    unreadCount,
+    updatedAt: lastMessage?.createdAt || primary.updatedAt,
+    sourceThreads: sources.map((s) => ({
+      appointmentId: s.appointmentId,
+      doctorId: s.doctorId,
+      doctorName: s.doctorName,
+      date: s.date,
+      time: s.time,
+      lastMessage: s.lastMessage,
+      unreadCount: s.unreadCount || 0,
+      updatedAt: s.updatedAt,
+    })),
+    appointmentIds: sources.map((s) => s.appointmentId),
+  };
+}
+
+/** Flatten grouped threads back to per-appointment rows. */
+export function expandGroupedThreads(groups) {
+  if (!Array.isArray(groups)) return [];
+  return groups.flatMap((g) => {
+    if (Array.isArray(g.sourceThreads) && g.sourceThreads.length > 0) {
+      return g.sourceThreads.map((s) => ({
+        ...s,
+        doctorId: g.doctorId ?? s.doctorId,
+        doctorName: g.doctorName ?? s.doctorName,
+        patientName: g.patientName ?? s.patientName,
+      }));
+    }
+    return [g];
+  });
+}
+
+/** One list row per doctor with combined unread count and latest doctor message. */
+export function groupPatientThreadsByDoctor(threads) {
+  const flat = expandGroupedThreads(threads);
+  const map = new Map();
+
+  for (const t of flat) {
+    if (!t?.appointmentId) continue;
+    const key = doctorGroupKey(t);
+    const list = map.get(key) || [];
+    list.push({ ...t });
+    map.set(key, list);
+  }
+
+  return Array.from(map.values())
+    .map(mergeSourceThreads)
+    .sort(
+      (a, b) =>
+        new Date(b.updatedAt || 0).getTime() - new Date(a.updatedAt || 0).getTime()
+    );
+}
+
+export function clearGroupedThreadUnread(groups, appointmentId) {
+  const id = String(appointmentId);
+  const flat = expandGroupedThreads(groups).map((t) =>
+    String(t.appointmentId) === id ? { ...t, unreadCount: 0 } : t
+  );
+  return groupPatientThreadsByDoctor(flat);
 }

@@ -33,6 +33,7 @@ const AppointmentChat = ({
   currentUserId,
   currentUserName,
   doctorId,
+  patientEmail,
   title,
   subtitle,
   compact = false,
@@ -40,7 +41,9 @@ const AppointmentChat = ({
   onBack,
   onMessageSent,
   onIncomingMessage,
+  onMarkedRead,
 }) => {
+  const roomId = appointmentId ? String(appointmentId) : "";
   const [messages, setMessages] = useState([]);
   const [draft, setDraft] = useState("");
   const [loading, setLoading] = useState(false);
@@ -59,8 +62,11 @@ const AppointmentChat = ({
   const queryParams = useMemo(() => {
     const params = { role: currentRole };
     if (currentRole === "doctor" && doctorId) params.doctorId = doctorId;
+    if (currentRole === "patient" && patientEmail) {
+      params.patientEmail = patientEmail;
+    }
     return params;
-  }, [currentRole, doctorId]);
+  }, [currentRole, doctorId, patientEmail]);
 
   const otherRole = currentRole === "doctor" ? "patient" : "doctor";
 
@@ -75,35 +81,37 @@ const AppointmentChat = ({
   }, []);
 
   const markRead = useCallback(async () => {
-    if (!appointmentId) return;
+    if (!roomId) return;
     try {
-      const { data } = await apiInstance.patch(`/chat/appointment/${appointmentId}/read`, {
+      const { data } = await apiInstance.patch(`/chat/appointment/${roomId}/read`, {
         role: currentRole,
         doctorId,
+        ...(currentRole === "patient" && patientEmail ? { patientEmail } : {}),
       });
       if (wsRef.current?.readyState === WebSocket.OPEN) {
         wsRef.current.send(
           JSON.stringify({
             type: "chat:read",
-            appointmentId,
+            appointmentId: roomId,
             role: currentRole,
           })
         );
       }
       setMessages((prev) => markMessagesReadByRole(prev, otherRole));
+      onMarkedRead?.(roomId);
       return data;
     } catch (err) {
       console.error("Failed to mark chat read", err);
     }
     return null;
-  }, [appointmentId, currentRole, doctorId, otherRole]);
+  }, [roomId, currentRole, doctorId, otherRole, onMarkedRead]);
 
   const loadMessages = useCallback(async () => {
-    if (!appointmentId) return;
+    if (!roomId) return;
     setLoading(true);
     setError("");
     try {
-      const { data } = await apiInstance.get(`/chat/appointment/${appointmentId}`, {
+      const { data } = await apiInstance.get(`/chat/appointment/${roomId}`, {
         params: queryParams,
       });
       setMessages(Array.isArray(data?.data) ? data.data : []);
@@ -114,12 +122,12 @@ const AppointmentChat = ({
     } finally {
       setLoading(false);
     }
-  }, [appointmentId, queryParams, markRead]);
+  }, [roomId, queryParams, markRead]);
 
   useEffect(() => {
     setMessages([]);
     loadMessages();
-  }, [appointmentId, loadMessages]);
+  }, [roomId, loadMessages]);
 
   useEffect(() => {
     if (nearBottomRef.current) {
@@ -128,26 +136,26 @@ const AppointmentChat = ({
   }, [messages.length, scrollToBottom]);
 
   const emitTyping = useCallback(() => {
-    if (wsRef.current?.readyState !== WebSocket.OPEN || !appointmentId) return;
+    if (wsRef.current?.readyState !== WebSocket.OPEN || !roomId) return;
     wsRef.current.send(
       JSON.stringify({
         type: "chat:typing",
-        appointmentId,
+        appointmentId: roomId,
         role: currentRole,
         userId: currentUserId,
       })
     );
-  }, [appointmentId, currentRole, currentUserId]);
+  }, [roomId, currentRole, currentUserId]);
 
   useEffect(() => {
-    if (!appointmentId || !currentRole) return undefined;
+    if (!roomId || !currentRole) return undefined;
     let cancelled = false;
 
     const connect = () => {
       if (cancelled) return;
       const params = new URLSearchParams({
         chat: "1",
-        appointmentId,
+        appointmentId: roomId,
         role: currentRole,
         userId: currentUserId || `${currentRole}-${Date.now()}`,
         username: currentUserName || currentRole,
@@ -159,7 +167,7 @@ const AppointmentChat = ({
         socket.send(
           JSON.stringify({
             type: "chat:join",
-            appointmentId,
+            appointmentId: roomId,
             role: currentRole,
             userId: currentUserId,
           })
@@ -169,7 +177,7 @@ const AppointmentChat = ({
       socket.onmessage = (event) => {
         try {
           const payload = JSON.parse(event.data);
-          if (payload.appointmentId && payload.appointmentId !== appointmentId) return;
+          if (payload.appointmentId && String(payload.appointmentId) !== roomId) return;
 
           if (payload.type === "chat:message" && payload.message) {
             const incoming = payload.message;
@@ -223,7 +231,7 @@ const AppointmentChat = ({
       wsRef.current?.close();
     };
   }, [
-    appointmentId,
+    roomId,
     currentRole,
     currentUserId,
     currentUserName,
@@ -242,13 +250,13 @@ const AppointmentChat = ({
   };
 
   const sendMessage = async (text, tempId = null) => {
-    if (!text || !appointmentId) return;
+    if (!text || !roomId) return;
 
     const optimisticId = tempId || `temp-${Date.now()}`;
     if (!tempId) {
       const optimistic = {
         _id: optimisticId,
-        appointmentId,
+        appointmentId: roomId,
         senderRole: currentRole,
         senderName: currentUserName,
         message: text,
@@ -272,11 +280,12 @@ const AppointmentChat = ({
     setSending(true);
     setError("");
     try {
-      const { data } = await apiInstance.post(`/chat/appointment/${appointmentId}`, {
+      const { data } = await apiInstance.post(`/chat/appointment/${roomId}`, {
         senderRole: currentRole,
         senderName: currentUserName,
         doctorId,
         message: text,
+        ...(currentRole === "patient" && patientEmail ? { patientEmail } : {}),
       });
       if (data?.success && data.data) {
         setMessages((prev) => {
@@ -287,7 +296,7 @@ const AppointmentChat = ({
           wsRef.current.send(
             JSON.stringify({
               type: "chat:message",
-              appointmentId,
+              appointmentId: roomId,
               message: data.data,
             })
           );
@@ -334,7 +343,7 @@ const AppointmentChat = ({
     return groups;
   }, [messages]);
 
-  if (!appointmentId) {
+  if (!roomId) {
     return (
       <div className="flex flex-1 items-center justify-center bg-[#f0f2f5] p-6 text-center text-sm text-[#667781]">
         Select an appointment to start messaging.
