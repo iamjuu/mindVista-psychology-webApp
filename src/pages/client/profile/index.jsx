@@ -369,10 +369,11 @@ const ProfilePage = () => {
       thread.appointmentIds?.length ? thread.appointmentIds : [thread.appointmentId]
     ),
     currentRole: "patient",
-    currentUserId: profile?.patientId || profile?.email,
+    currentUserId: profile?.patientId || profile?.email || guestChatEmail,
     currentUserName: profile?.name || "Patient",
     skipAppointmentId: selectedChatThread?.appointmentId,
     onMessage: handleIncomingMessage,
+    onPoll: loadChatThreads,
   });
 
   const handleGateSubmit = async (e) => {
@@ -859,15 +860,7 @@ const ProfilePage = () => {
               getThreadDisplayName={getThreadDisplayName}
               getThreadSubtitle={getThreadSubtitle}
               onMessageSent={(message) => {
-                setChatThreads((prev) => {
-                  const updated = prev.map((thread) =>
-                    thread.appointmentId === message.appointmentId
-                      ? { ...thread, lastMessage: message, updatedAt: message.createdAt }
-                      : thread
-                  );
-                  updated.sort((a, b) => new Date(b.updatedAt || 0) - new Date(a.updatedAt || 0));
-                  return updated;
-                });
+                handleIncomingMessage(message);
               }}
               onIncomingMessage={handleIncomingMessage}
               onMarkedRead={handleMarkedRead}

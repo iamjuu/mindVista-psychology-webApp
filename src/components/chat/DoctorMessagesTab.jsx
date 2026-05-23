@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import apiInstance from "../../instance";
+import { useAppointmentChatRealtime } from "../../hooks/useAppointmentChatRealtime";
 import WhatsAppChatShell from "./WhatsAppChatShell";
 
 const DoctorMessagesTab = ({ doctorData }) => {
@@ -83,6 +84,17 @@ const DoctorMessagesTab = ({ doctorData }) => {
       return updated;
     });
   }, []);
+
+  useAppointmentChatRealtime({
+    enabled: !!doctorData?._id,
+    appointmentIds: threads.map((t) => t.appointmentId),
+    currentRole: "doctor",
+    currentUserId: doctorData?._id,
+    currentUserName: doctorData?.name || "Doctor",
+    skipAppointmentId: selectedThread?.appointmentId,
+    onMessage: handleIncomingMessage,
+    onPoll: loadThreads,
+  });
 
   const getThreadDisplayName = (thread) => thread.patientName || "Patient";
 

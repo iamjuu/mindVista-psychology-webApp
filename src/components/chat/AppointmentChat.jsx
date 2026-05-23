@@ -12,6 +12,8 @@ import {
 
 const TYPING_DEBOUNCE_MS = 400;
 const NEAR_BOTTOM_PX = 80;
+/** Poll when WebSocket unavailable (e.g. Vercel serverless). */
+const CHAT_POLL_MS = 3000;
 
 function markMessagesReadByRole(messages, role) {
   const flag = role === "doctor" ? "readByDoctor" : "readByPatient";
@@ -51,6 +53,7 @@ const AppointmentChat = ({
   const [error, setError] = useState("");
   const [otherTyping, setOtherTyping] = useState(false);
   const wsRef = useRef(null);
+  const wsConnectedRef = useRef(false);
   const reconnectRef = useRef(null);
   const bottomRef = useRef(null);
   const scrollRef = useRef(null);
@@ -106,28 +109,58 @@ const AppointmentChat = ({
     return null;
   }, [roomId, currentRole, doctorId, otherRole, onMarkedRead]);
 
-  const loadMessages = useCallback(async () => {
-    if (!roomId) return;
-    setLoading(true);
-    setError("");
-    try {
-      const { data } = await apiInstance.get(`/chat/appointment/${roomId}`, {
-        params: queryParams,
-      });
-      setMessages(Array.isArray(data?.data) ? data.data : []);
-      await markRead();
-    } catch (err) {
-      console.error("Failed to load chat", err);
-      setError(err.response?.data?.message || "Failed to load messages");
-    } finally {
-      setLoading(false);
-    }
-  }, [roomId, queryParams, markRead]);
+  const syncMessages = useCallback(
+    async ({ showLoading = false } = {}) => {
+      if (!roomId) return;
+      if (showLoading) {
+        setLoading(true);
+        setError("");
+      }
+      try {
+        const { data } = await apiInstance.get(`/chat/appointment/${roomId}`, {
+          params: queryParams,
+        });
+        const incoming = Array.isArray(data?.data) ? data.data : [];
+        setMessages((prev) => {
+          const pending = prev.filter((m) => m._pending);
+          let merged = prev.filter((m) => !m._pending);
+          incoming.forEach((msg) => {
+            merged = upsertMessage(merged, msg);
+          });
+          return [...merged, ...pending];
+        });
+        await markRead();
+      } catch (err) {
+        console.error("Failed to load chat", err);
+        if (showLoading) {
+          setError(err.response?.data?.message || "Failed to load messages");
+        }
+      } finally {
+        if (showLoading) setLoading(false);
+      }
+    },
+    [roomId, queryParams, markRead]
+  );
+
+  const loadMessages = useCallback(
+    () => syncMessages({ showLoading: true }),
+    [syncMessages]
+  );
 
   useEffect(() => {
     setMessages([]);
     loadMessages();
   }, [roomId, loadMessages]);
+
+  useEffect(() => {
+    if (!roomId || !currentRole) return undefined;
+    const poll = () => {
+      if (wsConnectedRef.current) return;
+      syncMessages({ showLoading: false });
+    };
+    const id = setInterval(poll, CHAT_POLL_MS);
+    return () => clearInterval(id);
+  }, [roomId, currentRole, syncMessages]);
 
   useEffect(() => {
     if (nearBottomRef.current) {
@@ -164,6 +197,7 @@ const AppointmentChat = ({
       wsRef.current = socket;
 
       socket.onopen = () => {
+        wsConnectedRef.current = true;
         socket.send(
           JSON.stringify({
             type: "chat:join",
@@ -172,6 +206,10 @@ const AppointmentChat = ({
             userId: currentUserId,
           })
         );
+      };
+
+      socket.onerror = () => {
+        wsConnectedRef.current = false;
       };
 
       socket.onmessage = (event) => {
@@ -216,6 +254,7 @@ const AppointmentChat = ({
       };
 
       socket.onclose = () => {
+        wsConnectedRef.current = false;
         if (cancelled) return;
         reconnectRef.current = setTimeout(connect, 3000);
       };
@@ -225,6 +264,7 @@ const AppointmentChat = ({
 
     return () => {
       cancelled = true;
+      wsConnectedRef.current = false;
       if (reconnectRef.current) clearTimeout(reconnectRef.current);
       if (typingClearRef.current) clearTimeout(typingClearRef.current);
       if (typingDebounceRef.current) clearTimeout(typingDebounceRef.current);
