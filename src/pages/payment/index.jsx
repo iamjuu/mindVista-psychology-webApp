@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import apiInstance from "../../instance"; // your axios instance
+import { savePatientProfileAfterPayment } from "../../constants/patientProfileStorage";
 
 const PaymentPage = () => {
   const navigate = useNavigate();
@@ -92,11 +93,18 @@ const PaymentPage = () => {
             });
 
             if (verifyRes.data.success) {
-              toast.success("Payment successful! Appointment confirmed.");
+              savePatientProfileAfterPayment(appointmentData, appointmentId);
+              toast.success(
+                "Payment successful! Log in to message your doctor from your profile."
+              );
               setLoading(false);
-              // Small delay to ensure toast is visible before navigation
               setTimeout(() => {
-                navigate("/");
+                navigate("/login", {
+                  state: {
+                    email: appointmentData?.email || "",
+                    fromPayment: true,
+                  },
+                });
               }, 1000);
             } else {
               toast.error("Payment verification failed.");

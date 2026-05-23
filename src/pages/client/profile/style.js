@@ -1,5 +1,21 @@
+import styled, { keyframes, css } from "styled-components";
 
-import styled from "styled-components";
+const shimmerAnim = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+`;
+
+/** Must use css`` so keyframe interpolation works in styled-components v4+ */
+const shimmerStyles = css`
+  background: linear-gradient(
+    90deg,
+    #ececec 0%,
+    #f5f5f5 50%,
+    #ececec 100%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmerAnim} 1.3s ease-in-out infinite;
+`;
  export const PageWrapper = styled.div`
   min-height: 100vh;
   background: linear-gradient(to bottom right, #fde2e4, #cce4f7);
@@ -188,4 +204,86 @@ export const Company = styled.h4`
 export const Period = styled.p`
   font-size: 12px;
   color: #666;
+`;
+
+/** Shimmer placeholders — match layout/size of real content */
+export const ShimmerAvatar = styled.div`
+  margin-top: 10px;
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  margin-bottom: 16px;
+  ${shimmerStyles}
+`;
+
+export const ShimmerLine = styled.div`
+  height: ${(p) => p.$h || "16px"};
+  width: ${(p) => p.$w || "100%"};
+  max-width: ${(p) => p.$maxW || "none"};
+  border-radius: 6px;
+  margin-bottom: ${(p) => p.$mb || "0"};
+  ${shimmerStyles}
+`;
+
+export const ShimmerSkillsRow = styled.div`
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+`;
+
+export const ShimmerSkillPill = styled.div`
+  height: 34px;
+  width: ${(p) => p.$w || "100px"};
+  border-radius: 20px;
+  ${shimmerStyles}
+`;
+
+export const ShimmerTextarea = styled.div`
+  width: 100%;
+  height: 78px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  ${shimmerStyles}
+`;
+
+export const ShimmerButton = styled.div`
+  width: 100%;
+  height: 42px;
+  border-radius: 8px;
+  ${shimmerStyles}
+`;
+
+export const ShimmerActionsRow = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-bottom: 24px;
+`;
+
+export const ShimmerActionBtn = styled.div`
+  flex: 1;
+  height: 46px;
+  border-radius: 8px;
+  ${shimmerStyles}
+`;
+
+export const ShimmerExperienceRow = styled.div`
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+`;
+
+export const ShimmerLogo = styled.div`
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  ${shimmerStyles}
+`;
+
+export const ShimmerExpLines = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 4px;
 `;

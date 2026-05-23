@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import api from '../../../instance/index.jsx';
 import { X, Phone, Mail, MapPin, Calendar, CheckCircle, Clock, Award, Star, MessageCircle } from 'lucide-react';
+import AppointmentChat from '../../../components/chat/AppointmentChat.jsx';
 
 const PatientModal = ({ 
   isUserModalOpen, 
@@ -12,84 +12,13 @@ const PatientModal = ({
 }) => {
 
 
-  const [isMessageModalOpen, setIsMessageModalOpen] = useState(false);
-  const [messageData, setMessageData] = useState({ date: '', time: '', text: '' });
-  const [activeTab, setActiveTab] = useState('details'); // 'details' | 'notifications'
-  const [notifications, setNotifications] = useState([]);
-  const [loadingNotifications, setLoadingNotifications] = useState(false);
-  const [notificationsError, setNotificationsError] = useState('');
+  const [activeTab, setActiveTab] = useState('details'); // 'details' | 'chat'
 
   // Defer conditional return until after hooks to satisfy Rules of Hooks
 
-  const handleSendMessage = async () => {
-    try {
-      const userId = selectedUser.id || selectedUser._id;
-      const payload = {
-        userId,
-        title: messageData.text?.trim() ? messageData.text.trim().slice(0, 60) : 'Message from doctor',
-        message: messageData.text || '',
-        type: 'message',
-        metadata: {
-          date: messageData.date || '',
-          time: messageData.time || '',
-          doctorId: doctorData?._id || doctorData?.id || undefined,
-          doctorName: doctorData?.name || undefined,
-        },
-      };
-
-      const { data } = await api.post('/notification-sent', payload);
-      if (data?.success) {
-        alert('Message sent!');
-        // Update notifications list with the newly created notification
-        if (data.data) {
-          setNotifications((prev) => [data.data, ...prev]);
-        }
-        setIsMessageModalOpen(false);
-        setMessageData({ date: '', time: '', text: '' });
-      } else {
-        alert(data?.message || 'Failed to send message');
-      }
-    } catch (error) {
-      console.error('Failed to send message', error);
-      alert('Failed to send message');
-    }
-  };
-
-  // Fetch notifications when tab switches to notifications or when user changes
-  useEffect(() => {
-    const userId = selectedUser?.id || selectedUser?._id;
-    if (!userId || activeTab !== 'notifications') return;
-
-    let isMounted = true;
-    setLoadingNotifications(true);
-    setNotificationsError('');
-    api
-      .get(`/notifications/${userId}`)
-      .then((res) => {
-        if (!isMounted) return;
-        if (res?.data?.success && Array.isArray(res.data.data)) {
-          setNotifications(res.data.data);
-        } else {
-          setNotifications([]);
-        }
-      })
-      .catch((err) => {
-        if (!isMounted) return;
-        console.error('Failed to load notifications', err);
-        setNotificationsError('Failed to load notifications');
-      })
-      .finally(() => {
-        if (!isMounted) return;
-        setLoadingNotifications(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, [activeTab, selectedUser]);
-
-
   if (!isUserModalOpen || !selectedUser) return null;
+
+  const appointmentId = selectedUser.id || selectedUser._id;
 
   return (
     <>
@@ -121,11 +50,11 @@ const PatientModal = ({
               </button>
               <button
                 className={`ml-6 px-4 py-2 -mb-px border-b-2 font-medium ${
-                  activeTab === 'notifications' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-800'
+                  activeTab === 'chat' ? 'border-blue-600 text-blue-600' : 'border-transparent text-gray-600 hover:text-gray-800'
                 }`}
-                onClick={() => setActiveTab('notifications')}
+                onClick={() => setActiveTab('chat')}
               >
-                Notifications
+                Messages
               </button>
             </div>
           </div>
@@ -320,7 +249,7 @@ const PatientModal = ({
 
                 {/* Message Button */}
                 <button 
-                  onClick={() => setIsMessageModalOpen(true)}
+                  onClick={() => setActiveTab('chat')}
                   className="w-full mt-4 flex items-center justify-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
                 >
                   <MessageCircle size={16} className="mr-2" />
@@ -332,104 +261,21 @@ const PatientModal = ({
             </div>
             )}
 
-            {activeTab === 'notifications' && (
-              <div className="space-y-4">
-                {loadingNotifications && (
-                  <p className="text-gray-600">Loading notifications...</p>
-                )}
-                {!loadingNotifications && notificationsError && (
-                  <p className="text-red-600">{notificationsError}</p>
-                )}
-                {!loadingNotifications && !notificationsError && notifications.length === 0 && (
-                  <p className="text-gray-600">No messages</p>
-                )}
-                {!loadingNotifications && !notificationsError && notifications.length > 0 && (
-                  <div className="space-y-3">
-                    {notifications.map((n) => (
-                      <div key={n._id || n.id} className="border border-gray-200 rounded-lg p-4">
-                        <div className="flex items-center justify-between">
-                          <h5 className="font-semibold text-gray-900">{n.title || 'Message'}</h5>
-                          <span className="text-xs text-gray-500">
-                            {n.createdAt ? new Date(n.createdAt).toLocaleString() : ''}
-                          </span>
-                        </div>
-                        <p className="mt-2 text-gray-800 whitespace-pre-wrap">{n.message}</p>
-                        {(n.metadata?.date || n.metadata?.time) && (
-                          <div className="mt-2 text-sm text-gray-600">
-                            {(n.metadata?.date) && <span>Date: {n.metadata.date}</span>}
-                            {(n.metadata?.date && n.metadata?.time) && <span className="mx-2">|</span>}
-                            {(n.metadata?.time) && <span>Time: {n.metadata.time}</span>}
-                          </div>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+            {activeTab === 'chat' && (
+              <AppointmentChat
+                appointmentId={appointmentId}
+                currentRole="doctor"
+                currentUserId={doctorData?._id || doctorData?.id}
+                currentUserName={doctorData?.name || 'Doctor'}
+                doctorId={doctorData?._id || doctorData?.id}
+                title={selectedUser.name || 'Patient'}
+                subtitle={`${selectedUser.date || ''}${selectedUser.time ? ` at ${selectedUser.time}` : ''}`.trim()}
+                compact
+              />
             )}
           </div>
         </div>
       </div>
-
-      {/* Message Modal */}
-      {isMessageModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl w-full max-w-lg p-6 relative">
-            <button 
-              onClick={() => setIsMessageModalOpen(false)} 
-              className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-lg"
-            >
-              <X size={20} className="text-gray-500" />
-            </button>
-
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Send Message</h2>
-
-            <div className="space-y-4">
-              {/* Date Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date</label>
-                <input 
-                  type="date" 
-                  value={messageData.date}
-                  onChange={(e) => setMessageData({ ...messageData, date: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Time Input */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Time</label>
-                <input 
-                  type="time" 
-                  value={messageData.time}
-                  onChange={(e) => setMessageData({ ...messageData, time: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Message Textarea */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-                <textarea 
-                  rows={4} 
-                  placeholder="Type your message here..."
-                  value={messageData.text}
-                  onChange={(e) => setMessageData({ ...messageData, text: e.target.value })}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                />
-              </div>
-
-              {/* Submit Button */}
-              <button 
-                onClick={handleSendMessage}
-                className="w-full py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors"
-              >
-                Send Message
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 };

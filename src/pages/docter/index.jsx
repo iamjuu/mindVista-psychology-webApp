@@ -18,6 +18,7 @@ import {
   Sidebar
 } from './components';
 import { ThemeProvider } from '../../contexts/ThemeContext';
+import DoctorMessagesTab from '../../components/chat/DoctorMessagesTab';
 
 // Default income data structure (moved outside component to prevent re-creation)
 const defaultIncomeData = {
@@ -287,14 +288,21 @@ const DoctorDashboard = () => {
       
       if (response.data.success) {
         console.log(`Appointment ${action}d successfully:`, response.data);
+        const emailSent = response.data.notifications?.email?.success;
         
         // Show success message with video call info for approvals
         if (action === 'approve') {
           const appointmentData = response.data.data;
           if (appointmentData.videoCallLink) {
-            toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
-              duration: 5000
-            });
+            if (emailSent) {
+              toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
+                duration: 5000
+              });
+            } else {
+              toast.warning(`Appointment approved and video link generated, but the email was not sent. Check backend email settings.`, {
+                duration: 6000
+              });
+            }
             
             // Show video call details
             setTimeout(() => {
@@ -313,7 +321,11 @@ const DoctorDashboard = () => {
             });
           }, 2000);
         } else {
-          toast.success(`Appointment declined. Email notification sent to the patient.`);
+          if (emailSent) {
+            toast.success(`Appointment declined. Email notification sent to the patient.`);
+          } else {
+            toast.warning(`Appointment declined, but the email was not sent. Check backend email settings.`);
+          }
         }
         
         await fetchPatientRequests();
@@ -338,14 +350,21 @@ const DoctorDashboard = () => {
       
       if (response.data.success) {
         console.log(`Appointment ${action}d successfully:`, response.data);
+        const emailSent = response.data.notifications?.email?.success;
         
         // Show success message with video call info for approvals
         if (action === 'approve') {
           const appointmentData = response.data.data;
           if (appointmentData.videoCallLink) {
-            toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
-              duration: 5000
-            });
+            if (emailSent) {
+              toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
+                duration: 5000
+              });
+            } else {
+              toast.warning(`Appointment approved and video link generated, but the email was not sent. Check backend email settings.`, {
+                duration: 6000
+              });
+            }
             
             // Show video call details
             setTimeout(() => {
@@ -364,7 +383,11 @@ const DoctorDashboard = () => {
             });
           }, 2000);
         } else {
-          toast.success(`Appointment declined. Email notification sent to the patient.`);
+          if (emailSent) {
+            toast.success(`Appointment declined. Email notification sent to the patient.`);
+          } else {
+            toast.warning(`Appointment declined, but the email was not sent. Check backend email settings.`);
+          }
         }
         
         await fetchPatientRequests();
@@ -386,9 +409,16 @@ const DoctorDashboard = () => {
       
       if (response.data.success) {
         const appointmentData = response.data.data;
-        toast.success(`Video call link generated successfully! Email sent to patient.`, {
-          duration: 5000
-        });
+        const emailSent = response.data.notifications?.email?.success;
+        if (emailSent) {
+          toast.success(`Video call link generated successfully! Email sent to patient.`, {
+            duration: 5000
+          });
+        } else {
+          toast.warning(`Video call link generated, but the email was not sent. Check backend email settings.`, {
+            duration: 6000
+          });
+        }
         
 
         // Show video call details
@@ -635,6 +665,10 @@ const DoctorDashboard = () => {
                   handleAppointmentActionForAppointments={handleAppointmentActionForAppointments}
                   handleGenerateVideoCall={handleGenerateVideoCall}
                 />
+              )}
+
+              {selectedTab === 'messages' && (
+                <DoctorMessagesTab doctorData={doctorData} />
               )}
 
               {/* Available Slots Tab Content */}

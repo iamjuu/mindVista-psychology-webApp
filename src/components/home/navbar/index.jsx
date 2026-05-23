@@ -7,16 +7,12 @@ import Button from "../button";
 import { Menu, X, Phone } from "lucide-react"; // Import Lucide icons
 import { MindvistaLogo } from "../../../assets";
 import { Link } from "react-router-dom";
-
-const ButtonBorderColor="300-primary"
-
-const navLinks = [
+const baseNavLinks = [
   { href: "#hero", label: "Home" },
   { href: "#Doctors", label: "Doctors" },
   { href: "#Services", label: "Services" },
   // { href: "#Reviews", label: "Reviews" },
   { href: "https://wa.me/7025715250", label: "Contect" },
-  // {href:"/profile",label:"profile"}
 ];
 
 const Header = () => {
@@ -29,13 +25,15 @@ const Header = () => {
     });
   }, []);
 
+  const navLinks = [...baseNavLinks, { href: "/profile", label: "Profile" }];
+
   return (
     <header className=" z-50 w-full bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center">
           {/* Logo */}
           <div className="flex">
-            <Link href="/" className="flex items-center">
+            <Link to="/" className="flex items-center">
               <img
                 data-aos="fade-up"
                 data-aos-delay={100}
@@ -54,8 +52,12 @@ const Header = () => {
               <a
                 key={link.label}
                 href={link.href}
-                target={link.href.startsWith('http') ? '_blank' : undefined}
-                rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                target={link.href.startsWith("http") ? "_blank" : undefined}
+                rel={
+                  link.href.startsWith("http")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
                 className="relative text-[14px] font-medium duration-700 delay-200 hover:text-primary-300 after:absolute after:left-0 after:-bottom-1 after:h-[2px] after:w-full after:origin-left after:scale-x-0 after:bg-primary-300 after:content-[''] after:transition-transform after:duration-300 hover:after:scale-x-100"
                 data-aos="flip-down"
                 data-aos-delay={index * 400}
@@ -120,8 +122,14 @@ const Header = () => {
                 <a
                   key={link.label}
                   href={link.href}
-                  target={link.href.startsWith('http') ? '_blank' : undefined}
-                  rel={link.href.startsWith('http') ? 'noopener noreferrer' : undefined}
+                  target={
+                    link.href.startsWith("http") ? "_blank" : undefined
+                  }
+                  rel={
+                    link.href.startsWith("http")
+                      ? "noopener noreferrer"
+                      : undefined
+                  }
                   onClick={() => setIsMenuOpen(false)}
                   className="flex items-center hover:text-primary-300 space-x-3 px-3 py-2 rounded-md text-[12px] font-medium text-gray-700"
                   data-aos="flip-down"

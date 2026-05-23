@@ -75,18 +75,29 @@ const TodaySessions = ({ doctorData, email, onNavigate }) => {
       
       if (response.data.success) {
         console.log(`Appointment ${action}d successfully:`, response.data);
+        const emailSent = response.data.notifications?.email?.success;
         
         if (action === 'approve') {
           const appointmentData = response.data.data;
           if (appointmentData.videoCallLink) {
-            toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
-              duration: 5000
-            });
+            if (emailSent) {
+              toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
+                duration: 5000
+              });
+            } else {
+              toast.warning(`Appointment approved and video link generated, but the email was not sent. Check backend email settings.`, {
+                duration: 6000
+              });
+            }
           } else {
             toast.success(`Appointment approved successfully!`);
           }
         } else {
-          toast.success(`Appointment declined. Email notification sent to the patient.`);
+          if (emailSent) {
+            toast.success(`Appointment declined. Email notification sent to the patient.`);
+          } else {
+            toast.warning(`Appointment declined, but the email was not sent. Check backend email settings.`);
+          }
         }
         
         // Refresh today's sessions

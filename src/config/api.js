@@ -17,7 +17,10 @@ const getWsUrl = () => {
   if (!apiUrl) {
     throw new Error('VITE_API_URL is not defined in .env file')
   }
-  const ws = apiUrl.replace(/^https?:\/\//, 'wss://').replace(/\/api\/?$/, '')
+  const ws = apiUrl
+    .replace(/^https:\/\//, 'wss://')
+    .replace(/^http:\/\//, 'ws://')
+    .replace(/\/api\/?$/, '')
   return ws
 }
 

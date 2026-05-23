@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import 'react-toastify/dist/ReactToastify.css';
 import { MainBackgroundImage } from "../../../src/assets";
 import apiInstance from '../../instance';
 
 function Form() {
   const Navigate = useNavigate();
+  const location = useLocation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -24,6 +25,16 @@ function Form() {
   const [availableTimeSlots, setAvailableTimeSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [bookedSlots, setBookedSlots] = useState([]);
+
+  useEffect(() => {
+    if (location.state?.email || location.state?.phone) {
+      setFormData((prev) => ({
+        ...prev,
+        ...(location.state?.email ? { email: location.state.email } : {}),
+        ...(location.state?.phone ? { number: location.state.phone } : {}),
+      }));
+    }
+  }, [location.state?.email, location.state?.phone]);
 
   useEffect(() => {
     const fetchDoctors = async () => {
