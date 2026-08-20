@@ -31,3 +31,7 @@ export function getPatientUser() {
     return null;
   }
 }
+
+// Aliases for seamless compatibility across components
+export const setPatientSession = savePatientSession;
+export const removePatientToken = clearPatientSession;

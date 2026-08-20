@@ -1,33 +1,27 @@
+import React, { useState } from 'react';
+import { useNavigate, useLocation, Link } from 'react-router-dom';
+import toast from 'react-hot-toast';
+import HeaderNav from '../../components/common/HeaderNav';
+import Footer from '../../components/common/Footer';
+import apiInstance from '../../instance';
+import { savePatientProfileAfterPayment } from '../../constants/patientProfileStorage';
 
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import toast from "react-hot-toast";
-import apiInstance from "../../instance"; // your axios instance
-import { savePatientProfileAfterPayment } from "../../constants/patientProfileStorage";
-
-const PaymentPage = () => {
+export default function PaymentPage() {
   const navigate = useNavigate();
   const location = useLocation();
   const [loading, setLoading] = useState(false);
-  
-  // Get appointment data from navigation state
+
   const appointmentData = location.state?.appointmentData;
-  
-  console.log('Location state:', location.state);
-  console.log('Appointment data:', appointmentData);
-  
-  // If no appointment data, redirect back to registration
+
   if (!appointmentData) {
-    console.log('No appointment data found, redirecting to registration');
-    navigate('/register');
+    navigate('/#experts');
     return null;
   }
 
-  // Load Razorpay script dynamically (safe way)
   const loadRazorpayScript = () => {
     return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
+      const script = document.createElement('script');
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
       script.onload = () => resolve(true);
       script.onerror = () => resolve(false);
       document.body.appendChild(script);
@@ -39,181 +33,144 @@ const PaymentPage = () => {
 
     const res = await loadRazorpayScript();
     if (!res) {
-      toast.error("Razorpay SDK failed to load. Check your internet.");
+      toast.error('Razorpay SDK failed to load. Check your internet connection.');
       setLoading(false);
       return;
     }
 
     try {
-      // Step 1: Create order on backend
-      const { data } = await apiInstance.post("/create-order", {
-        amount: 200, // ₹2 in paise (2 * 100)
-        currency: "INR",
-        appointmentData: appointmentData,
+      const orderRes = await apiInstance.post('/payments/order', {
+        doctorId: appointmentData.doctorId || appointmentData.doctor?._id,
+        appointmentId: appointmentData._id || appointmentData.id,
       });
 
-      // Validate and extract order data from response
-      if (!data?.success || !data?.data) {
-        console.error("Unexpected create-order response:", data);
-        toast.error("Failed to initiate payment. Please try again.");
-        setLoading(false);
-        return;
-      }
+      const { order, key_id } = orderRes.data;
 
-      const order = data.data;
-
-      // Step 2: Open Razorpay Checkout (key must match backend - live or test)
-      const razorpayKey = import.meta.env.VITE_RAZORPAY_KEY_ID;
-      if (!razorpayKey) {
-        toast.error("Razorpay key not configured. Check VITE_RAZORPAY_KEY_ID in .env");
-        setLoading(false);
-        return;
-      }
       const options = {
-        key: razorpayKey,
+        key: key_id || import.meta.env.VITE_RAZORPAY_KEY_ID || 'rzp_test_SN3KWXr3ClAEo8',
         amount: order.amount,
-        currency: order.currency,
-        name: "MindVista Psychology",
-        description: "Appointment Payment",
+        currency: order.currency || 'INR',
+        name: 'MindVista Telehealth',
+        description: '45-Min Video Consultation',
         order_id: order.id,
         handler: async function (response) {
           try {
             setLoading(true);
-            // Step 3: Verify payment
             const appointmentId = appointmentData?._id || appointmentData?.id;
-            console.log('Payment verification - appointmentId:', appointmentId);
-            console.log('Payment verification - response:', response);
-            
-            const verifyRes = await apiInstance.post("/verify-payment", {
-              ...response,
-              appointmentData: {
-                appointmentId: appointmentId,
-              },
-              amount: 2, // Amount in rupees
+
+            const verifyRes = await apiInstance.post('/payments/verify', {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+              appointmentId,
             });
 
-            if (verifyRes.data.success) {
+            if (verifyRes.data && verifyRes.data.success) {
               savePatientProfileAfterPayment(appointmentData, appointmentId);
-              toast.success(
-                "Payment successful! Open your profile to message your doctor."
-              );
-              setLoading(false);
+              toast.success('Consultation confirmed! Redirecting to your dashboard...');
               setTimeout(() => {
-                navigate("/profile", {
-                  state: {
-                    email: appointmentData?.email || "",
-                    fromPayment: true,
-                  },
-                });
-              }, 1000);
+                navigate('/profile');
+              }, 1200);
             } else {
-              toast.error("Payment verification failed.");
-              setLoading(false);
+              toast.error('Payment verification failed.');
             }
           } catch (err) {
-            console.error("Verification error:", err);
-            toast.error("Something went wrong verifying payment.");
+            console.error('Verification error:', err);
+            toast.error('Error verifying payment.');
+          } finally {
             setLoading(false);
           }
         },
         prefill: {
-          name: appointmentData?.name || "Guest",
-          email: appointmentData?.email || "guest@example.com",
-          contact: appointmentData?.number || "9999999999",
+          name: appointmentData?.name || '',
+          email: appointmentData?.email || '',
+          contact: appointmentData?.phone || appointmentData?.number || '',
         },
         theme: {
-          color: "#3399cc",
+          color: '#4a654e',
         },
       };
 
       const paymentObject = new window.Razorpay(options);
-      
-      // Handle modal close without payment
       paymentObject.on('payment.failed', function (response) {
-        console.error("Payment failed:", response);
-        toast.error("Payment failed. Please try again.");
+        toast.error(`Payment failed: ${response.error?.description || 'Transaction declined'}`);
         setLoading(false);
       });
-
-      paymentObject.on('close', function () {
-        console.log("Payment modal closed");
-        setLoading(false);
-      });
-
       paymentObject.open();
     } catch (err) {
-      console.error("Payment error:", err);
-      toast.error("Payment initiation failed.");
+      console.error('Payment error:', err);
+      toast.error('Payment initiation failed.');
       setLoading(false);
     }
   };
 
   return (
-    <div 
-    
-    className="flex items-center justify-center min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4">
-    <div className="bg-white shadow-lg rounded-2xl p-8 w-full max-w-md">
-      {/* Title */}
-      <h1 className="text-2xl font-extrabold mb-6 text-center text-gray-800">
-        Confirm Your Appointment
-      </h1>
-  
-      {/* Details */}
-      <div className="space-y-3 text-gray-700">
-        <div className="flex justify-between">
-          <span className="font-medium">Name:</span>
-          <span>{appointmentData?.name}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Email:</span>
-          <span>{appointmentData?.email}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Phone:</span>
-          <span>{appointmentData?.number}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Location:</span>
-          <span>{appointmentData?.location}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Age:</span>
-          <span>{appointmentData?.age}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Doctor:</span>
-          <span>{appointmentData?.doctorName}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Date:</span>
-          <span>{appointmentData?.date ? new Date(appointmentData.date).toLocaleDateString() : 'N/A'}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Time Slot:</span>
-          <span>{appointmentData?.time}</span>
-        </div>
-        <div className="flex justify-between">
-          <span className="font-medium">Slot:</span>
-          <span className="capitalize">{appointmentData?.slot}</span>
-        </div>
-        <div className="flex justify-between text-lg font-semibold text-gray-900 pt-2 border-t">
-          <span>Fee:</span>
-          <span>₹2</span>
-        </div>
-      </div>
-  
-      {/* Button */}
-      <button
-        onClick={handlePayment}
-        disabled={loading}
-        className="mt-6 w-full py-3 px-4 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 active:scale-95 transition disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        {loading ? "Processing..." : "Pay with Razorpay"}
-      </button>
-    </div>
-  </div>
-  
-  );
-};
+    <div className="font-sans bg-surface text-on-surface antialiased min-h-screen flex flex-col relative">
+      <HeaderNav />
 
-export default PaymentPage;
+      <main className="flex-1 flex items-center justify-center px-4 py-16">
+        <div className="w-full max-w-md bg-surface-container-lowest rounded-3xl ambient-shadow border border-surface-variant/50 p-8 space-y-6">
+          
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container mx-auto flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px]">payments</span>
+            </div>
+            <h1 className="font-headline text-2xl font-bold text-on-surface">Confirm Consultation</h1>
+            <p className="text-xs text-on-surface-variant">
+              Review session details before proceeding to 100% secure Razorpay checkout.
+            </p>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 text-xs space-y-2 text-on-surface">
+            <div className="flex justify-between">
+              <span className="text-on-surface-variant">Patient Name:</span>
+              <span className="font-bold">{appointmentData?.name}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-on-surface-variant">Email:</span>
+              <span className="font-bold">{appointmentData?.email}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-on-surface-variant">Contact:</span>
+              <span className="font-bold">{appointmentData?.phone || appointmentData?.number}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-on-surface-variant">Scheduled Date:</span>
+              <span className="font-bold">{appointmentData?.date}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-on-surface-variant">Time Slot:</span>
+              <span className="font-bold">{appointmentData?.time} (45 mins)</span>
+            </div>
+            <div className="flex justify-between items-center pt-2 border-t border-outline-variant">
+              <span className="font-bold text-on-surface">Standard Consultation Fee:</span>
+              <span className="font-headline text-xl font-bold text-primary">₹599</span>
+            </div>
+          </div>
+
+          <button
+            onClick={handlePayment}
+            disabled={loading}
+            className="w-full py-3.5 px-4 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-2"
+          >
+            {loading ? (
+              <span>Initiating Payment...</span>
+            ) : (
+              <>
+                <span>Pay ₹599 & Confirm Booking</span>
+                <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+              </>
+            )}
+          </button>
+
+          <div className="text-center text-[11px] text-on-surface-variant flex items-center justify-center gap-1">
+            <span className="material-symbols-outlined text-[14px] text-secondary">lock</span>
+            <span>Secured with 256-bit SSL encryption</span>
+          </div>
+        </div>
+      </main>
+
+      <Footer />
+    </div>
+  );
+}

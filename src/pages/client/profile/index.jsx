@@ -1,878 +1,456 @@
-import { useEffect, useState, useCallback, useRef } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import toast from "react-hot-toast";
-import apiInstance from "../../../instance";
-import {
-  isValidPatientIdentifier,
-  parsePatientIdentifier,
-} from "../../../utils/patientIdentifier";
-import {
-  checkPatientExists,
-  loadGuestProfileByIdentifier,
-} from "../../../utils/checkPatientExists";
-import PatientOtpForm, {
-  OTP_STORAGE_KEY,
-} from "../../../components/patient/PatientOtpForm";
-import {
-  resolveChatAppointmentId,
-  groupPatientThreadsByDoctor,
-  expandGroupedThreads,
-  clearGroupedThreadUnread,
-} from "../../../components/chat/chatUtils";
-import {
-  getPatientToken,
-  clearPatientSession,
-} from "../../../constants/patientAuthStorage";
-import {
-  saveGuestProfileSession,
-  loadGuestProfileSession,
-  clearGuestProfileSession,
-} from "../../../constants/patientGuestSession";
-import { getGuestChatEmail } from "../../../constants/patientGuestChat";
-import { loadGuestChatThreadsFromBookings } from "../../../utils/loadGuestChatThreads";
-import {
-  ActionButton,
-  Actions,
-  BasicInfo,
-  Company,
-  Container,
-  Content,
-  Description,
-  Experience,
-  ExperienceDetails,
-  ExperienceItem,
-  InfoItem,
-  Label,
-  LeftColumn,
-  Logo,
-  Name,
-  Notes,
-  NotesButton,
-  NotesTitle,
-  PageWrapper,
-  Period,
-  ProfileImage,
-  ProfileSection,
-  RightColumn,
-  Role,
-  SectionTitle,
-  Skill,
-  Skills,
-  ShimmerActionBtn,
-  ShimmerActionsRow,
-  ShimmerAvatar,
-  ShimmerButton,
-  ShimmerExpLines,
-  ShimmerExperienceRow,
-  ShimmerLine,
-  ShimmerLogo,
-  ShimmerSkillPill,
-  ShimmerSkillsRow,
-  ShimmerTextarea,
-  Value,
-} from "./style";
-import { Pic1 } from "../../../assets";
-import WhatsAppChatShell from "../../../components/chat/WhatsAppChatShell";
-import { useAppointmentChatRealtime } from "../../../hooks/useAppointmentChatRealtime";
+import React, { useState, useEffect } from 'react';
+import HeaderNav from '../../../components/common/HeaderNav';
+import Footer from '../../../components/common/Footer';
+import StatusBadge from '../../../components/common/StatusBadge';
+import PrescriptionModal from '../../../components/prescription/PrescriptionModal';
+import api from '../../../instance';
+import { getPatientUser, getPatientToken, setPatientSession, clearPatientSession } from '../../../constants/patientAuthStorage';
 
-function formatDateDisplay(d) {
-  if (!d) return "";
-  try {
-    return new Date(d).toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    });
-  } catch {
-    return String(d);
-  }
-}
-
-function formatPhone(num) {
-  if (!num) return "";
-  const s = String(num).replace(/\D/g, "");
-  if (s.length === 10) return `+91 ${s.slice(0, 5)} ${s.slice(5)}`;
-  return String(num);
-}
-
-function mapApiResponseToProfile(data) {
-  const { patient, summary, appointments } = data;
-  const history = (appointments || []).map((a) => {
-    const chatId = resolveChatAppointmentId(a);
-    return {
-      id: chatId,
-      appointmentId: chatId,
-      doctorId: a.doctorId,
-      doctorName: a.doctorName,
-      age: a.age,
-      date: a.date,
-      time: a.time,
-      location: a.location,
-      name: a.name,
-    };
-  });
-  const s = summary;
-  return {
-    source: "api",
-    patientId: patient?._id,
-    name: s?.name || patient?.name || "",
-    email: patient?.email || "",
-    number: s?.number || patient?.phone || "",
-    appointmentId: s?.appointmentId,
-    age: s?.age,
-    doctorName: s?.doctorName,
-    date: s?.date,
-    time: s?.time,
-    location: s?.location,
-    history,
-  };
-}
-
-const ProfilePage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const [profile, setProfile] = useState(null);
-  const [ready, setReady] = useState(false);
+export default function PatientProfilePage() {
+  const [patient, setPatient] = useState(getPatientUser());
+  const [appointments, setAppointments] = useState([]);
+  const [prescriptions, setPrescriptions] = useState([]);
+  const [activeTab, setActiveTab] = useState('UPCOMING'); // 'UPCOMING' | 'COMPLETED' | 'PRESCRIPTIONS'
   const [loading, setLoading] = useState(false);
-  const [activeTab, setActiveTab] = useState("profile");
-  const [chatThreads, setChatThreads] = useState([]);
-  const [selectedChatThread, setSelectedChatThread] = useState(null);
-  const [chatThreadsLoading, setChatThreadsLoading] = useState(false);
-  const [chatThreadsError, setChatThreadsError] = useState("");
-  const [gateIdentifier, setGateIdentifier] = useState("");
-  const [gateChecking, setGateChecking] = useState(false);
-  const [gateError, setGateError] = useState("");
-  const [otpEmail, setOtpEmail] = useState("");
-  const [otpExpiresAt, setOtpExpiresAt] = useState(null);
-  const [guestProfileUnlocked, setGuestProfileUnlocked] = useState(false);
-  const selectedChatIdRef = useRef(null);
+  const [selectedPrescription, setSelectedPrescription] = useState(null);
+  const [isPrescriptionModalOpen, setIsPrescriptionModalOpen] = useState(false);
+
+  // Login / Lookup
+  const [lookupEmail, setLookupEmail] = useState('');
+  const [lookupPhone, setLookupPhone] = useState('');
+  const [loginLoading, setLoginLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
 
   useEffect(() => {
-    selectedChatIdRef.current = selectedChatThread?.appointmentId ?? null;
-  }, [selectedChatThread?.appointmentId]);
-
-  const hasToken = () => !!getPatientToken();
-
-  const loadProfile = useCallback(async () => {
-    const token = getPatientToken();
-    if (!token) {
-      const guestSession = loadGuestProfileSession();
-      if (guestSession?.profile) {
-        setProfile(guestSession.profile);
-        setGuestProfileUnlocked(true);
-        if (guestSession.identifier) {
-          setGateIdentifier(guestSession.identifier);
-        }
-        setReady(true);
-        setLoading(false);
-        return;
-      }
-      setProfile(null);
-      setGuestProfileUnlocked(false);
-      setReady(true);
-      setLoading(false);
-      return;
+    if (patient?.email || patient?.phone || getPatientToken()) {
+      fetchPatientData();
     }
+  }, [patient]);
 
-    clearGuestProfileSession();
-
+  const fetchPatientData = async () => {
     setLoading(true);
     try {
-      const { data } = await apiInstance.get("/patient/me");
-      if (data.success) {
-        setProfile(mapApiResponseToProfile(data));
-      } else {
-        setProfile(null);
+      // 1. Fetch appointments
+      const apptRes = await api.get('/patient/appointments/public', {
+        params: { email: patient?.email, phone: patient?.phone },
+      });
+      if (apptRes.data && apptRes.data.data) {
+        setAppointments(apptRes.data.data);
+      }
+
+      // 2. Fetch prescriptions
+      const rxRes = await api.get('/patient/prescriptions/public', {
+        params: { email: patient?.email, phone: patient?.phone },
+      });
+      if (rxRes.data && rxRes.data.data) {
+        setPrescriptions(rxRes.data.data);
       }
     } catch (err) {
-      if (err.response?.status === 401) {
-        clearPatientSession();
-        setProfile(null);
-      } else {
-        setProfile(null);
-      }
+      console.warn('Error fetching patient records:', err);
     } finally {
       setLoading(false);
-      setReady(true);
     }
-  }, []);
+  };
 
-  useEffect(() => {
-    loadProfile();
-  }, [loadProfile]);
-
-  useEffect(() => {
-    if (location.state?.email) {
-      setGateIdentifier(location.state.email);
-    }
-    if (location.state?.fromPayment) {
-      toast.success("Enter your booking email below to open your profile.");
-    }
-  }, [location.state?.email, location.state?.fromPayment]);
-
-  useEffect(() => {
-    const onPatientAuthChanged = () => {
-      if (getPatientToken()) {
-        loadProfile();
-      }
-    };
-    window.addEventListener("patient-auth-changed", onPatientAuthChanged);
-    return () =>
-      window.removeEventListener("patient-auth-changed", onPatientAuthChanged);
-  }, [loadProfile]);
-
-  const buildThreadsFromHistory = useCallback((historyItems) => {
-    if (!Array.isArray(historyItems)) return [];
-    const seen = new Set();
-    return historyItems
-      .map((item) => {
-        const appointmentId = resolveChatAppointmentId(item);
-        if (!appointmentId || seen.has(appointmentId)) return null;
-        seen.add(appointmentId);
-        return {
-          appointmentId,
-          doctorId: item.doctorId,
-          doctorName: item.doctorName || profile?.doctorName || "Doctor",
-          patientName: profile?.name || "",
-          date: item.date,
-          time: item.time,
-          lastMessage: null,
-          unreadCount: 0,
-          updatedAt: item.date || new Date().toISOString(),
-        };
-      })
-      .filter(Boolean);
-  }, [profile?.doctorName, profile?.name]);
-
-  const loadChatThreads = useCallback(async () => {
-    const token = getPatientToken();
-    setChatThreadsLoading(true);
-    setChatThreadsError("");
-    try {
-      let threads = [];
-      if (token) {
-        const { data } = await apiInstance.get("/chat/patient/me/threads");
-        threads = Array.isArray(data?.data) ? data.data : [];
-      } else {
-        const guestEmail = profile?.email?.trim() || getGuestChatEmail();
-        if (guestEmail) {
-          try {
-            const { data } = await apiInstance.get("/chat/patient/threads", {
-              params: { patientEmail: guestEmail },
-            });
-            threads = Array.isArray(data?.data) ? data.data : [];
-          } catch (threadErr) {
-            if (threadErr.response?.status === 404) {
-              console.warn(
-                "[Messages] /chat/patient/threads not on server — using booking fallback"
-              );
-              threads = await loadGuestChatThreadsFromBookings(guestEmail);
-            } else {
-              throw threadErr;
-            }
-          }
-        }
-      }
-      if (threads.length === 0 && profile?.history?.length) {
-        threads = buildThreadsFromHistory(profile.history);
-      }
-      threads = groupPatientThreadsByDoctor(threads);
-      setChatThreads(threads);
-      setSelectedChatThread((current) => {
-        if (current && threads.some((thread) => thread.appointmentId === current.appointmentId)) {
-          return threads.find((thread) => thread.appointmentId === current.appointmentId);
-        }
-        const preferredId = profile?.appointmentId
-          ? String(profile.appointmentId)
-          : null;
-        if (preferredId) {
-          const preferred = threads.find((thread) => String(thread.appointmentId) === preferredId);
-          if (preferred) return preferred;
-        }
-        return threads[0] || null;
-      });
-    } catch (err) {
-      console.error("Failed to load patient chat threads", err);
-      setChatThreadsError(err.response?.data?.message || "Failed to load messages");
-    } finally {
-      setChatThreadsLoading(false);
-    }
-  }, [buildThreadsFromHistory, profile?.appointmentId, profile?.history, profile?.email]);
-
-  useEffect(() => {
-    const canLoadMessages =
-      activeTab === "messages" &&
-      profile &&
-      (hasToken() || guestProfileUnlocked);
-    if (canLoadMessages) {
-      loadChatThreads();
-    }
-  }, [activeTab, loadChatThreads, profile, guestProfileUnlocked]);
-
-  const handleIncomingMessage = useCallback((message) => {
-    if (!message?.appointmentId) return;
-    const appointmentId = String(message.appointmentId);
-    const isActive = selectedChatIdRef.current === appointmentId;
-    const fromDoctor = message.senderRole === "doctor";
-
-    setChatThreads((prev) => {
-      let flat = expandGroupedThreads(prev);
-      const idx = flat.findIndex((t) => String(t.appointmentId) === appointmentId);
-      if (idx === -1) {
-        flat = [
-          {
-            appointmentId,
-            doctorId: message.doctorId,
-            doctorName: message.senderName || profile?.doctorName || "Doctor",
-            patientName: profile?.name || "",
-            date: profile?.date,
-            time: profile?.time,
-            lastMessage: message,
-            unreadCount: fromDoctor && !isActive ? 1 : 0,
-            updatedAt: message.createdAt,
-          },
-          ...flat,
-        ];
-      } else {
-        flat = flat.map((t) => {
-          if (String(t.appointmentId) !== appointmentId) return t;
-          return {
-            ...t,
-            lastMessage: message,
-            updatedAt: message.createdAt,
-            unreadCount:
-              fromDoctor && !isActive
-                ? (t.unreadCount || 0) + 1
-                : fromDoctor && isActive
-                  ? 0
-                  : t.unreadCount,
-          };
-        });
-      }
-      return groupPatientThreadsByDoctor(flat);
-    });
-  }, [profile?.date, profile?.doctorName, profile?.name, profile?.time]);
-
-  const handleMarkedRead = useCallback((appointmentId) => {
-    setChatThreads((prev) => clearGroupedThreadUnread(prev, appointmentId));
-  }, []);
-
-  const guestChatEmail =
-    !hasToken() && guestProfileUnlocked
-      ? profile?.email?.trim() || getGuestChatEmail()
-      : "";
-
-  useAppointmentChatRealtime({
-    enabled:
-      activeTab === "messages" && (!!getPatientToken() || !!guestChatEmail),
-    appointmentIds: chatThreads.flatMap((thread) =>
-      thread.appointmentIds?.length ? thread.appointmentIds : [thread.appointmentId]
-    ),
-    currentRole: "patient",
-    currentUserId: profile?.patientId || profile?.email || guestChatEmail,
-    currentUserName: profile?.name || "Patient",
-    skipAppointmentId: selectedChatThread?.appointmentId,
-    onMessage: handleIncomingMessage,
-    onPoll: loadChatThreads,
-  });
-
-  const handleGateSubmit = async (e) => {
+  const handleLookupLogin = async (e) => {
     e.preventDefault();
-    const identifier = gateIdentifier.trim();
-    if (!identifier) {
-      setGateError("Please enter a valid email or phone number");
+    if (!lookupEmail.trim() && !lookupPhone.trim()) {
+      setLoginError('Please enter your email or phone number.');
       return;
     }
-    if (!isValidPatientIdentifier(identifier)) {
-      setGateError("Please enter a valid email or phone number");
-      return;
-    }
-    const parsed = parsePatientIdentifier(identifier);
-    setGateChecking(true);
-    setGateError("");
-    try {
-      console.log("[ProfileGate] Checking identifier:", {
-        identifier,
-        parsed,
-        apiBase: apiInstance.defaults.baseURL,
-      });
-      const { data, source } = await checkPatientExists(identifier);
-      console.log("[ProfileGate] check response:", { data, source });
-      if (data.success) {
-        if (data.exists || data.hasBooking) {
-          const guestProfile = await loadGuestProfileByIdentifier(identifier, data);
-          if (guestProfile) {
-            setProfile(guestProfile);
-            setGuestProfileUnlocked(true);
-            saveGuestProfileSession(identifier, guestProfile);
-            setReady(true);
-            toast.success("Welcome back");
-            return;
-          }
-          setGateError(
-            "We found your booking but could not load your profile. Try your email or contact support."
-          );
-          return;
-        }
 
-        navigate("/register", {
-          state: {
-            email: parsed.type === "email" ? parsed.email : undefined,
-            phone: parsed.type === "phone" ? parsed.phone : undefined,
-          },
-        });
-      } else {
-        console.warn("[ProfileGate] API returned success:false", data);
-        setGateError("Could not verify your details. Please try again.");
-      }
+    setLoginLoading(true);
+    setLoginError('');
+
+    try {
+      const user = {
+        name: lookupEmail.split('@')[0] || 'Patient',
+        email: lookupEmail.toLowerCase().trim(),
+        phone: lookupPhone.trim(),
+      };
+      setPatientSession('guest_token_' + Date.now(), user);
+      setPatient(user);
     } catch (err) {
-      console.error("[ProfileGate] Request failed:", {
-        message: err.message,
-        code: err.code,
-        status: err.response?.status,
-        url: err.config?.url,
-        baseURL: err.config?.baseURL,
-        data: err.response?.data,
-      });
-      if (err.response?.status === 404) {
-        setGateError(
-          "Could not verify this phone number on the server. Try your email address, or ask support to update the live API."
-        );
-      } else if (err.code === "ERR_NETWORK") {
-        setGateError(
-          "Cannot reach the server. Check your internet connection and try again."
-        );
-      } else {
-        setGateError(
-          err.response?.data?.message ||
-            "Could not verify your details. Please try again."
-        );
-      }
+      setLoginError('Failed to access profile. Please try again.');
     } finally {
-      setGateChecking(false);
+      setLoginLoading(false);
     }
   };
 
   const handleLogout = () => {
     clearPatientSession();
-    clearGuestProfileSession();
-    sessionStorage.removeItem(OTP_STORAGE_KEY);
-    setOtpEmail("");
-    setOtpExpiresAt(null);
-    setGuestProfileUnlocked(false);
-    setProfile(null);
-    setGateIdentifier("");
-    setActiveTab("profile");
-    setChatThreads([]);
-    setSelectedChatThread(null);
-    setReady(true);
-    toast.success("Logged out");
+    setPatient(null);
+    setAppointments([]);
+    setPrescriptions([]);
   };
 
-  const hasData =
-    ready &&
-    !loading &&
-    profile &&
-    (profile.name || profile.email || profile.patientId);
+  const handleJoinConsultation = async (appointmentId) => {
+    try {
+      const res = await api.get(`/appointments/${appointmentId}/join`);
+      if (res.data && res.data.joinUrl) {
+        window.open(res.data.joinUrl, '_blank');
+      } else if (res.data?.message) {
+        alert(res.data.message);
+      }
+    } catch (err) {
+      const msg = err.response?.data?.message || 'Cannot join consultation at this time.';
+      alert(msg);
+    }
+  };
 
-  const history = Array.isArray(profile?.history) ? profile.history : [];
+  const upcomingAppointments = appointments.filter(
+    (a) => a.status !== 'COMPLETED' && a.status !== 'completed' && a.status !== 'CANCELLED'
+  );
+  const completedAppointments = appointments.filter(
+    (a) => a.status === 'COMPLETED' || a.status === 'completed'
+  );
 
-  const skills =
-    hasData && profile
-      ? [profile.doctorName, formatPhone(profile.number)].filter(Boolean)
-      : [];
+  return (
+    <div className="font-sans bg-surface text-on-surface antialiased min-h-screen flex flex-col relative">
+      <HeaderNav />
 
-  const showShimmer =
-    loading || !ready || (hasToken() && !profile) || (guestProfileUnlocked && !profile);
+      <main className="flex-1 max-w-container-max mx-auto w-full px-4 sm:px-8 lg:px-16 py-12">
+        
+        {/* If Patient Not Logged In */}
+        {!patient ? (
+          <div className="max-w-md mx-auto my-12 bg-surface-container-lowest rounded-3xl ambient-shadow border border-surface-variant/50 p-8 text-center space-y-6 animate-fadeIn">
+            <div className="w-14 h-14 rounded-full bg-secondary-container text-on-secondary-container mx-auto flex items-center justify-center">
+              <span className="material-symbols-outlined text-[28px]">account_circle</span>
+            </div>
 
-  if (ready && !hasToken() && otpEmail && otpExpiresAt && !guestProfileUnlocked) {
-    return (
-      <PageWrapper>
-        <Container>
-          <PatientOtpForm
-            email={otpEmail}
-            expiresAt={otpExpiresAt}
-            onVerified={() => {
-              setOtpEmail("");
-              setOtpExpiresAt(null);
-              clearGuestProfileSession();
-              loadProfile();
-            }}
-            onBack={() => {
-              setOtpEmail("");
-              setOtpExpiresAt(null);
-            }}
-          />
-        </Container>
-      </PageWrapper>
-    );
-  }
+            <div>
+              <h2 className="font-headline text-2xl font-bold text-on-surface">Patient Portal</h2>
+              <p className="text-xs text-on-surface-variant mt-1">
+                Enter your booking email or phone to view scheduled sessions, join Google Meet calls, and download prescriptions.
+              </p>
+            </div>
 
-  if (ready && !hasToken() && !guestProfileUnlocked) {
-    return (
-      <PageWrapper>
-        <Container>
-          <div style={{ maxWidth: 420, margin: "48px auto", padding: 24, textAlign: "center" }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#111b21", marginBottom: 8 }}>
-              Your profile & messages
-            </h1>
-            <p style={{ color: "#667781", marginBottom: 24, fontSize: 15 }}>
-              Enter the email or phone number you used when booking to continue.
-            </p>
-            <form onSubmit={handleGateSubmit}>
-              <input
-                type="text"
-                value={gateIdentifier}
-                onChange={(e) => setGateIdentifier(e.target.value)}
-                placeholder="Email or phone number"
-                required
-                style={{
-                  width: "100%",
-                  padding: "12px 14px",
-                  border: "1px solid #e9edef",
-                  borderRadius: 8,
-                  fontSize: 16,
-                  marginBottom: 12,
-                  boxSizing: "border-box",
-                }}
-              />
-              {gateError && (
-                <p style={{ color: "#dc2626", fontSize: 14, marginBottom: 12 }}>{gateError}</p>
-              )}
+            {loginError && (
+              <div className="p-3 rounded-2xl bg-error-container text-on-error-container text-xs flex items-center gap-2 text-left">
+                <span className="material-symbols-outlined text-[18px]">error</span>
+                <span>{loginError}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleLookupLogin} className="space-y-4 text-left">
+              <div>
+                <label className="block text-xs font-bold text-on-surface mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={lookupEmail}
+                  onChange={(e) => setLookupEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-surface-container-lowest"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-on-surface mb-1">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={lookupPhone}
+                  onChange={(e) => setLookupPhone(e.target.value)}
+                  placeholder="e.g. 9876543210"
+                  className="w-full px-3.5 py-2.5 rounded-xl border border-outline-variant text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-surface-container-lowest"
+                />
+              </div>
+
               <button
                 type="submit"
-                disabled={gateChecking}
-                style={{
-                  width: "100%",
-                  padding: "12px 16px",
-                  background: "#25d366",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 8,
-                  fontWeight: 600,
-                  fontSize: 16,
-                  cursor: gateChecking ? "wait" : "pointer",
-                  opacity: gateChecking ? 0.7 : 1,
-                }}
+                disabled={loginLoading}
+                className="w-full py-3.5 px-4 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-sm hover:opacity-90 transition-all flex items-center justify-center gap-2"
               >
-                {gateChecking ? "Checking..." : "Continue"}
+                {loginLoading ? <span>Accessing...</span> : <span>View My Consultations</span>}
               </button>
             </form>
           </div>
-        </Container>
-      </PageWrapper>
-    );
-  }
-
-  if (ready && !loading && hasToken() && !profile) {
-    return (
-      <PageWrapper>
-        <Container>
-          <div style={{ padding: 32, textAlign: "center" }}>
-            <h1 style={{ fontSize: 24, fontWeight: 700, color: "#333" }}>
-              Could not load profile
-            </h1>
-            <p style={{ color: "#666", marginTop: 8 }}>
-              Please log in again to access your profile and messages.
-            </p>
-            <button
-              type="button"
-              onClick={() => {
-                clearPatientSession();
-                clearGuestProfileSession();
-                setOtpEmail("");
-                setOtpExpiresAt(null);
-                setGuestProfileUnlocked(false);
-                setProfile(null);
-                setGateIdentifier("");
-                setReady(true);
-              }}
-              style={{
-                marginTop: 16,
-                padding: "10px 16px",
-                background: "#007bff",
-                color: "#fff",
-                border: "none",
-                borderRadius: 8,
-                cursor: "pointer",
-                fontWeight: 600,
-              }}
-            >
-              Try again
-            </button>
-          </div>
-        </Container>
-      </PageWrapper>
-    );
-  }
-
-  const getThreadDisplayName = (thread) =>
-    thread.doctorName || profile?.doctorName || "Doctor";
-
-  const getThreadSubtitle = () => "";
-
-  return (
-    <PageWrapper>
-      <Container>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-            padding: "20px 24px 0",
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => setActiveTab("profile")}
-            style={{
-              padding: "10px 16px",
-              border: "none",
-              borderBottom: activeTab === "profile" ? "2px solid #007bff" : "2px solid transparent",
-              background: "transparent",
-              color: activeTab === "profile" ? "#007bff" : "#555",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            Profile
-          </button>
-          <button
-            type="button"
-            onClick={() => setActiveTab("messages")}
-            style={{
-              padding: "10px 16px",
-              border: "none",
-              borderBottom: activeTab === "messages" ? "2px solid #007bff" : "2px solid transparent",
-              background: "transparent",
-              color: activeTab === "messages" ? "#007bff" : "#555",
-              fontWeight: 600,
-              cursor: "pointer",
-            }}
-          >
-            Messages
-          </button>
-          {(hasToken() || guestProfileUnlocked) && (
-            <button
-              type="button"
-              onClick={handleLogout}
-              style={{
-                marginLeft: "auto",
-                padding: "8px 14px",
-                border: "1px solid #e9edef",
-                borderRadius: 8,
-                background: "#fff",
-                color: "#dc2626",
-                fontWeight: 600,
-                fontSize: 14,
-                cursor: "pointer",
-              }}
-            >
-              Log out
-            </button>
-          )}
-        </div>
-
-        {activeTab === "profile" ? (
-          <Content>
-          <LeftColumn>
-            <ProfileSection>
-              {showShimmer ? (
-                <>
-                  <ShimmerAvatar />
-                  <ShimmerLine $w="200px" $h="24px" $mb="12px" />
-                  <ShimmerLine $w="160px" $h="16px" $mb="16px" />
-                  <ShimmerLine $w="100%" $h="14px" $mb="8px" />
-                  <ShimmerLine $w="95%" $h="14px" $mb="8px" />
-                  <ShimmerLine $w="80%" $h="14px" $mb="24px" />
-                  <ShimmerSkillsRow>
-                    <ShimmerSkillPill $w="120px" />
-                    <ShimmerSkillPill $w="160px" />
-                  </ShimmerSkillsRow>
-                  <Notes style={{ marginTop: 24 }}>
-                    <ShimmerLine $w="140px" $h="20px" $mb="8px" />
-                    <ShimmerTextarea />
-                    <ShimmerButton />
-                  </Notes>
-                </>
-              ) : profile ? (
-                <>
-                  <ProfileImage src={Pic1} alt="Profile" />
-                  <Name>{profile?.name || "—"}</Name>
-                  <Role>
-                    {profile?.appointmentId
-                      ? `Appointment ID: ${profile.appointmentId}`
-                      : "Appointment"}
-                  </Role>
-                  <Description>
-                    {profile?.doctorName && (
-                      <>
-                        Doctor: {profile.doctorName}
-                        <br />
-                      </>
-                    )}
-                    {profile?.date && (
-                      <>
-                        Session date: {formatDateDisplay(profile.date)}
-                        {profile?.time ? ` · ${profile.time}` : ""}
-                        <br />
-                      </>
-                    )}
-                    Message your doctor securely from the Messages tab.
-                  </Description>
-                  <Skills>
-                    {skills.map((skill, index) => (
-                      <Skill key={index}>{skill}</Skill>
-                    ))}
-                  </Skills>
-                  <Notes>
-                    <NotesTitle>Doctor messages</NotesTitle>
-                    <p style={{ color: "#667781", fontSize: 14, marginBottom: 12 }}>
-                      Chat with your doctor about appointments and care.
-                    </p>
-                    <NotesButton type="button" onClick={() => setActiveTab("messages")}>
-                      Open Messages
-                    </NotesButton>
-                  </Notes>
-                </>
-              ) : null}
-            </ProfileSection>
-          </LeftColumn>
-
-          <RightColumn>
-            {showShimmer ? (
-              <>
-                <BasicInfo>
-                  {[1, 2, 3, 4, 5].map((i) => (
-                    <InfoItem key={i}>
-                      <ShimmerLine $w="56px" $h="16px" $mb="8px" />
-                      <ShimmerLine $w="100%" $maxW="180px" $h="18px" />
-                    </InfoItem>
-                  ))}
-                </BasicInfo>
-                <ShimmerActionsRow>
-                  <ShimmerActionBtn />
-                  <ShimmerActionBtn />
-                </ShimmerActionsRow>
-                <Experience>
-                  <ShimmerLine $w="220px" $h="22px" $mb="16px" />
-                  {[1, 2, 3].map((i) => (
-                    <ShimmerExperienceRow key={i}>
-                      <ShimmerLogo />
-                      <ShimmerExpLines>
-                        <ShimmerLine $w="40%" $h="16px" />
-                        <ShimmerLine $w="70%" $h="12px" />
-                        <ShimmerLine $w="55%" $h="12px" />
-                        <ShimmerLine $w="85%" $h="12px" />
-                      </ShimmerExpLines>
-                    </ShimmerExperienceRow>
-                  ))}
-                </Experience>
-              </>
-            ) : profile ? (
-              <>
-                <BasicInfo>
-                  <InfoItem>
-                    <Label>AGE</Label>
-                    <Value>
-                      {profile?.age ? `${profile.age} years` : "—"}
-                    </Value>
-                  </InfoItem>
-                  <InfoItem>
-                    <Label>PHONE</Label>
-                    <Value>
-                      {profile?.number ? formatPhone(profile.number) : "—"}
-                    </Value>
-                  </InfoItem>
-                  <InfoItem>
-                    <Label>Next session</Label>
-                    <Value>
-                      {profile?.date
-                        ? `${formatDateDisplay(profile.date)}${
-                            profile?.time ? ` · ${profile.time}` : ""
-                          }`
-                        : "—"}
-                    </Value>
-                  </InfoItem>
-                  <InfoItem>
-                    <Label>LOCATION</Label>
-                    <Value>{profile?.location || "—"}</Value>
-                  </InfoItem>
-                  <InfoItem>
-                    <Label>EMAIL</Label>
-                    <Value>{profile?.email || "—"}</Value>
-                  </InfoItem>
-                </BasicInfo>
-                <Actions>
-                  <ActionButton type="button">Download History</ActionButton>
-                  <a
-                    href="https://wa.me/917025715250?text=Hello%2C%20I%20need%20help%20with%20MindVista"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{ flex: 1, textDecoration: "none" }}
-                  >
-                    <ActionButton secondary type="button">
-                      Help
-                    </ActionButton>
-                  </a>
-                </Actions>
-                <Experience>
-                  <SectionTitle>History of Consultant</SectionTitle>
-                  {history.length === 0 ? (
-                    <Period style={{ color: "#888" }}>
-                      No past sessions listed yet.
-                    </Period>
-                  ) : (
-                    history.map((exp) => (
-                      <ExperienceItem key={exp.id || exp.appointmentId}>
-                        <Logo color="#4e95ff">MV</Logo>
-                        <ExperienceDetails>
-                          <Company>MindVista</Company>
-                          <Period>{exp.doctorName || "—"}</Period>
-                          <Period>{exp.age ? `${exp.age} years` : "—"}</Period>
-                          <Period>
-                            {formatDateDisplay(exp.date)}
-                            {exp.location ? ` | ${exp.location}` : ""}
-                          </Period>
-                        </ExperienceDetails>
-                      </ExperienceItem>
-                    ))
-                  )}
-                </Experience>
-              </>
-            ) : null}
-          </RightColumn>
-          </Content>
         ) : (
-          <div style={{ padding: 24 }}>
-            <WhatsAppChatShell
-              threads={chatThreads}
-              selectedThread={selectedChatThread}
-              onSelectThread={setSelectedChatThread}
-              loading={chatThreadsLoading}
-              error={chatThreadsError}
-              onRefresh={loadChatThreads}
-              currentRole="patient"
-              currentUserId={profile?.patientId || profile?.email}
-              currentUserName={profile?.name || "Patient"}
-              doctorId={selectedChatThread?.doctorId}
-              patientEmail={guestChatEmail}
-              getThreadDisplayName={getThreadDisplayName}
-              getThreadSubtitle={getThreadSubtitle}
-              onMessageSent={(message) => {
-                handleIncomingMessage(message);
-              }}
-              onIncomingMessage={handleIncomingMessage}
-              onMarkedRead={handleMarkedRead}
-              emptyStateText="No appointment chats yet."
-              listTitle="Messages"
-              listSubtitle="Your appointment conversations"
-            />
+          <div className="space-y-8 animate-fadeIn">
+            
+            {/* Patient Header Banner */}
+            <div className="p-8 rounded-3xl bg-primary text-on-primary flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-[0px_4px_20px_rgba(74,101,78,0.2)]">
+              <div>
+                <div className="flex items-center gap-2 mb-1">
+                  <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-primary-fixed text-on-primary-fixed-variant">
+                    Patient Profile
+                  </span>
+                  <span className="text-xs opacity-80">{patient.email || patient.phone}</span>
+                </div>
+                <h1 className="font-headline text-3xl font-bold tracking-tight">
+                  Welcome, {patient.name || 'Patient'}
+                </h1>
+                <p className="text-xs opacity-80 mt-1">
+                  Manage your upcoming consultations, join video calls, and access digital prescriptions.
+                </p>
+              </div>
+
+              <button
+                onClick={handleLogout}
+                className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+              >
+                Switch Account
+              </button>
+            </div>
+
+            {/* Tab Navigation */}
+            <div className="flex border-b border-surface-variant gap-6 text-sm font-bold">
+              <button
+                type="button"
+                onClick={() => setActiveTab('UPCOMING')}
+                className={`pb-3 relative transition-colors ${
+                  activeTab === 'UPCOMING'
+                    ? 'text-primary border-b-2 border-primary font-bold'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                Upcoming Sessions ({upcomingAppointments.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('COMPLETED')}
+                className={`pb-3 relative transition-colors ${
+                  activeTab === 'COMPLETED'
+                    ? 'text-primary border-b-2 border-primary font-bold'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                Past Consultations ({completedAppointments.length})
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setActiveTab('PRESCRIPTIONS')}
+                className={`pb-3 relative transition-colors ${
+                  activeTab === 'PRESCRIPTIONS'
+                    ? 'text-primary border-b-2 border-primary font-bold'
+                    : 'text-on-surface-variant hover:text-on-surface'
+                }`}
+              >
+                My Prescriptions ({prescriptions.length})
+              </button>
+            </div>
+
+            {/* TAB 1: UPCOMING CONSULTATIONS */}
+            {activeTab === 'UPCOMING' && (
+              <div>
+                {loading ? (
+                  <div className="py-16 text-center text-on-surface-variant">
+                    <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+                    <span className="text-xs">Loading appointments...</span>
+                  </div>
+                ) : upcomingAppointments.length === 0 ? (
+                  <div className="bg-surface-container-lowest rounded-3xl ambient-shadow p-12 text-center text-on-surface-variant max-w-md mx-auto border border-surface-variant/40">
+                    <span className="material-symbols-outlined text-[36px] text-outline mb-2">calendar_month</span>
+                    <h3 className="font-headline text-lg font-bold text-on-surface">No Upcoming Consultations</h3>
+                    <p className="text-xs text-on-surface-variant mt-1 mb-4">
+                      You do not have any scheduled consultations at the moment.
+                    </p>
+                    <a
+                      href="/#experts"
+                      className="inline-block py-2.5 px-6 rounded-full bg-primary text-on-primary font-bold text-xs shadow-sm hover:opacity-90 transition-opacity"
+                    >
+                      Book a Session for ₹599
+                    </a>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {upcomingAppointments.map((appt) => {
+                      const doctor = appt.doctor || {};
+                      const isAyurveda =
+                        appt.professionalType === 'AYURVEDA_DOCTOR' ||
+                        doctor.professionalType === 'AYURVEDA_DOCTOR';
+
+                      return (
+                        <div key={appt._id} className="bg-surface-container-lowest rounded-3xl p-6 ambient-shadow border border-surface-variant/40 flex flex-col justify-between space-y-4">
+                          <div>
+                            <div className="flex justify-between items-start gap-2 mb-3">
+                              <span
+                                className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                                  isAyurveda
+                                    ? 'bg-primary-fixed text-on-primary-fixed-variant'
+                                    : 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+                                }`}
+                              >
+                                {isAyurveda ? 'Ayurveda' : 'Psychology'}
+                              </span>
+                              <StatusBadge status={appt.status} />
+                            </div>
+
+                            <h3 className="font-headline text-xl font-bold text-on-surface">
+                              {doctor.name || appt.doctorName || 'Practitioner'}
+                            </h3>
+                            <p className="text-xs text-on-surface-variant">{doctor.specialization || 'Clinical Specialist'}</p>
+
+                            <div className="my-4 p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 text-xs space-y-1.5 text-on-surface">
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
+                                <span><strong>Date:</strong> {appt.date}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
+                                <span><strong>Time:</strong> {appt.time} (45 mins)</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="material-symbols-outlined text-secondary text-[18px]">payments</span>
+                                <span><strong>Fee:</strong> ₹{appt.amount || 599} (Confirmed)</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="space-y-2">
+                            <button
+                              onClick={() => handleJoinConsultation(appt._id)}
+                              className="w-full py-3 px-4 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">videocam</span>
+                              <span>Join Google Meet Consultation</span>
+                            </button>
+                            <p className="text-[11px] text-on-surface-variant text-center">
+                              * Activates 10 minutes prior to scheduled start time
+                            </p>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 2: PAST CONSULTATIONS */}
+            {activeTab === 'COMPLETED' && (
+              <div>
+                {completedAppointments.length === 0 ? (
+                  <div className="bg-surface-container-lowest rounded-3xl ambient-shadow p-12 text-center text-on-surface-variant max-w-md mx-auto border border-surface-variant/40">
+                    <p className="text-sm font-bold">No past consultations found.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {completedAppointments.map((appt) => (
+                      <div key={appt._id} className="bg-surface-container-lowest rounded-3xl p-6 ambient-shadow border border-surface-variant/40 flex flex-col justify-between">
+                        <div>
+                          <div className="flex justify-between items-start mb-2">
+                            <h3 className="font-headline text-lg font-bold text-on-surface">
+                              {appt.doctor?.name || appt.doctorName || 'Practitioner'}
+                            </h3>
+                            <StatusBadge status="COMPLETED" />
+                          </div>
+                          <p className="text-xs text-on-surface-variant mb-3">
+                            Session on {appt.date} at {appt.time}
+                          </p>
+                        </div>
+
+                        {appt.prescriptionId && (
+                          <div className="pt-3 border-t border-surface-variant">
+                            <button
+                              onClick={() => {
+                                setSelectedPrescription(appt.prescriptionId);
+                                setIsPrescriptionModalOpen(true);
+                              }}
+                              className="w-full py-2.5 px-4 rounded-xl bg-secondary-container text-on-secondary-container text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                            >
+                              <span className="material-symbols-outlined text-[18px]">clinical_notes</span>
+                              <span>View Digital Prescription</span>
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* TAB 3: MY PRESCRIPTIONS */}
+            {activeTab === 'PRESCRIPTIONS' && (
+              <div>
+                {prescriptions.length === 0 ? (
+                  <div className="bg-surface-container-lowest rounded-3xl ambient-shadow p-12 text-center text-on-surface-variant max-w-md mx-auto border border-surface-variant/40">
+                    <span className="material-symbols-outlined text-[36px] text-outline mb-2">description</span>
+                    <h3 className="font-headline text-lg font-bold text-on-surface">No Prescriptions Issued Yet</h3>
+                    <p className="text-xs text-on-surface-variant mt-1">
+                      Ayurveda digital prescriptions will appear here once published by your doctor.
+                    </p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {prescriptions.map((p) => (
+                      <div key={p._id} className="bg-surface-container-lowest rounded-3xl p-6 ambient-shadow border border-surface-variant/40 flex flex-col justify-between space-y-4">
+                        <div>
+                          <div className="flex justify-between items-start gap-2 mb-2">
+                            <span className="bg-primary-fixed text-on-primary-fixed-variant text-[10px] font-bold uppercase px-2.5 py-0.5 rounded-full">
+                              Ayurveda Rx
+                            </span>
+                            <span className="text-xs text-on-surface-variant">
+                              {new Date(p.publishedAt || p.createdAt).toLocaleDateString('en-IN')}
+                            </span>
+                          </div>
+
+                          <h3 className="font-headline text-lg font-bold text-on-surface">{p.doctorName}</h3>
+                          <p className="text-xs text-on-surface-variant">
+                            {(p.doctorQualifications || []).join(', ') || 'Ayurvedic Specialist'}
+                          </p>
+
+                          <div className="mt-3 p-3 rounded-2xl bg-surface-container-low text-xs text-on-surface">
+                            <div className="font-bold text-on-surface mb-1">
+                              {p.medicines?.length || 0} Medicines Prescribed
+                            </div>
+                            <p className="text-on-surface-variant line-clamp-2">
+                              {p.assessment || p.dietAdvice || 'Ayurvedic prescription instructions available.'}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-2">
+                          <button
+                            onClick={() => {
+                              setSelectedPrescription(p);
+                              setIsPrescriptionModalOpen(true);
+                            }}
+                            className="flex-1 py-2.5 px-3 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-sm flex items-center justify-center gap-1.5 transition-colors"
+                          >
+                            <span className="material-symbols-outlined text-[16px]">visibility</span>
+                            <span>View Details</span>
+                          </button>
+
+                          <a
+                            href={`http://localhost:3000/api/patient/prescriptions/${p._id}/pdf`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="p-2.5 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-bold transition-colors flex items-center"
+                            title="Download PDF"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">download</span>
+                          </a>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
-      </Container>
-    </PageWrapper>
-  );
-};
+      </main>
 
-export default ProfilePage;
+      {/* Prescription Detail Modal */}
+      {selectedPrescription && (
+        <PrescriptionModal
+          prescription={selectedPrescription}
+          isOpen={isPrescriptionModalOpen}
+          onClose={() => {
+            setIsPrescriptionModalOpen(false);
+            setSelectedPrescription(null);
+          }}
+        />
+      )}
+
+      <Footer />
+    </div>
+  );
+}

@@ -1,726 +1,319 @@
-import { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { LogOut, Menu, X, Bell, Download, TrendingUp, Clock } from 'lucide-react';
-import { toast, ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import apiInstance from '../../instance';
-import { Button } from '../../components/shadcn/button/button';
-import { 
-  OverviewTab, 
-  PatientsTab, 
-  AppointmentsTab, 
-  SettingsTab, 
-  MyPatients, 
-  PatientModal,
-  TodaySessions,
-  UpcomingAppointments,
-  AvailableSlots,
-  Sidebar
-} from './components';
-import { ThemeProvider } from '../../contexts/ThemeContext';
-import DoctorMessagesTab from '../../components/chat/DoctorMessagesTab';
+import HeaderNav from '../../components/common/HeaderNav';
+import Footer from '../../components/common/Footer';
+import StatusBadge from '../../components/common/StatusBadge';
+import PrescriptionEditorModal from '../../components/prescription/PrescriptionEditorModal';
+import PrescriptionModal from '../../components/prescription/PrescriptionModal';
+import api from '../../instance';
 
-// Default income data structure (moved outside component to prevent re-creation)
-const defaultIncomeData = {
-  daily: 1250,
-  weekly: 8750,
-  monthly: 35000,
-  yearly: 420000,
-  dailyGrowth: 5.2,
-  weeklyGrowth: 12.8,
-  monthlyGrowth: 8.5,
-  yearlyGrowth: 15.3,
-  monthlyChart: [
-    { name: 'Jan', income: 25000 },
-    { name: 'Feb', income: 28000 },
-    { name: 'Mar', income: 32000 },
-    { name: 'Apr', income: 30000 },
-    { name: 'May', income: 35000 },
-    { name: 'Jun', income: 38000 },
-  ],
-  weeklyChart: [
-    { name: 'Mon', income: 1200 },
-    { name: 'Tue', income: 1500 },
-    { name: 'Wed', income: 1100 },
-    { name: 'Thu', income: 1800 },
-    { name: 'Fri', income: 1400 },
-    { name: 'Sat', income: 900 },
-    { name: 'Sun', income: 750 },
-  ]
-};
-
-const DoctorDashboard = () => {
+export default function DoctorDashboard() {
   const navigate = useNavigate();
-  // const [searchParams] = useSearchParams(); // Remove useSearchParams
+  const [doctor, setDoctor] = useState(null);
+  const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [doctorData, setDoctorData] = useState({});
-  const [incomeData, setIncomeData] = useState({});
-  const [patientsList, setPatientsList] = useState([]);
-  const [selectedTimeFrame, setSelectedTimeFrame] = useState('monthly');
-  const [patientRequests, setPatientRequests] = useState([]);
-  const [requestsLoading, setRequestsLoading] = useState(false);
-  const [profileRefreshing, setProfileRefreshing] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState('TODAY'); // 'TODAY' | 'UPCOMING' | 'COMPLETED'
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [selectedTab, setSelectedTab] = useState('overview');
-  const [doctorAppointments, setDoctorAppointments] = useState([]);
-  const [appointmentsLoading, setAppointmentsLoading] = useState(false);
-  const [appointmentsError, setAppointmentsError] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null); // State for selected user data
-  const [isUserModalOpen, setIsUserModalOpen] = useState(false); // State for modal visibility
 
-  // Debug: Log state changes
-  useEffect(() => {
-    console.log('selectedUser state changed:', selectedUser);
-  }, [selectedUser]);
+  // Prescription Modal states
+  const [selectedApptForPrescription, setSelectedApptForPrescription] = useState(null);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   useEffect(() => {
-    console.log('isUserModalOpen state changed:', isUserModalOpen);
-  }, [isUserModalOpen]);
-
-  // Get email from session storage, fallback to localStorage (doctorData) for reliable read on navigation
-  const getEmail = () => {
-    const encryptedEmail = sessionStorage.getItem('doctorEmail');
-    if (encryptedEmail) return atob(encryptedEmail);
-    const stored = localStorage.getItem('doctorData');
-    if (stored) {
+    const storedDoctor = localStorage.getItem('doctorData');
+    if (storedDoctor) {
       try {
-        const doctor = JSON.parse(stored);
-        return doctor?.email || null;
-      } catch { /* ignore */ }
-    }
-    return null;
-  };
-  const email = getEmail();
-
-
-  // Fetch doctor data and income data
-  useEffect(() => {
-    const fetchDoctorData = async () => {
-      if (!email) return;
-      
-      try {
-        const response = await apiInstance.get(`/doctors/email/${encodeURIComponent(email)}`);
-        console.log(response.data, 'doctor response');
-        
-        if (response.data.success && response.data.doctor) {
-          setDoctorData(response.data.doctor);
-          
-          // Fetch income data after doctor data is set
-          const incomeResponse = await apiInstance.get(`/doctors/${response.data.doctor._id}/income`);
-          console.log(incomeResponse.data, 'income response');
-          
-          if (incomeResponse.data.success && incomeResponse.data.incomeData) {
-            setIncomeData(incomeResponse.data.incomeData);
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching doctor data:', error);
-        toast.error('Failed to fetch doctor data');
+        const parsed = JSON.parse(storedDoctor);
+        setDoctor(parsed);
+        fetchDoctorAppointments(parsed._id || parsed.id);
+      } catch (err) {
+        navigate('/doctor/login');
       }
-    };
-
-    fetchDoctorData();
-  }, [email]);
-  // Check authentication on component mount
-  useEffect(() => {
-    // Check if email is provided, if not redirect to login
-    if (!email) {
-      console.log('No email provided, redirecting to login');
+    } else {
       navigate('/doctor/login');
-      return;
     }
-    
-    setLoading(false);
-  }, [navigate, email]);
+  }, []);
+
+  const fetchDoctorAppointments = async (doctorId) => {
+    setLoading(true);
+    try {
+      const res = await api.get('/professional/appointments/public', {
+        params: { doctorId },
+      });
+      if (res.data && res.data.data) {
+        setAppointments(res.data.data);
+      }
+    } catch (err) {
+      console.warn('Failed to load appointments:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleStartConsultation = async (appointmentId) => {
+    try {
+      const res = await api.get(`/professional/appointments/${appointmentId}/join`);
+      if (res.data && res.data.joinUrl) {
+        window.open(res.data.joinUrl, '_blank');
+      } else {
+        alert(res.data?.message || 'Could not launch Google Meet.');
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Error joining meeting.');
+    }
+  };
+
+  const handleMarkCompleted = async (appointmentId) => {
+    if (!window.confirm('Mark this consultation as completed?')) return;
+    try {
+      const res = await api.post(`/professional/appointments/${appointmentId}/complete-public`);
+      if (res.data && res.data.success) {
+        fetchDoctorAppointments(doctor._id || doctor.id);
+      }
+    } catch (err) {
+      alert(err.response?.data?.message || 'Failed to complete appointment');
+    }
+  };
 
   const handleLogout = () => {
-    localStorage.removeItem('isDoctorLoggedIn');
     localStorage.removeItem('doctorData');
-    sessionStorage.removeItem('doctorEmail');
+    localStorage.removeItem('doctorToken');
+    sessionStorage.clear();
     navigate('/doctor/login');
   };
 
-  // Function to fetch doctor appointments
-  const fetchDoctorAppointments = useCallback(async () => {
-    if (!doctorData._id) {
-      console.log('No doctor ID available, cannot fetch appointments');
-      return;
-    }
+  if (!doctor) return null;
 
-    // Prevent multiple simultaneous calls
-    if (appointmentsLoading) {
-      console.log('Appointments already loading, skipping duplicate call');
-      return;
-    }
+  const isAyurveda =
+    doctor.professionalType === 'AYURVEDA_DOCTOR' ||
+    (doctor.specialization || '').toLowerCase().includes('ayurved');
 
-    setAppointmentsLoading(true);
-    setAppointmentsError(null); // Clear previous errors
-    try {
-      const response = await apiInstance.get(`/doctor/${doctorData._id}/appointments`);
-      
-      if (response.data.success) {
-        // Transform the data to match the expected format
-        const transformedAppointments = response.data.data.map(appointment => ({
-          ...appointment,
-          patientName: appointment.name,
-          patientAge: appointment.age,
-          patientPhone: appointment.phone || appointment.number,
-          patientLocation: appointment.location
-        }));
-        
-        // Deduplicate appointments by _id
-        const uniqueAppointments = transformedAppointments.reduce((unique, appointment) => {
-          const exists = unique.find(item => item._id === appointment._id);
-          if (!exists) {
-            unique.push(appointment);
-          }
-          return unique;
-        }, []);
-        
-        console.log('Transformed appointments (deduplicated):', uniqueAppointments);
-        setDoctorAppointments(uniqueAppointments);
-      } else {
-        console.error('Failed to fetch doctor appointments:', response.data.message);
-        setAppointmentsError(response.data.message || 'Failed to fetch appointments');
-        setDoctorAppointments([]);
-      }
-    } catch (error) {
-      console.error('Error fetching doctor appointments:', error);
-      setAppointmentsError('Failed to connect to server or fetch appointments.');
-      setDoctorAppointments([]);
-    } finally {
-      setAppointmentsLoading(false);
-    }
-  }, [doctorData._id, appointmentsLoading]);
+  const todayStr = new Date().toISOString().split('T')[0];
 
-  // Function to fetch patient requests from API
-  const fetchPatientRequests = useCallback(async () => {
-    setRequestsLoading(true);
-    try {
-      // If we have a doctor ID, fetch only appointments for this doctor
-      if (doctorData._id) {
-        const response = await apiInstance.get(`/doctor/${doctorData._id}/appointments`);
-        console.log('Patient requests fetched for doctor:', response.data);
-        
-        if (response.data.success) {
-          // Transform the data to match frontend expectations
-          const transformedRequests = response.data.data.map(request => ({
-            id: request._id,
-            _id: request._id,
-            name: request.name,
-            email: request.email, // Add missing email field
-            phone: request.phone,
-            number: request.phone, // Alternative field name
-            age: request.age,
-            location: request.location,
-            doctor: request.doctor,
-            doctorName: doctorData.name || 'N/A',
-            doctorSpecialization: doctorData.specialization || 'N/A',
-            status: request.status || 'pending',
-            time: request.time,
-            date: request.date,
-            createdAt: request.createdAt,
-            updatedAt: request.updatedAt
-          }));
-          setPatientRequests(transformedRequests);
-        } else {
-          console.error('Failed to fetch patient requests:', response.data.message);
-          setPatientRequests([]);
-        }
-      } else {
-        // Fallback to general patient requests if no doctor ID
-        const response = await apiInstance.get('/request-pateint');
-        console.log('Patient requests fetched:', response.data);
-        
-        if (response.data.success) {
-          setPatientRequests(response.data.data || []);
-        } else {
-          console.error('Failed to fetch patient requests:', response.data.message);
-          setPatientRequests([]);
-        }
-      }
-    } catch (error) {
-      console.error('Error fetching patient requests:', error);
-      setPatientRequests([]);
-    } finally {
-      setRequestsLoading(false);
-    }
-  }, [doctorData._id, doctorData.name, doctorData.specialization]);
+  const todayAppointments = appointments.filter((a) => a.date === todayStr);
+  const upcomingAppointments = appointments.filter(
+    (a) => a.date >= todayStr && a.status !== 'COMPLETED' && a.status !== 'completed'
+  );
+  const completedAppointments = appointments.filter(
+    (a) => a.status === 'COMPLETED' || a.status === 'completed'
+  );
 
-  // Function to fetch doctor profile data from API
-  const fetchDoctorProfile = useCallback(async () => {
-    setProfileRefreshing(true);
-    try {
-      if (!email) {
-        console.log('No email available, using stored data');
-        return;
-      }
+  const currentDisplayList =
+    activeTab === 'TODAY'
+      ? todayAppointments
+      : activeTab === 'UPCOMING'
+      ? upcomingAppointments
+      : completedAppointments;
 
-      console.log('Fetching doctor profile for email:', email);
-      const response = await apiInstance.get(`/doctors/email/${encodeURIComponent(email)}`);
-      console.log('Doctor profile fetched:', response.data);
-      
-      if (response.data.success) {
-        const updatedDoctorData = response.data.doctor;
-        console.log('Updated doctor data:', updatedDoctorData);
-        console.log('Doctor ID:', updatedDoctorData._id);
-        setDoctorData(updatedDoctorData);
-        localStorage.setItem('doctorData', JSON.stringify(updatedDoctorData));
-      } else {
-        console.error('Failed to fetch doctor profile:', response.data.message);
-      }
-    } catch (error) {
-      console.error('Error fetching doctor profile:', error);
-    } finally {
-      setProfileRefreshing(false);
-    }
-  }, [email]);
-
-  // Function to handle appointment approval
-  const handleAppointmentAction = async (appointmentId, action) => {
-    try {
-      const endpoint = action === 'approve' ? `/appointment/${appointmentId}/approve` : `/appointment/${appointmentId}/decline`;
-      const method = 'PUT';
-      
-      const response = await apiInstance[method.toLowerCase()](endpoint);
-      
-      if (response.data.success) {
-        console.log(`Appointment ${action}d successfully:`, response.data);
-        const emailSent = response.data.notifications?.email?.success;
-        
-        // Show success message with video call info for approvals
-        if (action === 'approve') {
-          const appointmentData = response.data.data;
-          if (appointmentData.videoCallLink) {
-            if (emailSent) {
-              toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
-                duration: 5000
-              });
-            } else {
-              toast.warning(`Appointment approved and video link generated, but the email was not sent. Check backend email settings.`, {
-                duration: 6000
-              });
-            }
-            
-            // Show video call details
-            setTimeout(() => {
-              toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
-                duration: 6000
-              });
-            }, 1000);
-          } else {
-            toast.success(`Appointment approved successfully!`);
-          }
-          
-          // Show additional message about viewing sessions
-          setTimeout(() => {
-            toast.info(`Check "Today's Sessions" for today's appointments or "Upcoming" for future appointments.`, {
-              duration: 8000
-            });
-          }, 2000);
-        } else {
-          if (emailSent) {
-            toast.success(`Appointment declined. Email notification sent to the patient.`);
-          } else {
-            toast.warning(`Appointment declined, but the email was not sent. Check backend email settings.`);
-          }
-        }
-        
-        await fetchPatientRequests();
-        await fetchDoctorAppointments(); // Refresh appointments after approval/decline
-      } else {
-        console.error(`Failed to ${action} appointment:`, response.data.message);
-        toast.error(`Failed to ${action} appointment: ${response.data.message}`);
-      }
-    } catch (error) {
-      console.error(`Error ${action}ing appointment:`, error);
-      toast.error(`Error ${action}ing appointment. Please try again.`);
-    }
-  };
-
-  // Function to handle appointment actions for appointments tab
-  const handleAppointmentActionForAppointments = async (appointmentId, action) => {
-    try {
-      const endpoint = action === 'approve' ? `/appointment/${appointmentId}/approve` : `/appointment/${appointmentId}/decline`;
-      const method = 'PUT';
-      
-      const response = await apiInstance[method.toLowerCase()](endpoint);
-      
-      if (response.data.success) {
-        console.log(`Appointment ${action}d successfully:`, response.data);
-        const emailSent = response.data.notifications?.email?.success;
-        
-        // Show success message with video call info for approvals
-        if (action === 'approve') {
-          const appointmentData = response.data.data;
-          if (appointmentData.videoCallLink) {
-            if (emailSent) {
-              toast.success(`Appointment approved! Video call link has been generated and sent to the patient via email.`, {
-                duration: 5000
-              });
-            } else {
-              toast.warning(`Appointment approved and video link generated, but the email was not sent. Check backend email settings.`, {
-                duration: 6000
-              });
-            }
-            
-            // Show video call details
-            setTimeout(() => {
-              toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
-                duration: 6000
-              });
-            }, 1000);
-          } else {
-            toast.success(`Appointment approved successfully!`);
-          }
-          
-          // Show additional message about viewing sessions
-          setTimeout(() => {
-            toast.info(`Check "Today's Sessions" for today's appointments or "Upcoming" for future appointments.`, {
-              duration: 8000
-            });
-          }, 2000);
-        } else {
-          if (emailSent) {
-            toast.success(`Appointment declined. Email notification sent to the patient.`);
-          } else {
-            toast.warning(`Appointment declined, but the email was not sent. Check backend email settings.`);
-          }
-        }
-        
-        await fetchPatientRequests();
-        await fetchDoctorAppointments(); // Refresh appointments after approval/decline
-      } else {
-        console.error(`Failed to ${action} appointment:`, response.data.message);
-        toast.error(`Failed to ${action} appointment: ${response.data.message}`);
-      }
-    } catch (error) {
-      console.error(`Error ${action}ing appointment:`, error);
-      toast.error(`Error ${action}ing appointment. Please try again.`);
-    }
-  };
-
-  // Function to generate video call link for confirmed appointments
-  const handleGenerateVideoCall = async (appointmentId) => {
-    try {
-      const response = await apiInstance.put(`/appointment/${appointmentId}/generate-video-call`);
-      
-      if (response.data.success) {
-        const appointmentData = response.data.data;
-        const emailSent = response.data.notifications?.email?.success;
-        if (emailSent) {
-          toast.success(`Video call link generated successfully! Email sent to patient.`, {
-            duration: 5000
-          });
-        } else {
-          toast.warning(`Video call link generated, but the email was not sent. Check backend email settings.`, {
-            duration: 6000
-          });
-        }
-        
-
-        // Show video call details
-        setTimeout(() => {
-          toast.info(`Video Call ID: ${appointmentData.videoCallId}`, {
-            duration: 6000
-          });
-        }, 1000);
-        
-        await fetchDoctorAppointments(); // Refresh appointments
-      } else {
-        console.error('Failed to generate video call link:', response.data.message);
-        toast.error(`Failed to generate video call link: ${response.data.message}`);
-      }
-    } catch (error) {
-      console.error('Error generating video call link:', error);
-      toast.error('Error generating video call link. Please try again.');
-    }
-  };
-
-  // Function to handle user row click and open modal
-  const handleUserRowClick = (user) => {
-  
-    console.log('Row clicked! User data:', user); // Debug log
-    console.log('Setting selectedUser to:', user); // Debug log
-    console.log('Current selectedUser before update:', selectedUser); // Debug log
-    setSelectedUser(user);
-    setIsUserModalOpen(true);
-    console.log('Modal should now be open. selectedUser:', user, 'isUserModalOpen:', true); // Debug log
-  };
-
-  // Function to close user modal
-  const closeUserModal = () => {
-    setIsUserModalOpen(false);
-    setSelectedUser(null);
-  };
-
-  // Function to handle navigation between tabs
-  const handleNavigate = (tabName) => {
-    setSelectedTab(tabName);
-  };
-
-  useEffect(() => {
-    const loadDoctorData = async () => {
-      console.log('Loading doctor dashboard data...');
-      setLoading(true);
-      
-      try {
-        if (email) {
-          await fetchDoctorProfile();
-          // Appointments will be fetched when appointments tab is selected
-        } else {
-          // Fallback to stored data if no email
-          const storedData = localStorage.getItem('doctorData');
-          if (storedData) {
-            setDoctorData(JSON.parse(storedData));
-          }
-        }
-        
-        setIncomeData(defaultIncomeData);
-        setPatientsList([]); // Initialize with empty array instead of fake data
-        
-        console.log('Doctor data loaded successfully:', doctorData);
-        console.log('Income data loaded successfully:', defaultIncomeData);
-        
-        setLoading(false);
-      } catch (error) {
-        console.error('Error loading doctor data:', error);
-        setLoading(false);
-      }
-    };
-
-    loadDoctorData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [email]);
-
-  // Load appointments when appointments tab is selected (only if not already loaded)
-  useEffect(() => {
-    if (selectedTab === 'appointments' && doctorData._id && doctorAppointments.length === 0) {
-      fetchDoctorAppointments();
-    }
-  }, [selectedTab, doctorData._id, doctorAppointments.length, fetchDoctorAppointments]);
-
-  // Auto-fetch patient requests when patients tab is selected or doctor data is loaded
-  useEffect(() => {
-    if (selectedTab === 'patients' && doctorData._id && patientRequests.length === 0) {
-      fetchPatientRequests();
-    }
-  }, [selectedTab, doctorData._id, patientRequests.length, fetchPatientRequests]);
-
-  // Filter functions
-  const filteredRequests = patientRequests.filter(request => {
-    const matchesSearch = request.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         request.phone?.includes(searchTerm);
-    const matchesFilter = filterStatus === 'all' || request.status === filterStatus;
-    return matchesSearch && matchesFilter;
+  const filteredAppointments = currentDisplayList.filter((a) => {
+    if (!searchTerm.trim()) return true;
+    return (
+      (a.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (a.email || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (a.phone || '').includes(searchTerm)
+    );
   });
 
-  // When not authenticated, render nothing to avoid flash of dashboard before redirect
-  if (!email) {
-    return null;
-  }
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="relative">
-            <div className="animate-spin rounded-full h-20 w-20 border-4 border-blue-200 border-t-blue-600 mb-6"></div>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 bg-blue-600 rounded-full animate-pulse"></div>
-            </div>
-          </div>
-          <p className="text-gray-600 text-lg font-medium">Loading your dashboard...</p>
-          <p className="text-gray-400 text-sm mt-2">Please wait while we fetch your data</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
-    <ThemeProvider>
-      <div className="h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 overflow-hidden">
-        {/* Mobile Sidebar Overlay */}
-        {sidebarOpen && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-30 lg:hidden" onClick={() => setSidebarOpen(false)}></div>
-        )}
+    <div className="font-sans bg-surface text-on-surface antialiased min-h-screen flex flex-col relative">
+      <HeaderNav />
 
-        <div className="flex h-full">
-          {/* Mobile Header */}
-          <div className="lg:hidden fixed top-0 left-0 right-0 bg-white shadow-sm p-4 flex items-center justify-between z-30">
-            <Button 
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-              variant="ghost"
-              size="icon"
-            >
-              {sidebarOpen ? <X size={24} /> : <Menu size={24} />}
-            </Button>
-            <h1 className="text-lg font-semibold text-gray-900">Dashboard</h1>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell size={20} />
-                <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-              </Button>
-              <Button 
-                onClick={handleLogout}
-                variant="ghost"
-                size="icon"
-                className="text-red-600"
+      <main className="flex-1 max-w-container-max mx-auto w-full px-4 sm:px-8 lg:px-16 py-12">
+        
+        {/* Doctor Header Banner */}
+        <div className="p-8 rounded-3xl bg-primary text-on-primary flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-[0px_4px_20px_rgba(74,101,78,0.2)] mb-8">
+          <div>
+            <div className="flex items-center gap-2 mb-1">
+              <span
+                className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full ${
+                  isAyurveda ? 'bg-primary-fixed text-on-primary-fixed-variant' : 'bg-tertiary-fixed text-on-tertiary-fixed-variant'
+                }`}
               >
-                <LogOut size={20} />
-              </Button>
+                {isAyurveda ? 'Ayurvedic Practitioner Portal' : 'Psychology Portal'}
+              </span>
+              <span className="text-xs opacity-80">{doctor.email}</span>
             </div>
+            <h1 className="font-headline text-3xl font-bold tracking-tight">{doctor.name}</h1>
+            <p className="text-xs opacity-80 mt-1">
+              {doctor.specialization} • 45-Min Sessions (₹{doctor.consultation?.price || 599})
+            </p>
           </div>
-          {/* Sidebar */}
-          <Sidebar
-            sidebarOpen={sidebarOpen}
-            setSidebarOpen={setSidebarOpen}
-            doctorData={doctorData}
-            selectedTab={selectedTab}
-            setSelectedTab={setSelectedTab}
-            handleNavigate={handleNavigate}
-            profileRefreshing={profileRefreshing}
-            fetchDoctorProfile={fetchDoctorProfile}
-            handleLogout={handleLogout}
-          />
 
-          {/* Main Content */}
-          <div className="flex-1 lg:ml-80 w-full overflow-y-auto">
-            {/* Add top padding for mobile to account for fixed header */}
-            <div className="pt-20 lg:pt-0 p-4 lg:p-8 max-w-7xl mx-auto">
-              {/* Main Header - Desktop Only */}
-              <div className="hidden lg:flex items-center justify-between mb-8">
-                <div className="flex py-2 flex-col">
-                  <h1 className="text-[22px] font-medium text-gray-800">Welcome back, Dr. {doctorData.name?.split(' ')[1] || 'Doctor'}!</h1>
-                  <p className="text-gray-500  text-[16px] mt-1">Here&apos;s what&apos;s happening with your practice today.</p>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white text-xs font-bold transition-colors"
+          >
+            Logout
+          </button>
+        </div>
+
+        {/* Quick Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+          <div className="bg-surface-container-lowest rounded-3xl p-6 ambient-shadow border border-surface-variant/40">
+            <div className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Today's Sessions</div>
+            <div className="font-headline text-3xl font-bold text-on-surface mt-1">{todayAppointments.length}</div>
+          </div>
+          <div className="bg-surface-container-lowest rounded-3xl p-6 ambient-shadow border border-surface-variant/40">
+            <div className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Upcoming Total</div>
+            <div className="font-headline text-3xl font-bold text-primary mt-1">{upcomingAppointments.length}</div>
+          </div>
+          <div className="bg-surface-container-lowest rounded-3xl p-6 ambient-shadow border border-surface-variant/40">
+            <div className="text-xs font-bold uppercase tracking-wider text-on-surface-variant">Completed Sessions</div>
+            <div className="font-headline text-3xl font-bold text-secondary mt-1">{completedAppointments.length}</div>
+          </div>
+        </div>
+
+        {/* Tab Selection & Search */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-surface-variant pb-3 mb-6">
+          <div className="flex gap-6 text-sm font-bold">
+            <button
+              onClick={() => setActiveTab('TODAY')}
+              className={`pb-2 transition-colors ${
+                activeTab === 'TODAY'
+                  ? 'text-primary border-b-2 border-primary font-bold'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Today's Sessions ({todayAppointments.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('UPCOMING')}
+              className={`pb-2 transition-colors ${
+                activeTab === 'UPCOMING'
+                  ? 'text-primary border-b-2 border-primary font-bold'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Upcoming ({upcomingAppointments.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('COMPLETED')}
+              className={`pb-2 transition-colors ${
+                activeTab === 'COMPLETED'
+                  ? 'text-primary border-b-2 border-primary font-bold'
+                  : 'text-on-surface-variant hover:text-on-surface'
+              }`}
+            >
+              Completed ({completedAppointments.length})
+            </button>
+          </div>
+
+          <div className="relative w-full sm:w-64">
+            <input
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search patient name..."
+              className="w-full pl-4 pr-3 py-2 rounded-full border border-outline-variant bg-surface-container-lowest text-xs text-on-surface placeholder-on-surface-variant focus:outline-none focus:ring-2 focus:ring-primary shadow-sm"
+            />
+          </div>
+        </div>
+
+        {/* Appointments List */}
+        {loading ? (
+          <div className="py-16 text-center text-on-surface-variant">
+            <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <span className="text-xs">Loading appointments...</span>
+          </div>
+        ) : filteredAppointments.length === 0 ? (
+          <div className="bg-surface-container-lowest rounded-3xl ambient-shadow p-12 text-center text-on-surface-variant max-w-md mx-auto border border-surface-variant/40">
+            <span className="material-symbols-outlined text-[36px] text-outline mb-2">event_available</span>
+            <p className="font-headline text-sm font-bold text-on-surface">No appointments in this category</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredAppointments.map((appt) => (
+              <div key={appt._id} className="bg-surface-container-lowest rounded-3xl p-6 ambient-shadow border border-surface-variant/40 flex flex-col justify-between space-y-4">
+                <div>
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h3 className="font-headline text-xl font-bold text-on-surface">{appt.name}</h3>
+                      <p className="text-xs text-on-surface-variant">
+                        {appt.phone} • {appt.email} • {appt.age} yrs
+                      </p>
+                    </div>
+                    <StatusBadge status={appt.status} />
+                  </div>
+
+                  <div className="p-4 rounded-2xl bg-surface-container-low border border-outline-variant/60 text-xs space-y-1.5 my-3 text-on-surface">
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary text-[18px]">calendar_today</span>
+                      <span><strong>Date:</strong> {appt.date}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="material-symbols-outlined text-primary text-[18px]">schedule</span>
+                      <span><strong>Time:</strong> {appt.time} (45 mins)</span>
+                    </div>
+                    {appt.reasonForConsultation && (
+                      <div className="pt-1 text-on-surface-variant italic">
+                        "{appt.reasonForConsultation}"
+                      </div>
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-4">
-                  <Button 
 
-                  variant='outline'
-                    onClick={() => handleNavigate('todaySessions')}
-                    className=""
-                  >
-                    <Clock size={16} />
-                    Today&apos;s Sessions
-                  </Button>
-                  <Button 
-                  
-                  variant='outline'
-                    onClick={() => handleNavigate('upcoming')}
-                  
-                  >
-                    <TrendingUp size={16} />
-                    Upcoming
-                  </Button>
-                  <Button variant="outline" size="icon" className="relative">
-                    <Bell size={20} className="text-gray-600" />
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs text-white flex items-center justify-center">3</span>
-                  </Button>
-                  <Button variant="outline" size="icon">
-                    <Download size={20} className="text-gray-600" />
-                  </Button>
+                <div className="space-y-2 pt-2 border-t border-surface-variant">
+                  {/* Start Google Meet Video Call */}
+                  {appt.status !== 'COMPLETED' && appt.status !== 'completed' ? (
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleStartConsultation(appt._id)}
+                        className="flex-1 py-3 px-4 rounded-xl bg-primary text-on-primary font-bold text-xs shadow-sm hover:opacity-90 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">videocam</span>
+                        <span>Start Consultation (Google Meet)</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleMarkCompleted(appt._id)}
+                        className="py-3 px-4 rounded-xl bg-surface-container-high hover:bg-surface-container-highest text-on-surface text-xs font-bold transition-colors"
+                        title="Mark Completed"
+                      >
+                        <span className="material-symbols-outlined text-[18px] text-secondary">check_circle</span>
+                      </button>
+                    </div>
+                  ) : null}
+
+                  {/* Ayurveda Prescription Actions */}
+                  {isAyurveda && (
+                    <div className="pt-1">
+                      <button
+                        onClick={() => {
+                          setSelectedApptForPrescription(appt);
+                          setIsEditorOpen(true);
+                        }}
+                        className="w-full py-2.5 px-4 rounded-xl bg-secondary-container text-on-secondary-container text-xs font-bold flex items-center justify-center gap-1.5 transition-colors"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">clinical_notes</span>
+                        <span>
+                          {appt.prescriptionId ? 'Edit Digital Prescription' : 'Draft Ayurveda Prescription'}
+                        </span>
+                      </button>
+                    </div>
+                  )}
                 </div>
               </div>
-
-              {/* Overview Tab Content */}
-              {selectedTab === 'overview' && (
-                <OverviewTab
-                  selectedTimeFrame={selectedTimeFrame}
-                  setSelectedTimeFrame={setSelectedTimeFrame}
-                  incomeData={incomeData}
-                  doctorAppointments={doctorAppointments}
-                  appointmentsLoading={appointmentsLoading}
-                  fetchDoctorAppointments={fetchDoctorAppointments}
-                />
-              )}
-
-              {/* Patients Tab Content */}
-              {selectedTab === 'patients' && (
-                <PatientsTab
-                  patientRequests={patientRequests}
-                  requestsLoading={requestsLoading}
-                  searchTerm={searchTerm}
-                  setSearchTerm={setSearchTerm}
-                  filterStatus={filterStatus}
-                  setFilterStatus={setFilterStatus}
-                  fetchPatientRequests={fetchPatientRequests}
-                  handleUserRowClick={handleUserRowClick}
-                  handleAppointmentAction={handleAppointmentAction}
-                  handleGenerateVideoCall={handleGenerateVideoCall}
-                  doctorData={doctorData}
-                  filteredRequests={filteredRequests}
-                />
-              )}
-
-              {/* Appointments Tab Content */}
-              {selectedTab === 'appointments' && (
-                <AppointmentsTab
-                  doctorAppointments={doctorAppointments}
-                  appointmentsLoading={appointmentsLoading}
-                  appointmentsError={appointmentsError}
-                  fetchDoctorAppointments={fetchDoctorAppointments}
-                  handleAppointmentActionForAppointments={handleAppointmentActionForAppointments}
-                  handleGenerateVideoCall={handleGenerateVideoCall}
-                />
-              )}
-
-              {selectedTab === 'messages' && (
-                <DoctorMessagesTab doctorData={doctorData} />
-              )}
-
-              {/* Available Slots Tab Content */}
-              {selectedTab === 'availableSlots' && (
-                <AvailableSlots doctorData={doctorData} />
-              )}
-
-              {/* My Patients Section - Show in both Overview and Patients tabs */}
-              {(selectedTab === 'overview' || selectedTab === 'patients') && (
-                <MyPatients patientsList={patientsList} />
-              )}
-
-              {/* Today's Sessions Tab Content */}
-              {selectedTab === 'todaySessions' && (
-                <TodaySessions 
-                  doctorData={doctorData} 
-                  email={email} 
-                  onNavigate={handleNavigate}
-                />
-              )}
-
-              {/* Upcoming Appointments Tab Content */}
-              {selectedTab === 'upcoming' && (
-                <UpcomingAppointments 
-                  doctorData={doctorData} 
-                  email={email} 
-                  onNavigate={handleNavigate}
-                />
-              )}
-
-              {/* Settings Tab Content */}
-              {selectedTab === 'settings' && (
-                <SettingsTab doctorData={doctorData} />
-              )}
-            </div>
+            ))}
           </div>
-        </div>
+        )}
+      </main>
 
-
-        {/* Patient Details Modal */}
-        <PatientModal
-          isUserModalOpen={isUserModalOpen}
-          closeUserModal={closeUserModal}
-          selectedUser={selectedUser}
-          doctorData={doctorData}
-          handleAppointmentAction={handleAppointmentAction}
+      {/* Ayurveda Prescription Editor Modal */}
+      {selectedApptForPrescription && (
+        <PrescriptionEditorModal
+          appointment={selectedApptForPrescription}
+          isOpen={isEditorOpen}
+          onClose={() => {
+            setIsEditorOpen(false);
+            setSelectedApptForPrescription(null);
+          }}
+          onSaveSuccess={() => {
+            fetchDoctorAppointments(doctor._id || doctor.id);
+          }}
         />
+      )}
 
-        <ToastContainer />
-      </div>
-    </ThemeProvider>
+      <Footer />
+    </div>
   );
-};
-
-export default DoctorDashboard;
+}
